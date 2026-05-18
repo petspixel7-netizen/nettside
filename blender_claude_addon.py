@@ -381,7 +381,8 @@ class CLAUDE_PT_MainPanel(Panel):
             layout.label(text=props.status, icon="TIME")
 
         # Inndatafelt
-        layout.prop(props, "user_input", placeholder="Skriv til Claude...")
+        layout.label(text="Melding til Claude:")
+        layout.prop(props, "user_input")
 
         row = layout.row(align=True)
         row.operator("claude.send_message", icon="PLAY")
