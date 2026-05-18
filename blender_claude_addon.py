@@ -354,19 +354,19 @@ class CLAUDE_PT_MainPanel(Panel):
             box = layout.box()
             box.label(text="API-nøkkel mangler!", icon="ERROR")
             box.label(text="Innstillinger > Add-ons > Claude AI")
-            box.operator("claude.install_deps", icon="IMPORT")
+            box.operator("claude.install_deps")
             return
 
         # Samtalehistorikk
         if props.messages:
             box = layout.box()
-            box.label(text="Samtale:", icon="CHAT")
+            box.label(text="Samtale:")
             for msg in props.messages:
                 row = box.row()
                 if msg.role == "user":
-                    row.label(text="Du:", icon="PERSON")
+                    row.label(text="Du:", icon="USER")
                 else:
-                    row.label(text="Claude:", icon="MODIFIER")
+                    row.label(text="Claude:", icon="INFO")
                 # Wrap lange linjer
                 max_chars = 50
                 text = msg.content
@@ -378,7 +378,7 @@ class CLAUDE_PT_MainPanel(Panel):
 
         # Status
         if props.status:
-            layout.label(text=props.status, icon="TIME")
+            layout.label(text=props.status, icon="SORTTIME")
 
         # Inndatafelt
         layout.label(text="Melding til Claude:")
@@ -388,7 +388,7 @@ class CLAUDE_PT_MainPanel(Panel):
         row.operator("claude.send_message", icon="PLAY")
         row.operator("claude.clear_history", icon="TRASH")
 
-        layout.operator("claude.install_deps", icon="IMPORT", text="Sjekk/installer avhengigheter")
+        layout.operator("claude.install_deps", text="Sjekk/installer avhengigheter")
 
 
 # ---------------------------------------------------------------------------
