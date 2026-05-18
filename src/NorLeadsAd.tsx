@@ -52,7 +52,7 @@ const AnimLetter: React.FC<{
   );
 };
 
-// Word with entry + exit
+// Word with entry + exit — opacity and position eased independently
 const AnimWord: React.FC<{
   text: string;
   frame: number;
@@ -63,16 +63,21 @@ const AnimWord: React.FC<{
   translateFrom?: 'bottom' | 'right' | 'left';
   style?: React.CSSProperties;
 }> = ({ text, frame, inA, inB, outC, outD, fontSize = 36, color = theme.white, goldWord, translateFrom = 'bottom', style = {} }) => {
-  const p = presence(frame, inA, inB, outC, outD);
-  const words = text.split(' ');
-  const dx = translateFrom === 'right' ? lerp(80, 0, p) : translateFrom === 'left' ? lerp(-80, 0, p) : 0;
-  const dy = translateFrom === 'bottom' ? lerp(40, 0, p) : 0;
+  const opacity = presence(frame, inA, inB, outC, outD);
+  // Position uses a slower, longer ease so it glides in well after opacity
+  const posT = easeOutExpo(clamp(prog(frame, inA, inB + 14)));
+  const posOut = easeInOutCubic(clamp(prog(frame, outC, outD)));
+  const pos = posT * (1 - posOut);
 
+  const dx = translateFrom === 'right' ? lerp(28, 0, pos) : translateFrom === 'left' ? lerp(-28, 0, pos) : 0;
+  const dy = translateFrom === 'bottom' ? lerp(18, 0, pos) : 0;
+
+  const words = text.split(' ');
   return (
     <div style={{
-      opacity: p,
+      opacity,
       transform: `translate(${dx}px, ${dy}px)`,
-      filter: `blur(${lerp(6, 0, easeOutExpo(p))}px)`,
+      filter: `blur(${lerp(4, 0, easeOutExpo(clamp(prog(frame, inA, inA + 14))))}px)`,
       display: 'flex', flexWrap: 'wrap', gap: '0 12px',
       ...style,
     }}>
@@ -139,10 +144,10 @@ export const NorLeadsAd: React.FC = () => {
 
   // ── Services section ─────────────────────────────────────────────────────
   const services = [
-    { icon: '🎬', title: 'Reklamevideo', sub: 'Sosiale medier & TV' },
-    { icon: '✨', title: 'Produktanimasjon', sub: 'Vis frem det du selger' },
-    { icon: '🚀', title: 'Firmaintro', sub: 'Profesjonell merkevare' },
-    { icon: '📈', title: 'Kampanjevideoer', sub: 'Tilbud som konverterer' },
+    { title: 'Reklamevideo', sub: 'Sosiale medier & TV' },
+    { title: 'Produktanimasjon', sub: 'Vis frem det du selger' },
+    { title: 'Firmaintro', sub: 'Profesjonell merkevare' },
+    { title: 'Kampanjevideoer', sub: 'Tilbud som konverterer' },
   ];
   const svcHeadingP = presence(frame, 108, 130, 188, 212);
 
@@ -262,20 +267,16 @@ export const NorLeadsAd: React.FC = () => {
                 background: `linear-gradient(135deg, rgba(255,255,255,0.04), rgba(212,175,55,${0.03 + shimmer * 0.04}))`,
                 border: `1px solid rgba(212,175,55,${0.12 + shimmer * 0.12})`,
                 borderRadius: 14,
-                padding: '24px 28px',
-                display: 'flex', alignItems: 'center', gap: 18,
+                padding: '26px 36px',
                 opacity: p,
-                transform: `translateX(${lerp(60, 0, p)}px)`,
+                transform: `translateX(${lerp(28, 0, easeOutExpo(p))}px)`,
                 boxShadow: `0 0 ${16 + shimmer * 12}px rgba(212,175,55,0.06)`,
               }}>
-                <span style={{ fontSize: 40 }}>{s.icon}</span>
-                <div>
-                  <div style={{ fontFamily: 'sans-serif', fontSize: 22, fontWeight: 700, color: theme.white }}>
-                    {s.title}
-                  </div>
-                  <div style={{ fontFamily: 'sans-serif', fontSize: 15, color: '#888', marginTop: 3 }}>
-                    {s.sub}
-                  </div>
+                <div style={{ fontFamily: 'Georgia, serif', fontSize: 23, fontWeight: 700, color: theme.white }}>
+                  {s.title}
+                </div>
+                <div style={{ fontFamily: 'sans-serif', fontSize: 15, color: '#888', marginTop: 5 }}>
+                  {s.sub}
                 </div>
               </div>
             );
@@ -298,8 +299,9 @@ export const NorLeadsAd: React.FC = () => {
 
         <div style={{ display: 'flex', gap: 90 }}>
           {stats.map((stat, i) => {
-            const p = presence(frame, 228 + i * 14, 252 + i * 14, 292, 318);
-            const countT = easeOutExpo(clamp(prog(frame, 232 + i * 14, 270 + i * 14)));
+            const p = presence(frame, 220 + i * 14, 248 + i * 14, 292, 318);
+            // easeInOutCubic: starts slow, accelerates, decelerates — over 80 frames (~2.7s)
+            const countT = easeInOutCubic(clamp(prog(frame, 228 + i * 14, 308 + i * 14)));
             const val = Math.round(countT * stat.value);
             const shimmer = 0.65 + 0.35 * Math.sin(frame * 0.07 + i * 2.1);
             const circleLen = 2 * Math.PI * 96;
