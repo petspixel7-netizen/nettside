@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Underverket Gastrobar — Moss</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600;1,700&family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=Geist:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#09070A;
+  --white:#F4EEE6;
+  --amber:#C8782A;
+  --amber2:#E09040;
+  --cream:#EAD9C2;
+  --dark:#0E0B0F;
+  --charcoal:#1A1520;
+}
+body{
+  background:#000;
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;padding:20px;
+  font-family:'Geist',sans-serif;
+}
+.video{
+  width:100%;max-width:1100px;aspect-ratio:16/9;
+  background:var(--black);border-radius:16px;overflow:hidden;
+  position:relative;container-type:inline-size;
+  box-shadow:0 40px 120px rgba(0,0,0,0.98);
+}
+.grain{
+  position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0.028;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.flash{position:absolute;inset:0;background:#fff;z-index:50;opacity:0;pointer-events:none;}
+.scene{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;z-index:2;padding:4cqw;
+}
+
+/* ─── SCENE 1 – INTRO ─── */
+.scene-1{
+  background:
+    radial-gradient(ellipse at 15% 55%,rgba(200,120,42,0.35) 0%,transparent 50%),
+    radial-gradient(ellipse at 85% 40%,rgba(100,60,150,0.2) 0%,transparent 50%),
+    var(--black);
+  flex-direction:column;align-items:center;justify-content:center;gap:0;overflow:hidden;
+}
+.s1-topline{
+  font-family:'Geist',sans-serif;font-size:1.05cqw;color:var(--amber);
+  text-transform:uppercase;letter-spacing:0.55em;margin-bottom:2.5cqw;
+  opacity:0;transform:translateY(10px);
+}
+.s1-name{
+  font-family:'Playfair Display',serif;font-size:10.5cqw;font-weight:900;
+  line-height:0.88;letter-spacing:-0.03em;color:var(--white);
+  overflow:hidden;margin-bottom:2.2cqw;
+}
+.s1-name-inner{display:block;transform:translateY(110%);}
+.s1-divider{width:6cqw;height:1px;background:linear-gradient(to right,transparent,var(--amber),transparent);opacity:0;margin-bottom:2.2cqw;}
+.s1-tagline{
+  font-family:'Cormorant Garamond',serif;font-size:2.6cqw;font-weight:600;font-style:italic;
+  color:var(--cream);letter-spacing:0.12em;opacity:0;filter:blur(8px);
+  margin-bottom:1cqw;
+}
+.s1-loc{
+  font-family:'Geist',sans-serif;font-size:0.88cqw;color:rgba(234,217,194,0.45);
+  text-transform:uppercase;letter-spacing:0.4em;opacity:0;
+}
+.s1-bar{position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,var(--amber),var(--amber2),transparent);transform:scaleX(0);transform-origin:center;}
+
+/* ─── SCENE 2 – MAT ─── */
+.scene-2{
+  background:
+    radial-gradient(ellipse at 50% 0%,rgba(200,120,42,0.07) 0%,transparent 55%),
+    var(--dark);
+  flex-direction:column;gap:1.6cqw;
+}
+.s2-top{display:flex;flex-direction:column;align-items:center;gap:0.7cqw;}
+.scene-label{
+  font-family:'Geist',sans-serif;font-size:0.95cqw;color:var(--amber);
+  text-transform:uppercase;letter-spacing:0.55em;
+  opacity:0;clip-path:polygon(0 0,0 0,0 100%,0 100%);
+}
+.big-headline{
+  font-family:'Playfair Display',serif;font-size:4.6cqw;font-weight:900;
+  line-height:1.05;color:var(--white);letter-spacing:-0.02em;text-align:center;overflow:hidden;
+}
+.big-headline .gold-i{font-style:italic;color:var(--amber);}
+.hl-line{display:block;transform:translateY(110%);}
+.s2-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4cqw;width:93%;}
+.s2-card{
+  position:relative;border-radius:1.1cqw;overflow:hidden;
+  height:16cqw;
+  clip-path:polygon(0 100%,100% 100%,100% 100%,0 100%);
+  border:1px solid rgba(200,120,42,0.14);
+}
+.s2-card-img{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:center center;
+  filter:brightness(1.05) saturate(1.2) contrast(1.06);
+}
+.s2-card-grad{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(6,4,8,1) 0%,rgba(6,4,8,0.65) 30%,rgba(6,4,8,0.0) 60%),
+    linear-gradient(to bottom,rgba(6,4,8,0.45) 0%,transparent 25%);
+}
+.s2-card-body{position:absolute;bottom:0;left:0;right:0;padding:1.1cqw 1.3cqw;}
+.s2-card-title{font-family:'Playfair Display',serif;font-size:1.55cqw;font-weight:700;font-style:italic;color:var(--white);margin-bottom:0.25cqw;line-height:1.15;}
+.s2-card-desc{font-family:'Geist',sans-serif;font-size:0.82cqw;color:rgba(234,217,194,0.58);line-height:1.3;}
+
+/* ─── SCENE 3 – DRIKKE ─── */
+.scene-3{background:var(--black);flex-direction:row;gap:4cqw;overflow:hidden;}
+.s3-bg-img{
+  position:absolute;inset:-5%;width:110%;height:110%;
+  object-fit:cover;object-position:center;
+  opacity:0;
+  filter:saturate(1.1) brightness(0.6);
+  will-change:transform,opacity;
+}
+.s3-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(110deg,rgba(6,4,8,0.97) 0%,rgba(6,4,8,0.88) 40%,rgba(6,4,8,0.25) 75%,rgba(6,4,8,0.1) 100%);
+}
+.s3-left{flex:1.3;position:relative;z-index:3;}
+.s3-badge{
+  display:inline-flex;align-items:center;gap:0.8cqw;
+  background:rgba(200,120,42,0.1);border:1px solid rgba(200,120,42,0.45);
+  color:#ffb874;padding:0.6cqw 1.4cqw;border-radius:100px;
+  font-family:'Geist',sans-serif;font-size:1cqw;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.14em;margin-bottom:1.8cqw;
+  opacity:0;transform:scale(0.88);
+}
+.s3-dot{width:0.5cqw;height:0.5cqw;background:var(--amber);border-radius:50%;animation:blink 1.2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.1}}
+.s3-headline{
+  font-family:'Playfair Display',serif;font-size:5.5cqw;font-weight:900;
+  line-height:0.92;letter-spacing:-0.025em;color:var(--white);
+  margin-bottom:2cqw;overflow:hidden;
+}
+.s3-headline .amber{color:var(--amber);}
+.s3-headline .italic{font-style:italic;}
+.s3-hl-line{display:block;transform:translateY(110%);}
+.s3-list{display:flex;flex-direction:column;gap:0.85cqw;}
+.s3-item{
+  display:flex;align-items:flex-start;gap:1cqw;
+  opacity:0;transform:translateX(-20px);
+  will-change:transform,opacity;
+}
+.s3-bullet{width:0.38cqw;height:0.38cqw;background:var(--amber);border-radius:50%;flex-shrink:0;margin-top:0.85cqw;}
+.s3-item-text{font-family:'Geist',sans-serif;font-size:1.28cqw;color:var(--cream);line-height:1.4;}
+.s3-item-text strong{color:var(--white);font-weight:700;}
+.s3-right{flex:0.85;display:flex;align-items:center;justify-content:center;position:relative;z-index:3;}
+.s3-photo-frame{
+  width:100%;aspect-ratio:3/4;border-radius:1.5cqw;overflow:hidden;
+  border:1px solid rgba(200,120,42,0.35);
+  box-shadow:0 0 5cqw rgba(200,120,42,0.2),0 30px 70px rgba(0,0,0,0.85);
+  position:relative;
+  clip-path:polygon(0 100%,100% 100%,100% 100%,0 100%);
+}
+.s3-photo-frame img{
+  width:100%;height:100%;
+  object-fit:cover;object-position:center 30%;
+  filter:brightness(1.08) saturate(1.18) contrast(1.05);
+}
+.s3-photo-label{
+  position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(to top,rgba(6,4,8,0.97) 0%,transparent 100%);
+  padding:1.5cqw 1.3cqw 1.1cqw;
+  transform:translateY(100%);
+}
+.s3-photo-label span{font-family:'Playfair Display',serif;font-style:italic;font-size:1.5cqw;font-weight:700;color:var(--white);display:block;}
+.s3-photo-label small{font-family:'Geist',sans-serif;font-size:0.82cqw;color:var(--amber);text-transform:uppercase;letter-spacing:0.2em;}
+
+/* ─── SCENE 4 – EVENTS ─── */
+.scene-4{
+  background:
+    radial-gradient(ellipse at 50% 110%,rgba(200,120,42,0.18) 0%,transparent 55%),
+    radial-gradient(ellipse at 50% -10%,rgba(80,40,120,0.14) 0%,transparent 50%),
+    var(--dark);
+  flex-direction:row;gap:4cqw;align-items:center;
+}
+.s4-left{flex:1.2;display:flex;flex-direction:column;gap:0;}
+.s4-eyebrow{font-family:'Geist',sans-serif;font-size:0.95cqw;color:var(--amber);text-transform:uppercase;letter-spacing:0.5em;margin-bottom:1.2cqw;opacity:0;transform:translateY(10px);}
+.s4-headline{font-family:'Playfair Display',serif;font-size:5cqw;font-weight:900;line-height:0.92;letter-spacing:-0.025em;color:var(--white);margin-bottom:2.2cqw;overflow:hidden;}
+.s4-hl-line{display:block;transform:translateY(110%);}
+.s4-hl-line .amber{color:var(--amber);}
+.s4-hl-line .italic{font-style:italic;}
+.s4-events{display:flex;flex-direction:column;gap:0.7cqw;}
+.s4-event{
+  display:flex;align-items:center;gap:1.1cqw;
+  padding:0.75cqw 1.2cqw;
+  border:1px solid rgba(200,120,42,0.18);
+  border-radius:0.8cqw;
+  background:rgba(200,120,42,0.05);
+  opacity:0;transform:translateX(-18px);
+}
+.s4-event-icon{font-size:1.3cqw;flex-shrink:0;}
+.s4-event-name{font-family:'Geist',sans-serif;font-size:1.1cqw;font-weight:600;color:var(--white);}
+.s4-event-freq{font-family:'Geist',sans-serif;font-size:0.8cqw;color:rgba(234,217,194,0.45);letter-spacing:0.08em;}
+.s4-right{flex:0.9;display:flex;align-items:center;justify-content:center;}
+.s4-frame{
+  width:100%;aspect-ratio:4/5;border-radius:1.4cqw;overflow:hidden;
+  border:1px solid rgba(200,120,42,0.25);
+  box-shadow:0 0 4cqw rgba(200,120,42,0.12),0 25px 70px rgba(0,0,0,0.8);
+  clip-path:polygon(0 100%,100% 100%,100% 100%,0 100%);
+}
+.s4-frame img{width:100%;height:100%;object-fit:cover;object-position:center;filter:saturate(1.15) brightness(0.92) contrast(1.05);}
+
+/* ─── SCENE 5 – FINN OSS ─── */
+.scene-5{background:var(--dark);flex-direction:row;gap:5cqw;align-items:center;}
+.s5-left{flex:1.1;}
+.s5-label{font-family:'Geist',sans-serif;font-size:1cqw;color:var(--amber);text-transform:uppercase;letter-spacing:0.45em;margin-bottom:1.4cqw;opacity:0;transform:translateY(10px);}
+.s5-city{font-family:'Playfair Display',serif;font-size:6.2cqw;font-weight:900;line-height:0.88;letter-spacing:-0.04em;color:var(--white);margin-bottom:1.5cqw;overflow:hidden;}
+.s5-city-inner{display:block;transform:translateY(110%);filter:blur(12px);}
+.s5-addr{font-family:'Geist',sans-serif;font-size:1.7cqw;color:var(--amber);font-weight:700;margin-bottom:0.3cqw;opacity:0;transform:translateX(-14px);}
+.s5-addr2{font-family:'Geist',sans-serif;font-size:0.95cqw;color:rgba(234,217,194,0.4);margin-bottom:0.6cqw;opacity:0;transform:translateX(-12px);}
+.s5-phone{font-family:'Geist',sans-serif;font-size:1.15cqw;font-weight:700;color:var(--white);margin-bottom:1.8cqw;opacity:0;transform:translateX(-12px);}
+.s5-web{
+  display:inline-flex;align-items:center;
+  background:rgba(200,120,42,0.12);border:1px solid rgba(200,120,42,0.38);
+  color:var(--white);padding:0.75cqw 1.6cqw;border-radius:100px;
+  font-family:'Geist',sans-serif;font-size:1.15cqw;font-weight:600;
+  letter-spacing:0.04em;margin-bottom:2cqw;
+  opacity:0;transform:translateY(10px);
+}
+.s5-hours{display:flex;gap:2cqw;align-items:flex-start;}
+.s5-hgroup{display:flex;flex-direction:column;gap:0.5cqw;}
+.s5-htitle{font-family:'Geist',sans-serif;font-size:0.76cqw;color:var(--amber);text-transform:uppercase;letter-spacing:0.18em;padding-bottom:0.45cqw;border-bottom:1px solid rgba(200,120,42,0.28);margin-bottom:0.2cqw;opacity:0;transform:translateY(10px);}
+.s5-hdivider{width:1px;background:linear-gradient(to bottom,transparent,rgba(200,120,42,0.22),transparent);align-self:stretch;margin:0 0.2cqw;}
+.s5-hour{opacity:0;transform:translateY(14px);}
+.s5-hday{font-family:'Geist',sans-serif;font-size:0.76cqw;color:var(--amber);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.15cqw;}
+.s5-htime{font-family:'Geist',sans-serif;font-size:1.45cqw;font-weight:700;color:var(--white);}
+.s5-right{flex:1;opacity:0;transform:scale(0.92);}
+.s5-img-box{width:100%;aspect-ratio:1;border-radius:1.3cqw;overflow:hidden;border:1px solid rgba(200,120,42,0.25);box-shadow:0 0 4cqw rgba(200,120,42,0.1);position:relative;}
+.s5-img-box img{width:100%;height:100%;object-fit:cover;object-position:center;filter:saturate(1.1) contrast(1.05);}
+.s5-img-box::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(14,11,15,0.4) 0%,transparent 40%);}
+
+/* ─── SCENE 6 – OUTRO ─── */
+.scene-6{
+  background:var(--black);
+  flex-direction:column;align-items:center;justify-content:center;gap:0;overflow:hidden;
+}
+.s6-bg{
+  position:absolute;inset:-5%;width:110%;height:110%;
+  object-fit:cover;object-position:center 40%;
+  opacity:0;filter:saturate(1.0) brightness(0.35);
+}
+.s6-overlay{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 50%,rgba(9,7,10,0.55) 0%,rgba(9,7,10,0.92) 100%);
+}
+.s6-rings{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
+.s6-ring{
+  position:absolute;border-radius:50%;
+  border:1px solid rgba(200,120,42,0.18);
+}
+.s6-ring:nth-child(1){width:30cqw;height:30cqw;}
+.s6-ring:nth-child(2){width:50cqw;height:50cqw;}
+.s6-ring:nth-child(3){width:72cqw;height:72cqw;}
+.s6-content{position:relative;z-index:4;display:flex;flex-direction:column;align-items:center;gap:0;}
+.s6-eyebrow{font-family:'Geist',sans-serif;font-size:0.95cqw;color:var(--amber);text-transform:uppercase;letter-spacing:0.55em;margin-bottom:1.8cqw;opacity:0;transform:translateY(8px);}
+.s6-headline{font-family:'Playfair Display',serif;font-size:7.2cqw;font-weight:900;line-height:0.9;letter-spacing:-0.03em;color:var(--white);overflow:hidden;margin-bottom:1.6cqw;}
+.s6-hl-inner{display:block;transform:translateY(110%);}
+.s6-hl-inner .amber-i{color:var(--amber);font-style:italic;}
+.s6-sub{font-family:'Cormorant Garamond',serif;font-size:1.9cqw;font-weight:600;font-style:italic;color:var(--cream);letter-spacing:0.05em;margin-bottom:2.5cqw;opacity:0;filter:blur(6px);text-align:center;}
+.s6-cta{
+  display:inline-flex;align-items:center;gap:1cqw;
+  background:var(--amber);color:#09070A;
+  padding:1cqw 2.8cqw;border-radius:100px;
+  font-family:'Geist',sans-serif;font-size:1.3cqw;font-weight:800;
+  letter-spacing:0.06em;text-transform:uppercase;
+  opacity:0;transform:scale(0.82) translateY(12px);
+  box-shadow:0 0 3cqw rgba(200,120,42,0.4),0 20px 50px rgba(0,0,0,0.7);
+}
+.s6-addr{font-family:'Geist',sans-serif;font-size:0.9cqw;color:rgba(234,217,194,0.35);text-transform:uppercase;letter-spacing:0.22em;margin-top:2cqw;opacity:0;transform:translateY(8px);}
+
+/* ─── CORNERS ─── */
+.corner{position:absolute;width:2.2cqw;height:2.2cqw;border:1px solid rgba(200,120,42,0.18);z-index:15;pointer-events:none;}
+.c-tl{top:1.5cqw;left:1.5cqw;border-right:none;border-bottom:none;}
+.c-tr{top:1.5cqw;right:1.5cqw;border-left:none;border-bottom:none;}
+.c-bl{bottom:1.5cqw;left:1.5cqw;border-right:none;border-top:none;}
+.c-br{bottom:1.5cqw;right:1.5cqw;border-left:none;border-top:none;}
+
+.progress-track{position:absolute;bottom:0;left:0;right:0;height:2px;background:rgba(255,255,255,0.04);z-index:20;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--amber),var(--amber2));width:0%;}
+
+.fs-btn{position:fixed;bottom:28px;right:28px;z-index:9999;background:rgba(0,0,0,0.75);color:#fff;border:1px solid rgba(255,255,255,0.18);border-radius:10px;padding:10px 18px;font-family:'Geist',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(10px);transition:opacity 0.3s;}
+.fs-btn:hover{opacity:0.9;}
+.fs-btn.hidden{display:none;}
+</style>
+</head>
+<body>
+<div class="video">
+  <div class="grain"></div>
+  <div class="flash" id="flash"></div>
+  <div class="corner c-tl"></div><div class="corner c-tr"></div>
+  <div class="corner c-bl"></div><div class="corner c-br"></div>
+
+  <!-- SCENE 1 – INTRO -->
+  <div class="scene scene-1" data-scene="1">
+    <div class="s1-topline">Gastrobar &middot; Moss</div>
+    <div class="s1-name"><span class="s1-name-inner">Underverket</span></div>
+    <div class="s1-divider"></div>
+    <div class="s1-tagline">Spis &middot; Drikk &middot; Nyt</div>
+    <div class="s1-loc">Bernt Ankers gate 19 &middot; Verket</div>
+    <div class="s1-bar"></div>
+  </div>
+
+  <!-- SCENE 2 – MAT -->
+  <div class="scene scene-2" data-scene="2">
+    <div class="s2-top">
+      <div class="scene-label">Mat</div>
+      <div class="big-headline">
+        <span class="hl-line">Byens <span class="gold-i">beste</span></span>
+        <span class="hl-line">burgere.</span>
+      </div>
+    </div>
+    <div class="s2-grid">
+      <div class="s2-card">
+        <img class="s2-card-img" src="https://images.pexels.com/photos/1639562/pexels-photo-1639562.jpeg?auto=compress&cs=tinysrgb&w=700&h=1000&fit=crop" alt="Classic Burger">
+        <div class="s2-card-grad"></div>
+        <div class="s2-card-body">
+          <div class="s2-card-title">The Classic</div>
+          <div class="s2-card-desc">Beef smash, cheddar, karamellisert l&oslash;k &amp; pickles</div>
+        </div>
+      </div>
+      <div class="s2-card">
+        <img class="s2-card-img" src="https://images.pexels.com/photos/3219547/pexels-photo-3219547.jpeg?auto=compress&cs=tinysrgb&w=700&h=1000&fit=crop" alt="Veggie Burger">
+        <div class="s2-card-grad"></div>
+        <div class="s2-card-body">
+          <div class="s2-card-title">Veggie</div>
+          <div class="s2-card-desc">Plantebasert patty, avokado, sriracha mayo</div>
+        </div>
+      </div>
+      <div class="s2-card">
+        <img class="s2-card-img" src="https://images.pexels.com/photos/1352270/pexels-photo-1352270.jpeg?auto=compress&cs=tinysrgb&w=700&h=1000&fit=crop" alt="Crispy Fries">
+        <div class="s2-card-grad"></div>
+        <div class="s2-card-body">
+          <div class="s2-card-title">Crispy Fries</div>
+          <div class="s2-card-desc">Spr&oslash;e pomfrites med husets dip</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 3 – DRIKKE -->
+  <div class="scene scene-3" data-scene="3">
+    <img class="s3-bg-img" src="https://images.pexels.com/photos/696218/pexels-photo-696218.jpeg?auto=compress&cs=tinysrgb&w=1400&h=900&fit=crop" alt="">
+    <div class="s3-overlay"></div>
+    <div class="s3-left">
+      <div class="s3-badge"><span class="s3-dot"></span>Full bar</div>
+      <div class="s3-headline">
+        <span class="s3-hl-line"><span class="amber italic">H&aring;ndlagde</span></span>
+        <span class="s3-hl-line">drinker.</span>
+      </div>
+      <div class="s3-list">
+        <div class="s3-item"><div class="s3-bullet"></div><div class="s3-item-text"><strong>Cocktails</strong> &mdash; h&aring;ndlagde signaturdrinker</div></div>
+        <div class="s3-item"><div class="s3-bullet"></div><div class="s3-item-text"><strong>Craft&oslash;l</strong> &mdash; lokale og internasjonale sorter</div></div>
+        <div class="s3-item"><div class="s3-bullet"></div><div class="s3-item-text"><strong>Vin</strong> &mdash; nøye utvalgt vinliste</div></div>
+        <div class="s3-item"><div class="s3-bullet"></div><div class="s3-item-text">Bestill bord p&aring; <strong>underverket.moss.no</strong></div></div>
+      </div>
+    </div>
+    <div class="s3-right">
+      <div class="s3-photo-frame">
+        <img src="https://images.pexels.com/photos/3407777/pexels-photo-3407777.jpeg?auto=compress&cs=tinysrgb&w=700&h=900&fit=crop" alt="Cocktail">
+        <div class="s3-photo-label">
+          <span>Signaturdrinker</span>
+          <small>Skreddersydd av baren</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 4 – EVENTS -->
+  <div class="scene scene-4" data-scene="4">
+    <div class="s4-left">
+      <div class="s4-eyebrow">Opplevelser</div>
+      <div class="s4-headline">
+        <span class="s4-hl-line">Noe skjer</span>
+        <span class="s4-hl-line"><span class="amber italic">alltid.</span></span>
+      </div>
+      <div class="s4-events">
+        <div class="s4-event">
+          <div class="s4-event-icon">🍷</div>
+          <div>
+            <div class="s4-event-name">Vinsmaking</div>
+            <div class="s4-event-freq">Jevnlig arrangement</div>
+          </div>
+        </div>
+        <div class="s4-event">
+          <div class="s4-event-icon">🎵</div>
+          <div>
+            <div class="s4-event-name">Music Bingo</div>
+            <div class="s4-event-freq">Ukentlig</div>
+          </div>
+        </div>
+        <div class="s4-event">
+          <div class="s4-event-icon">🧠</div>
+          <div>
+            <div class="s4-event-name">Quiz Night</div>
+            <div class="s4-event-freq">Fast kveld i måneden</div>
+          </div>
+        </div>
+        <div class="s4-event">
+          <div class="s4-event-icon">🎤</div>
+          <div>
+            <div class="s4-event-name">Konserter &amp; Vernissage</div>
+            <div class="s4-event-freq">Se program p&aring; nett</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="s4-right">
+      <div class="s4-frame">
+        <img src="https://images.pexels.com/photos/1267320/pexels-photo-1267320.jpeg?auto=compress&cs=tinysrgb&w=700&h=900&fit=crop" alt="Events">
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 5 – FINN OSS -->
+  <div class="scene scene-5" data-scene="5">
+    <div class="s5-left">
+      <div class="s5-label">Finn oss</div>
+      <div class="s5-city"><span class="s5-city-inner">Moss</span></div>
+      <div class="s5-addr">Bernt Ankers gate 19</div>
+      <div class="s5-addr2">P&aring; historiske Verket i Moss</div>
+      <div class="s5-phone">+47 915 91 330</div>
+      <div class="s5-web">underverket.moss.no</div>
+      <div class="s5-hours">
+        <div class="s5-hgroup">
+          <div class="s5-htitle">Ons &ndash; Tor</div>
+          <div class="s5-hour"><div class="s5-hday">Åpner</div><div class="s5-htime">15:00&ndash;20:30</div></div>
+        </div>
+        <div class="s5-hdivider"></div>
+        <div class="s5-hgroup">
+          <div class="s5-htitle">Fre &ndash; Lør</div>
+          <div class="s5-hour"><div class="s5-hday">Åpner</div><div class="s5-htime">12:00&ndash;20:30</div></div>
+        </div>
+        <div class="s5-hdivider"></div>
+        <div class="s5-hgroup">
+          <div class="s5-htitle">Søndag</div>
+          <div class="s5-hour"><div class="s5-hday">Åpner</div><div class="s5-htime">12:00&ndash;17:30</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="s5-right">
+      <div class="s5-img-box">
+        <img src="https://images.pexels.com/photos/941861/pexels-photo-941861.jpeg?auto=compress&cs=tinysrgb&w=800&h=800&fit=crop" alt="Underverket interiør">
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 6 – OUTRO -->
+  <div class="scene scene-6" data-scene="6">
+    <img class="s6-bg" src="https://images.pexels.com/photos/941861/pexels-photo-941861.jpeg?auto=compress&cs=tinysrgb&w=1400&h=900&fit=crop" alt="">
+    <div class="s6-overlay"></div>
+    <div class="s6-rings">
+      <div class="s6-ring"></div>
+      <div class="s6-ring"></div>
+      <div class="s6-ring"></div>
+    </div>
+    <div class="s6-content">
+      <div class="s6-eyebrow">Gastrobar &middot; Moss</div>
+      <div class="s6-headline"><span class="s6-hl-inner">Vi <span class="amber-i">sees?</span></span></div>
+      <div class="s6-sub">Historiske lokaler &mdash; minneverdig kveld</div>
+      <div class="s6-cta">underverket.moss.no</div>
+      <div class="s6-addr">Bernt Ankers gate 19 &middot; Verket &middot; Moss</div>
+    </div>
+  </div>
+
+  <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+</div>
+
+<button class="fs-btn" id="fs-btn" onclick="goFS()">&#x26F6; Fullskjerm</button>
+
+<script>
+const TIMELINE=[
+  {duration:8000, scene:1},
+  {duration:10000,scene:2},
+  {duration:9000, scene:3},
+  {duration:10000,scene:4},
+  {duration:11000,scene:5},
+  {duration:9000, scene:6},
+];
+const TOTAL=57000;
+const flash=document.getElementById('flash');
+
+function flashTransition(cb){
+  gsap.timeline()
+    .to(flash,{opacity:0.15,duration:0.1,ease:'power4.out'})
+    .to(flash,{opacity:0,duration:0.3,ease:'power2.in',onComplete:cb});
+}
+
+/* ── SCENE 1 ── */
+function anim1(){
+  gsap.set('.scene-1',{opacity:0});
+  gsap.set('.s1-topline',{opacity:0,y:10});
+  gsap.set('.s1-name-inner',{y:'110%'});
+  gsap.set('.s1-divider',{opacity:0,scaleX:0});
+  gsap.set('.s1-tagline',{opacity:0,filter:'blur(10px)'});
+  gsap.set('.s1-loc',{opacity:0});
+  gsap.set('.s1-bar',{scaleX:0});
+
+  const tl=gsap.timeline();
+  tl.to('.scene-1',{opacity:1,duration:0.8,ease:'power2.out'})
+    .to('.s1-topline',{opacity:1,y:0,duration:0.7,ease:'power3.out'},0.4)
+    .to('.s1-name-inner',{y:'0%',duration:1.2,ease:'expo.out'},0.9)
+    .to('.s1-divider',{opacity:1,scaleX:1,transformOrigin:'center',duration:1.0,ease:'expo.out'},1.8)
+    .to('.s1-tagline',{opacity:1,filter:'blur(0px)',duration:1.1,ease:'power3.out'},2.2)
+    .to('.s1-loc',{opacity:1,duration:0.8,ease:'power3.out'},2.8)
+    .to('.s1-bar',{scaleX:1,transformOrigin:'center',duration:1.6,ease:'expo.out'},3.2);
+
+  gsap.to('.s1-name-inner',{y:-6,duration:3.5,repeat:-1,yoyo:true,ease:'sine.inOut',delay:3});
+}
+
+/* ── SCENE 2 ── */
+function anim2(){
+  gsap.set('.scene-2',{opacity:0});
+  gsap.set('.scene-2 .scene-label',{opacity:0,clipPath:'polygon(0 0,0 0,0 100%,0 100%)'});
+  gsap.set('.scene-2 .hl-line',{y:'110%'});
+  gsap.set('.s2-card',{clipPath:'polygon(0 100%,100% 100%,100% 100%,0 100%)'});
+
+  const tl=gsap.timeline();
+  tl.to('.scene-2',{opacity:1,duration:0.6})
+    .to('.scene-2 .scene-label',{opacity:1,clipPath:'polygon(0 0,100% 0,100% 100%,0 100%)',duration:0.9,ease:'power3.out'},0.3)
+    .to('.scene-2 .hl-line',{y:'0%',duration:1.0,ease:'expo.out',stagger:0.18},0.8)
+    .to('.s2-card',{clipPath:'polygon(0 0%,100% 0%,100% 100%,0 100%)',duration:1.1,stagger:0.2,ease:'expo.out'},1.5);
+
+  document.querySelectorAll('.s2-card-img').forEach((img,i)=>{
+    gsap.fromTo(img,{scale:1.0},{scale:1.04,duration:10,ease:'none',delay:1.8+i*0.2});
+  });
+}
+
+/* ── SCENE 3 ── */
+function anim3(){
+  gsap.set('.scene-3',{opacity:0});
+  gsap.set('.s3-bg-img',{opacity:0,scale:1.04,force3D:true});
+  gsap.set('.s3-badge',{opacity:0,scale:0.88,force3D:true});
+  gsap.set('.s3-hl-line',{y:'110%',force3D:true});
+  gsap.set('.s3-item',{opacity:0,x:-18,force3D:true});
+  gsap.set('.s3-photo-frame',{clipPath:'polygon(0 100%,100% 100%,100% 100%,0 100%)'});
+  gsap.set('.s3-photo-label',{y:'100%',force3D:true});
+
+  const tl=gsap.timeline();
+  tl.to('.scene-3',{opacity:1,duration:0.5})
+    .to('.s3-bg-img',{opacity:1,scale:1,duration:1.8,ease:'power2.out',force3D:true},0)
+    .to('.s3-badge',{opacity:1,scale:1,duration:0.6,ease:'power2.out',force3D:true},0.4)
+    .to('.s3-hl-line',{y:'0%',duration:0.9,stagger:0.2,ease:'expo.out',force3D:true},0.7)
+    .to('.s3-photo-frame',{clipPath:'polygon(0 0%,100% 0%,100% 100%,0 100%)',duration:1.1,ease:'expo.out'},0.8)
+    .to('.s3-photo-label',{y:'0%',duration:0.7,ease:'power3.out',force3D:true},1.9)
+    .to('.s3-item',{opacity:1,x:0,duration:0.6,stagger:0.17,ease:'power2.out',force3D:true},1.5);
+
+  gsap.fromTo('.s3-bg-img',{x:0},{x:'-1.5%',duration:12,ease:'none',delay:0.3,force3D:true});
+}
+
+/* ── SCENE 4 ── */
+function anim4(){
+  gsap.set('.scene-4',{opacity:0});
+  gsap.set('.s4-eyebrow',{opacity:0,y:10});
+  gsap.set('.s4-hl-line',{y:'110%'});
+  gsap.set('.s4-event',{opacity:0,x:-18});
+  gsap.set('.s4-frame',{clipPath:'polygon(0 100%,100% 100%,100% 100%,0 100%)'});
+
+  const tl=gsap.timeline();
+  tl.to('.scene-4',{opacity:1,duration:0.6})
+    .to('.s4-eyebrow',{opacity:1,y:0,duration:0.7,ease:'power3.out'},0.3)
+    .to('.s4-hl-line',{y:'0%',duration:1.0,stagger:0.2,ease:'expo.out'},0.7)
+    .to('.s4-frame',{clipPath:'polygon(0 0%,100% 0%,100% 100%,0 100%)',duration:1.2,ease:'expo.out'},0.9)
+    .to('.s4-event',{opacity:1,x:0,duration:0.65,stagger:0.2,ease:'power2.out'},1.8);
+}
+
+/* ── SCENE 5 ── */
+function anim5(){
+  gsap.set('.scene-5',{opacity:0});
+  gsap.set('.s5-label',{opacity:0,y:10});
+  gsap.set('.s5-city-inner',{y:'110%',filter:'blur(14px)'});
+  gsap.set('.s5-addr,.s5-addr2,.s5-phone',{opacity:0,x:-14});
+  gsap.set('.s5-web',{opacity:0,y:10});
+  gsap.set('.s5-htitle',{opacity:0,y:10});
+  gsap.set('.s5-hour',{opacity:0,y:14});
+  gsap.set('.s5-right',{opacity:0,scale:0.92});
+
+  const tl=gsap.timeline();
+  tl.to('.scene-5',{opacity:1,duration:0.7})
+    .to('.s5-label',{opacity:1,y:0,duration:0.7,ease:'power3.out'},0.3)
+    .to('.s5-city-inner',{y:'0%',filter:'blur(0px)',duration:1.1,ease:'expo.out'},0.7)
+    .to('.s5-addr',{opacity:1,x:0,duration:0.7,ease:'power3.out'},1.4)
+    .to('.s5-addr2',{opacity:1,x:0,duration:0.6,ease:'power3.out'},1.6)
+    .to('.s5-phone',{opacity:1,x:0,duration:0.6,ease:'power3.out'},1.8)
+    .to('.s5-web',{opacity:1,y:0,duration:0.7,ease:'back.out(1.4)'},2.1)
+    .to('.s5-right',{opacity:1,scale:1,duration:1.3,ease:'expo.out'},0.5)
+    .to('.s5-htitle',{opacity:1,y:0,duration:0.6,stagger:0.18,ease:'power3.out'},2.5)
+    .to('.s5-hour',{opacity:1,y:0,duration:0.65,stagger:0.15,ease:'power3.out'},2.75);
+}
+
+/* ── SCENE 6 ── */
+function anim6(){
+  gsap.fromTo('.s6-ring',
+    {opacity:0.5,scale:0.15},
+    {opacity:0,scale:1.6,duration:3.8,stagger:1.2,ease:'power2.out',repeat:-1}
+  );
+  gsap.set('.scene-6',{opacity:0});
+  gsap.set('.s6-bg',{opacity:0});
+  gsap.set('.s6-eyebrow',{opacity:0,y:8});
+  gsap.set('.s6-hl-inner',{y:'110%'});
+  gsap.set('.s6-sub',{opacity:0,filter:'blur(8px)'});
+  gsap.set('.s6-cta',{opacity:0,scale:0.82,y:12});
+  gsap.set('.s6-addr',{opacity:0,y:8});
+
+  const tl=gsap.timeline();
+  tl.to('.scene-6',{opacity:1,duration:0.8})
+    .to('.s6-bg',{opacity:1,duration:1.8,ease:'power2.out'},0)
+    .to('.s6-eyebrow',{opacity:1,y:0,duration:0.7,ease:'power3.out'},0.5)
+    .to('.s6-hl-inner',{y:'0%',duration:1.1,ease:'expo.out'},0.9)
+    .to('.s6-sub',{opacity:1,filter:'blur(0px)',duration:1.0,ease:'power3.out'},1.7)
+    .to('.s6-cta',{opacity:1,scale:1,y:0,duration:1.0,ease:'back.out(1.6)'},2.3)
+    .to('.s6-addr',{opacity:1,y:0,duration:0.7,ease:'power3.out'},3.0);
+
+  gsap.to('.s6-cta',{boxShadow:'0 0 4cqw rgba(200,120,42,0.4)',duration:1.8,repeat:-1,yoyo:true,ease:'sine.inOut',delay:3.5});
+}
+
+const ANIMS={1:anim1,2:anim2,3:anim3,4:anim4,5:anim5,6:anim6};
+const scenes=document.querySelectorAll('.scene');
+const fill=document.getElementById('progress-fill');
+let videoStart=null,currentScene=0;
+
+function switchScene(num){
+  gsap.to(scenes,{opacity:0,duration:0.45,ease:'power2.in'});
+  scenes.forEach(s=>s.classList.remove('active'));
+  flashTransition(()=>{
+    document.querySelector('.scene-'+num).classList.add('active');
+    ANIMS[num]();
+  });
+}
+
+function loop(ts){
+  if(!videoStart)videoStart=ts;
+  const elapsed=(ts-videoStart)%TOTAL;
+  fill.style.width=(elapsed/TOTAL*100)+'%';
+  let cum=0,num=1;
+  for(let i=0;i<TIMELINE.length;i++){
+    if(elapsed<cum+TIMELINE[i].duration){num=TIMELINE[i].scene;break;}
+    cum+=TIMELINE[i].duration;
+  }
+  if(num!==currentScene){
+    currentScene=num;
+    switchScene(num);
+  }
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+function goFS(){
+  const el=document.documentElement;
+  if(el.requestFullscreen)el.requestFullscreen();
+  else if(el.webkitRequestFullscreen)el.webkitRequestFullscreen();
+  document.getElementById('fs-btn').classList.add('hidden');
+}
+document.addEventListener('fullscreenchange',()=>{
+  if(!document.fullscreenElement)document.getElementById('fs-btn').classList.remove('hidden');
+});
+</script>
+</body>
+</html>
