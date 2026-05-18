@@ -296,10 +296,6 @@ body{
   opacity:0;transform:scale(0.82) translateY(8px);
 }
 
-/* QR CODE */
-.qr-corner{position:absolute;bottom:2.2cqw;right:2.2cqw;z-index:16;display:flex;flex-direction:column;align-items:center;gap:0.5cqw;opacity:0.8;}
-.qr-corner img{width:8cqw;height:8cqw;border-radius:0.5cqw;border:1px solid rgba(201,168,76,0.3);background:#fff;padding:0.25cqw;display:block;}
-.qr-corner span{font-family:'Geist',sans-serif;font-size:0.72cqw;color:rgba(201,168,76,0.65);text-transform:uppercase;letter-spacing:0.15em;}
 
 /* FULLSCREEN */
 .fs-btn{position:fixed;bottom:28px;right:28px;z-index:9999;background:rgba(0,0,0,0.78);color:#fff;border:1px solid rgba(255,255,255,0.2);border-radius:10px;padding:10px 18px;font-family:'Geist',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(10px);transition:opacity 0.3s;}
@@ -327,9 +323,6 @@ body{
 .s7-hl .gold-i{font-style:italic;color:var(--gold);}
 .s7-hl-inner{display:block;transform:translateY(108%);}
 .s7-sub{font-family:'Tajawal',sans-serif;font-size:1.75cqw;color:rgba(240,230,204,0.68);text-align:center;letter-spacing:0.03em;margin-bottom:3.2cqw;opacity:0;filter:blur(5px);max-width:66%;}
-.s7-qr-wrap{display:flex;flex-direction:column;align-items:center;gap:1cqw;opacity:0;transform:scale(0.78) translateY(22px);}
-.s7-qr-img{width:15cqw;height:15cqw;background:#fff;border-radius:1cqw;padding:0.6cqw;border:1.5px solid rgba(201,168,76,0.45);box-shadow:0 0 5cqw rgba(201,168,76,0.2),0 20px 60px rgba(0,0,0,0.6);display:block;}
-.s7-qr-label{font-family:'Geist',sans-serif;font-size:0.95cqw;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:0.3em;}
 .s7-addr{font-family:'Geist',sans-serif;font-size:0.9cqw;color:rgba(240,230,204,0.38);text-transform:uppercase;letter-spacing:0.18em;}
 
 </style>
@@ -505,17 +498,9 @@ body{
     <div class="s7-eyebrow">arabern.no</div>
     <div class="s7-hl"><span class="s7-hl-inner">Alltid klare for <span class="gold-i">deg.</span></span></div>
     <div class="s7-sub">Bestill takeaway, se menyen og finn oss &mdash; alt p&aring; arabern.no</div>
-    <div class="s7-qr-wrap">
-      <img class="s7-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Farabern.no&bgcolor=ffffff&color=0A0A08&format=png&margin=6" alt="arabern.no">
-      <div class="s7-qr-label">Skan meg</div>
-      <div class="s7-addr">Glommengata 45 &middot; Kongsvinger</div>
-    </div>
+    <div class="s7-addr">Glommengata 45 &middot; Kongsvinger</div>
   </div>
 
-  <div class="qr-corner">
-    <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https%3A%2F%2Farabern.no&bgcolor=ffffff&color=0A0A08&format=png&margin=4" alt="arabern.no QR">
-    <span>arabern.no</span>
-  </div>
 
   <button class="fs-btn" id="fs-btn" onclick="goFS()">&#x26F6; Fullskjerm</button>
   <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
@@ -672,7 +657,6 @@ function anim7(){
   gsap.set('.s7-eyebrow',{opacity:0,y:10});
   gsap.set('.s7-hl-inner',{y:'108%'});
   gsap.set('.s7-sub',{opacity:0,filter:'blur(5px)'});
-  gsap.set('.s7-qr-wrap',{opacity:0,scale:0.78,y:22});
   gsap.set('.s7-line',{scaleX:0});
   const tl=gsap.timeline();
   tl.to('.scene-7',{opacity:1,duration:0.7})
@@ -680,8 +664,7 @@ function anim7(){
     .to('.s7-eyebrow',{opacity:1,y:0,duration:0.8,ease:'power3.out'},0.4)
     .to('.s7-hl-inner',{y:'0%',duration:1.1,ease:'expo.out'},0.9)
     .to('.s7-sub',{opacity:1,filter:'blur(0px)',duration:1,ease:'power3.out'},1.8)
-    .to('.s7-qr-wrap',{opacity:1,scale:1,y:0,duration:1.1,ease:'back.out(1.5)'},2.4);
-  gsap.to('.s7-qr-wrap',{y:-5,duration:3.2,repeat:-1,yoyo:true,ease:'sine.inOut',delay:4});
+;
 }
 
 const ANIMS={1:anim1,2:anim2,3:anim3,4:anim4,5:anim5,6:anim6,7:anim7};
