@@ -1,6 +1,7 @@
 import { Composition } from 'remotion';
 import { NorLeadsAd } from './NorLeadsAd';
 import { IgnoredAds } from './IgnoredAds';
+import { ThumbStopper } from './ThumbStopper';
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -17,6 +18,14 @@ export const RemotionRoot: React.FC = () => {
         id="IgnoredAds"
         component={IgnoredAds}
         durationInFrames={120}
+        fps={30}
+        width={1080}
+        height={1920}
+      />
+      <Composition
+        id="ThumbStopper"
+        component={ThumbStopper}
+        durationInFrames={150}
         fps={30}
         width={1080}
         height={1920}
