@@ -3,10 +3,19 @@ import { NorLeadsAd } from './NorLeadsAd';
 import { IgnoredAds } from './IgnoredAds';
 import { ThumbStopper } from './ThumbStopper';
 import { HotelRiviera } from './HotelRiviera';
+import { ComposerAd } from './ComposerAd';
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      <Composition
+        id="ComposerAd"
+        component={ComposerAd}
+        durationInFrames={900}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
       <Composition
         id="NorLeadsAd"
         component={NorLeadsAd}
