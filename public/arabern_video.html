@@ -132,6 +132,7 @@ body{
   object-fit:cover;object-position:center;
   opacity:0;
   filter:saturate(1.3) brightness(0.75);
+  will-change:transform,opacity;
 }
 .s3-overlay{
   position:absolute;inset:0;
@@ -159,7 +160,8 @@ body{
 .s3-list{display:flex;flex-direction:column;gap:1cqw;}
 .s3-item{
   display:flex;align-items:flex-start;gap:1cqw;
-  opacity:0;transform:translateX(-24px);filter:blur(4px);
+  opacity:0;transform:translateX(-24px);
+  will-change:transform,opacity;
 }
 .s3-bullet{
   width:0.4cqw;height:0.4cqw;background:var(--gold);
@@ -582,23 +584,23 @@ function anim2(){
 /* ── SCENE 3 ── */
 function anim3(){
   gsap.set('.scene-3',{opacity:0});
-  gsap.set('.s3-bg-img',{opacity:0,scale:1.08});
-  gsap.set('.s3-badge',{opacity:0,scale:0.8});
-  gsap.set('.s3-hl-line',{y:'110%'});
-  gsap.set('.s3-item',{opacity:0,x:-28,filter:'blur(5px)'});
+  gsap.set('.s3-bg-img',{opacity:0,scale:1.05,force3D:true});
+  gsap.set('.s3-badge',{opacity:0,scale:0.88,force3D:true});
+  gsap.set('.s3-hl-line',{y:'110%',force3D:true});
+  gsap.set('.s3-item',{opacity:0,x:-20,force3D:true});
   gsap.set('.s3-photo-frame',{clipPath:'polygon(0 100%,100% 100%,100% 100%,0 100%)'});
-  gsap.set('.s3-photo-label',{y:'100%'});
+  gsap.set('.s3-photo-label',{y:'100%',force3D:true});
 
   const tl=gsap.timeline();
-  tl.to('.scene-3',{opacity:1,duration:0.7})
-    .to('.s3-bg-img',{opacity:1,scale:1,duration:2,ease:'power2.out'},0)
-    .to('.s3-badge',{opacity:1,scale:1,duration:0.7,ease:'back.out(1.8)'},0.5)
-    .to('.s3-hl-line',{y:'0%',duration:1.0,stagger:0.22,ease:'expo.out'},0.9)
-    .to('.s3-photo-frame',{clipPath:'polygon(0 0%,100% 0%,100% 100%,0 100%)',duration:1.2,ease:'expo.out'},1.0)
-    .to('.s3-photo-label',{y:'0%',duration:0.8,ease:'power3.out'},2.1)
-    .to('.s3-item',{opacity:1,x:0,filter:'blur(0px)',duration:0.75,stagger:0.25,ease:'power3.out'},1.8);
+  tl.to('.scene-3',{opacity:1,duration:0.5})
+    .to('.s3-bg-img',{opacity:1,scale:1,duration:1.8,ease:'power2.out',force3D:true},0)
+    .to('.s3-badge',{opacity:1,scale:1,duration:0.6,ease:'power2.out',force3D:true},0.4)
+    .to('.s3-hl-line',{y:'0%',duration:0.9,stagger:0.18,ease:'expo.out',force3D:true},0.7)
+    .to('.s3-photo-frame',{clipPath:'polygon(0 0%,100% 0%,100% 100%,0 100%)',duration:1.1,ease:'expo.out'},0.8)
+    .to('.s3-photo-label',{y:'0%',duration:0.7,ease:'power3.out',force3D:true},1.8)
+    .to('.s3-item',{opacity:1,x:0,duration:0.65,stagger:0.18,ease:'power2.out',force3D:true},1.5);
 
-  gsap.fromTo('.s3-bg-img',{x:0},{x:'-2%',duration:10,ease:'none',delay:0.5});
+  gsap.fromTo('.s3-bg-img',{x:0},{x:'-1.5%',duration:12,ease:'none',delay:0.3,force3D:true});
 }
 
 /* ── SCENE 4 ── */
