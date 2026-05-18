@@ -8,306 +8,521 @@ import {
   Sequence,
 } from 'remotion';
 import { theme } from './theme';
+import { Particles } from './components/Particles';
+import { KineticText } from './components/KineticText';
+import { GlowLine } from './components/GlowLine';
+import { FadeIn, FadeOut, SlashWipe } from './components/SceneTransition';
+import { easeOutExpo, easeOutBack, easeInOutCubic, clamp, progress } from './utils/easing';
 
-const GoldLine: React.FC<{ delay?: number }> = ({ delay = 0 }) => {
+// ─── Bakgrunn med animert radial glow ───────────────────────────────────────
+const AnimatedBg: React.FC<{ color?: string }> = ({ color = theme.gold }) => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-  const width = spring({ fps, frame: frame - delay, config: { damping: 20, stiffness: 80 }, durationInFrames: 40 });
+  const pulse1 = 0.6 + 0.4 * Math.sin(frame * 0.04);
+  const pulse2 = 0.6 + 0.4 * Math.sin(frame * 0.03 + 1.5);
   return (
-    <div
-      style={{
-        height: 3,
-        width: `${interpolate(width, [0, 1], [0, 100])}%`,
-        background: `linear-gradient(90deg, ${theme.gold}, ${theme.goldLight})`,
-        borderRadius: 2,
-      }}
-    />
+    <div style={{ position: 'absolute', inset: 0, backgroundColor: theme.bg, overflow: 'hidden' }}>
+      <div style={{
+        position: 'absolute',
+        width: 900, height: 900,
+        top: '50%', left: '50%',
+        transform: 'translate(-50%, -50%)',
+        borderRadius: '50%',
+        background: `radial-gradient(circle, ${color}22 0%, transparent 65%)`,
+        opacity: pulse1,
+      }} />
+      <div style={{
+        position: 'absolute',
+        width: 1200, height: 600,
+        top: '20%', left: '-10%',
+        borderRadius: '50%',
+        background: `radial-gradient(ellipse, ${color}0D 0%, transparent 60%)`,
+        opacity: pulse2,
+        transform: `rotate(${frame * 0.1}deg)`,
+      }} />
+    </div>
   );
 };
 
-// Scene 1: NorLeads logo intro
+// ─── Scene 1: Logo reveal (0–100) ───────────────────────────────────────────
 const SceneIntro: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const logoScale = spring({ fps, frame, config: { damping: 14, stiffness: 120 }, durationInFrames: 35 });
-  const lineOpacity = interpolate(frame, [30, 45], [0, 1], { extrapolateRight: 'clamp' });
-  const taglineY = spring({ fps, frame: frame - 40, config: { damping: 18, stiffness: 100 }, durationInFrames: 30 });
+  // Bokstav-for-bokstav reveal av "NorLeads"
+  const letters = 'NorLeads'.split('');
+  const lineIn = easeOutExpo(clamp(progress(frame, 35, 55)));
+  const taglineT = easeOutExpo(clamp(progress(frame, 55, 75)));
+  const ringScale = spring({ fps, frame, config: { damping: 8, stiffness: 60 }, durationInFrames: 50 });
+  const ringOpacity = interpolate(frame, [0, 10, 80, 100], [0, 1, 1, 0]);
 
   return (
-    <AbsoluteFill style={{ backgroundColor: theme.bg, justifyContent: 'center', alignItems: 'center', flexDirection: 'column', gap: 16 }}>
-      {/* Glow bakgrunn */}
+    <AbsoluteFill>
+      <AnimatedBg />
+      <Particles intensity={0.7} />
+
+      {/* Ytre ring */}
       <div style={{
-        position: 'absolute',
-        width: 600,
-        height: 600,
-        borderRadius: '50%',
-        background: `radial-gradient(circle, ${theme.gold}18 0%, transparent 70%)`,
-        pointerEvents: 'none',
-      }} />
-
-      <div style={{ transform: `scale(${logoScale})`, textAlign: 'center' }}>
-        <span style={{
-          fontFamily: theme.font,
-          fontSize: 96,
-          fontWeight: 900,
-          letterSpacing: '-2px',
-          color: theme.white,
-        }}>
-          Nor<span style={{ color: theme.gold }}>Leads</span>
-        </span>
-      </div>
-
-      <div style={{ opacity: lineOpacity, width: 400 }}>
-        <GoldLine />
-      </div>
-
-      <div style={{
-        transform: `translateY(${interpolate(taglineY, [0, 1], [20, 0])}px)`,
-        opacity: taglineY,
-        fontFamily: theme.font,
-        fontSize: 22,
-        letterSpacing: 6,
-        color: theme.gray,
-        textTransform: 'uppercase',
+        position: 'absolute', inset: 0, display: 'flex', justifyContent: 'center', alignItems: 'center',
       }}>
-        Animasjonsvideoer som selger
+        <div style={{
+          width: 500, height: 500, borderRadius: '50%',
+          border: `1px solid ${theme.gold}44`,
+          transform: `scale(${ringScale * 1.1})`,
+          opacity: ringOpacity * 0.5,
+        }} />
+        <div style={{
+          position: 'absolute',
+          width: 380, height: 380, borderRadius: '50%',
+          border: `1px solid ${theme.gold}33`,
+          transform: `scale(${ringScale})`,
+          opacity: ringOpacity * 0.3,
+        }} />
+      </div>
+
+      {/* Logo tekst */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        display: 'flex', flexDirection: 'column',
+        justifyContent: 'center', alignItems: 'center', gap: 24,
+      }}>
+        <div style={{ display: 'flex', overflow: 'hidden' }}>
+          {letters.map((letter, i) => {
+            const isGold = i >= 3;
+            const t = easeOutBack(clamp(progress(frame, i * 3, i * 3 + 20)));
+            return (
+              <span
+                key={i}
+                style={{
+                  fontFamily: 'Georgia, serif',
+                  fontSize: 120,
+                  fontWeight: 900,
+                  letterSpacing: '-2px',
+                  color: isGold ? theme.gold : theme.white,
+                  transform: `translateY(${(1 - t) * 80}px)`,
+                  opacity: t,
+                  display: 'inline-block',
+                  textShadow: isGold
+                    ? `0 0 40px ${theme.gold}88, 0 0 80px ${theme.gold}44`
+                    : '0 4px 20px rgba(0,0,0,0.5)',
+                }}
+              >
+                {letter}
+              </span>
+            );
+          })}
+        </div>
+
+        <div style={{ opacity: lineIn }}>
+          <GlowLine startFrame={35} width={480} />
+        </div>
+
+        <div style={{
+          opacity: taglineT,
+          transform: `translateY(${(1 - taglineT) * 20}px)`,
+          fontFamily: 'sans-serif',
+          fontSize: 20,
+          letterSpacing: 8,
+          color: theme.gray,
+          textTransform: 'uppercase',
+          filter: `blur(${(1 - taglineT) * 6}px)`,
+        }}>
+          Animasjonsvideoer som selger
+        </div>
       </div>
     </AbsoluteFill>
   );
 };
 
-// Scene 2: "Vi lager videoer for deg"
-const SceneWhatWeDo: React.FC = () => {
+// ─── Scene 2: Hva vi tilbyr (100–210) ───────────────────────────────────────
+const SceneServices: React.FC = () => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-
-  const items = [
-    { icon: '🎬', text: 'Reklamevideo for sosiale medier' },
-    { icon: '✨', text: 'Animerte produktpresentasjoner' },
-    { icon: '🚀', text: 'Firmaintro og merkevarebygging' },
-    { icon: '📈', text: 'Tilbud og kampanjevideoer' },
+  const services = [
+    { icon: '🎬', title: 'Reklamevideoer', sub: 'For sosiale medier og TV' },
+    { icon: '✨', title: 'Produktanimasjon', sub: 'Vis frem det du selger' },
+    { icon: '🚀', title: 'Firmaintro', sub: 'Profesjonell merkevare' },
+    { icon: '📈', title: 'Kampanjevideoer', sub: 'Tilbud som konverterer' },
   ];
 
-  const headingY = spring({ fps, frame, config: { damping: 18, stiffness: 100 } });
-
   return (
-    <AbsoluteFill style={{ backgroundColor: theme.bg, justifyContent: 'center', alignItems: 'flex-start', flexDirection: 'column', padding: '0 140px' }}>
-      <div style={{
-        transform: `translateY(${interpolate(headingY, [0, 1], [30, 0])}px)`,
-        opacity: headingY,
-        marginBottom: 50,
-      }}>
-        <div style={{ marginBottom: 16 }}>
-          <GoldLine />
-        </div>
-        <h2 style={{
-          fontFamily: theme.font,
-          fontSize: 58,
-          fontWeight: 800,
-          color: theme.white,
-          margin: 0,
-          lineHeight: 1.1,
-        }}>
-          Vi lager videoer<br />
-          <span style={{ color: theme.gold }}>som gir resultater</span>
-        </h2>
-      </div>
+    <AbsoluteFill>
+      <AnimatedBg color={theme.gold} />
+      <Particles intensity={0.5} />
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-        {items.map((item, i) => {
-          const itemSpring = spring({
-            fps,
-            frame: frame - (i * 8 + 15),
-            config: { damping: 18, stiffness: 100 },
-            durationInFrames: 25,
-          });
-          return (
-            <div
-              key={i}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 20,
-                opacity: itemSpring,
-                transform: `translateX(${interpolate(itemSpring, [0, 1], [-40, 0])}px)`,
-              }}
-            >
-              <span style={{ fontSize: 36 }}>{item.icon}</span>
-              <span style={{
-                fontFamily: theme.font,
-                fontSize: 28,
-                color: theme.white,
-                fontWeight: 500,
+      <div style={{
+        position: 'absolute', inset: 0,
+        display: 'flex', flexDirection: 'column',
+        justifyContent: 'center', padding: '0 120px', gap: 50,
+      }}>
+        {/* Heading */}
+        <div style={{ overflow: 'hidden' }}>
+          <KineticText
+            text="Vi lager videoer"
+            style={{ fontSize: 64, fontWeight: 900, fontFamily: 'Georgia, serif' }}
+            startFrame={5}
+            stagger={4}
+            mode="rise"
+            color={theme.white}
+          />
+          <KineticText
+            text="som gir resultater"
+            style={{ fontSize: 64, fontWeight: 900, fontFamily: 'Georgia, serif', marginTop: 4 }}
+            startFrame={15}
+            stagger={4}
+            mode="rise"
+            goldWord="resultater"
+            goldColor={theme.gold}
+          />
+        </div>
+
+        <div style={{ opacity: easeOutExpo(clamp(progress(frame, 10, 25))) }}>
+          <GlowLine startFrame={10} width={560} />
+        </div>
+
+        {/* Service cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+          {services.map((s, i) => {
+            const t = easeOutExpo(clamp(progress(frame, 25 + i * 10, 50 + i * 10)));
+            const shimmer = 0.5 + 0.5 * Math.sin(frame * 0.08 + i * 1.2);
+            return (
+              <div key={i} style={{
+                background: `linear-gradient(135deg, rgba(255,255,255,0.05), rgba(212,175,55,${0.04 + shimmer * 0.04}))`,
+                border: `1px solid rgba(212,175,55,${0.15 + shimmer * 0.1})`,
+                borderRadius: 16,
+                padding: '28px 32px',
+                display: 'flex', alignItems: 'center', gap: 20,
+                opacity: t,
+                transform: `translateX(${(1 - t) * (i % 2 === 0 ? -40 : 40)}px)`,
+                boxShadow: `0 0 ${20 + shimmer * 10}px rgba(212,175,55,0.05)`,
               }}>
-                {item.text}
-              </span>
-            </div>
-          );
-        })}
+                <span style={{ fontSize: 42 }}>{s.icon}</span>
+                <div>
+                  <div style={{ fontFamily: 'sans-serif', fontSize: 22, fontWeight: 700, color: theme.white }}>
+                    {s.title}
+                  </div>
+                  <div style={{ fontFamily: 'sans-serif', fontSize: 16, color: theme.gray, marginTop: 4 }}>
+                    {s.sub}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </AbsoluteFill>
   );
 };
 
-// Scene 3: Sosiale medier stats
+// ─── Scene 3: Stats counter (210–320) ───────────────────────────────────────
 const SceneStats: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
   const stats = [
-    { number: '3x', label: 'Mer engasjement med video' },
-    { number: '80%', label: 'Husker budskapet etter video' },
-    { number: '10x', label: 'Mer rekkevidde på sosiale medier' },
+    { value: 3, suffix: 'x', label: 'Mer engasjement', sub: 'med video vs. bilde' },
+    { value: 80, suffix: '%', label: 'Husker budskapet', sub: 'etter å se video' },
+    { value: 10, suffix: 'x', label: 'Mer rekkevidde', sub: 'på sosiale medier' },
   ];
 
+  const titleT = easeOutExpo(clamp(progress(frame, 0, 25)));
+
   return (
-    <AbsoluteFill style={{ backgroundColor: theme.bg, justifyContent: 'center', alignItems: 'center', flexDirection: 'column', gap: 60 }}>
-      <div style={{ textAlign: 'center' }}>
-        {(() => {
-          const h = spring({ fps, frame, config: { damping: 18, stiffness: 100 } });
-          return (
-            <h2 style={{
-              fontFamily: theme.font,
-              fontSize: 42,
-              color: theme.white,
-              margin: 0,
-              opacity: h,
-              transform: `translateY(${interpolate(h, [0, 1], [20, 0])}px)`,
-            }}>
-              Hvorfor video <span style={{ color: theme.gold }}>virker</span>
-            </h2>
-          );
-        })()}
+    <AbsoluteFill>
+      <AnimatedBg color="#4444FF" />
+      <Particles intensity={0.8} />
+
+      {/* Grid bakgrunnslinjer */}
+      <div style={{ position: 'absolute', inset: 0, opacity: 0.05 }}>
+        {Array.from({ length: 10 }).map((_, i) => (
+          <div key={i} style={{
+            position: 'absolute',
+            left: `${i * 11}%`, top: 0, bottom: 0,
+            width: 1, background: theme.gold,
+          }} />
+        ))}
       </div>
 
-      <div style={{ display: 'flex', gap: 80 }}>
-        {stats.map((stat, i) => {
-          const s = spring({
-            fps,
-            frame: frame - (i * 12 + 20),
-            config: { damping: 14, stiffness: 120 },
-            durationInFrames: 30,
-          });
-          return (
-            <div key={i} style={{
-              textAlign: 'center',
-              opacity: s,
-              transform: `scale(${interpolate(s, [0, 1], [0.7, 1])})`,
-            }}>
-              <div style={{
-                fontFamily: theme.font,
-                fontSize: 80,
-                fontWeight: 900,
-                color: theme.gold,
-                lineHeight: 1,
+      <div style={{
+        position: 'absolute', inset: 0,
+        display: 'flex', flexDirection: 'column',
+        justifyContent: 'center', alignItems: 'center', gap: 70,
+      }}>
+        <div style={{
+          textAlign: 'center',
+          opacity: titleT,
+          transform: `translateY(${(1 - titleT) * 30}px)`,
+          filter: `blur(${(1 - titleT) * 8}px)`,
+        }}>
+          <div style={{ fontFamily: 'Georgia, serif', fontSize: 48, fontWeight: 700, color: theme.white }}>
+            Hvorfor <span style={{ color: theme.gold }}>video virker</span>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', gap: 100 }}>
+          {stats.map((stat, i) => {
+            const s = spring({
+              fps,
+              frame: frame - (i * 15 + 20),
+              config: { damping: 12, stiffness: 80 },
+              durationInFrames: 35,
+            });
+            const countT = clamp(progress(frame, i * 15 + 20, i * 15 + 55));
+            const displayVal = Math.round(easeOutExpo(countT) * stat.value);
+            const shimmer = 0.7 + 0.3 * Math.sin(frame * 0.06 + i * 2);
+
+            return (
+              <div key={i} style={{
+                textAlign: 'center',
+                opacity: s,
+                transform: `translateY(${(1 - s) * 60}px) scale(${0.8 + s * 0.2})`,
               }}>
-                {stat.number}
+                {/* Bakgrunnssirkel */}
+                <div style={{
+                  position: 'relative',
+                  width: 220, height: 220,
+                  margin: '0 auto 20px',
+                }}>
+                  <svg width="220" height="220" style={{ position: 'absolute', top: 0, left: 0 }}>
+                    <circle cx="110" cy="110" r="100" fill="none" stroke={`${theme.gold}22`} strokeWidth="2" />
+                    <circle
+                      cx="110" cy="110" r="100"
+                      fill="none"
+                      stroke={theme.gold}
+                      strokeWidth="3"
+                      strokeDasharray={`${628 * countT} 628`}
+                      strokeLinecap="round"
+                      transform="rotate(-90 110 110)"
+                      style={{ filter: `drop-shadow(0 0 8px ${theme.gold})` }}
+                    />
+                  </svg>
+                  <div style={{
+                    position: 'absolute', inset: 0,
+                    display: 'flex', flexDirection: 'column',
+                    justifyContent: 'center', alignItems: 'center',
+                  }}>
+                    <div style={{
+                      fontFamily: 'Georgia, serif',
+                      fontSize: 64, fontWeight: 900,
+                      color: theme.gold,
+                      lineHeight: 1,
+                      textShadow: `0 0 ${20 + shimmer * 20}px ${theme.gold}88`,
+                    }}>
+                      {displayVal}{stat.suffix}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ fontFamily: 'sans-serif', fontSize: 22, color: theme.white, fontWeight: 600 }}>
+                  {stat.label}
+                </div>
+                <div style={{ fontFamily: 'sans-serif', fontSize: 16, color: theme.gray, marginTop: 6 }}>
+                  {stat.sub}
+                </div>
               </div>
-              <div style={{
-                fontFamily: theme.font,
-                fontSize: 20,
-                color: theme.gray,
-                marginTop: 12,
-                maxWidth: 180,
-                lineHeight: 1.4,
-              }}>
-                {stat.label}
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </AbsoluteFill>
   );
 };
 
-// Scene 4: Call to action
+// ─── Scene 4: CTA (320–440) ─────────────────────────────────────────────────
 const SceneCTA: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const pulse = Math.sin(frame * 0.08) * 0.04 + 1;
-  const logoIn = spring({ fps, frame, config: { damping: 14, stiffness: 100 } });
-  const ctaIn = spring({ fps, frame: frame - 25, config: { damping: 18, stiffness: 80 } });
+  const logoScale = spring({ fps, frame, config: { damping: 10, stiffness: 100 } });
+  const lineT = easeOutExpo(clamp(progress(frame, 25, 45)));
+  const ctaT = easeOutExpo(clamp(progress(frame, 40, 60)));
+  const btnT = easeOutBack(clamp(progress(frame, 60, 80)));
+
+  // Pulserende ring
+  const ringPulse = 1 + 0.04 * Math.sin(frame * 0.07);
+  // Shimmer på knapp
+  const shimmerPos = ((frame * 3) % 120) - 20;
 
   return (
-    <AbsoluteFill style={{ backgroundColor: theme.bg, justifyContent: 'center', alignItems: 'center', flexDirection: 'column', gap: 40 }}>
-      <div style={{
-        position: 'absolute',
-        width: 800,
-        height: 800,
-        borderRadius: '50%',
-        background: `radial-gradient(circle, ${theme.gold}12 0%, transparent 65%)`,
-        transform: `scale(${pulse})`,
-      }} />
+    <AbsoluteFill>
+      <AnimatedBg />
+      <Particles intensity={1} />
+
+      {/* Pulserende sirkler */}
+      {[600, 750, 900].map((size, i) => (
+        <div key={i} style={{
+          position: 'absolute',
+          top: '50%', left: '50%',
+          width: size, height: size,
+          transform: `translate(-50%, -50%) scale(${ringPulse + i * 0.02})`,
+          borderRadius: '50%',
+          border: `1px solid ${theme.gold}${['33', '22', '11'][i]}`,
+          boxShadow: i === 0 ? `0 0 30px ${theme.gold}22` : 'none',
+        }} />
+      ))}
 
       <div style={{
-        opacity: logoIn,
-        transform: `scale(${interpolate(logoIn, [0, 1], [0.8, 1])})`,
-        textAlign: 'center',
+        position: 'absolute', inset: 0,
+        display: 'flex', flexDirection: 'column',
+        justifyContent: 'center', alignItems: 'center', gap: 32,
       }}>
+        {/* Logo */}
         <div style={{
-          fontFamily: theme.font,
-          fontSize: 80,
-          fontWeight: 900,
-          color: theme.white,
-          letterSpacing: '-2px',
+          transform: `scale(${logoScale})`,
+          textAlign: 'center',
         }}>
-          Nor<span style={{ color: theme.gold }}>Leads</span>
+          {'NorLeads'.split('').map((ch, i) => {
+            const isGold = i >= 3;
+            return (
+              <span key={i} style={{
+                fontFamily: 'Georgia, serif',
+                fontSize: 100,
+                fontWeight: 900,
+                color: isGold ? theme.gold : theme.white,
+                textShadow: isGold
+                  ? `0 0 40px ${theme.gold}99, 0 0 80px ${theme.gold}44`
+                  : '0 4px 30px rgba(0,0,0,0.6)',
+                letterSpacing: '-2px',
+              }}>
+                {ch}
+              </span>
+            );
+          })}
         </div>
-      </div>
 
-      <div style={{ width: 500, opacity: logoIn }}>
-        <GoldLine />
-      </div>
-
-      <div style={{
-        opacity: ctaIn,
-        transform: `translateY(${interpolate(ctaIn, [0, 1], [20, 0])}px)`,
-        textAlign: 'center',
-      }}>
-        <div style={{
-          fontFamily: theme.font,
-          fontSize: 32,
-          color: theme.white,
-          marginBottom: 20,
-        }}>
-          Klar for en video som faktisk selger?
+        {/* Glødende linje */}
+        <div style={{ opacity: lineT }}>
+          <GlowLine startFrame={25} width={500} />
         </div>
+
+        {/* Tagline */}
         <div style={{
-          display: 'inline-block',
-          background: `linear-gradient(135deg, ${theme.gold}, ${theme.goldLight})`,
-          color: theme.bg,
-          fontFamily: theme.font,
-          fontSize: 26,
-          fontWeight: 800,
-          padding: '16px 48px',
-          borderRadius: 50,
-          letterSpacing: 1,
+          opacity: ctaT,
+          transform: `translateY(${(1 - ctaT) * 20}px)`,
+          filter: `blur(${(1 - ctaT) * 6}px)`,
+          textAlign: 'center',
         }}>
-          Ta kontakt i dag
+          <div style={{
+            fontFamily: 'sans-serif',
+            fontSize: 30,
+            color: theme.white,
+            fontWeight: 300,
+            letterSpacing: 2,
+            marginBottom: 8,
+          }}>
+            Klar for en video som
+          </div>
+          <div style={{
+            fontFamily: 'Georgia, serif',
+            fontSize: 46,
+            color: theme.gold,
+            fontWeight: 700,
+            textShadow: `0 0 30px ${theme.gold}66`,
+          }}>
+            faktisk selger?
+          </div>
+        </div>
+
+        {/* CTA-knapp med shimmer */}
+        <div style={{
+          opacity: btnT,
+          transform: `scale(${0.8 + btnT * 0.2})`,
+          position: 'relative',
+          overflow: 'hidden',
+          borderRadius: 60,
+        }}>
+          <div style={{
+            background: `linear-gradient(135deg, ${theme.gold}, ${theme.goldLight}, ${theme.gold})`,
+            color: theme.bg,
+            fontFamily: 'sans-serif',
+            fontSize: 26,
+            fontWeight: 800,
+            padding: '20px 60px',
+            borderRadius: 60,
+            letterSpacing: 1,
+            boxShadow: `0 0 40px ${theme.gold}66, 0 0 80px ${theme.gold}33`,
+          }}>
+            Ta kontakt i dag
+          </div>
+          {/* Shimmer overlay */}
+          <div style={{
+            position: 'absolute',
+            top: 0, bottom: 0,
+            left: shimmerPos,
+            width: 60,
+            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)',
+            transform: 'skewX(-20deg)',
+            pointerEvents: 'none',
+          }} />
+        </div>
+
+        {/* Nettside */}
+        <div style={{
+          opacity: Math.max(0, ctaT - 0.3) * (1 / 0.7),
+          fontFamily: 'sans-serif',
+          fontSize: 18,
+          color: `${theme.gold}99`,
+          letterSpacing: 3,
+          textTransform: 'uppercase',
+        }}>
+          norleads.no
         </div>
       </div>
     </AbsoluteFill>
   );
 };
 
-// Hoved-komponent med alle scener
+// ─── Hoved-komponent ─────────────────────────────────────────────────────────
+const SCENE_INTRO = 0;
+const SCENE_SERVICES = 100;
+const SCENE_STATS = 220;
+const SCENE_CTA = 330;
+const TOTAL = 440;
+
 export const NorLeadsAd: React.FC = () => {
+  const frame = useCurrentFrame();
+
   return (
     <AbsoluteFill style={{ backgroundColor: theme.bg }}>
-      <Sequence from={0} durationInFrames={90}>
-        <SceneIntro />
+      {/* Scene 1 */}
+      <Sequence from={SCENE_INTRO} durationInFrames={SCENE_SERVICES - SCENE_INTRO + 15}>
+        <FadeOut totalFrames={SCENE_SERVICES - SCENE_INTRO + 15} fadeStart={SCENE_SERVICES - SCENE_INTRO}>
+          <SceneIntro />
+        </FadeOut>
       </Sequence>
-      <Sequence from={90} durationInFrames={100}>
-        <SceneWhatWeDo />
+
+      {/* Scene 2 */}
+      <Sequence from={SCENE_SERVICES} durationInFrames={SCENE_STATS - SCENE_SERVICES + 15}>
+        <FadeIn duration={15}>
+          <FadeOut totalFrames={SCENE_STATS - SCENE_SERVICES + 15} fadeStart={SCENE_STATS - SCENE_SERVICES}>
+            <SceneServices />
+          </FadeOut>
+        </FadeIn>
       </Sequence>
-      <Sequence from={190} durationInFrames={90}>
-        <SceneStats />
+
+      {/* Scene 3 */}
+      <Sequence from={SCENE_STATS} durationInFrames={SCENE_CTA - SCENE_STATS + 15}>
+        <FadeIn duration={15}>
+          <FadeOut totalFrames={SCENE_CTA - SCENE_STATS + 15} fadeStart={SCENE_CTA - SCENE_STATS}>
+            <SceneStats />
+          </FadeOut>
+        </FadeIn>
       </Sequence>
-      <Sequence from={280} durationInFrames={100}>
-        <SceneCTA />
+
+      {/* Scene 4 */}
+      <Sequence from={SCENE_CTA} durationInFrames={TOTAL - SCENE_CTA}>
+        <FadeIn duration={15}>
+          <SceneCTA />
+        </FadeIn>
+      </Sequence>
+
+      {/* Gold slash wipe mellom scener */}
+      <Sequence from={SCENE_SERVICES - 10} durationInFrames={25}>
+        <SlashWipe startFrame={0} />
+      </Sequence>
+      <Sequence from={SCENE_STATS - 10} durationInFrames={25}>
+        <SlashWipe startFrame={0} />
+      </Sequence>
+      <Sequence from={SCENE_CTA - 10} durationInFrames={25}>
+        <SlashWipe startFrame={0} />
       </Sequence>
     </AbsoluteFill>
   );
