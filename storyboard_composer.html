@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<title>Composer Ad – Storyboard</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a0a;
+    color: #fff;
+    font-family: 'Inter', system-ui, sans-serif;
+    padding: 48px 32px;
+  }
+
+  h1 {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 6px;
+    background: linear-gradient(135deg, #fff, #00F5A0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .meta { color: #5a7090; font-size: 14px; margin-bottom: 48px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+
+  .scene {
+    border: 1px solid #1a2a3a;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #0d1520;
+  }
+
+  .frame {
+    width: 100%;
+    aspect-ratio: 16/9;
+    position: relative;
+    overflow: hidden;
+    background: #06090F;
+  }
+
+  /* grid lines */
+  .frame::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(#0f1e30 1px, transparent 1px),
+      linear-gradient(90deg, #0f1e30 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .scene-info {
+    padding: 16px 20px;
+    border-top: 1px solid #1a2a3a;
+  }
+  .scene-num {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #00F5A0;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .scene-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .scene-timing {
+    font-size: 12px;
+    color: #5a7090;
+    margin-bottom: 8px;
+  }
+  .scene-desc {
+    font-size: 13px;
+    color: #8a9ab0;
+    line-height: 1.5;
+  }
+
+  /* ── SCENE 1 ── */
+  .s1-content {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 6px;
+  }
+  .s1-label {
+    font-size: 9px; letter-spacing: 3px;
+    color: #FF3B5C; text-transform: uppercase; font-weight: 700;
+  }
+  .s1-big {
+    font-size: 26px; font-weight: 900; letter-spacing: -1px; color: #fff;
+    text-align: center;
+  }
+  .s1-red { color: #FF3B5C; }
+  .glow-red {
+    position: absolute; width: 300px; height: 300px; border-radius: 50%;
+    background: radial-gradient(circle, #FF3B5C22 0%, transparent 70%);
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+  }
+
+  /* ── SCENE 2 ── */
+  .s2-content {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 12px;
+  }
+  .s2-label {
+    font-size: 9px; letter-spacing: 3px; color: #5a7090;
+    text-transform: uppercase;
+  }
+  .terminal {
+    background: #0d1520;
+    border: 1px solid #00D4FF44;
+    border-radius: 8px;
+    padding: 10px 16px;
+    width: 80%;
+    box-shadow: 0 0 20px #00D4FF11;
+  }
+  .term-dots { display: flex; gap: 4px; margin-bottom: 6px; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; }
+  .term-text {
+    font-family: monospace; font-size: 9px; color: #00F5A0;
+  }
+  .term-prompt { color: #5a7090; }
+  .s2-check { font-size: 9px; color: #00D4FF; }
+
+  /* ── SCENE 3 ── */
+  .s3-content {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 4px;
+  }
+  .s3-intro { font-size: 9px; letter-spacing: 4px; color: #00D4FF; text-transform: uppercase; }
+  .s3-logo {
+    font-size: 42px; font-weight: 900; letter-spacing: -2px;
+    background: linear-gradient(135deg, #fff 30%, #00F5A0);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 12px #00F5A066);
+  }
+  .s3-tag { font-size: 10px; color: #5a7090; }
+  .glow-green {
+    position: absolute; width: 250px; height: 250px; border-radius: 50%;
+    background: radial-gradient(circle, #00F5A022 0%, transparent 70%);
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+  }
+
+  /* ── SCENE 4 ── */
+  .s4-content {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center; gap: 16px;
+    padding: 16px;
+  }
+  .s4-text { flex: 1; }
+  .s4-headline { font-size: 14px; font-weight: 800; color: #fff; line-height: 1.2; }
+  .s4-headline span { color: #00F5A0; }
+  .s4-sub { font-size: 9px; color: #5a7090; margin-top: 6px; line-height: 1.5; }
+  .chart-box {
+    background: #0d1520;
+    border: 1px solid #00F5A033;
+    border-radius: 8px; padding: 10px;
+    box-shadow: 0 0 20px #00F5A011;
+  }
+  .chart-label { font-size: 8px; color: #5a7090; margin-bottom: 2px; }
+  .chart-val { font-size: 18px; font-weight: 900; color: #00F5A0; margin-bottom: 6px; }
+  .chart-svg { width: 110px; height: 50px; }
+
+  /* ── SCENE 5 ── */
+  .s5-content {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 10px;
+  }
+  .s5-label { font-size: 9px; letter-spacing: 3px; color: #5a7090; text-transform: uppercase; }
+  .stats { display: flex; gap: 20px; }
+  .stat { text-align: center; }
+  .stat-val {
+    font-size: 22px; font-weight: 900;
+    background: linear-gradient(135deg, #fff, #00F5A0);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .stat-label { font-size: 8px; color: #5a7090; margin-top: 2px; }
+  .tags { display: flex; gap: 6px; }
+  .tag {
+    padding: 3px 10px; border-radius: 100px;
+    border: 1px solid #00D4FF55; color: #00D4FF; font-size: 8px; font-weight: 600;
+  }
+
+  /* ── SCENE 6 ── */
+  .s6-content {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 8px;
+  }
+  .s6-logo {
+    font-size: 36px; font-weight: 900; letter-spacing: -1px;
+    background: linear-gradient(135deg, #fff 20%, #00F5A0);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 10px #00F5A066);
+  }
+  .s6-sub { font-size: 9px; color: #5a7090; }
+  .cta-btn {
+    padding: 8px 24px; border-radius: 100px;
+    background: linear-gradient(135deg, #00F5A0, #00D4FF);
+    font-size: 10px; font-weight: 800; color: #06090F;
+    margin-top: 4px;
+  }
+  .s6-fine { font-size: 8px; color: #3a5060; }
+
+  /* Arrows between scenes */
+  .arrow-row {
+    display: flex; align-items: center; justify-content: center;
+    color: #1a3a2a; font-size: 20px; padding: 4px 0;
+  }
+
+  /* Timeline bar */
+  .timeline {
+    display: flex; margin-bottom: 32px;
+    border: 1px solid #1a2a3a; border-radius: 12px; overflow: hidden;
+  }
+  .tl-scene {
+    flex: 1; padding: 10px 12px;
+    border-right: 1px solid #1a2a3a;
+    font-size: 10px;
+  }
+  .tl-scene:last-child { border-right: none; }
+  .tl-num { color: #00F5A0; font-weight: 700; font-size: 9px; letter-spacing: 2px; }
+  .tl-name { color: #fff; font-weight: 600; margin-top: 2px; }
+  .tl-time { color: #5a7090; font-size: 9px; margin-top: 2px; }
+  .tl-bar {
+    height: 3px; border-radius: 2px; margin-top: 6px;
+    background: linear-gradient(90deg, #00F5A0, #00D4FF);
+  }
+</style>
+</head>
+<body>
+
+<h1>Composer.trade — 30s Promo Ad</h1>
+<p class="meta">Storyboard · 6 scener · 30 sekunder · 1920×1080 · 30fps</p>
+
+<!-- Timeline -->
+<div class="timeline">
+  <div class="tl-scene">
+    <div class="tl-num">SCN 01</div>
+    <div class="tl-name">Hook</div>
+    <div class="tl-time">0–2.5s</div>
+    <div class="tl-bar" style="width:100%"></div>
+  </div>
+  <div class="tl-scene">
+    <div class="tl-num">SCN 02</div>
+    <div class="tl-name">AI Demo</div>
+    <div class="tl-time">2.5–7s</div>
+    <div class="tl-bar" style="width:100%"></div>
+  </div>
+  <div class="tl-scene">
+    <div class="tl-num">SCN 03</div>
+    <div class="tl-name">Logo Reveal</div>
+    <div class="tl-time">7–13s</div>
+    <div class="tl-bar" style="width:100%"></div>
+  </div>
+  <div class="tl-scene">
+    <div class="tl-num">SCN 04</div>
+    <div class="tl-name">Chart Feature</div>
+    <div class="tl-time">13–19s</div>
+    <div class="tl-bar" style="width:100%"></div>
+  </div>
+  <div class="tl-scene">
+    <div class="tl-num">SCN 05</div>
+    <div class="tl-name">Social Proof</div>
+    <div class="tl-time">19–25s</div>
+    <div class="tl-bar" style="width:100%"></div>
+  </div>
+  <div class="tl-scene">
+    <div class="tl-num">SCN 06</div>
+    <div class="tl-name">CTA</div>
+    <div class="tl-time">25–30s</div>
+    <div class="tl-bar" style="width:100%"></div>
+  </div>
+</div>
+
+<!-- Scenes grid -->
+<div class="grid">
+
+  <!-- SCENE 1 -->
+  <div class="scene">
+    <div class="frame">
+      <div class="glow-red"></div>
+      <div class="s1-content">
+        <div class="s1-label">The problem with trading</div>
+        <div class="s1-big">You're doing it<br>manually.</div>
+        <div class="s1-big s1-red">That's exhausting.</div>
+      </div>
+    </div>
+    <div class="scene-info">
+      <div class="scene-num">Scene 01 · 0–2.5s</div>
+      <div class="scene-title">Hook — Smerte</div>
+      <div class="scene-timing">Frames 0–75 · Cut hard</div>
+      <div class="scene-desc">
+        Mørk bakgrunn med rødt ambient glow. Tekst riser opp ord-for-ord.
+        "That's exhausting" i rødt for emosjonell kontrast. Ingen musikk – bare bass whoosh.
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 2 -->
+  <div class="scene">
+    <div class="frame">
+      <div class="s2-content">
+        <div class="s2-label">What if you just… typed it?</div>
+        <div class="terminal">
+          <div class="term-dots">
+            <div class="dot" style="background:#FF5F57"></div>
+            <div class="dot" style="background:#FFBD2E"></div>
+            <div class="dot" style="background:#28C840"></div>
+          </div>
+          <div class="term-text">
+            <span class="term-prompt">composer &gt; </span>
+            Build me a momentum strategy<br>
+            <span class="term-prompt">             </span>with tech stocks▋
+          </div>
+        </div>
+        <div class="s2-check">✓ Strategy built and backtested in 60 seconds</div>
+      </div>
+    </div>
+    <div class="scene-info">
+      <div class="scene-num">Scene 02 · 2.5–7s</div>
+      <div class="scene-title">AI Demo — Typing</div>
+      <div class="scene-timing">Frames 70–180 · Typewriter effekt</div>
+      <div class="scene-desc">
+        Terminal-vindu med cursor som typer "Make My Own Symphony"-prompten i sanntid.
+        Grønn tekst på mørk kort. Cyan bekreftelse fader inn nederst.
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 3 -->
+  <div class="scene">
+    <div class="frame">
+      <div class="glow-green"></div>
+      <div class="s3-content">
+        <div class="s3-intro">Introducing</div>
+        <div class="s3-logo">Composer</div>
+        <div class="s3-tag">Trading. Built Better.</div>
+      </div>
+    </div>
+    <div class="scene-info">
+      <div class="scene-num">Scene 03 · 7–13s</div>
+      <div class="scene-title">Logo Reveal</div>
+      <div class="scene-timing">Frames 175–330 · Spring scale-in</div>
+      <div class="scene-desc">
+        Logo springer inn fra 50% til 100% med grønn glow som pulserer.
+        "Trading. Built Better." — ekte tagline fra nettsiden.
+        Grønn ambient glow bak logoen.
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 4 -->
+  <div class="scene">
+    <div class="frame">
+      <div class="s4-content">
+        <div class="s4-text">
+          <div class="s4-headline">
+            AI builds<br>your strategy.<br>
+            <span>In 60 seconds.</span>
+          </div>
+          <div class="s4-sub">
+            Type in plain English.<br>
+            Backtest. Optimize.<br>
+            Execute — automatically.
+          </div>
+        </div>
+        <div class="chart-box">
+          <div class="chart-label">Portfolio Performance</div>
+          <div class="chart-val">+127%</div>
+          <svg class="chart-svg" viewBox="0 0 110 50">
+            <defs>
+              <linearGradient id="cg" x1="0" x2="1" y1="0" y2="0">
+                <stop offset="0%" stop-color="#00D4FF" stop-opacity="0.3"/>
+                <stop offset="100%" stop-color="#00F5A0"/>
+              </linearGradient>
+            </defs>
+            <polyline points="0,45 15,40 30,42 45,30 60,33 75,18 90,20 110,5"
+              fill="none" stroke="#00F5A0" stroke-width="2"/>
+            <circle cx="110" cy="5" r="3" fill="#00F5A0"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="scene-info">
+      <div class="scene-num">Scene 04 · 13–19s</div>
+      <div class="scene-title">Feature — Chart</div>
+      <div class="scene-timing">Frames 320–480 · Chart animerer live</div>
+      <div class="scene-desc">
+        Venstre: tekst riser inn. Høyre: dashboard-kort med chart som tegner seg opp
+        og teller til +127%. Grønt glow på kort.
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 5 -->
+  <div class="scene">
+    <div class="frame">
+      <div class="s5-content">
+        <div class="s5-label">Trusted by traders worldwide</div>
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-val">$200M+</div>
+            <div class="stat-label">Daily Volume</div>
+          </div>
+          <div class="stat">
+            <div class="stat-val">3,000+</div>
+            <div class="stat-label">Strategies</div>
+          </div>
+          <div class="stat">
+            <div class="stat-val">60s</div>
+            <div class="stat-label">Build Time</div>
+          </div>
+        </div>
+        <div class="tags">
+          <div class="tag">Stocks</div>
+          <div class="tag">Crypto</div>
+          <div class="tag">ETFs</div>
+          <div class="tag">Options</div>
+        </div>
+      </div>
+    </div>
+    <div class="scene-info">
+      <div class="scene-num">Scene 05 · 19–25s</div>
+      <div class="scene-title">Social Proof — Tall</div>
+      <div class="scene-timing">Frames 470–660 · Tall teller opp</div>
+      <div class="scene-desc">
+        Tre store tall teller opp fra 0 med stagger. Asset-tags fader inn.
+        Hvit-til-grønn gradient på tallene. Zero kommisjoner nevnes.
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 6 -->
+  <div class="scene">
+    <div class="frame">
+      <div class="glow-green"></div>
+      <div class="s6-content">
+        <div class="s6-logo">Composer</div>
+        <div class="s6-sub">Trade with AI. No code required.</div>
+        <div class="cta-btn">Start free at composer.trade</div>
+        <div class="s6-fine">3,000+ strategies ready. Zero commissions.</div>
+      </div>
+    </div>
+    <div class="scene-info">
+      <div class="scene-num">Scene 06 · 25–30s</div>
+      <div class="scene-title">CTA — Call to Action</div>
+      <div class="scene-timing">Frames 650–900 · Pulserende knapp</div>
+      <div class="scene-desc">
+        Logo springer inn igjen. CTA-knapp pulserer med scale-animasjon.
+        Grønn-til-cyan gradient på knapp. URL tydelig synlig. Hold på siste frame.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Notes -->
+<div style="margin-top: 48px; padding: 24px; background: #0d1520; border: 1px solid #1a2a3a; border-radius: 16px;">
+  <div style="font-size: 13px; font-weight: 700; color: #00F5A0; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px;">Produksjonsnotater</div>
+  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; font-size: 13px; color: #8a9ab0; line-height: 1.7;">
+    <div>
+      <div style="color: #fff; font-weight: 600; margin-bottom: 6px;">Fargepalett</div>
+      <div>BG: <span style="color:#00F5A0">#06090F</span></div>
+      <div>Grønn: <span style="color:#00F5A0">#00F5A0</span></div>
+      <div>Cyan: <span style="color:#00D4FF">#00D4FF</span></div>
+      <div>Rød: <span style="color:#FF3B5C">#FF3B5C</span></div>
+      <div>Muted: <span style="color:#5a7090">#5A7090</span></div>
+    </div>
+    <div>
+      <div style="color: #fff; font-weight: 600; margin-bottom: 6px;">Animasjon</div>
+      <div>Tekst: Rise/fade ord-for-ord</div>
+      <div>Logo: Spring scale-in</div>
+      <div>Chart: Live draw</div>
+      <div>Tall: Count-up</div>
+      <div>CTA: Pulse scale</div>
+    </div>
+    <div>
+      <div style="color: #fff; font-weight: 600; margin-bottom: 6px;">Tekst (ekte fra site)</div>
+      <div>"Trading. Built Better."</div>
+      <div>"Make My Own Symphony"</div>
+      <div>"Trade with AI"</div>
+      <div>"No code required"</div>
+      <div>"Zero commissions"</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
