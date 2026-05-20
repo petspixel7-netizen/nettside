@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>DentalEstetic — Det lille ekstra (40s)</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@hyperframes/core/dist/hyperframe.runtime.iife.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@hyperframes/shader-transitions/dist/index.global.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Italiana&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,700&family=DM+Mono:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div
+      id="main"
+      data-composition-id="main"
+      data-width="1920"
+      data-height="1080"
+      data-start="0"
+      data-duration="70"
+    >
+      <!-- ====================== S1 — HERO (0-4s) ====================== -->
+      <div class="scene clip bg-dark" id="s1" data-start="0" data-duration="6.5" data-track-index="0">
+        <div class="s1-photo" id="s1-photo"></div>
+        <div class="s1-scrim"></div>
+        <div class="s1-vign"></div>
+        <div class="s1-bloom" id="s1-bloom"></div>
+        <div class="s1-bloom-inner" id="s1-bloom-inner"></div>
+        <div class="s1-streak" id="s1-streak"></div>
+        <div class="flare s1-flare drift-c" id="s1-flare"></div>
+        <div class="flare s1-flare-2 drift-d" id="s1-flare-2"></div>
+
+        <div class="dust xl fa" style="left: 78%; top: 70%;"></div>
+        <div class="dust lg fb" style="left: 64%; top: 82%; animation-delay: -3s;"></div>
+        <div class="dust fc"    style="left: 86%; top: 60%; animation-delay: -2s;"></div>
+        <div class="dust fa"    style="left: 22%; top: 88%; animation-delay: -5s;"></div>
+        <div class="dust lg fd" style="left: 14%; top: 72%; animation-delay: -7s;"></div>
+        <div class="dust xl fc" style="left: 12%; top: 90%; animation-delay: -4s;"></div>
+        <div class="dust fb"    style="left: 88%; top: 85%; animation-delay: -6s;"></div>
+
+        <div class="grain"></div>
+
+        <div class="sc s1-content">
+          <div class="s1-eyebrow-wrap">
+            <div class="eyebrow s1-eyebrow">
+              <span class="dot" id="s1-dot"></span>
+              <span id="s1-eyebrow-text">Tannklinikk &amp; Estetikk · Lørenskog</span>
+            </div>
+          </div>
+          <div class="s1-center">
+            <img class="s1-logo-img" id="s1-logo-img" src="./assets/logo-wordmark-cream.png" alt="DentalEstetic" />
+            <div class="s1-rule" id="s1-rule"></div>
+            <div class="s1-sub" id="s1-sub">Lørenskog</div>
+          </div>
+          <div class="s1-foot">
+            <span id="s1-foot-l">&nbsp;</span>
+            <span id="s1-foot-r">&nbsp;</span>
+          </div>
+        </div>
+
+        <div class="sfx" id="s1-flash"></div>
+      </div>
+
+      <!-- ====================== S2 — TAGLINE (4-7.5s) ====================== -->
+      <div class="scene clip bg-cream" id="s2" data-start="6.5" data-duration="6.5" data-track-index="0" style="visibility: hidden;">
+        <div class="glow g-amber s2-glow-a drift-a"></div>
+        <div class="glow g-gold  s2-glow-b drift-b"></div>
+
+        <div class="dust xl fa" style="left: 12%; top: 85%; animation-delay: -1s;"></div>
+        <div class="dust fb"    style="left: 8%;  top: 70%; animation-delay: -4s;"></div>
+        <div class="dust dim fc"style="left: 88%; top: 90%; animation-delay: -2s;"></div>
+        <div class="dust lg fa" style="left: 92%; top: 75%; animation-delay: -6s;"></div>
+        <div class="dust fd"    style="left: 78%; top: 60%; animation-delay: -3s;"></div>
+
+        <div class="paper-vign"></div>
+        <div class="grain"></div>
+
+        <div class="sc s2-content">
+          <div class="eyebrow s2-eyebrow">
+            <span class="dash"></span><span id="s2-eyebrow-text">Filosofi</span>
+          </div>
+          <div class="s2-title" id="s2-title">
+            <span class="s2-line">
+              <span class="char">D</span><span class="char">e</span><span class="char">t</span>&nbsp;<span class="char">l</span><span class="char">i</span><span class="char">l</span><span class="char">l</span><span class="char">e</span>
+            </span>
+            <span class="s2-line">
+              <span class="char">e</span><span class="char">k</span><span class="char">s</span><span class="char">t</span><span class="char">r</span><span class="char">a</span><span class="char accent-dot">.</span>
+            </span>
+          </div>
+          <div class="s2-sub" id="s2-sub">
+            Fordi tannhelse er for alle.
+          </div>
+          <div class="s2-rule-wrap">
+            <div class="s2-rule" id="s2-rule"></div>
+            <div class="s2-rule-end" id="s2-rule-end">DentalEstetic · Lørenskog</div>
+          </div>
+        </div>
+
+        <div class="sfx" id="s2-flash"></div>
+      </div>
+
+      <!-- ====================== S3 — MANIFESTO (7.5-11s) ====================== -->
+      <div class="scene clip bg-dark" id="s3" data-start="13" data-duration="7" data-track-index="0" style="visibility: hidden;">
+        <div class="glow g-amber s3-glow-a drift-a"></div>
+        <div class="glow g-gold  s3-glow-b drift-b"></div>
+        <div class="streak" id="s3-streak"></div>
+        <div class="wave" id="s3-wave-1" style="left: 50%; top: 50%; transform: translate(-50%,-50%); width: 200px; height: 200px;"></div>
+        <div class="wave" id="s3-wave-2" style="left: 50%; top: 50%; transform: translate(-50%,-50%); width: 200px; height: 200px;"></div>
+
+        <div class="dust xl fa" style="left: 10%; top: 82%; animation-delay: -2s;"></div>
+        <div class="dust fb"    style="left: 14%; top: 70%; animation-delay: -5s;"></div>
+        <div class="dust dim fc"style="left: 88%; top: 88%; animation-delay: -3s;"></div>
+        <div class="dust lg fd" style="left: 92%; top: 76%; animation-delay: -7s;"></div>
+
+        <div class="grain"></div>
+        <div class="vign"></div>
+
+        <div class="sc s3-content">
+          <div class="eyebrow s3-eyebrow">
+            <span class="dot"></span><span id="s3-eyebrow-text">Vår filosofi</span>
+          </div>
+          <div class="s3-headline" id="s3-headline">
+            <span class="word s3-word">For</span>&nbsp;<span class="word s3-word">deg</span>&nbsp;<span class="word s3-word">som</span>&nbsp;<span class="word s3-word">vil</span>&nbsp;<span class="word s3-word accent">mer.</span>
+          </div>
+          <div class="s3-sub" id="s3-sub">
+            Tannhelse, smiledesign og estetisk medisin — under samme tak.
+          </div>
+          <div class="s3-sub" id="s3-sub-2" style="display: none;">
+          </div>
+          <div class="s3-row">
+            <span class="pip"></span>
+            <span class="label">Tannhelse · Smiledesign · Estetisk medisin</span>
+          </div>
+        </div>
+
+        <div class="sfx dark" id="s3-flash"></div>
+      </div>
+
+      <!-- ====================== S4 — ESTETISKE BEHANDLINGER (11-15s) ====================== -->
+      <div class="scene clip bg-cream" id="s4" data-start="20" data-duration="7" data-track-index="0" style="visibility: hidden;">
+        <div class="glow g-warm  s4-glow-a drift-a"></div>
+        <div class="glow g-gold  s4-glow-b drift-b"></div>
+        <div class="streak tone-dark" id="s4-streak"></div>
+
+        <div class="dust xl fa" style="left: 10%; top: 85%; animation-delay: -2s;"></div>
+        <div class="dust fb"    style="left: 16%; top: 72%; animation-delay: -4s;"></div>
+        <div class="dust dim fc"style="left: 86%; top: 88%; animation-delay: -1s;"></div>
+        <div class="dust lg fd" style="left: 90%; top: 75%; animation-delay: -6s;"></div>
+
+        <div class="paper-vign"></div>
+        <div class="grain"></div>
+
+        <div class="sc s4-content">
+          <div class="s4-top">
+            <div>
+              <div class="eyebrow s4-eyebrow">
+                <span class="dash"></span><span id="s4-eyebrow-text">Estetiske behandlinger</span>
+              </div>
+              <div class="s4-title" id="s4-title">
+                Hud, ansikt, <span class="accent">glød.</span>
+              </div>
+            </div>
+            <div class="s4-count" id="s4-count">
+              <span class="big">08</span>
+              behandlinger<br />fra <strong>790,-</strong>
+            </div>
+          </div>
+          <div class="s4-grid">
+            <div class="s4-row"><span class="s4-name">Botox <em>· 30 min</em></span><span class="s4-price">1 600,-</span></div>
+            <div class="s4-row"><span class="s4-name">Fillers <em>· 30 min</em></span><span class="s4-price">1 950,-</span></div>
+            <div class="s4-row"><span class="s4-name">Hollywood Peel <em>· 75 min</em></span><span class="s4-price">1 995,-</span></div>
+            <div class="s4-row"><span class="s4-name">Skinboosters / Profhilo <em>· 30 min</em></span><span class="s4-price">1 995,-</span></div>
+            <div class="s4-row"><span class="s4-name">Dermapen / Microneedling <em>· 60 min</em></span><span class="s4-price">1 500,-</span></div>
+            <div class="s4-row"><span class="s4-name">Laserbehandling — hud <em>· 30 min</em></span><span class="s4-price">1 290,-</span></div>
+            <div class="s4-row"><span class="s4-name">Tatoveringsfjerning <em>· 30 min</em></span><span class="s4-price">950,-</span></div>
+            <div class="s4-row"><span class="s4-name">Laser hårfjerning <em>· 30 min</em></span><span class="s4-price">790,-</span></div>
+          </div>
+        </div>
+
+        <div class="sfx" id="s4-flash"></div>
+      </div>
+
+      <!-- ====================== S5 — TANNBEHANDLINGER (15-19s) ====================== -->
+      <div class="scene clip bg-dark" id="s5" data-start="27" data-duration="6.5" data-track-index="0" style="visibility: hidden;">
+        <div class="glow g-amber s5-glow-a drift-a"></div>
+        <div class="glow g-gold  s5-glow-b drift-b"></div>
+        <div class="streak" id="s5-streak"></div>
+
+        <div class="dust xl fa" style="left: 8%;  top: 80%; animation-delay: -2s;"></div>
+        <div class="dust fb"    style="left: 14%; top: 68%; animation-delay: -5s;"></div>
+        <div class="dust dim fc"style="left: 88%; top: 90%; animation-delay: -3s;"></div>
+        <div class="dust lg fd" style="left: 92%; top: 75%; animation-delay: -7s;"></div>
+
+        <div class="grain"></div>
+        <div class="vign"></div>
+
+        <div class="sc s5-content">
+          <div class="s5-top">
+            <div>
+              <div class="eyebrow s5-eyebrow">
+                <span class="dot"></span><span id="s5-eyebrow-text">Tannbehandlinger</span>
+              </div>
+              <div class="s5-title" id="s5-title">
+                Smiledesign — <span class="accent">trygt og varmt.</span>
+              </div>
+            </div>
+            <div class="s5-count" id="s5-count">
+              <span class="big">06</span>
+              spesialiteter<br />individuell pris
+            </div>
+          </div>
+          <div class="s5-grid">
+            <div class="s5-row"><span class="s5-name">Keramiske kroner</span><span class="s5-price from">på forespørsel</span></div>
+            <div class="s5-row"><span class="s5-name">Fasetter <em>· minimal invasiv</em></span><span class="s5-price from">på forespørsel</span></div>
+            <div class="s5-row"><span class="s5-name">Edge-bonding <em>· non-prep komposit</em></span><span class="s5-price from">på forespørsel</span></div>
+            <div class="s5-row"><span class="s5-name">Tannbleking</span><span class="s5-price from">på forespørsel</span></div>
+            <div class="s5-row"><span class="s5-name">Implantater</span><span class="s5-price from">på forespørsel</span></div>
+            <div class="s5-row"><span class="s5-name">Periodisk undersøkelse</span><span class="s5-price from">fra 950,-</span></div>
+          </div>
+        </div>
+
+        <div class="sfx dark" id="s5-flash"></div>
+      </div>
+
+      <!-- ====================== S6 — RESULTATER (19-23s) SHADER ANCHOR ====================== -->
+      <div class="scene clip bg-dark" id="s6" data-start="33.5" data-duration="7" data-track-index="0" style="opacity: 0;">
+        <div class="glow g-gold  s6-glow-a drift-a"></div>
+        <div class="glow g-amber s6-glow-b drift-b"></div>
+
+        <div class="dust xl fa" style="left: 5%;  top: 80%; animation-delay: -2s;"></div>
+        <div class="dust fb"    style="left: 95%; top: 70%; animation-delay: -4s;"></div>
+
+        <div class="grain"></div>
+        <div class="vign"></div>
+
+        <div class="sc s6-content">
+          <div class="s6-head">
+            <div class="eyebrow s6-eyebrow" id="s6-eyebrow">
+              <span class="dot"></span><span>Resultater</span>
+            </div>
+            <div class="s6-title" id="s6-title">Før <span class="accent">/</span> etter.</div>
+          </div>
+          <div class="s6-grid">
+            <div class="s6-card" id="s6-c1">
+              <div class="s6-photo kroner">
+                <div class="ba"><span>Før</span><span class="after">Etter</span></div>
+              </div>
+              <div class="s6-body">
+                <div class="s6-tag">01 — Tannrekonstruksjon</div>
+                <div class="s6-name">Kroner</div>
+                <div class="s6-desc">Fraktur og skade etter tidligere traume — to nye keramiske kroner.</div>
+                <div class="s6-foot"><span>Utført på 2 besøk</span><span class="s6-de">DE</span></div>
+              </div>
+            </div>
+            <div class="s6-card" id="s6-c2">
+              <div class="s6-photo fasetter">
+                <div class="ba"><span>Før</span><span class="after">Etter</span></div>
+              </div>
+              <div class="s6-body">
+                <div class="s6-tag">02 — Smiledesign</div>
+                <div class="s6-name">Fasetter</div>
+                <div class="s6-desc">Mineraliseringsforstyrrelse — 10 minimal invasive fasetter i overkjeven.</div>
+                <div class="s6-foot"><span>Utført på 2 besøk</span><span class="s6-de">DE</span></div>
+              </div>
+            </div>
+            <div class="s6-card" id="s6-c3">
+              <div class="s6-photo edgebonding">
+                <div class="ba"><span>Før</span><span class="after">Etter</span></div>
+              </div>
+              <div class="s6-body">
+                <div class="s6-tag">03 — Non-prep komposit</div>
+                <div class="s6-name">Edge-bonding</div>
+                <div class="s6-desc">Ønsket å fjerne mellomrom mellom fortennene — komposittbehandling på begge.</div>
+                <div class="s6-foot"><span>Utført på 1 besøk</span><span class="s6-de">DE</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====================== S7 — BIG MESSAGE (23-27.5s) SHADER ANCHOR ====================== -->
+      <div class="scene clip bg-cream" id="s7" data-start="40.5" data-duration="7" data-track-index="0" style="opacity: 0;">
+        <div class="s7-photo" id="s7-photo"></div>
+        <div class="s7-scrim"></div>
+        <div class="glow g-cream s7-glow-a drift-a" id="s7-glow-a"></div>
+        <div class="glow g-gold  s7-glow-b drift-b" id="s7-glow-b"></div>
+        <div class="flare s7-flare drift-c" id="s7-flare"></div>
+        <div class="wave" id="s7-wave-1" style="left: 50%; top: 55%; transform: translate(-50%,-50%); width: 220px; height: 220px;"></div>
+        <div class="wave" id="s7-wave-2" style="left: 50%; top: 55%; transform: translate(-50%,-50%); width: 220px; height: 220px;"></div>
+
+        <div class="dust xl fa" style="left: 8%;  top: 85%; animation-delay: -1s;"></div>
+        <div class="dust fb"    style="left: 14%; top: 70%; animation-delay: -3s;"></div>
+        <div class="dust xl fc" style="left: 88%; top: 80%; animation-delay: -2s;"></div>
+        <div class="dust fa"    style="left: 92%; top: 65%; animation-delay: -5s;"></div>
+        <div class="dust dim fb"style="left: 82%; top: 92%; animation-delay: -4s;"></div>
+        <div class="dust lg fd" style="left: 18%; top: 55%; animation-delay: -6s;"></div>
+
+        <div class="paper-vign"></div>
+        <div class="grain"></div>
+
+        <div class="sc s7-content">
+          <div class="eyebrow s7-eyebrow">
+            <span class="dash"></span><span>Til deg som vurderer</span>
+          </div>
+          <div class="s7-title" id="s7-title">
+            <span class="s7-line"><span class="word" id="s7-w1">Et</span>&nbsp;<span class="word" id="s7-w2">nytt</span></span>
+            <span class="s7-line"><span class="word accent" id="s7-w3">smil.</span></span>
+          </div>
+          <div class="s7-sub" id="s7-sub">
+            På ett eller to besøk.
+          </div>
+          <div class="s7-sub" id="s7-sub-2" style="display: none;">
+          </div>
+        </div>
+      </div>
+
+      <!-- ====================== S8 — RATING (27.5-31s) SHADER ANCHOR ====================== -->
+      <div class="scene clip bg-cream" id="s8" data-start="47.5" data-duration="5.5" data-track-index="0" style="opacity: 0;">
+        <div class="s8-halo pulse" id="s8-halo"></div>
+        <div class="s8-halo-2 drift-c" id="s8-halo-2"></div>
+
+        <div class="dust xl fa" style="left: 14%; top: 85%; animation-delay: -2s;"></div>
+        <div class="dust fb"    style="left: 18%; top: 72%; animation-delay: -4s;"></div>
+        <div class="dust dim fc"style="left: 82%; top: 90%; animation-delay: -1s;"></div>
+        <div class="dust lg fd" style="left: 86%; top: 75%; animation-delay: -6s;"></div>
+        <div class="dust xl fa" style="left: 78%; top: 60%; animation-delay: -3s;"></div>
+
+        <div class="paper-vign"></div>
+        <div class="grain"></div>
+
+        <div class="sc s8-content">
+          <div class="eyebrow s8-eyebrow">
+            <span class="dash"></span><span>Anmeldelser på Google</span>
+          </div>
+          <div class="s8-big" id="s8-big">0.0</div>
+          <div class="s8-stars" id="s8-stars">
+            <span class="s8-star">★</span><span class="s8-star">★</span><span class="s8-star">★</span><span class="s8-star">★</span><span class="s8-star">★</span>
+          </div>
+          <div class="s8-meta" id="s8-meta">
+            <strong id="s8-count">0</strong> femstjerners anmeldelser — og fortsatt tellende.
+          </div>
+          <div class="s8-google" id="s8-google"><strong>G</strong> · Verifisert på google.com</div>
+        </div>
+      </div>
+
+      <!-- ====================== S9 — CONTACT (31-35.5s) SHADER ANCHOR ====================== -->
+      <div class="scene clip bg-dark" id="s9" data-start="53" data-duration="7" data-track-index="0" style="opacity: 0;">
+        <div class="glow g-amber s9-glow-a drift-a"></div>
+        <div class="glow g-gold  s9-glow-b drift-b"></div>
+
+        <div class="dust xl fa" style="left: 5%;  top: 85%; animation-delay: -2s;"></div>
+        <div class="dust fb"    style="left: 95%; top: 70%; animation-delay: -4s;"></div>
+        <div class="dust dim fc"style="left: 50%; top: 95%; animation-delay: -3s;"></div>
+
+        <div class="grain"></div>
+        <div class="vign"></div>
+
+        <div class="sc s9-content">
+          <div class="s9-map-deco" id="s9-map"></div>
+          <div>
+            <div class="eyebrow s9-eyebrow">
+              <span class="dot"></span><span>Bestill time</span>
+            </div>
+            <div class="s9-headline" id="s9-headline">
+              Stikk innom oss i <span class="accent">Lørenskog.</span>
+            </div>
+            <div class="s9-sub" id="s9-sub">
+              Uforpliktende konsultasjon.
+            </div>
+            <div class="s9-sub" id="s9-sub-2" style="display: none;">
+            </div>
+          </div>
+          <div class="s9-card-wrap">
+            <div class="s9-card-glow pulse-slow" id="s9-card-glow"></div>
+            <div class="s9-card" id="s9-card">
+              <div class="s9-row">
+                <div class="s9-label">Adresse</div>
+                <div class="s9-value">Bibliotekgata 34</div>
+                <div class="s9-value">1437 Lørenskog</div>
+              </div>
+              <div class="s9-row">
+                <div class="s9-label">Telefon</div>
+                <div class="s9-value serif" id="s9-phone">47 45 75 85</div>
+              </div>
+              <div class="s9-row">
+                <div class="s9-label">E-post</div>
+                <div class="s9-value">post@dentalestetic.no</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====================== S10 — CLOSE (35.5-40s) ====================== -->
+      <div class="scene clip bg-cream" id="s10" data-start="60" data-duration="10" data-track-index="0" style="visibility: hidden;">
+        <div class="s10-bg-glow" id="s10-bg-glow"></div>
+
+        <div class="dust xl fa" style="left: 15%; top: 85%; animation-delay: -2s;"></div>
+        <div class="dust fb"    style="left: 22%; top: 70%; animation-delay: -4s;"></div>
+        <div class="dust xl fc" style="left: 82%; top: 80%; animation-delay: -3s;"></div>
+        <div class="dust fa"    style="left: 88%; top: 65%; animation-delay: -5s;"></div>
+        <div class="dust dim fb"style="left: 50%; top: 92%; animation-delay: -1s;"></div>
+        <div class="dust lg fd" style="left: 8%;  top: 60%; animation-delay: -6s;"></div>
+        <div class="dust fa"    style="left: 92%; top: 90%; animation-delay: -7s;"></div>
+
+        <div class="paper-vign"></div>
+        <div class="grain"></div>
+
+        <div class="sc s10-content">
+          <div class="corner-orn tl" id="s10-orn-tl"></div>
+          <div class="corner-orn tr" id="s10-orn-tr"></div>
+          <div class="corner-orn bl" id="s10-orn-bl"></div>
+          <div class="corner-orn br" id="s10-orn-br"></div>
+          <div class="s10-logo-wrap">
+            <div class="s10-logo-glow" id="s10-logo-glow"></div>
+                        <div class="s10-wordmark-type" id="s10-wordmark-type"><span class="char">D</span><span class="char">E</span><span class="char">N</span><span class="char">T</span><span class="char">A</span><span class="char">L</span><span class="char">E</span><span class="char">S</span><span class="char">T</span><span class="char">E</span><span class="char">T</span><span class="char">I</span><span class="char">C</span></div>
+          </div>
+          <div class="s10-rule-wrap">
+            <div class="s10-rule" id="s10-rule-l"></div>
+            <div class="s10-dot" id="s10-dot"></div>
+            <div class="s10-rule" id="s10-rule-r"></div>
+          </div>
+          <div class="s10-tag" id="s10-tag">Det lille ekstra.</div>
+          <div class="s10-sub" id="s10-sub">Fordi tannhelse er for alle.</div>
+          <div class="s10-url" id="s10-url">
+            <span>dentalestetic.no</span>
+            <span class="sep"></span>
+            <span>47 45 75 85</span>
+          </div>
+        </div>
+
+        <div class="sfx" id="s10-flash"></div>
+      </div>
+    </div>
+
+    <!-- preview watermark (sits above ALL scenes, including shader compositor) -->
+    <div class="watermark-overlay" aria-hidden="true">
+      <span>norleads · preview · 2026</span><span>norleads · preview · 2026</span><span>norleads · preview · 2026</span><span>norleads · preview · 2026</span><span>norleads · preview · 2026</span><span>norleads · preview · 2026</span>
+      <span>norleads · preview · 2026</span><span>norleads · preview · 2026</span><span>norleads · preview · 2026</span><span>norleads · preview · 2026</span><span>norleads · preview · 2026</span><span>norleads · preview · 2026</span>
+      <span>norleads · preview · 2026</span><span>norleads · preview · 2026</span><span>norleads · preview · 2026</span><span>norleads · preview · 2026</span><span>norleads · preview · 2026</span><span>norleads · preview · 2026</span>
+      <span>norleads · preview · 2026</span><span>norleads · preview · 2026</span><span>norleads · preview · 2026</span><span>norleads · preview · 2026</span><span>norleads · preview · 2026</span><span>norleads · preview · 2026</span>
+    </div>
+    <div class="watermark-corner" aria-hidden="true">
+      <span class="pill gold">NORLEADS</span>
+      <span class="pill">PREVIEW · 2026</span>
+    </div>
+
+    <script src="./animations.js"></script>
+  </body>
+</html>
