@@ -93,14 +93,49 @@
     fill:var(--white);
     opacity:0;
   }
-  #signal-core{ fill:#FFFFFF; opacity:0; }
-  #signal-halo{ fill:url(#flowGradient); opacity:0; }
-  #jump-ring{ fill:none; stroke:url(#flowGradient); stroke-width:6; opacity:0; }
 
-  /* ---------- intro: signal scan ---------- */
+  /* ---------- intro: multi-stage signal sequence ---------- */
   #intro-stage{
     position:absolute; inset:0;
     pointer-events:none;
+  }
+  .swarm-dot{
+    position:absolute;
+    width:4px; height:4px;
+    border-radius:50%;
+    background:#fff;
+    opacity:0;
+  }
+  #orbit-group{
+    position:absolute;
+    left:50%; top:46%;
+    width:0; height:0;
+  }
+  .orbit-dot{
+    position:absolute;
+    width:7px; height:7px;
+    margin:-3.5px;
+    border-radius:50%;
+    background:var(--gold-light);
+    opacity:0;
+  }
+  .wipe-bar{
+    position:absolute;
+    top:-10%;
+    height:120%;
+    width:10px;
+    background:linear-gradient(180deg, transparent, rgba(255,255,255,0.55), transparent);
+    opacity:0;
+    transform:skewX(-14deg);
+  }
+  #core-flash{
+    position:absolute;
+    left:50%; top:46%;
+    width:14px; height:14px;
+    border-radius:50%;
+    background:#fff;
+    opacity:0;
+    transform:translate(-50%,-50%) scale(0);
   }
   .grid-line{
     position:absolute;
@@ -183,6 +218,8 @@
     <div class="ring" id="ring3"></div>
 
     <div id="intro-stage">
+      <div id="orbit-group"></div>
+      <div id="core-flash"></div>
       <div id="scan-label">ACQUIRING SIGNAL</div>
     </div>
 
@@ -293,11 +330,6 @@ l0 797 53 -55 c64 -68 110 -121 121 -138 8 -13 9 -1912 1 -1920 -5 -6 -252
 -80 43 -33 85 -68 94 -77 42 -47 41 -63 41 916 l0 934 -39 35 c-21 19 -70 55
 -109 81 -39 25 -74 50 -77 56 -7 12 -35 14 -35 3z"/>
         </g>
-        <g id="signal-group" transform="translate(-20.180019,618.971223) scale(0.100000,-0.100000)">
-          <circle id="signal-halo" cx="0" cy="0" r="220"/>
-          <circle id="signal-core" cx="0" cy="0" r="70"/>
-          <circle id="jump-ring" cx="0" cy="0" r="10"/>
-        </g>
       </svg>
     </div>
 
@@ -345,9 +377,6 @@ gsap.to(particles, {
 });
 
 /* ---------- core elements ---------- */
-const signalCore  = document.getElementById('signal-core');
-const signalHalo  = document.getElementById('signal-halo');
-const jumpRing    = document.getElementById('jump-ring');
 const monoWrap    = document.getElementById('mono-wrap');
 const fillPaths   = Array.from(document.querySelectorAll('.mono-fill'));
 const strokeOrder = ['s1','s0','s2','s3','s4'].map(id => document.getElementById(id));
@@ -361,8 +390,6 @@ strokeOrder.forEach(p => {
 gsap.set('#mono-wrap', { xPercent: -50, yPercent: -50, scale: 1 });
 gsap.set('#lockup', { xPercent: -50, yPercent: 0 });
 
-function movePoint(el, x, y){ el.setAttribute('cx', x); el.setAttribute('cy', y); }
-
 /* ---------- flowing multi-color gradient ---------- */
 const gradEl = document.getElementById('flowGradient');
 const gradProxy = { x: 0 };
@@ -374,14 +401,26 @@ gsap.to(gradProxy, {
   onUpdate: () => gradEl.setAttribute('gradientTransform', `translate(${gradProxy.x} 0)`)
 });
 
-/* ---------- intro: signal scan (grid + sweep before the logo draws) ---------- */
+/* ---------- intro: 5 distinct sequences before the logo draws ---------- */
 const introStage = document.getElementById('intro-stage');
+const coreFlash  = document.getElementById('core-flash');
+
+// 1) particle swarm — dots fly in from the edges and converge
+const swarmDots = [];
+for (let i = 0; i < 26; i++){
+  const d = document.createElement('div');
+  d.className = 'swarm-dot';
+  introStage.appendChild(d);
+  swarmDots.push(d);
+}
+const CX = 960, CY = 497; // canvas-space center (matches mono-wrap top:46%)
+
+// 2) grid + scan sweep
 const scanLine = document.createElement('div');
 scanLine.className = 'scan-line';
 introStage.appendChild(scanLine);
-
 const gridLines = [];
-const gridX = [28, 39, 50, 61, 72]; // percent positions across the canvas
+const gridX = [28, 39, 50, 61, 72];
 gridX.forEach(pct => {
   const g = document.createElement('div');
   g.className = 'grid-line';
@@ -390,114 +429,167 @@ gridX.forEach(pct => {
   gridLines.push(g);
 });
 
-/* ---------- master timeline, ~41.6s ---------- */
+// 3) orbit ring of dots
+const orbitGroup = document.getElementById('orbit-group');
+const orbitDots = [];
+const ORBIT_N = 10, ORBIT_R = 230;
+for (let i = 0; i < ORBIT_N; i++){
+  const d = document.createElement('div');
+  d.className = 'orbit-dot';
+  const a = (i / ORBIT_N) * Math.PI * 2;
+  d.dataset.ax = Math.cos(a);
+  d.dataset.ay = Math.sin(a);
+  orbitGroup.appendChild(d);
+  orbitDots.push(d);
+}
+
+// 4) diagonal wipe bars
+const wipeBars = [];
+for (let i = 0; i < 6; i++){
+  const b = document.createElement('div');
+  b.className = 'wipe-bar';
+  introStage.appendChild(b);
+  wipeBars.push(b);
+}
+
+// 5) shockwave pulse rings (reuse .ring styling, dedicated elements)
+const pulseRings = [];
+for (let i = 0; i < 3; i++){
+  const r = document.createElement('div');
+  r.className = 'ring';
+  introStage.appendChild(r);
+  pulseRings.push(r);
+}
+
+// fixed orbit-dot positions (set once, rotation handled on the group)
+orbitDots.forEach(d => {
+  d.style.left = (parseFloat(d.dataset.ax) * ORBIT_R) + 'px';
+  d.style.top  = (parseFloat(d.dataset.ay) * ORBIT_R) + 'px';
+});
+
+/* ---------- master timeline, ~54s, 5 intro animations before the logo draws ---------- */
 const tl = gsap.timeline({ repeat: -1, repeatDelay: 1.4 });
 window.masterTL = tl;
 
-// 0.0 - 0.8  black hold
+// 0.0 - 0.7  black hold
 tl.set('#blackout', { opacity: 1 });
-tl.to('#blackout', { opacity: 0, duration: 0.9, ease: 'power1.in' }, 0.0);
+tl.to('#blackout', { opacity: 0, duration: 0.8, ease: 'power1.in' }, 0.0);
 
-// 0.8 - 2.4  intro: grid lines resolve, a scan sweep crosses the stage
-tl.to(gridLines, { opacity: 0.5, scaleY: 1, duration: 0.55, stagger: 0.06, ease: 'power2.out' }, 0.8);
-tl.to('#scan-label', { opacity: 1, duration: 0.4 }, 0.9);
-tl.fromTo(scanLine, { top: '0%', opacity: 0 }, { opacity: 1, duration: 0.2 }, 1.0);
-tl.to(scanLine, { top: '100%', duration: 1.05, ease: 'power1.inOut' }, 1.0);
-tl.to(scanLine, { opacity: 0, duration: 0.2 }, 1.95);
-tl.to(gridLines, { opacity: 0, scaleY: 0, duration: 0.4, stagger: 0.03 }, 1.95);
-tl.to('#scan-label', { opacity: 0, duration: 0.3 }, 2.0);
+// ===== INTRO 1/5 (0.7 - 3.0): particle swarm converges to a point =====
+tl.call(() => {
+  swarmDots.forEach(d => {
+    const edge = Math.random();
+    let x, y;
+    if (edge < 0.25)      { x = Math.random() * 1920; y = -20; }
+    else if (edge < 0.5)  { x = Math.random() * 1920; y = 1100; }
+    else if (edge < 0.75) { x = -20; y = Math.random() * 1080; }
+    else                  { x = 1940; y = Math.random() * 1080; }
+    gsap.set(d, { x, y, opacity: 0 });
+  });
+}, [], 0.7);
+tl.to(swarmDots, { opacity: 1, duration: 0.2, stagger: 0.015 }, 0.75);
+tl.to(swarmDots, { x: CX, y: CY, duration: 1.3, ease: 'power2.in', stagger: { each: 0.02, from: 'random' } }, 0.8);
+tl.to(coreFlash, { opacity: 1, scale: 1, duration: 0.15, ease: 'back.out(3)' }, 2.05);
+tl.to(swarmDots, { opacity: 0, duration: 0.2 }, 2.05);
+tl.to(coreFlash, { scale: 2.4, opacity: 0, duration: 0.4, ease: 'power2.out' }, 2.15);
 
-// 2.4 - 3.2 signal acquires
-const p0start = strokeOrder[0].getPointAtLength(0);
-tl.set(signalHalo, { opacity: 0, attr: { cx: p0start.x, cy: p0start.y, r: 0 } }, 2.4);
-tl.set(signalCore, { opacity: 0, attr: { cx: p0start.x, cy: p0start.y, r: 0 } }, 2.4);
-tl.to(signalHalo, { opacity: 0.4, attr: { r: 180 }, duration: 0.5, ease: 'power2.out' }, 2.4);
-tl.to(signalCore, { opacity: 1, attr: { r: 70 }, duration: 0.4, ease: 'back.out(2)' }, 2.45);
-tl.to(signalCore, { attr: { r: 90 }, duration: 0.35, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 2.85);
+// ===== INTRO 2/5 (3.0 - 5.6): data grid resolves + scan sweep =====
+tl.to(gridLines, { opacity: 0.5, scaleY: 1, duration: 0.55, stagger: 0.06, ease: 'power2.out' }, 3.0);
+tl.to('#scan-label', { opacity: 1, duration: 0.4 }, 3.1);
+tl.fromTo(scanLine, { top: '0%', opacity: 0 }, { opacity: 1, duration: 0.2 }, 3.2);
+tl.to(scanLine, { top: '100%', duration: 1.05, ease: 'power1.inOut' }, 3.2);
+tl.to(scanLine, { opacity: 0, duration: 0.2 }, 4.15);
+tl.to(gridLines, { opacity: 0, scaleY: 0, duration: 0.4, stagger: 0.03 }, 4.15);
+tl.to('#scan-label', { opacity: 0, duration: 0.3 }, 4.2);
 
-// 3.3 -> 17.6  draw the monogram, signal travels & traces each stroke
-const drawStart = 3.3, drawEnd = 17.6;
+// ===== INTRO 3/5 (5.6 - 8.6): orbit ring spins up then collapses =====
+tl.set(orbitGroup, { rotation: -90, scale: 0.4, opacity: 1 }, 5.6);
+tl.to(orbitDots, { opacity: 0.8, duration: 0.4, stagger: 0.04 }, 5.6);
+tl.to(orbitGroup, { rotation: 270, scale: 1, duration: 2.0, ease: 'power2.inOut' }, 5.7);
+tl.to(orbitDots, { opacity: 0, duration: 0.3, stagger: 0.03 }, 7.9);
+tl.to(orbitGroup, { scale: 0, duration: 0.5, ease: 'power2.in' }, 7.9);
+
+// ===== INTRO 4/5 (8.6 - 11.2): diagonal light wipes sweep through =====
+tl.call(() => {
+  wipeBars.forEach((b, i) => gsap.set(b, { left: (-100 + i * 30) + 'px', x: 0, opacity: 0 }));
+}, [], 8.6);
+tl.to(wipeBars, { opacity: 0.8, duration: 0.1, stagger: 0.08 }, 8.65);
+tl.to(wipeBars, { x: 2200, duration: 1.8, ease: 'power1.inOut', stagger: 0.08 }, 8.7);
+tl.to(wipeBars, { opacity: 0, duration: 0.3 }, 10.3);
+
+// ===== INTRO 5/5 (11.2 - 14.4): shockwave pulses signal the handoff =====
+pulseRings.forEach((r, i) => {
+  tl.fromTo(r, { opacity: 0.6, width: '10px', height: '10px' }, {
+    opacity: 0, width: '700px', height: '700px', duration: 1.3, ease: 'power1.out'
+  }, 11.2 + i * 0.3);
+});
+tl.to(coreFlash, { opacity: 1, scale: 1, duration: 0.12, ease: 'back.out(3)' }, 11.2);
+tl.to(coreFlash, { scale: 0, opacity: 0, duration: 0.3, ease: 'power1.in' }, 11.5);
+
+// 15.0 -> 29.3  draw the monogram (pure stroke reveal, no tracer dot)
+const drawStart = 15.0, drawEnd = 29.3;
 const drawBudget = drawEnd - drawStart;
 const lens = strokeOrder.map(p => p.getTotalLength());
-const totalLen = lens.reduce((a,b) => a+b, 0);
+const totalLen = lens.reduce((a, b) => a + b, 0);
 let cursor = drawStart;
 
 strokeOrder.forEach((p, idx) => {
   const len = lens[idx];
   const dur = drawBudget * (len / totalLen);
-  const start = p.getPointAtLength(0);
-
-  if (idx > 0) {
-    // quick signal jump to next segment start, with a small ring flash
-    tl.to(signalCore, { attr: { cx: start.x, cy: start.y }, duration: 0.18, ease: 'power3.inOut' }, cursor - 0.18);
-    tl.to(signalHalo, { attr: { cx: start.x, cy: start.y }, duration: 0.18, ease: 'power3.inOut' }, cursor - 0.18);
-    tl.set(jumpRing, { opacity: 0.8, attr: { cx: start.x, cy: start.y, r: 10 } }, cursor - 0.1);
-    tl.to(jumpRing, { opacity: 0, attr: { r: 160 }, duration: 0.4, ease: 'power2.out' }, cursor - 0.1);
-  }
-
-  const proxy = { t: 0 };
-  tl.to(proxy, {
-    t: 1,
-    duration: dur,
-    ease: 'none',
-    onUpdate: () => {
-      const pt = p.getPointAtLength(proxy.t * len);
-      movePoint(signalCore, pt.x, pt.y);
-      movePoint(signalHalo, pt.x, pt.y);
-    }
-  }, cursor);
   tl.to(p, { strokeDashoffset: 0, duration: dur, ease: 'none' }, cursor);
-
   cursor += dur;
 });
 
-// 17.6 - 19.6  lock-in: fill fades in, signal fades out (sharp, no glow)
-tl.to(signalHalo, { attr: { r: 260 }, opacity: 0, duration: 0.6, ease: 'power2.out' }, 17.6);
-tl.to(signalCore, { opacity: 0, duration: 0.4, ease: 'power1.in' }, 17.6);
-tl.to(strokeOrder, { stroke: '#FFFFFF', opacity: 0.9, duration: 0.25 }, 17.6);
-tl.to(fillPaths, { opacity: 1, duration: 0.7, ease: 'power2.out' }, 17.8);
-tl.to(strokeOrder, { opacity: 0, duration: 0.8, ease: 'power1.in' }, 18.2);
+// 29.3 - 30.1  lock-in: fill fades in, stroke fades out (sharp, no glow)
+tl.to(strokeOrder, { stroke: '#FFFFFF', opacity: 0.9, duration: 0.25 }, 29.3);
+tl.to(fillPaths, { opacity: 1, duration: 0.7, ease: 'power2.out' }, 29.5);
+tl.to(strokeOrder, { opacity: 0, duration: 0.8, ease: 'power1.in' }, 29.9);
 
-// 19.6 - 21.2 hold + gentle scale breathing (no glow)
+// 31.3 - 32.9 hold + gentle scale breathing (no glow)
 tl.to(monoWrap, {
   scale: 1.03, duration: 0.9, ease: 'sine.inOut', yoyo: true, repeat: 1
-}, 19.6);
+}, 31.3);
 
-// 21.4 - 24.8  move to lockup position, scale down
+// 33.1 - 36.5  move to lockup position, scale down
 tl.to(monoWrap, {
   top: '30%', scale: 0.62, duration: 2.6, ease: 'power3.inOut'
-}, 21.4);
-tl.to('#lockup', { top: '30%', paddingTop: '150px', duration: 2.6, ease: 'power3.inOut' }, 21.4);
-tl.to('#divider', { opacity: 1, width: '480px', duration: 1.6, ease: 'power2.out' }, 23.2);
+}, 33.1);
+tl.to('#lockup', { top: '30%', paddingTop: '150px', duration: 2.6, ease: 'power3.inOut' }, 33.1);
+tl.to('#divider', { opacity: 1, width: '480px', duration: 1.6, ease: 'power2.out' }, 34.9);
 
-// 25.0 - 28.4  wordmark reveal
-tl.to('#wordmark', { clipPath: 'inset(0 0% 0 0)', duration: 1.8, ease: 'power3.out' }, 25.0);
+// 36.7 - 40.1  wordmark reveal
+tl.to('#wordmark', { clipPath: 'inset(0 0% 0 0)', duration: 1.8, ease: 'power3.out' }, 36.7);
 
-// 28.2 - 32.2  radiating signal rings (reach / network motif)
+// 39.9 - 43.9  radiating signal rings (reach / network motif)
 [ '#ring1', '#ring2', '#ring3' ].forEach((sel, i) => {
   tl.fromTo(sel, {
     opacity: 0.4, width: '10px', height: '10px'
   }, {
     opacity: 0, width: '900px', height: '900px', duration: 2.6, ease: 'power1.out'
-  }, 28.2 + i * 0.55);
+  }, 39.9 + i * 0.55);
 });
 
-// 33.0 - 37.0  url reveal + hold
-tl.to('#urlmark', { opacity: 1, y: -4, duration: 1.2, ease: 'power2.out' }, 33.0);
-tl.to('#canvas', { scale: 1.012, duration: 3.5, ease: 'sine.inOut' }, 36.6);
+// 44.7 - 48.7  url reveal + hold
+tl.to('#urlmark', { opacity: 1, y: -4, duration: 1.2, ease: 'power2.out' }, 44.7);
+tl.to('#canvas', { scale: 1.012, duration: 3.5, ease: 'sine.inOut' }, 48.3);
 
-// 40.0 - 41.5  fade to black, ready to loop
-tl.to('#blackout', { opacity: 1, duration: 1.5, ease: 'power2.in' }, 40.0);
-tl.set(['#wordmark'], { clipPath: 'inset(0 100% 0 0)' }, 41.6);
-tl.set(['#divider'], { width: '0px', opacity: 0 }, 41.6);
-tl.set(['#urlmark'], { opacity: 0 }, 41.6);
-tl.set(monoWrap, { top: '46%', scale: 1 }, 41.6);
-tl.set('#lockup', { top: '46%', paddingTop: '0px' }, 41.6);
-tl.set(fillPaths, { opacity: 0 }, 41.6);
-tl.set(strokeOrder, { opacity: 1, strokeDashoffset: (i, t) => t.getTotalLength() }, 41.6);
-tl.set('#canvas', { scale: 1 }, 41.6);
-tl.set(gridLines, { opacity: 0, scaleY: 0 }, 41.6);
-tl.set('#scan-label', { opacity: 0 }, 41.6);
+// 51.7 - 53.2  fade to black, ready to loop
+tl.to('#blackout', { opacity: 1, duration: 1.5, ease: 'power2.in' }, 51.7);
+tl.set(['#wordmark'], { clipPath: 'inset(0 100% 0 0)' }, 53.3);
+tl.set(['#divider'], { width: '0px', opacity: 0 }, 53.3);
+tl.set(['#urlmark'], { opacity: 0 }, 53.3);
+tl.set(monoWrap, { top: '46%', scale: 1 }, 53.3);
+tl.set('#lockup', { top: '46%', paddingTop: '0px' }, 53.3);
+tl.set(fillPaths, { opacity: 0 }, 53.3);
+tl.set(strokeOrder, { opacity: 1, strokeDashoffset: (i, t) => t.getTotalLength() }, 53.3);
+tl.set('#canvas', { scale: 1 }, 53.3);
+tl.set(gridLines, { opacity: 0, scaleY: 0 }, 53.3);
+tl.set('#scan-label', { opacity: 0 }, 53.3);
+tl.set(orbitGroup, { scale: 0, opacity: 0 }, 53.3);
+tl.set(orbitDots, { opacity: 0 }, 53.3);
+tl.set(wipeBars, { opacity: 0 }, 53.3);
+tl.set(coreFlash, { opacity: 0, scale: 0 }, 53.3);
+tl.set(swarmDots, { opacity: 0 }, 53.3);
 </script>
 </body>
 </html>
