@@ -94,39 +94,25 @@
     opacity:0;
   }
 
-  /* ---------- intro: multi-stage signal sequence ---------- */
+  /* ---------- intro: a network of leads converges into a single signal ---------- */
   #intro-stage{
     position:absolute; inset:0;
     pointer-events:none;
   }
-  .swarm-dot{
-    position:absolute;
-    width:4px; height:4px;
-    border-radius:50%;
-    background:#fff;
+  #network-svg{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    overflow:visible;
+  }
+  .net-node{
+    fill:#fff;
     opacity:0;
   }
-  #orbit-group{
-    position:absolute;
-    left:50%; top:46%;
-    width:0; height:0;
-  }
-  .orbit-dot{
-    position:absolute;
-    width:7px; height:7px;
-    margin:-3.5px;
-    border-radius:50%;
-    background:var(--gold-light);
+  .net-edge{
+    fill:none;
+    stroke:url(#flowGradient);
+    stroke-width:2;
     opacity:0;
-  }
-  .wipe-bar{
-    position:absolute;
-    top:-10%;
-    height:120%;
-    width:10px;
-    background:linear-gradient(180deg, transparent, rgba(255,255,255,0.55), transparent);
-    opacity:0;
-    transform:skewX(-14deg);
   }
   #core-flash{
     position:absolute;
@@ -136,34 +122,6 @@
     background:#fff;
     opacity:0;
     transform:translate(-50%,-50%) scale(0);
-  }
-  .grid-line{
-    position:absolute;
-    top:0; bottom:0;
-    width:1px;
-    background:rgba(255,255,255,0.18);
-    opacity:0;
-    transform:scaleY(0);
-    transform-origin:center center;
-  }
-  .scan-line{
-    position:absolute;
-    left:0; top:0;
-    width:100%; height:2px;
-    background:linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent);
-    opacity:0;
-  }
-  #scan-label{
-    position:absolute;
-    left:50%; top:0;
-    transform:translate(-50%,-50%);
-    font-size:13px;
-    font-weight:500;
-    letter-spacing:5px;
-    text-transform:uppercase;
-    color:rgba(255,255,255,0.6);
-    opacity:0;
-    white-space:nowrap;
   }
 
   /* ---------- lockup (wordmark + url) ---------- */
@@ -223,9 +181,11 @@
     <div class="ring" id="ring3"></div>
 
     <div id="intro-stage">
-      <div id="orbit-group"></div>
+      <svg id="network-svg" viewBox="0 0 1920 1080" preserveAspectRatio="none">
+        <g id="net-edges"></g>
+        <g id="net-nodes"></g>
+      </svg>
       <div id="core-flash"></div>
-      <div id="scan-label">ACQUIRING SIGNAL</div>
     </div>
 
     <div id="mono-wrap">
@@ -412,75 +372,77 @@ gsap.to('#wordmark', {
   ease: 'none'
 });
 
-/* ---------- intro: 5 distinct sequences before the logo draws ---------- */
-const introStage = document.getElementById('intro-stage');
-const coreFlash  = document.getElementById('core-flash');
-
-// 1) particle ring — dots are placed on a precise circle and close inward like an iris
-const SWARM_N = 28;
-const swarmDots = [];
-for (let i = 0; i < SWARM_N; i++){
-  const d = document.createElement('div');
-  d.className = 'swarm-dot';
-  d.dataset.angle = (i / SWARM_N) * Math.PI * 2;
-  introStage.appendChild(d);
-  swarmDots.push(d);
-}
+/* ---------- intro: a network of leads converges into one signal ---------- */
+const coreFlash = document.getElementById('core-flash');
+const SVG_NS = 'http://www.w3.org/2000/svg';
+const edgesGroup = document.getElementById('net-edges');
+const nodesGroup = document.getElementById('net-nodes');
 const CX = 960, CY = 497; // canvas-space center (matches mono-wrap top:46%)
+const NET_N = 8, NET_R = 320;
 
-// 2) grid + scan sweep
-const scanLine = document.createElement('div');
-scanLine.className = 'scan-line';
-introStage.appendChild(scanLine);
-const gridLines = [];
-const gridX = [28, 39, 50, 61, 72];
-gridX.forEach(pct => {
-  const g = document.createElement('div');
-  g.className = 'grid-line';
-  g.style.left = pct + '%';
-  introStage.appendChild(g);
-  gridLines.push(g);
+const centerNode = document.createElementNS(SVG_NS, 'circle');
+centerNode.setAttribute('class', 'net-node');
+centerNode.setAttribute('r', 6);
+centerNode.setAttribute('cx', CX);
+centerNode.setAttribute('cy', CY);
+nodesGroup.appendChild(centerNode);
+
+const outerNodes = [];
+for (let i = 0; i < NET_N; i++){
+  const angle = (i / NET_N) * Math.PI * 2 - Math.PI / 2;
+  const x = CX + Math.cos(angle) * NET_R;
+  const y = CY + Math.sin(angle) * NET_R * 0.62;
+  const el = document.createElementNS(SVG_NS, 'circle');
+  el.setAttribute('class', 'net-node');
+  el.setAttribute('r', 5);
+  el.setAttribute('cx', x);
+  el.setAttribute('cy', y);
+  nodesGroup.appendChild(el);
+  outerNodes.push({ x, y, el });
+}
+
+// spokes: each lead connects directly to the central signal
+const spokes = outerNodes.map(n => {
+  const line = document.createElementNS(SVG_NS, 'line');
+  line.setAttribute('class', 'net-edge');
+  line.setAttribute('x1', CX); line.setAttribute('y1', CY);
+  line.setAttribute('x2', n.x); line.setAttribute('y2', n.y);
+  edgesGroup.appendChild(line);
+  return line;
 });
 
-// 3) orbit ring of dots
-const orbitGroup = document.getElementById('orbit-group');
-const orbitDots = [];
-const ORBIT_N = 10, ORBIT_R = 230;
-for (let i = 0; i < ORBIT_N; i++){
-  const d = document.createElement('div');
-  d.className = 'orbit-dot';
-  const a = (i / ORBIT_N) * Math.PI * 2;
-  d.dataset.ax = Math.cos(a);
-  d.dataset.ay = Math.sin(a);
-  orbitGroup.appendChild(d);
-  orbitDots.push(d);
+// ring edges: leads are also connected to each other, forming one network
+const ringEdges = [];
+for (let i = 0; i < NET_N; i++){
+  const line = document.createElementNS(SVG_NS, 'line');
+  line.setAttribute('class', 'net-edge');
+  edgesGroup.appendChild(line);
+  ringEdges.push(line);
 }
 
-// 4) diagonal wipe bars
-const wipeBars = [];
-for (let i = 0; i < 6; i++){
-  const b = document.createElement('div');
-  b.className = 'wipe-bar';
-  introStage.appendChild(b);
-  wipeBars.push(b);
+function renderNetwork(){
+  outerNodes.forEach((n, i) => {
+    n.el.setAttribute('cx', n.x);
+    n.el.setAttribute('cy', n.y);
+    spokes[i].setAttribute('x2', n.x);
+    spokes[i].setAttribute('y2', n.y);
+  });
+  ringEdges.forEach((line, i) => {
+    const a = outerNodes[i], b = outerNodes[(i + 1) % NET_N];
+    line.setAttribute('x1', a.x); line.setAttribute('y1', a.y);
+    line.setAttribute('x2', b.x); line.setAttribute('y2', b.y);
+  });
 }
+renderNetwork();
 
-// 5) shockwave pulse rings (reuse .ring styling, dedicated elements)
-const pulseRings = [];
-for (let i = 0; i < 3; i++){
-  const r = document.createElement('div');
-  r.className = 'ring';
-  introStage.appendChild(r);
-  pulseRings.push(r);
-}
-
-// fixed orbit-dot positions (set once, rotation handled on the group)
-orbitDots.forEach(d => {
-  d.style.left = (parseFloat(d.dataset.ax) * ORBIT_R) + 'px';
-  d.style.top  = (parseFloat(d.dataset.ay) * ORBIT_R) + 'px';
+// prep stroke-draw reveal on every edge (spokes + ring)
+[...spokes, ...ringEdges].forEach(line => {
+  const len = line.getTotalLength();
+  line.style.strokeDasharray = len;
+  line.style.strokeDashoffset = len;
 });
 
-/* ---------- master timeline, ~52.5s, 5 intro animations before the logo draws ---------- */
+/* ---------- master timeline, ~45.5s: one continuous network-to-signal build, then the logo draws ---------- */
 const tl = gsap.timeline({ repeat: -1, repeatDelay: 1.4 });
 window.masterTL = tl;
 
@@ -488,55 +450,36 @@ window.masterTL = tl;
 tl.set('#blackout', { opacity: 1 });
 tl.to('#blackout', { opacity: 0, duration: 0.8, ease: 'power1.in' }, 0.0);
 
-// ===== INTRO 1/5 (0.7 - 3.0): a precise ring of signal points closes inward like an iris =====
-tl.call(() => {
-  swarmDots.forEach(d => {
-    const a = parseFloat(d.dataset.angle);
-    const r = 700;
-    gsap.set(d, { x: CX + Math.cos(a) * r, y: CY + Math.sin(a) * r * 0.62, opacity: 0 });
-  });
-}, [], 0.7);
-tl.to(swarmDots, { opacity: 1, duration: 0.3, stagger: 0.012, ease: 'none' }, 0.75);
-tl.to(swarmDots, { x: CX, y: CY, duration: 1.3, ease: 'power2.in', stagger: 0.012 }, 0.85);
-tl.to(coreFlash, { opacity: 1, scale: 1, duration: 0.15, ease: 'back.out(3)' }, 2.1);
-tl.to(swarmDots, { opacity: 0, duration: 0.2 }, 2.1);
-tl.to(coreFlash, { scale: 2.4, opacity: 0, duration: 0.4, ease: 'power2.out' }, 2.2);
+// ===== ONE CONTINUOUS BUILD: scattered leads form a network, then resolve into a single signal =====
+// 1) the central signal appears first — everything will connect back to it
+tl.to(centerNode, { opacity: 1, duration: 0.3 }, 1.0);
 
-// ===== INTRO 2/5 (3.0 - 5.6): data grid resolves + scan sweep =====
-tl.to(gridLines, { opacity: 0.5, scaleY: 1, duration: 0.55, stagger: 0.06, ease: 'power2.out' }, 3.0);
-tl.to('#scan-label', { opacity: 1, duration: 0.4 }, 3.1);
-tl.fromTo(scanLine, { top: '0%', opacity: 0 }, { opacity: 1, duration: 0.2 }, 3.2);
-tl.to(scanLine, { top: '100%', duration: 1.05, ease: 'power1.inOut' }, 3.2);
-tl.to(scanLine, { opacity: 0, duration: 0.2 }, 4.15);
-tl.to(gridLines, { opacity: 0, scaleY: 0, duration: 0.4, stagger: 0.03 }, 4.15);
-tl.to('#scan-label', { opacity: 0, duration: 0.3 }, 4.2);
+// 2) the leads appear around it, in clean rotational order (not random)
+tl.to(outerNodes.map(n => n.el), { opacity: 1, duration: 0.25, stagger: 0.08, ease: 'none' }, 1.3);
 
-// ===== INTRO 3/5 (4.8 - 7.8): orbit ring spins up then collapses =====
-tl.set(orbitGroup, { rotation: -90, scale: 0.4, opacity: 1 }, 4.8);
-tl.to(orbitDots, { opacity: 0.8, duration: 0.4, stagger: 0.04 }, 4.8);
-tl.to(orbitGroup, { rotation: 270, scale: 1, duration: 2.0, ease: 'power2.inOut' }, 4.9);
-tl.to(orbitDots, { opacity: 0, duration: 0.3, stagger: 0.03 }, 7.1);
-tl.to(orbitGroup, { scale: 0, duration: 0.5, ease: 'power2.in' }, 7.1);
+// 3) each lead connects straight to the signal
+tl.to(spokes, { strokeDashoffset: 0, opacity: 0.85, duration: 0.45, stagger: 0.1, ease: 'power1.inOut' }, 2.0);
 
-// ===== INTRO 4/5 (7.8 - 10.4): diagonal light wipes sweep through =====
-tl.call(() => {
-  wipeBars.forEach((b, i) => gsap.set(b, { left: (-100 + i * 30) + 'px', x: 0, opacity: 0 }));
-}, [], 7.8);
-tl.to(wipeBars, { opacity: 0.8, duration: 0.1, stagger: 0.08 }, 7.85);
-tl.to(wipeBars, { x: 2200, duration: 1.8, ease: 'power1.inOut', stagger: 0.08 }, 7.9);
-tl.to(wipeBars, { opacity: 0, duration: 0.3 }, 9.5);
+// 4) the leads connect to each other — the network closes into one whole
+tl.to(ringEdges, { strokeDashoffset: 0, opacity: 0.55, duration: 0.35, stagger: 0.06, ease: 'power1.inOut' }, 3.4);
 
-// ===== INTRO 5/5 (10.4 - 13.6): shockwave pulses signal the handoff =====
-pulseRings.forEach((r, i) => {
-  tl.fromTo(r, { opacity: 0.6, width: '10px', height: '10px' }, {
-    opacity: 0, width: '700px', height: '700px', duration: 1.3, ease: 'power1.out'
-  }, 10.4 + i * 0.3);
-});
-tl.to(coreFlash, { opacity: 1, scale: 1, duration: 0.12, ease: 'back.out(3)' }, 10.4);
-tl.to(coreFlash, { scale: 0, opacity: 0, duration: 0.3, ease: 'power1.in' }, 10.7);
+// 5) a pulse confirms the network is live
+tl.to(centerNode, { opacity: 1, attr: { r: 9 }, duration: 0.18, ease: 'back.out(3)' }, 4.6);
+tl.to(centerNode, { attr: { r: 6 }, duration: 0.3, ease: 'power2.out' }, 4.78);
 
-// 14.2 -> 28.5  draw the monogram (pure stroke reveal, no tracer dot)
-const drawStart = 14.2, drawEnd = 28.5;
+// 6) every lead pulls inward along its own connection, converging into the signal
+tl.to(outerNodes, {
+  x: CX, y: CY, duration: 1.1, ease: 'power2.in', stagger: 0.05,
+  onUpdate: renderNetwork
+}, 5.2);
+
+// 7) the network has become one point of light — direct handoff into the mark
+tl.to(coreFlash, { opacity: 1, scale: 1, duration: 0.16, ease: 'back.out(3)' }, 6.5);
+tl.to([nodesGroup, edgesGroup], { opacity: 0, duration: 0.22, ease: 'power1.in' }, 6.5);
+tl.to(coreFlash, { scale: 2.6, opacity: 0, duration: 0.45, ease: 'power2.out' }, 6.62);
+
+// 7.0 -> 21.3  draw the monogram (pure stroke reveal, no tracer dot) — the signal becomes the mark
+const drawStart = 7.0, drawEnd = 21.3;
 const drawBudget = drawEnd - drawStart;
 const lens = strokeOrder.map(p => p.getTotalLength());
 const totalLen = lens.reduce((a, b) => a + b, 0);
@@ -549,56 +492,67 @@ strokeOrder.forEach((p, idx) => {
   cursor += dur;
 });
 
-// 28.5 - 29.3  lock-in: fill fades in, stroke fades out (sharp, no glow)
-tl.to(strokeOrder, { stroke: '#FFFFFF', opacity: 0.9, duration: 0.25 }, 28.5);
-tl.to(fillPaths, { opacity: 1, duration: 0.7, ease: 'power2.out' }, 28.7);
-tl.to(strokeOrder, { opacity: 0, duration: 0.8, ease: 'power1.in' }, 29.1);
+// 21.3 - 22.1  lock-in: fill fades in, stroke fades out (sharp, no glow)
+tl.to(strokeOrder, { stroke: '#FFFFFF', opacity: 0.9, duration: 0.25 }, 21.3);
+tl.to(fillPaths, { opacity: 1, duration: 0.7, ease: 'power2.out' }, 21.5);
+tl.to(strokeOrder, { opacity: 0, duration: 0.8, ease: 'power1.in' }, 21.9);
 
-// 30.5 - 32.1 hold + gentle scale breathing (no glow)
+// 23.3 - 24.9 hold + gentle scale breathing (no glow)
 tl.to(monoWrap, {
   scale: 1.03, duration: 0.9, ease: 'sine.inOut', yoyo: true, repeat: 1
-}, 30.5);
+}, 23.3);
 
-// 32.3 - 35.7  move to lockup position, scale down
+// 25.1 - 28.5  move to lockup position, scale down
 tl.to(monoWrap, {
   top: '30%', scale: 0.62, duration: 2.6, ease: 'power3.inOut'
-}, 32.3);
-tl.to('#lockup', { top: '30%', paddingTop: '150px', duration: 2.6, ease: 'power3.inOut' }, 32.3);
-tl.to('#divider', { opacity: 1, width: '480px', duration: 1.6, ease: 'power2.out' }, 34.1);
+}, 25.1);
+tl.to('#lockup', { top: '30%', paddingTop: '150px', duration: 2.6, ease: 'power3.inOut' }, 25.1);
+tl.to('#divider', { opacity: 1, width: '480px', duration: 1.6, ease: 'power2.out' }, 26.9);
 
-// 35.9 - 39.3  wordmark reveal
-tl.to('#wordmark', { clipPath: 'inset(0 0% 0 0)', duration: 1.8, ease: 'power3.out' }, 35.9);
+// 28.7 - 32.1  wordmark reveal
+tl.to('#wordmark', { clipPath: 'inset(0 0% 0 0)', duration: 1.8, ease: 'power3.out' }, 28.7);
 
-// 39.1 - 43.1  radiating signal rings (reach / network motif)
+// 31.9 - 35.9  radiating signal rings (reach / network motif)
 [ '#ring1', '#ring2', '#ring3' ].forEach((sel, i) => {
   tl.fromTo(sel, {
     opacity: 0.4, width: '10px', height: '10px'
   }, {
     opacity: 0, width: '900px', height: '900px', duration: 2.6, ease: 'power1.out'
-  }, 39.1 + i * 0.55);
+  }, 31.9 + i * 0.55);
 });
 
-// 43.9 - 47.9  url reveal + hold
-tl.to('#urlmark', { opacity: 1, y: -4, duration: 1.2, ease: 'power2.out' }, 43.9);
-tl.to('#canvas', { scale: 1.012, duration: 3.5, ease: 'sine.inOut' }, 47.5);
+// 36.7 - 40.7  url reveal + hold
+tl.to('#urlmark', { opacity: 1, y: -4, duration: 1.2, ease: 'power2.out' }, 36.7);
+tl.to('#canvas', { scale: 1.012, duration: 3.5, ease: 'sine.inOut' }, 40.3);
 
-// 50.9 - 52.4  fade to black, ready to loop
-tl.to('#blackout', { opacity: 1, duration: 1.5, ease: 'power2.in' }, 50.9);
-tl.set(['#wordmark'], { clipPath: 'inset(0 100% 0 0)' }, 52.5);
-tl.set(['#divider'], { width: '0px', opacity: 0 }, 52.5);
-tl.set(['#urlmark'], { opacity: 0 }, 52.5);
-tl.set(monoWrap, { top: '46%', scale: 1 }, 52.5);
-tl.set('#lockup', { top: '46%', paddingTop: '0px' }, 52.5);
-tl.set(fillPaths, { opacity: 0 }, 52.5);
-tl.set(strokeOrder, { opacity: 1, strokeDashoffset: (i, t) => t.getTotalLength() }, 52.5);
-tl.set('#canvas', { scale: 1 }, 52.5);
-tl.set(gridLines, { opacity: 0, scaleY: 0 }, 52.5);
-tl.set('#scan-label', { opacity: 0 }, 52.5);
-tl.set(orbitGroup, { scale: 0, opacity: 0 }, 52.5);
-tl.set(orbitDots, { opacity: 0 }, 52.5);
-tl.set(wipeBars, { opacity: 0 }, 52.5);
-tl.set(coreFlash, { opacity: 0, scale: 0 }, 52.5);
-tl.set(swarmDots, { opacity: 0 }, 52.5);
+// 43.7 - 45.2  fade to black, ready to loop
+tl.to('#blackout', { opacity: 1, duration: 1.5, ease: 'power2.in' }, 43.7);
+tl.set(['#wordmark'], { clipPath: 'inset(0 100% 0 0)' }, 45.3);
+tl.set(['#divider'], { width: '0px', opacity: 0 }, 45.3);
+tl.set(['#urlmark'], { opacity: 0 }, 45.3);
+tl.set(monoWrap, { top: '46%', scale: 1 }, 45.3);
+tl.set('#lockup', { top: '46%', paddingTop: '0px' }, 45.3);
+tl.set(fillPaths, { opacity: 0 }, 45.3);
+tl.set(strokeOrder, { opacity: 1, strokeDashoffset: (i, t) => t.getTotalLength() }, 45.3);
+tl.set('#canvas', { scale: 1 }, 45.3);
+tl.set(coreFlash, { opacity: 0, scale: 0 }, 45.3);
+tl.set(centerNode, { opacity: 0, attr: { r: 6 } }, 45.3);
+tl.set(outerNodes.map(n => n.el), { opacity: 0 }, 45.3);
+tl.set([nodesGroup, edgesGroup], { opacity: 1 }, 45.3);
+tl.call(() => {
+  outerNodes.forEach((n, i) => {
+    const angle = (i / NET_N) * Math.PI * 2 - Math.PI / 2;
+    n.x = CX + Math.cos(angle) * NET_R;
+    n.y = CY + Math.sin(angle) * NET_R * 0.62;
+  });
+  renderNetwork();
+  [...spokes, ...ringEdges].forEach(line => {
+    const len = line.getTotalLength();
+    line.style.strokeDasharray = len;
+    line.style.strokeDashoffset = len;
+    line.style.opacity = 0;
+  });
+}, [], 45.3);
 </script>
 </body>
 </html>
