@@ -61,16 +61,15 @@
     position:absolute;
     width:3px; height:3px;
     border-radius:50%;
-    background:var(--gold);
+    background:var(--gray);
     opacity:0;
-    box-shadow:0 0 6px rgba(212,175,55,0.8);
   }
   .ring{
     position:absolute;
     left:50%; top:46%;
     width:10px; height:10px;
     border-radius:50%;
-    border:1px solid rgba(212,175,55,0.5);
+    border:1px solid rgba(255,255,255,0.35);
     transform:translate(-50%,-50%);
     opacity:0;
     pointer-events:none;
@@ -81,24 +80,56 @@
     position:absolute;
     left:50%; top:46%;
     width:380px; height:387px;
-    filter:drop-shadow(0 0 26px rgba(212,175,55,0.0));
   }
   #mono-svg{ width:100%; height:100%; overflow:visible; }
   .mono-stroke{
     fill:none;
     stroke:url(#flowGradient);
-    stroke-width:34;
+    stroke-width:28;
     stroke-linecap:round;
     stroke-linejoin:round;
-    filter:url(#glowFilter);
   }
   .mono-fill{
     fill:var(--white);
     opacity:0;
   }
-  #signal-core{ fill:#FFFFFF; filter:url(#glowFilter); opacity:0; }
-  #signal-halo{ fill:url(#flowGradient); opacity:0; filter:url(#bigGlow); }
-  #jump-ring{ fill:none; stroke:url(#flowGradient); stroke-width:8; opacity:0; }
+  #signal-core{ fill:#FFFFFF; opacity:0; }
+  #signal-halo{ fill:url(#flowGradient); opacity:0; }
+  #jump-ring{ fill:none; stroke:url(#flowGradient); stroke-width:6; opacity:0; }
+
+  /* ---------- intro: signal scan ---------- */
+  #intro-stage{
+    position:absolute; inset:0;
+    pointer-events:none;
+  }
+  .grid-line{
+    position:absolute;
+    top:0; bottom:0;
+    width:1px;
+    background:rgba(255,255,255,0.18);
+    opacity:0;
+    transform:scaleY(0);
+    transform-origin:center center;
+  }
+  .scan-line{
+    position:absolute;
+    left:0; top:0;
+    width:100%; height:2px;
+    background:linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent);
+    opacity:0;
+  }
+  #scan-label{
+    position:absolute;
+    left:50%; top:0;
+    transform:translate(-50%,-50%);
+    font-size:13px;
+    font-weight:500;
+    letter-spacing:5px;
+    text-transform:uppercase;
+    color:rgba(255,255,255,0.6);
+    opacity:0;
+    white-space:nowrap;
+  }
 
   /* ---------- lockup (wordmark + url) ---------- */
   #lockup{
@@ -111,7 +142,6 @@
   #divider{
     width:0px; height:2px; margin:30px auto 0;
     background:linear-gradient(90deg, transparent, var(--gold) 20%, var(--gold-light) 50%, var(--gold) 80%, transparent);
-    box-shadow:0 0 16px rgba(212,175,55,0.65);
     opacity:0;
   }
   #wordmark{
@@ -120,7 +150,6 @@
     font-size:64px;
     letter-spacing:1px;
     color:var(--gold);
-    text-shadow:0 0 30px rgba(212,175,55,0.35);
     clip-path:inset(0 100% 0 0);
   }
   #urlmark{
@@ -131,20 +160,6 @@
     text-transform:uppercase;
     color:rgba(212,175,55,0.55);
     opacity:0;
-  }
-
-  #ball-stage{
-    position:absolute; inset:0;
-    pointer-events:none;
-  }
-  .ball{
-    position:absolute;
-    left:50%; top:50%;
-    width:40px; height:40px;
-    margin-left:-20px; margin-top:-20px;
-    border-radius:50%;
-    opacity:0;
-    will-change:transform;
   }
 
   #blackout{
@@ -167,19 +182,13 @@
     <div class="ring" id="ring2"></div>
     <div class="ring" id="ring3"></div>
 
+    <div id="intro-stage">
+      <div id="scan-label">ACQUIRING SIGNAL</div>
+    </div>
+
     <div id="mono-wrap">
       <svg id="mono-svg" viewBox="0 0 588.319981 598.987083">
         <defs>
-          <filter id="glowFilter" x="-40%" y="-40%" width="180%" height="180%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="1.6" result="b"/>
-            <feMerge>
-              <feMergeNode in="b"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-          <filter id="bigGlow" x="-150%" y="-150%" width="400%" height="400%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="9"/>
-          </filter>
           <linearGradient id="flowGradient" x1="0%" y1="0%" x2="100%" y2="0%" spreadMethod="repeat" gradientUnits="objectBoundingBox">
             <stop offset="0%"  style="stop-color:var(--c1)"/>
             <stop offset="25%" style="stop-color:var(--c2)"/>
@@ -298,8 +307,6 @@ l0 797 53 -55 c64 -68 110 -121 121 -138 8 -13 9 -1912 1 -1920 -5 -6 -252
       <div id="urlmark">norleads.no</div>
     </div>
 
-    <div id="ball-stage"></div>
-
     <div id="blackout"></div>
   </div>
 </div>
@@ -367,45 +374,23 @@ gsap.to(gradProxy, {
   onUpdate: () => gradEl.setAttribute('gradientTransform', `translate(${gradProxy.x} 0)`)
 });
 
-/* ---------- bouncing / multiplying ball scene ---------- */
-const ballStage = document.getElementById('ball-stage');
-const ballPalette = ['var(--c1)', 'var(--c2)', 'var(--c3)', 'var(--c4)'];
-let liveBalls = [];
+/* ---------- intro: signal scan (grid + sweep before the logo draws) ---------- */
+const introStage = document.getElementById('intro-stage');
+const scanLine = document.createElement('div');
+scanLine.className = 'scan-line';
+introStage.appendChild(scanLine);
 
-function spawnBall(x, y, gen, color){
-  const el = document.createElement('div');
-  el.className = 'ball';
-  el.style.background = color;
-  el.style.boxShadow = `0 0 18px ${color}`;
-  ballStage.appendChild(el);
-  liveBalls.push(el);
-  gsap.set(el, { x, y, scale: 1 - gen * 0.22, opacity: 0 });
+const gridLines = [];
+const gridX = [28, 39, 50, 61, 72]; // percent positions across the canvas
+gridX.forEach(pct => {
+  const g = document.createElement('div');
+  g.className = 'grid-line';
+  g.style.left = pct + '%';
+  introStage.appendChild(g);
+  gridLines.push(g);
+});
 
-  const groundY = 70;
-  const dropDur = 0.55 - gen * 0.08;
-  const t = gsap.timeline();
-  t.to(el, { opacity: 1, duration: 0.12 }, 0);
-  t.to(el, { y: y + groundY, duration: dropDur, ease: 'power2.in' }, 0);
-  t.to(el, { scaleY: 0.55, scaleX: 1.3, duration: 0.08, ease: 'power1.out' }, dropDur - 0.02);
-  t.to(el, { scaleY: 1 - gen * 0.22, scaleX: 1 - gen * 0.22, duration: 0.14, ease: 'back.out(3)' }, dropDur + 0.05);
-  t.call(() => {
-    if (gen < 3){
-      const spread = 90 + gen * 30;
-      spawnBall(x - spread, y - 10, gen + 1, ballPalette[(gen + 1) % ballPalette.length]);
-      spawnBall(x + spread, y - 10, gen + 1, ballPalette[(gen + 2) % ballPalette.length]);
-    }
-  }, [], dropDur);
-  t.to(el, { y: y - 20, duration: 0.4, ease: 'power1.out' }, dropDur + 0.1);
-  t.to(el, { opacity: 0, y: y - 120, duration: 0.9, ease: 'power1.in' }, dropDur + 0.55);
-  t.call(() => { el.remove(); liveBalls = liveBalls.filter(b => b !== el); }, [], dropDur + 1.45);
-}
-
-function clearBalls(){
-  liveBalls.forEach(b => b.remove());
-  liveBalls = [];
-}
-
-/* ---------- master timeline, ~49s ---------- */
+/* ---------- master timeline, ~41.6s ---------- */
 const tl = gsap.timeline({ repeat: -1, repeatDelay: 1.4 });
 window.masterTL = tl;
 
@@ -413,16 +398,25 @@ window.masterTL = tl;
 tl.set('#blackout', { opacity: 1 });
 tl.to('#blackout', { opacity: 0, duration: 0.9, ease: 'power1.in' }, 0.0);
 
-// 0.8 - 1.6 signal acquires
-const p0start = strokeOrder[0].getPointAtLength(0);
-tl.set(signalHalo, { opacity: 0, attr: { cx: p0start.x, cy: p0start.y, r: 0 } }, 0.8);
-tl.set(signalCore, { opacity: 0, attr: { cx: p0start.x, cy: p0start.y, r: 0 } }, 0.8);
-tl.to(signalHalo, { opacity: 0.55, attr: { r: 220 }, duration: 0.5, ease: 'power2.out' }, 0.8);
-tl.to(signalCore, { opacity: 1, attr: { r: 70 }, duration: 0.4, ease: 'back.out(2)' }, 0.85);
-tl.to(signalCore, { attr: { r: 95 }, duration: 0.35, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 1.25);
+// 0.8 - 2.4  intro: grid lines resolve, a scan sweep crosses the stage
+tl.to(gridLines, { opacity: 0.5, scaleY: 1, duration: 0.55, stagger: 0.06, ease: 'power2.out' }, 0.8);
+tl.to('#scan-label', { opacity: 1, duration: 0.4 }, 0.9);
+tl.fromTo(scanLine, { top: '0%', opacity: 0 }, { opacity: 1, duration: 0.2 }, 1.0);
+tl.to(scanLine, { top: '100%', duration: 1.05, ease: 'power1.inOut' }, 1.0);
+tl.to(scanLine, { opacity: 0, duration: 0.2 }, 1.95);
+tl.to(gridLines, { opacity: 0, scaleY: 0, duration: 0.4, stagger: 0.03 }, 1.95);
+tl.to('#scan-label', { opacity: 0, duration: 0.3 }, 2.0);
 
-// 1.6 -> 16.0  draw the monogram, signal travels & traces each stroke
-const drawStart = 1.7, drawEnd = 16.0;
+// 2.4 - 3.2 signal acquires
+const p0start = strokeOrder[0].getPointAtLength(0);
+tl.set(signalHalo, { opacity: 0, attr: { cx: p0start.x, cy: p0start.y, r: 0 } }, 2.4);
+tl.set(signalCore, { opacity: 0, attr: { cx: p0start.x, cy: p0start.y, r: 0 } }, 2.4);
+tl.to(signalHalo, { opacity: 0.4, attr: { r: 180 }, duration: 0.5, ease: 'power2.out' }, 2.4);
+tl.to(signalCore, { opacity: 1, attr: { r: 70 }, duration: 0.4, ease: 'back.out(2)' }, 2.45);
+tl.to(signalCore, { attr: { r: 90 }, duration: 0.35, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 2.85);
+
+// 3.3 -> 17.6  draw the monogram, signal travels & traces each stroke
+const drawStart = 3.3, drawEnd = 17.6;
 const drawBudget = drawEnd - drawStart;
 const lens = strokeOrder.map(p => p.getTotalLength());
 const totalLen = lens.reduce((a,b) => a+b, 0);
@@ -457,69 +451,53 @@ strokeOrder.forEach((p, idx) => {
   cursor += dur;
 });
 
-// 16.0 - 18.0  lock-in: fill fades in, outline glow blooms, signal fades out
-tl.to(signalHalo, { attr: { r: 320 }, opacity: 0, duration: 0.6, ease: 'power2.out' }, 16.0);
-tl.to(signalCore, { opacity: 0, duration: 0.4, ease: 'power1.in' }, 16.0);
-tl.to(strokeOrder, { stroke: '#FFFFFF', opacity: 0.9, duration: 0.25 }, 16.0);
-tl.to(fillPaths, { opacity: 1, duration: 0.7, ease: 'power2.out' }, 16.2);
-tl.to(strokeOrder, { opacity: 0, duration: 0.8, ease: 'power1.in' }, 16.6);
-tl.to(monoWrap, { filter: 'drop-shadow(0 0 26px rgba(212,175,55,0.55))', duration: 0.8 }, 16.6);
+// 17.6 - 19.6  lock-in: fill fades in, signal fades out (sharp, no glow)
+tl.to(signalHalo, { attr: { r: 260 }, opacity: 0, duration: 0.6, ease: 'power2.out' }, 17.6);
+tl.to(signalCore, { opacity: 0, duration: 0.4, ease: 'power1.in' }, 17.6);
+tl.to(strokeOrder, { stroke: '#FFFFFF', opacity: 0.9, duration: 0.25 }, 17.6);
+tl.to(fillPaths, { opacity: 1, duration: 0.7, ease: 'power2.out' }, 17.8);
+tl.to(strokeOrder, { opacity: 0, duration: 0.8, ease: 'power1.in' }, 18.2);
 
-// 18.0 - 19.6 hold + breathing glow
+// 19.6 - 21.2 hold + gentle scale breathing (no glow)
 tl.to(monoWrap, {
-  filter: 'drop-shadow(0 0 40px rgba(212,175,55,0.8))',
-  duration: 0.9, ease: 'sine.inOut', yoyo: true, repeat: 1
-}, 18.0);
+  scale: 1.03, duration: 0.9, ease: 'sine.inOut', yoyo: true, repeat: 1
+}, 19.6);
 
-// 19.6 - 23.0  move to lockup position, scale down
+// 21.4 - 24.8  move to lockup position, scale down
 tl.to(monoWrap, {
   top: '30%', scale: 0.62, duration: 2.6, ease: 'power3.inOut'
-}, 19.8);
-tl.to('#lockup', { top: '30%', paddingTop: '150px', duration: 2.6, ease: 'power3.inOut' }, 19.8);
-tl.to('#divider', { opacity: 1, width: '480px', duration: 1.6, ease: 'power2.out' }, 21.6);
+}, 21.4);
+tl.to('#lockup', { top: '30%', paddingTop: '150px', duration: 2.6, ease: 'power3.inOut' }, 21.4);
+tl.to('#divider', { opacity: 1, width: '480px', duration: 1.6, ease: 'power2.out' }, 23.2);
 
-// 23.0 - 27.0  wordmark reveal
-tl.to('#wordmark', { clipPath: 'inset(0 0% 0 0)', duration: 1.8, ease: 'power3.out' }, 23.4);
-tl.fromTo('#wordmark', { textShadow: '0 0 60px rgba(212,175,55,0.9)' }, { textShadow: '0 0 30px rgba(212,175,55,0.35)', duration: 1.4 }, 23.4);
+// 25.0 - 28.4  wordmark reveal
+tl.to('#wordmark', { clipPath: 'inset(0 0% 0 0)', duration: 1.8, ease: 'power3.out' }, 25.0);
 
-// 27.0 - 31.0  radiating signal rings (reach / network motif)
+// 28.2 - 32.2  radiating signal rings (reach / network motif)
 [ '#ring1', '#ring2', '#ring3' ].forEach((sel, i) => {
   tl.fromTo(sel, {
-    opacity: 0.5, width: '10px', height: '10px'
+    opacity: 0.4, width: '10px', height: '10px'
   }, {
     opacity: 0, width: '900px', height: '900px', duration: 2.6, ease: 'power1.out'
-  }, 26.6 + i * 0.55);
+  }, 28.2 + i * 0.55);
 });
 
-// 31.0 - 35.0  url reveal
-tl.to('#urlmark', { opacity: 1, y: -4, duration: 1.2, ease: 'power2.out' }, 31.4);
+// 33.0 - 37.0  url reveal + hold
+tl.to('#urlmark', { opacity: 1, y: -4, duration: 1.2, ease: 'power2.out' }, 33.0);
+tl.to('#canvas', { scale: 1.012, duration: 3.5, ease: 'sine.inOut' }, 36.6);
 
-// 33.0 - 44.0  creative continuation: signal becomes a bouncing, multiplying ball field
-tl.call(() => {
-  spawnBall(0, -260, 0, ballPalette[0]);
-}, [], 33.2);
-tl.call(() => {
-  spawnBall(-260, -200, 0, ballPalette[1]);
-  spawnBall(260, -200, 0, ballPalette[2]);
-}, [], 34.6);
-tl.call(() => {
-  spawnBall(0, -300, 0, ballPalette[3]);
-}, [], 36.4);
-
-// 44.0 - 47.5  full hold, gentle life
-tl.to('#canvas', { scale: 1.012, duration: 3.5, ease: 'sine.inOut' }, 44.0);
-
-// 47.4 - 48.9  fade to black, ready to loop
-tl.to('#blackout', { opacity: 1, duration: 1.5, ease: 'power2.in' }, 47.4);
-tl.call(clearBalls, [], 48.8);
-tl.set(['#wordmark'], { clipPath: 'inset(0 100% 0 0)' }, 49.0);
-tl.set(['#divider'], { width: '0px', opacity: 0 }, 49.0);
-tl.set(['#urlmark'], { opacity: 0 }, 49.0);
-tl.set(monoWrap, { top: '46%', scale: 1, filter: 'drop-shadow(0 0 26px rgba(212,175,55,0))' }, 49.0);
-tl.set('#lockup', { top: '46%', paddingTop: '0px' }, 49.0);
-tl.set(fillPaths, { opacity: 0 }, 49.0);
-tl.set(strokeOrder, { opacity: 1, strokeDashoffset: (i, t) => t.getTotalLength() }, 49.0);
-tl.set('#canvas', { scale: 1 }, 49.0);
+// 40.0 - 41.5  fade to black, ready to loop
+tl.to('#blackout', { opacity: 1, duration: 1.5, ease: 'power2.in' }, 40.0);
+tl.set(['#wordmark'], { clipPath: 'inset(0 100% 0 0)' }, 41.6);
+tl.set(['#divider'], { width: '0px', opacity: 0 }, 41.6);
+tl.set(['#urlmark'], { opacity: 0 }, 41.6);
+tl.set(monoWrap, { top: '46%', scale: 1 }, 41.6);
+tl.set('#lockup', { top: '46%', paddingTop: '0px' }, 41.6);
+tl.set(fillPaths, { opacity: 0 }, 41.6);
+tl.set(strokeOrder, { opacity: 1, strokeDashoffset: (i, t) => t.getTotalLength() }, 41.6);
+tl.set('#canvas', { scale: 1 }, 41.6);
+tl.set(gridLines, { opacity: 0, scaleY: 0 }, 41.6);
+tl.set('#scan-label', { opacity: 0 }, 41.6);
 </script>
 </body>
 </html>
