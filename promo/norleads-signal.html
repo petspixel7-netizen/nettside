@@ -176,7 +176,7 @@
   }
   #divider{
     width:0px; height:2px; margin:30px auto 0;
-    background:linear-gradient(90deg, transparent, var(--gold) 20%, var(--gold-light) 50%, var(--gold) 80%, transparent);
+    background:linear-gradient(90deg, transparent, var(--c1) 15%, var(--c2) 40%, var(--c3) 60%, var(--c4) 85%, transparent);
     opacity:0;
   }
   #wordmark{
@@ -184,7 +184,12 @@
     font-weight:800;
     font-size:64px;
     letter-spacing:1px;
-    color:var(--gold);
+    background:linear-gradient(90deg, var(--c1), var(--c2), var(--c3), var(--c4), var(--c1));
+    background-size:300% 100%;
+    background-position:0% 0;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
     clip-path:inset(0 100% 0 0);
   }
   #urlmark{
@@ -400,16 +405,24 @@ gsap.to(gradProxy, {
   ease: 'none',
   onUpdate: () => gradEl.setAttribute('gradientTransform', `translate(${gradProxy.x} 0)`)
 });
+gsap.to('#wordmark', {
+  backgroundPosition: '-300% 0',
+  duration: 3.2,
+  repeat: -1,
+  ease: 'none'
+});
 
 /* ---------- intro: 5 distinct sequences before the logo draws ---------- */
 const introStage = document.getElementById('intro-stage');
 const coreFlash  = document.getElementById('core-flash');
 
-// 1) particle swarm — dots fly in from the edges and converge
+// 1) particle ring — dots are placed on a precise circle and close inward like an iris
+const SWARM_N = 28;
 const swarmDots = [];
-for (let i = 0; i < 26; i++){
+for (let i = 0; i < SWARM_N; i++){
   const d = document.createElement('div');
   d.className = 'swarm-dot';
+  d.dataset.angle = (i / SWARM_N) * Math.PI * 2;
   introStage.appendChild(d);
   swarmDots.push(d);
 }
@@ -467,7 +480,7 @@ orbitDots.forEach(d => {
   d.style.top  = (parseFloat(d.dataset.ay) * ORBIT_R) + 'px';
 });
 
-/* ---------- master timeline, ~54s, 5 intro animations before the logo draws ---------- */
+/* ---------- master timeline, ~52.5s, 5 intro animations before the logo draws ---------- */
 const tl = gsap.timeline({ repeat: -1, repeatDelay: 1.4 });
 window.masterTL = tl;
 
@@ -475,23 +488,19 @@ window.masterTL = tl;
 tl.set('#blackout', { opacity: 1 });
 tl.to('#blackout', { opacity: 0, duration: 0.8, ease: 'power1.in' }, 0.0);
 
-// ===== INTRO 1/5 (0.7 - 3.0): particle swarm converges to a point =====
+// ===== INTRO 1/5 (0.7 - 3.0): a precise ring of signal points closes inward like an iris =====
 tl.call(() => {
   swarmDots.forEach(d => {
-    const edge = Math.random();
-    let x, y;
-    if (edge < 0.25)      { x = Math.random() * 1920; y = -20; }
-    else if (edge < 0.5)  { x = Math.random() * 1920; y = 1100; }
-    else if (edge < 0.75) { x = -20; y = Math.random() * 1080; }
-    else                  { x = 1940; y = Math.random() * 1080; }
-    gsap.set(d, { x, y, opacity: 0 });
+    const a = parseFloat(d.dataset.angle);
+    const r = 700;
+    gsap.set(d, { x: CX + Math.cos(a) * r, y: CY + Math.sin(a) * r * 0.62, opacity: 0 });
   });
 }, [], 0.7);
-tl.to(swarmDots, { opacity: 1, duration: 0.2, stagger: 0.015 }, 0.75);
-tl.to(swarmDots, { x: CX, y: CY, duration: 1.3, ease: 'power2.in', stagger: { each: 0.02, from: 'random' } }, 0.8);
-tl.to(coreFlash, { opacity: 1, scale: 1, duration: 0.15, ease: 'back.out(3)' }, 2.05);
-tl.to(swarmDots, { opacity: 0, duration: 0.2 }, 2.05);
-tl.to(coreFlash, { scale: 2.4, opacity: 0, duration: 0.4, ease: 'power2.out' }, 2.15);
+tl.to(swarmDots, { opacity: 1, duration: 0.3, stagger: 0.012, ease: 'none' }, 0.75);
+tl.to(swarmDots, { x: CX, y: CY, duration: 1.3, ease: 'power2.in', stagger: 0.012 }, 0.85);
+tl.to(coreFlash, { opacity: 1, scale: 1, duration: 0.15, ease: 'back.out(3)' }, 2.1);
+tl.to(swarmDots, { opacity: 0, duration: 0.2 }, 2.1);
+tl.to(coreFlash, { scale: 2.4, opacity: 0, duration: 0.4, ease: 'power2.out' }, 2.2);
 
 // ===== INTRO 2/5 (3.0 - 5.6): data grid resolves + scan sweep =====
 tl.to(gridLines, { opacity: 0.5, scaleY: 1, duration: 0.55, stagger: 0.06, ease: 'power2.out' }, 3.0);
@@ -502,32 +511,32 @@ tl.to(scanLine, { opacity: 0, duration: 0.2 }, 4.15);
 tl.to(gridLines, { opacity: 0, scaleY: 0, duration: 0.4, stagger: 0.03 }, 4.15);
 tl.to('#scan-label', { opacity: 0, duration: 0.3 }, 4.2);
 
-// ===== INTRO 3/5 (5.6 - 8.6): orbit ring spins up then collapses =====
-tl.set(orbitGroup, { rotation: -90, scale: 0.4, opacity: 1 }, 5.6);
-tl.to(orbitDots, { opacity: 0.8, duration: 0.4, stagger: 0.04 }, 5.6);
-tl.to(orbitGroup, { rotation: 270, scale: 1, duration: 2.0, ease: 'power2.inOut' }, 5.7);
-tl.to(orbitDots, { opacity: 0, duration: 0.3, stagger: 0.03 }, 7.9);
-tl.to(orbitGroup, { scale: 0, duration: 0.5, ease: 'power2.in' }, 7.9);
+// ===== INTRO 3/5 (4.8 - 7.8): orbit ring spins up then collapses =====
+tl.set(orbitGroup, { rotation: -90, scale: 0.4, opacity: 1 }, 4.8);
+tl.to(orbitDots, { opacity: 0.8, duration: 0.4, stagger: 0.04 }, 4.8);
+tl.to(orbitGroup, { rotation: 270, scale: 1, duration: 2.0, ease: 'power2.inOut' }, 4.9);
+tl.to(orbitDots, { opacity: 0, duration: 0.3, stagger: 0.03 }, 7.1);
+tl.to(orbitGroup, { scale: 0, duration: 0.5, ease: 'power2.in' }, 7.1);
 
-// ===== INTRO 4/5 (8.6 - 11.2): diagonal light wipes sweep through =====
+// ===== INTRO 4/5 (7.8 - 10.4): diagonal light wipes sweep through =====
 tl.call(() => {
   wipeBars.forEach((b, i) => gsap.set(b, { left: (-100 + i * 30) + 'px', x: 0, opacity: 0 }));
-}, [], 8.6);
-tl.to(wipeBars, { opacity: 0.8, duration: 0.1, stagger: 0.08 }, 8.65);
-tl.to(wipeBars, { x: 2200, duration: 1.8, ease: 'power1.inOut', stagger: 0.08 }, 8.7);
-tl.to(wipeBars, { opacity: 0, duration: 0.3 }, 10.3);
+}, [], 7.8);
+tl.to(wipeBars, { opacity: 0.8, duration: 0.1, stagger: 0.08 }, 7.85);
+tl.to(wipeBars, { x: 2200, duration: 1.8, ease: 'power1.inOut', stagger: 0.08 }, 7.9);
+tl.to(wipeBars, { opacity: 0, duration: 0.3 }, 9.5);
 
-// ===== INTRO 5/5 (11.2 - 14.4): shockwave pulses signal the handoff =====
+// ===== INTRO 5/5 (10.4 - 13.6): shockwave pulses signal the handoff =====
 pulseRings.forEach((r, i) => {
   tl.fromTo(r, { opacity: 0.6, width: '10px', height: '10px' }, {
     opacity: 0, width: '700px', height: '700px', duration: 1.3, ease: 'power1.out'
-  }, 11.2 + i * 0.3);
+  }, 10.4 + i * 0.3);
 });
-tl.to(coreFlash, { opacity: 1, scale: 1, duration: 0.12, ease: 'back.out(3)' }, 11.2);
-tl.to(coreFlash, { scale: 0, opacity: 0, duration: 0.3, ease: 'power1.in' }, 11.5);
+tl.to(coreFlash, { opacity: 1, scale: 1, duration: 0.12, ease: 'back.out(3)' }, 10.4);
+tl.to(coreFlash, { scale: 0, opacity: 0, duration: 0.3, ease: 'power1.in' }, 10.7);
 
-// 15.0 -> 29.3  draw the monogram (pure stroke reveal, no tracer dot)
-const drawStart = 15.0, drawEnd = 29.3;
+// 14.2 -> 28.5  draw the monogram (pure stroke reveal, no tracer dot)
+const drawStart = 14.2, drawEnd = 28.5;
 const drawBudget = drawEnd - drawStart;
 const lens = strokeOrder.map(p => p.getTotalLength());
 const totalLen = lens.reduce((a, b) => a + b, 0);
@@ -540,56 +549,56 @@ strokeOrder.forEach((p, idx) => {
   cursor += dur;
 });
 
-// 29.3 - 30.1  lock-in: fill fades in, stroke fades out (sharp, no glow)
-tl.to(strokeOrder, { stroke: '#FFFFFF', opacity: 0.9, duration: 0.25 }, 29.3);
-tl.to(fillPaths, { opacity: 1, duration: 0.7, ease: 'power2.out' }, 29.5);
-tl.to(strokeOrder, { opacity: 0, duration: 0.8, ease: 'power1.in' }, 29.9);
+// 28.5 - 29.3  lock-in: fill fades in, stroke fades out (sharp, no glow)
+tl.to(strokeOrder, { stroke: '#FFFFFF', opacity: 0.9, duration: 0.25 }, 28.5);
+tl.to(fillPaths, { opacity: 1, duration: 0.7, ease: 'power2.out' }, 28.7);
+tl.to(strokeOrder, { opacity: 0, duration: 0.8, ease: 'power1.in' }, 29.1);
 
-// 31.3 - 32.9 hold + gentle scale breathing (no glow)
+// 30.5 - 32.1 hold + gentle scale breathing (no glow)
 tl.to(monoWrap, {
   scale: 1.03, duration: 0.9, ease: 'sine.inOut', yoyo: true, repeat: 1
-}, 31.3);
+}, 30.5);
 
-// 33.1 - 36.5  move to lockup position, scale down
+// 32.3 - 35.7  move to lockup position, scale down
 tl.to(monoWrap, {
   top: '30%', scale: 0.62, duration: 2.6, ease: 'power3.inOut'
-}, 33.1);
-tl.to('#lockup', { top: '30%', paddingTop: '150px', duration: 2.6, ease: 'power3.inOut' }, 33.1);
-tl.to('#divider', { opacity: 1, width: '480px', duration: 1.6, ease: 'power2.out' }, 34.9);
+}, 32.3);
+tl.to('#lockup', { top: '30%', paddingTop: '150px', duration: 2.6, ease: 'power3.inOut' }, 32.3);
+tl.to('#divider', { opacity: 1, width: '480px', duration: 1.6, ease: 'power2.out' }, 34.1);
 
-// 36.7 - 40.1  wordmark reveal
-tl.to('#wordmark', { clipPath: 'inset(0 0% 0 0)', duration: 1.8, ease: 'power3.out' }, 36.7);
+// 35.9 - 39.3  wordmark reveal
+tl.to('#wordmark', { clipPath: 'inset(0 0% 0 0)', duration: 1.8, ease: 'power3.out' }, 35.9);
 
-// 39.9 - 43.9  radiating signal rings (reach / network motif)
+// 39.1 - 43.1  radiating signal rings (reach / network motif)
 [ '#ring1', '#ring2', '#ring3' ].forEach((sel, i) => {
   tl.fromTo(sel, {
     opacity: 0.4, width: '10px', height: '10px'
   }, {
     opacity: 0, width: '900px', height: '900px', duration: 2.6, ease: 'power1.out'
-  }, 39.9 + i * 0.55);
+  }, 39.1 + i * 0.55);
 });
 
-// 44.7 - 48.7  url reveal + hold
-tl.to('#urlmark', { opacity: 1, y: -4, duration: 1.2, ease: 'power2.out' }, 44.7);
-tl.to('#canvas', { scale: 1.012, duration: 3.5, ease: 'sine.inOut' }, 48.3);
+// 43.9 - 47.9  url reveal + hold
+tl.to('#urlmark', { opacity: 1, y: -4, duration: 1.2, ease: 'power2.out' }, 43.9);
+tl.to('#canvas', { scale: 1.012, duration: 3.5, ease: 'sine.inOut' }, 47.5);
 
-// 51.7 - 53.2  fade to black, ready to loop
-tl.to('#blackout', { opacity: 1, duration: 1.5, ease: 'power2.in' }, 51.7);
-tl.set(['#wordmark'], { clipPath: 'inset(0 100% 0 0)' }, 53.3);
-tl.set(['#divider'], { width: '0px', opacity: 0 }, 53.3);
-tl.set(['#urlmark'], { opacity: 0 }, 53.3);
-tl.set(monoWrap, { top: '46%', scale: 1 }, 53.3);
-tl.set('#lockup', { top: '46%', paddingTop: '0px' }, 53.3);
-tl.set(fillPaths, { opacity: 0 }, 53.3);
-tl.set(strokeOrder, { opacity: 1, strokeDashoffset: (i, t) => t.getTotalLength() }, 53.3);
-tl.set('#canvas', { scale: 1 }, 53.3);
-tl.set(gridLines, { opacity: 0, scaleY: 0 }, 53.3);
-tl.set('#scan-label', { opacity: 0 }, 53.3);
-tl.set(orbitGroup, { scale: 0, opacity: 0 }, 53.3);
-tl.set(orbitDots, { opacity: 0 }, 53.3);
-tl.set(wipeBars, { opacity: 0 }, 53.3);
-tl.set(coreFlash, { opacity: 0, scale: 0 }, 53.3);
-tl.set(swarmDots, { opacity: 0 }, 53.3);
+// 50.9 - 52.4  fade to black, ready to loop
+tl.to('#blackout', { opacity: 1, duration: 1.5, ease: 'power2.in' }, 50.9);
+tl.set(['#wordmark'], { clipPath: 'inset(0 100% 0 0)' }, 52.5);
+tl.set(['#divider'], { width: '0px', opacity: 0 }, 52.5);
+tl.set(['#urlmark'], { opacity: 0 }, 52.5);
+tl.set(monoWrap, { top: '46%', scale: 1 }, 52.5);
+tl.set('#lockup', { top: '46%', paddingTop: '0px' }, 52.5);
+tl.set(fillPaths, { opacity: 0 }, 52.5);
+tl.set(strokeOrder, { opacity: 1, strokeDashoffset: (i, t) => t.getTotalLength() }, 52.5);
+tl.set('#canvas', { scale: 1 }, 52.5);
+tl.set(gridLines, { opacity: 0, scaleY: 0 }, 52.5);
+tl.set('#scan-label', { opacity: 0 }, 52.5);
+tl.set(orbitGroup, { scale: 0, opacity: 0 }, 52.5);
+tl.set(orbitDots, { opacity: 0 }, 52.5);
+tl.set(wipeBars, { opacity: 0 }, 52.5);
+tl.set(coreFlash, { opacity: 0, scale: 0 }, 52.5);
+tl.set(swarmDots, { opacity: 0 }, 52.5);
 </script>
 </body>
 </html>
