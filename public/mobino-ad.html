@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<title>MOBINO — Frihet uten grenser</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#020420; --bg2:#06084c;
+    --cyan:#42d9ff; --purple:#9070ff; --blue:#0040f0;
+    --white:#FFFFFF; --gray:#8893c9;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Manrope',sans-serif;}
+  #viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#000;}
+  #canvas{position:relative;width:1920px;height:1080px;background:linear-gradient(160deg,var(--bg) 0%,var(--bg2) 100%);overflow:hidden;transform-origin:center center;}
+
+  #grid{position:absolute;inset:0;background-image:linear-gradient(rgba(66,217,255,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(66,217,255,0.05) 1px,transparent 1px);background-size:90px 90px;}
+  .orb{position:absolute;border-radius:50%;pointer-events:none;}
+  #vignette{position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% 48%, transparent 38%, rgba(0,0,0,.65) 100%);pointer-events:none;}
+
+  .scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;opacity:0;pointer-events:none;}
+
+  .gradient-text{background:linear-gradient(90deg,var(--cyan),var(--purple),var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent;}
+
+  #logo-wrap{width:420px;height:149px;position:relative;}
+  #logo-svg{width:100%;height:100%;overflow:visible;}
+  .mono-stroke{fill:none;stroke:url(#flowGrad);stroke-width:5;stroke-linecap:round;stroke-linejoin:round;}
+  .mono-fill{fill:url(#flowGrad);opacity:0;}
+  .assemble-dot{fill:url(#flowGrad);}
+
+  #wordmark{font-size:72px;font-weight:800;color:var(--white);letter-spacing:1px;overflow:hidden;clip-path:inset(0 100% 0 0);white-space:nowrap;}
+  #tagline{font-size:22px;letter-spacing:6px;text-transform:uppercase;opacity:0;}
+
+  .heading{font-size:56px;font-weight:800;color:var(--white);text-align:center;}
+  .divider{height:2px;width:0;margin:14px auto 0;background:linear-gradient(90deg,var(--cyan),var(--purple),var(--blue));box-shadow:0 0 14px rgba(66,217,255,.5);}
+
+  #benefits-row{display:flex;gap:80px;align-items:center;margin-top:50px;}
+  .ring-card{text-align:center;}
+  .ring-wrap{position:relative;width:200px;height:200px;margin:0 auto 16px;}
+  .ring-val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:56px;font-weight:900;color:var(--white);}
+  .ring-label{font-size:19px;font-weight:700;color:var(--white);}
+  #feature-cards{display:flex;flex-direction:column;gap:18px;}
+  .feature-card{background:linear-gradient(135deg,rgba(255,255,255,.04),rgba(66,217,255,.05));border:1px solid rgba(66,217,255,.2);border-radius:16px;padding:28px 34px;opacity:0;transform:translateY(30px);box-shadow:0 0 18px rgba(66,217,255,.08);min-width:260px;}
+  .feature-title{font-size:30px;font-weight:800;}
+  .feature-sub{font-size:17px;color:var(--gray);margin-top:6px;}
+
+  #statement-text{font-size:84px;font-weight:800;color:var(--white);text-align:center;}
+  #statement-sub{font-size:32px;color:var(--gray);text-align:center;margin-top:24px;opacity:0;}
+  .coverage-ring{position:absolute;border-radius:50%;border:1px solid rgba(66,217,255,.3);}
+
+  #cta-logo-wrap{width:220px;height:78px;position:relative;}
+  .cta-ring{position:absolute;border-radius:50%;border:1px solid rgba(66,217,255,.3);top:50%;left:50%;transform:translate(-50%,-50%);}
+  #cta-headline-1{font-size:26px;color:var(--gray);font-weight:400;letter-spacing:1px;text-align:center;}
+  #cta-headline-2{font-size:48px;font-weight:800;text-align:center;}
+  #cta-btn{position:relative;border-radius:60px;overflow:hidden;opacity:0;margin-top:6px;}
+  #cta-btn-inner{background:linear-gradient(90deg,var(--cyan),var(--purple),var(--blue));color:var(--bg);font-size:26px;font-weight:800;padding:20px 64px;border-radius:60px;box-shadow:0 0 40px rgba(66,217,255,.4),0 0 80px rgba(144,112,255,.2);letter-spacing:1px;}
+  #cta-shimmer{position:absolute;top:0;bottom:0;left:-60px;width:60px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);transform:skewX(-20deg);}
+  #cta-url{font-size:18px;color:var(--cyan);letter-spacing:4px;text-transform:uppercase;opacity:0;margin-top:8px;}
+
+  #wipe{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:40;pointer-events:none;}
+  #wipe-circle{width:3400px;height:3400px;border-radius:50%;background:var(--bg);transform:scale(0);}
+
+  #blackout{position:absolute;inset:0;background:#000;opacity:1;pointer-events:none;z-index:50;}
+</style>
+</head>
+<body>
+
+<div id="viewport">
+  <div id="canvas">
+    <div id="grid"></div>
+    <div id="orbs"></div>
+    <div id="vignette"></div>
+
+    <!-- SCENE 1: intro -->
+    <div class="scene" id="scene-intro">
+      <div style="position:absolute;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(66,217,255,.1) 0%, transparent 65%);"></div>
+      <div id="logo-wrap">
+        <svg id="logo-svg" viewBox="0 0 310.07 110.35">
+          <defs>
+            <linearGradient id="flowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="var(--cyan)"/>
+              <stop offset="50%" stop-color="var(--purple)"/>
+              <stop offset="100%" stop-color="var(--blue)"/>
+            </linearGradient>
+          </defs>
+          <path id="measurePath" d="M268.86,34.93l41.22,63.26c-34.19,22.23-79.89,12.59-102.13-21.55-.31-.47-42.14-64.67-42.14-64.67,34.19-22.23,79.89-12.59,102.13,21.55.31.47.61.94.89,1.44l.03-.02ZM166.28,34.95c-.27-.49-.58-.97-.89-1.44C143.15-.63,97.45-10.27,63.26,11.96c0,0,41.83,64.2,42.14,64.67,22.24,34.14,67.94,43.78,102.13,21.55l-41.22-63.26-.03.02ZM53.98,19.71c-7.59,7.01-11.79,15.27-16.76,22.92-.27.43-.54.84-.78,1.27l-.03-.02L0,99.78c30.2,19.64,70.58,11.12,90.23-19.04.03-.05.93-1.28,1.67-2.42-4.21-6.46-37.07-57.28-37.92-58.61Z" fill="none" opacity="0"/>
+          <g id="assemble-group"></g>
+          <path id="strokePath" class="mono-stroke" d="M268.86,34.93l41.22,63.26c-34.19,22.23-79.89,12.59-102.13-21.55-.31-.47-42.14-64.67-42.14-64.67,34.19-22.23,79.89-12.59,102.13,21.55.31.47.61.94.89,1.44l.03-.02ZM166.28,34.95c-.27-.49-.58-.97-.89-1.44C143.15-.63,97.45-10.27,63.26,11.96c0,0,41.83,64.2,42.14,64.67,22.24,34.14,67.94,43.78,102.13,21.55l-41.22-63.26-.03.02ZM53.98,19.71c-7.59,7.01-11.79,15.27-16.76,22.92-.27.43-.54.84-.78,1.27l-.03-.02L0,99.78c30.2,19.64,70.58,11.12,90.23-19.04.03-.05.93-1.28,1.67-2.42-4.21-6.46-37.07-57.28-37.92-58.61Z"/>
+          <path id="fillPath" class="mono-fill" d="M268.86,34.93l41.22,63.26c-34.19,22.23-79.89,12.59-102.13-21.55-.31-.47-42.14-64.67-42.14-64.67,34.19-22.23,79.89-12.59,102.13,21.55.31.47.61.94.89,1.44l.03-.02ZM166.28,34.95c-.27-.49-.58-.97-.89-1.44C143.15-.63,97.45-10.27,63.26,11.96c0,0,41.83,64.2,42.14,64.67,22.24,34.14,67.94,43.78,102.13,21.55l-41.22-63.26-.03.02ZM53.98,19.71c-7.59,7.01-11.79,15.27-16.76,22.92-.27.43-.54.84-.78,1.27l-.03-.02L0,99.78c30.2,19.64,70.58,11.12,90.23-19.04.03-.05.93-1.28,1.67-2.42-4.21-6.46-37.07-57.28-37.92-58.61Z"/>
+        </svg>
+      </div>
+      <div id="wordmark">mobino</div>
+      <div id="tagline" class="gradient-text">Frihet uten grenser</div>
+    </div>
+
+    <!-- SCENE 2: benefits -->
+    <div class="scene" id="scene-benefits">
+      <div>
+        <div class="heading">Alt bedriften din <span class="gradient-text">trenger</span></div>
+        <div class="divider" id="benefits-divider"></div>
+      </div>
+      <div id="benefits-row">
+        <div class="ring-card">
+          <div class="ring-wrap">
+            <svg width="200" height="200">
+              <circle cx="100" cy="100" r="92" fill="none" stroke="rgba(66,217,255,0.15)" stroke-width="2"/>
+              <circle id="ring1" cx="100" cy="100" r="92" fill="none" stroke="url(#flowGrad)" stroke-width="4" stroke-dasharray="578 578" stroke-dashoffset="578" stroke-linecap="round" transform="rotate(-90 100 100)" style="filter:drop-shadow(0 0 8px rgba(66,217,255,.7))"/>
+            </svg>
+            <div class="ring-val" id="ring1-val">0 GB</div>
+          </div>
+          <div class="ring-label">Data i Norge</div>
+        </div>
+        <div class="ring-card">
+          <div class="ring-wrap">
+            <svg width="200" height="200">
+              <circle cx="100" cy="100" r="92" fill="none" stroke="rgba(66,217,255,0.15)" stroke-width="2"/>
+              <circle id="ring2" cx="100" cy="100" r="92" fill="none" stroke="url(#flowGrad)" stroke-width="4" stroke-dasharray="578 578" stroke-dashoffset="578" stroke-linecap="round" transform="rotate(-90 100 100)" style="filter:drop-shadow(0 0 8px rgba(66,217,255,.7))"/>
+            </svg>
+            <div class="ring-val" id="ring2-val">0</div>
+          </div>
+          <div class="ring-label">Land med roaming</div>
+        </div>
+        <div id="feature-cards">
+          <div class="feature-card" id="card1"><div class="feature-title gradient-text">Fri fart</div><div class="feature-sub">Ubegrenset hastighet, alltid</div></div>
+          <div class="feature-card" id="card2"><div class="feature-title gradient-text">e-SIM</div><div class="feature-sub">Oppe og kjøre på minutter</div></div>
+          <div class="feature-card" id="card3"><div class="feature-title gradient-text">Prisgaranti</div><div class="feature-sub">Samme pris, hele avtalen</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCENE 3: statement -->
+    <div class="scene" id="scene-statement">
+      <div class="coverage-ring" id="cov1" style="width:260px;height:260px;top:50%;left:50%;transform:translate(-50%,-50%);"></div>
+      <div class="coverage-ring" id="cov2" style="width:420px;height:420px;top:50%;left:50%;transform:translate(-50%,-50%);"></div>
+      <div class="coverage-ring" id="cov3" style="width:580px;height:580px;top:50%;left:50%;transform:translate(-50%,-50%);"></div>
+      <div style="text-align:center;max-width:1300px;">
+        <div id="statement-text">Frihet uten <span class="gradient-text">grenser</span></div>
+        <div id="statement-sub">500 GB data, fri fart og roaming i 80+ land</div>
+      </div>
+    </div>
+
+    <!-- SCENE 4: CTA -->
+    <div class="scene" id="scene-cta">
+      <div class="cta-ring" id="ctaring1" style="width:560px;height:560px;"></div>
+      <div class="cta-ring" id="ctaring2" style="width:680px;height:680px;"></div>
+      <div class="cta-ring" id="ctaring3" style="width:800px;height:800px;"></div>
+      <div id="cta-logo-wrap">
+        <svg viewBox="0 0 310.07 110.35" width="100%" height="100%">
+          <use href="#fillPath" fill="url(#flowGrad)" opacity="1"/>
+        </svg>
+      </div>
+      <div id="cta-headline-1">Klar for mobil uten begrensninger?</div>
+      <div id="cta-headline-2" class="gradient-text">Bytt til Mobino i dag</div>
+      <div id="cta-btn"><div id="cta-btn-inner">Se priser</div><div id="cta-shimmer"></div></div>
+      <div id="cta-url">mobino.no</div>
+    </div>
+
+    <div id="wipe"><div id="wipe-circle"></div></div>
+    <div id="blackout"></div>
+  </div>
+</div>
+
+<script src="vendor/gsap.min.js"></script>
+<script>
+function fitStage(){
+  const cv = document.getElementById('canvas');
+  const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+  cv.style.transform = `scale(${scale})`;
+}
+window.addEventListener('resize', fitStage);
+fitStage();
+
+/* ambient orbs */
+const ORB_DEFS = [
+  { x:26, y:38, size:750, color:'#42d9ff', op:.10 },
+  { x:74, y:62, size:900, color:'#9070ff', op:.09 },
+  { x:52, y:18, size:600, color:'#0040f0', op:.10 },
+  { x:18, y:78, size:520, color:'#42d9ff', op:.07 },
+];
+const orbHost = document.getElementById('orbs');
+ORB_DEFS.forEach((o, i) => {
+  const el = document.createElement('div');
+  el.className = 'orb';
+  el.style.left = o.x + '%';
+  el.style.top = o.y + '%';
+  el.style.width = o.size + 'px';
+  el.style.height = o.size + 'px';
+  el.style.transform = 'translate(-50%,-50%)';
+  el.style.background = `radial-gradient(circle, ${o.color} 0%, transparent 70%)`;
+  el.style.opacity = o.op;
+  orbHost.appendChild(el);
+  gsap.to(el, { left: `${o.x + 14}%`, top: `${o.y + 10}%`, duration: 14 + i * 3, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+});
+
+/* ---------- logo particle assembly (sampled from the real path) ---------- */
+const measurePath = document.getElementById('measurePath');
+const strokePath = document.getElementById('strokePath');
+const fillPath = document.getElementById('fillPath');
+const assembleGroup = document.getElementById('assemble-group');
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
+const len = measurePath.getTotalLength();
+strokePath.style.strokeDasharray = len;
+strokePath.style.strokeDashoffset = len;
+
+const SAMPLE_STEP = 6;
+const targets = [];
+for (let d = 0; d < len; d += SAMPLE_STEP) {
+  const p = measurePath.getPointAtLength(d);
+  targets.push({ x: p.x, y: p.y });
+}
+const ctr = targets.reduce((a, t) => ({ x: a.x + t.x, y: a.y + t.y }), { x: 0, y: 0 });
+ctr.x /= targets.length; ctr.y /= targets.length;
+
+const SCATTER = 2.6;
+const dots = targets.map(t => {
+  const c = document.createElementNS(SVG_NS, 'circle');
+  c.setAttribute('class', 'assemble-dot');
+  c.setAttribute('r', 1.6);
+  const sx = ctr.x + (t.x - ctr.x) * SCATTER;
+  const sy = ctr.y + (t.y - ctr.y) * SCATTER;
+  c.setAttribute('cx', sx);
+  c.setAttribute('cy', sy);
+  c.style.opacity = 0;
+  assembleGroup.appendChild(c);
+  return { el: c, sx, sy, tx: t.x, ty: t.y };
+});
+
+/* ---------- master timeline — ~36.7s, loops forever ---------- */
+const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.8 });
+
+function wipeAt(time) {
+  tl.to('#wipe-circle', { scale: 1, duration: 0.5, ease: 'power2.inOut' }, time - 0.5);
+  tl.to('#wipe-circle', { scale: 0, duration: 0.5, ease: 'power2.inOut' }, time);
+}
+
+// 0.0 — blackout fades in scene
+tl.set('#blackout', { opacity: 1 });
+tl.to('#blackout', { opacity: 0, duration: 0.6, ease: 'power1.in' }, 0.0);
+tl.set('#scene-intro', { opacity: 1 }, 0.0);
+
+// 0.3 — 2.3  particles implode into the logo outline
+tl.to(dots.map(d => d.el), { opacity: 0.9, duration: 0.3, stagger: 0.003 }, 0.3);
+tl.to(dots.map(d => d.el), {
+  attr: { cx: (i) => dots[i].tx, cy: (i) => dots[i].ty },
+  duration: 1.5, ease: 'power3.inOut', stagger: 0.003,
+}, 0.6);
+tl.to(dots.map(d => d.el), { opacity: 0, duration: 0.5, stagger: 0.002 }, 2.2);
+
+// 2.0 — 4.3  outline draws itself
+tl.to(strokePath, { strokeDashoffset: 0, duration: 2.3, ease: 'none' }, 2.0);
+
+// 4.3 — 5.0  fill locks in, stroke fades
+tl.to(fillPath, { opacity: 1, duration: 0.6, ease: 'power2.out' }, 4.3);
+tl.to(strokePath, { opacity: 0, duration: 0.5, ease: 'power1.in' }, 4.4);
+
+// 5.0 — 6.5  wordmark reveal
+tl.to('#wordmark', { clipPath: 'inset(0 0% 0 0)', duration: 1.4, ease: 'power3.out' }, 5.0);
+
+// 5.8 — 7.0  tagline
+tl.to('#tagline', { opacity: 1, y: -4, duration: 1.0, ease: 'power2.out' }, 5.8);
+
+// 7.7 — 8.7  WIPE into benefits
+wipeAt(8.2);
+tl.to('#scene-intro', { opacity: 0, duration: 0.1 }, 8.2);
+tl.set('#scene-benefits', { opacity: 1 }, 8.25);
+
+// 8.7 — heading + divider
+tl.to('.heading', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, 8.7, '+=0');
+gsap.set('.heading', { opacity: 0, y: 20 });
+tl.to('.heading', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, 8.7);
+tl.to('#benefits-divider', { width: '520px', duration: 0.8, ease: 'power2.out' }, 9.0);
+
+// counters
+const ring1Len = 2 * Math.PI * 92;
+const ringCounter1 = { v: 0 };
+tl.to(ringCounter1, {
+  v: 500, duration: 2.6, ease: 'power2.inOut',
+  onUpdate: () => {
+    document.getElementById('ring1-val').textContent = Math.round(ringCounter1.v) + ' GB';
+    document.getElementById('ring1').setAttribute('stroke-dashoffset', ring1Len * (1 - ringCounter1.v / 500));
+  },
+}, 9.9);
+const ringCounter2 = { v: 0 };
+tl.to(ringCounter2, {
+  v: 80, duration: 2.6, ease: 'power2.inOut',
+  onUpdate: () => {
+    document.getElementById('ring2-val').textContent = Math.round(ringCounter2.v) + '+';
+    document.getElementById('ring2').setAttribute('stroke-dashoffset', ring1Len * (1 - ringCounter2.v / 80));
+  },
+}, 10.5);
+
+['card1', 'card2', 'card3'].forEach((id, i) => {
+  tl.to('#' + id, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 11.1 + i * 0.6);
+});
+
+// hold ~17s, fade out benefits
+tl.to('#scene-benefits', { opacity: 0, duration: 0.6 }, 17.4);
+
+// 18.1 — 19.1  WIPE into statement
+wipeAt(18.6);
+tl.set('#scene-statement', { opacity: 1 }, 18.65);
+
+tl.fromTo('#statement-text', { opacity: 0, y: 24, filter: 'blur(8px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1.0, ease: 'power2.out' }, 18.8);
+tl.to('#statement-sub', { opacity: 1, duration: 0.8 }, 20.1);
+['cov1', 'cov2', 'cov3'].forEach((id, i) => {
+  tl.fromTo('#' + id, { opacity: 0, scale: 0.05 }, { opacity: 0.5 - i * 0.1, scale: 1, duration: 2.2, ease: 'power1.out' }, 20.2 + i * 0.3);
+});
+
+tl.to('#scene-statement', { opacity: 0, duration: 0.6 }, 25.5);
+
+// 26.6 — 27.6  WIPE into CTA
+wipeAt(27.1);
+tl.set('#scene-cta', { opacity: 1 }, 27.15);
+
+tl.fromTo('#cta-logo-wrap', { scale: 0.7, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8, ease: 'back.out(1.5)' }, 27.3);
+['ctaring1', 'ctaring2', 'ctaring3'].forEach((id, i) => {
+  gsap.set('#' + id, { opacity: 0 });
+  tl.to('#' + id, { opacity: 1, duration: 0.5 }, 27.3);
+  tl.to('#' + id, { scale: 1.03, duration: 1.4, repeat: 3, yoyo: true, ease: 'sine.inOut' }, 27.5 + i * 0.1);
+});
+tl.fromTo('#cta-headline-1', { opacity: 0, y: 24, filter: 'blur(8px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.9, ease: 'power2.out' }, 28.7);
+tl.fromTo('#cta-headline-2', { opacity: 0, y: 24, filter: 'blur(8px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.9, ease: 'power2.out' }, 28.85);
+tl.to('#cta-btn', { opacity: 1, scale: 1, duration: 0.6, ease: 'back.out(1.7)' }, 29.6);
+gsap.set('#cta-btn', { scale: 0.7 });
+tl.to('#cta-shimmer', { left: '120%', duration: 1.4, repeat: 2, ease: 'power1.inOut' }, 29.8);
+tl.to('#cta-url', { opacity: 1, y: -4, duration: 0.6 }, 30.4);
+
+// 34.7 — fade out, loop
+tl.to('#scene-cta', { opacity: 0, duration: 0.6 }, 34.7);
+tl.to('#blackout', { opacity: 1, duration: 1.3, ease: 'power2.in' }, 35.0);
+
+// reset for next loop
+tl.call(() => {
+  gsap.set('#wordmark', { clipPath: 'inset(0 100% 0 0)' });
+  gsap.set('#tagline', { opacity: 0 });
+  gsap.set(strokePath, { opacity: 1, strokeDashoffset: len });
+  gsap.set(fillPath, { opacity: 0 });
+  gsap.set('#benefits-divider', { width: '0px' });
+  gsap.set('.heading', { opacity: 0, y: 20 });
+  document.getElementById('ring1-val').textContent = '0 GB';
+  document.getElementById('ring2-val').textContent = '0';
+  gsap.set('#ring1', { strokeDashoffset: ring1Len });
+  gsap.set('#ring2', { strokeDashoffset: ring1Len });
+  gsap.set(['#card1', '#card2', '#card3'], { opacity: 0, y: 30 });
+  gsap.set(['#cov1', '#cov2', '#cov3'], { opacity: 0, scale: 0.05 });
+  gsap.set('#statement-sub', { opacity: 0 });
+  gsap.set(['#ctaring1', '#ctaring2', '#ctaring3'], { opacity: 0 });
+  gsap.set('#cta-btn', { opacity: 0, scale: 0.7 });
+  gsap.set('#cta-url', { opacity: 0 });
+  dots.forEach(d => { d.el.setAttribute('cx', d.sx); d.el.setAttribute('cy', d.sy); d.el.style.opacity = 0; });
+}, [], 35.9);
+</script>
+</body>
+</html>
