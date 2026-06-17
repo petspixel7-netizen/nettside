@@ -117,9 +117,9 @@
     opacity:0;
   }
   #wordmark{
-    margin-top:26px;
+    margin-top:30px;
     font-weight:800;
-    font-size:64px;
+    font-size:84px;
     letter-spacing:1px;
     background:linear-gradient(90deg, var(--c1), var(--c2), var(--c3), var(--c4), var(--c1));
     background-size:300% 100%;
@@ -130,10 +130,10 @@
     clip-path:inset(0 100% 0 0);
   }
   #urlmark{
-    margin-top:18px;
+    margin-top:22px;
     font-weight:500;
-    font-size:18px;
-    letter-spacing:6px;
+    font-size:22px;
+    letter-spacing:7px;
     text-transform:uppercase;
     color:rgba(212,175,55,0.55);
     opacity:0;
@@ -438,12 +438,12 @@ tl.to(monoWrap, {
   scale: 1.03, duration: 0.9, ease: 'sine.inOut', yoyo: true, repeat: 1
 }, 23.3);
 
-// 25.1 - 28.5  move to lockup position, scale down
+// 25.1 - 28.5  move to lockup position, scale down (kept large — premium lockup)
 tl.to(monoWrap, {
-  top: '30%', scale: 0.62, duration: 2.6, ease: 'power3.inOut'
+  top: '32%', scale: 0.85, duration: 2.6, ease: 'power3.inOut'
 }, 25.1);
-tl.to('#lockup', { top: '30%', paddingTop: '150px', duration: 2.6, ease: 'power3.inOut' }, 25.1);
-tl.to('#divider', { opacity: 1, width: '480px', duration: 1.6, ease: 'power2.out' }, 26.9);
+tl.to('#lockup', { top: '32%', paddingTop: '230px', duration: 2.6, ease: 'power3.inOut' }, 25.1);
+tl.to('#divider', { opacity: 1, width: '600px', duration: 1.6, ease: 'power2.out' }, 26.9);
 
 // 28.7 - 32.1  wordmark reveal
 tl.to('#wordmark', { clipPath: 'inset(0 0% 0 0)', duration: 1.8, ease: 'power3.out' }, 28.7);
