@@ -92,6 +92,29 @@ const FeatureCard: React.FC<{
   );
 };
 
+// Iris wipe — a circle expands from the screen's center to fully cover it,
+// then recedes back into the center, revealing the next scene. Used at every
+// scene boundary so all transitions read as happening through the middle.
+const CenterWipe: React.FC<{ frame: number; at: number; duration?: number; color?: string }> = ({
+  frame, at, duration = 30, color = mobinoTheme.bg,
+}) => {
+  const half = duration / 2;
+  const t = clamp(prog(frame, at - half, at + half));
+  if (t <= 0 || t >= 1) return null;
+  const scale = t < 0.5
+    ? easeInOutCubic(t / 0.5)
+    : 1 - easeInOutCubic((t - 0.5) / 0.5);
+  return (
+    <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 40, pointerEvents: 'none' }}>
+      <div style={{
+        width: 3400, height: 3400, borderRadius: '50%', background: color,
+        transform: `scale(${scale})`,
+        boxShadow: t > 0.42 && t < 0.58 ? `0 0 200px 80px ${mobinoTheme.cyan}55` : 'none',
+      }} />
+    </div>
+  );
+};
+
 // Counted-up stat ring (used for "500 GB" / "80+ land")
 const StatRing: React.FC<{
   frame: number; startFrame: number;
@@ -152,7 +175,6 @@ export const MobinoAd: React.FC = () => {
 
   const blackIn = 1 - easeInOutCubic(clamp(prog(frame, 0, 20)));
 
-  const cornerLogoP = presence(frame, 235, 260, 800, 825);
   const taglineP = presence(frame, 175, 210, 235, 255);
   const wordmarkClip = easeOutExpo(clamp(prog(frame, 150, 195)));
 
@@ -205,31 +227,20 @@ export const MobinoAd: React.FC = () => {
         }}>Frihet uten grenser</div>
       </AbsoluteFill>
 
-      {/* ── Corner mark, present through the body of the ad ────────────── */}
-      <div style={{
-        position: 'absolute', top: 50, left: 64, display: 'flex', alignItems: 'center', gap: 14,
-        opacity: cornerLogoP,
-        transform: `translateY(${lerp(-16, 0, cornerLogoP)}px)`,
-        zIndex: 10,
-      }}>
-        <MobinoLogo id="corner" size={56} assembleStart={235} assembleEnd={236} drawStart={235} drawEnd={236} lockStart={235} lockEnd={250} />
-        <span style={{ fontFamily: mobinoTheme.font, fontSize: 28, fontWeight: 800, color: mobinoTheme.white }}>mobino</span>
-      </div>
-
-      {/* ── Benefits grid ────────────────────────────────────────────── */}
+      {/* ── Benefits grid — centered as one block ───────────────────────── */}
       <AbsoluteFill style={{
-        display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 110px', gap: 50,
+        display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: 50,
         pointerEvents: 'none',
       }}>
-        <div style={{ opacity: benefitsHeadingP }}>
-          <AnimWord text="Alt bedriften din trenger" frame={frame} inA={260} inB={286} outC={520} outD={552} fontSize={56} highlightWord="trenger" />
-          <div style={{ marginTop: 14 }}><DrawLine p={benefitsHeadingP} width={520} /></div>
+        <div style={{ opacity: benefitsHeadingP, textAlign: 'center' }}>
+          <AnimWord text="Alt bedriften din trenger" frame={frame} inA={260} inB={286} outC={520} outD={552} fontSize={56} highlightWord="trenger" align="center" />
+          <div style={{ marginTop: 14, display: 'flex', justifyContent: 'center' }}><DrawLine p={benefitsHeadingP} width={520} /></div>
         </div>
 
-        <div style={{ display: 'flex', gap: 80, alignItems: 'flex-start' }}>
+        <div style={{ display: 'flex', gap: 80, alignItems: 'center' }}>
           <StatRing frame={frame} startFrame={296} target={500} suffix=" GB" label="Data i Norge" />
           <StatRing frame={frame} startFrame={314} target={80} suffix="+" label="Land med roaming" />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 18, paddingTop: 14 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
             <FeatureCard frame={frame} startFrame={332} title="Fri fart" sub="Ubegrenset hastighet, alltid" />
             <FeatureCard frame={frame} startFrame={350} title="e-SIM" sub="Oppe og kjøre på minutter" />
             <FeatureCard frame={frame} startFrame={368} title="Prisgaranti" sub="Samme pris, hele avtalen" />
@@ -322,6 +333,11 @@ export const MobinoAd: React.FC = () => {
           letterSpacing: 4, textTransform: 'uppercase',
         }}>mobino.no</div>
       </AbsoluteFill>
+
+      {/* ── Scene transitions: an iris wipe through the center on every cut ── */}
+      <CenterWipe frame={frame} at={247} />
+      <CenterWipe frame={frame} at={557} />
+      <CenterWipe frame={frame} at={812} />
 
       {/* ── Fades ───────────────────────────────────────────────────── */}
       <div style={{ position: 'absolute', inset: 0, backgroundColor: '#000', opacity: blackIn, pointerEvents: 'none' }} />
