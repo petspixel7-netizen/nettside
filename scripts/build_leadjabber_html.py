@@ -4,6 +4,8 @@ with open('public/leadjabber/symbol.png', 'rb') as f:
     SYMBOL_B64 = base64.b64encode(f.read()).decode()
 with open('public/leadjabber/logo-white.png', 'rb') as f:
     LOGOWHITE_B64 = base64.b64encode(f.read()).decode()
+with open('public/leadjabber/qr-book.png', 'rb') as f:
+    QRBOOK_B64 = base64.b64encode(f.read()).decode()
 with open('scripts/gsap.min.js', 'r', encoding='utf-8') as f:
     GSAP_JS = f.read()
 
@@ -109,16 +111,18 @@ HTML = f"""<!DOCTYPE html>
   #scene-cta{{background:linear-gradient(135deg,var(--navy),var(--navy2));}}
   #cta-logo{{width:420px;opacity:0;}}
   #cta-headline{{font-size:34px;font-weight:700;color:#fff;opacity:0;margin-top:18px;}}
-  #cta-btn{{position:relative;border-radius:60px;overflow:hidden;opacity:0;margin-top:30px;}}
-  #cta-btn-inner{{background:var(--teal);color:#fff;font-size:27px;font-weight:700;padding:21px 64px;border-radius:60px;box-shadow:0 0 44px rgba(25,148,181,.55);letter-spacing:0.5px;}}
-  #cta-shimmer{{position:absolute;top:0;bottom:0;left:-60px;width:60px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);transform:skewX(-20deg);}}
-  #cta-url{{font-size:19px;color:rgba(85,159,183,0.85);letter-spacing:4px;text-transform:uppercase;opacity:0;margin-top:14px;}}
+  #cta-qr-wrap{{position:relative;opacity:0;margin-top:28px;background:#fff;border-radius:22px;padding:22px;box-shadow:0 0 50px rgba(25,148,181,.45);}}
+  #cta-qr-wrap img{{width:170px;height:170px;display:block;}}
+  #cta-qr-ring{{position:absolute;inset:-6px;border-radius:26px;border:2px solid rgba(85,159,183,.6);pointer-events:none;}}
+  #cta-qr-label{{font-size:18px;font-weight:500;color:rgba(255,255,255,.85);margin-top:16px;opacity:0;letter-spacing:0.3px;}}
+  #cta-url{{font-size:19px;color:rgba(85,159,183,0.85);letter-spacing:4px;text-transform:uppercase;opacity:0;margin-top:10px;}}
   .cta-ring{{position:absolute;border-radius:50%;border:1px solid rgba(85,159,183,.28);top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;}}
 
   #stage-content{{position:absolute;inset:0;}}
 
   #wipe{{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:40;pointer-events:none;}}
   #wipe-circle{{width:3400px;height:3400px;border-radius:50%;background:var(--bg);transform:scale(0);}}
+  #wipe-navy{{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%, var(--navy2), var(--navy));transform:scale(0);border-radius:50%;width:3400px;height:3400px;left:50%;top:50%;margin-left:-1700px;margin-top:-1700px;z-index:41;pointer-events:none;}}
   #wipe-slide{{position:absolute;inset:0;background:var(--bg2);transform:translateX(-100%);z-index:40;pointer-events:none;}}
   #wipe-split-top{{position:absolute;left:0;top:0;width:100%;height:50%;background:var(--bg);transform:translateY(-100%);z-index:40;pointer-events:none;box-shadow:0 4px 30px rgba(25,148,181,.2);}}
   #wipe-split-bottom{{position:absolute;left:0;bottom:0;width:100%;height:50%;background:var(--bg);transform:translateY(100%);z-index:40;pointer-events:none;box-shadow:0 -4px 30px rgba(25,148,181,.2);}}
@@ -253,7 +257,8 @@ HTML = f"""<!DOCTYPE html>
       <div class="cta-ring" id="ctaring3" style="width:800px;height:800px;"></div>
       <img id="cta-logo" src="data:image/png;base64,{LOGOWHITE_B64}" alt="LeadJabber">
       <div id="cta-headline">Klar til å stupe inn?</div>
-      <div id="cta-btn"><div id="cta-btn-inner">Be om demo</div><div id="cta-shimmer"></div></div>
+      <div id="cta-qr-wrap"><div id="cta-qr-ring"></div><img src="data:image/png;base64,{QRBOOK_B64}" alt="QR til leadjabber.no"></div>
+      <div id="cta-qr-label">Skann for å besøke siden</div>
       <div id="cta-url">leadjabber.no</div>
     </div>
    </div>
@@ -268,6 +273,7 @@ HTML = f"""<!DOCTYPE html>
       <div class="wipe-bar"></div><div class="wipe-bar"></div><div class="wipe-bar"></div>
     </div>
     <div id="wipe-curtain"></div>
+    <div id="wipe-navy"></div>
     <div id="flash"><div class="flash-glow"></div></div>
     <div id="blackout"></div>
   </div>
@@ -373,10 +379,12 @@ function countUp(id, time, target, suffix, dur = 1.0) {{
     onUpdate() {{ el.textContent = Math.round(this.targets()[0].v) + suffix; }},
   }}, time);
 }}
-function zoomPunch(time) {{
-  tl.to('#stage-content', {{ scale: 1.06, filter: 'blur(6px)', duration: 0.16, ease: 'power2.in' }}, time - 0.16);
-  tl.to('#stage-content', {{ scale: 1, filter: 'blur(0px)', duration: 0.22, ease: 'power2.out' }}, time);
-  flash(time - 0.04, 0.55, 0.3);
+function navyWipe(time) {{
+  tl.to('#stage-content', {{ scale: 1.07, filter: 'blur(8px)', duration: 0.26, ease: 'power2.in' }}, time - 0.36);
+  tl.to('#wipe-navy', {{ scale: 1, duration: 0.36, ease: 'power3.in' }}, time - 0.36);
+  flash(time - 0.1, 0.5, 0.3);
+  tl.to('#stage-content', {{ scale: 1, filter: 'blur(0px)', duration: 0.3, ease: 'power2.out' }}, time);
+  tl.to('#wipe-navy', {{ scale: 0, duration: 0.4, ease: 'power3.out' }}, time + 0.02);
 }}
 function flash(time, opacity = 0.4, dur = 0.4) {{
   tl.fromTo('#flash', {{ opacity: 0, scale: 0.6 }},
@@ -441,13 +449,22 @@ diagWipe(13.0);
 tl.set('#scene-process', {{ opacity: 1 }}, 13.02);
 
 tl.to('#scene-process .heading', {{ opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }}, 13.15);
-tl.to(procLine, {{ strokeDashoffset: 0, duration: 0.7, ease: 'power2.out' }}, 13.4);
-tl.to('#process-line-dot', {{ attr: {{ cx: 850 }}, duration: 0.7, ease: 'power2.out' }}, 13.4);
 
-flash(13.6, 0.18);
-['proc1', 'proc2', 'proc3'].forEach((id, i) => {{
-  tl.fromTo('#' + id, {{ opacity: 0, y: 24, scale: 0.92 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.45, ease: 'back.out(1.7)' }}, 13.6 + i * 0.32);
-}});
+// step 1 appears first
+flash(13.45, 0.16);
+tl.fromTo('#proc1', {{ opacity: 0, y: 24, scale: 0.92 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.45, ease: 'back.out(1.7)' }}, 13.45);
+
+// line draws from step 1 to step 2, then step 2 appears
+tl.to(procLine, {{ strokeDashoffset: procLineLen / 2, duration: 0.5, ease: 'power2.inOut' }}, 13.95);
+tl.to('#process-line-dot', {{ attr: {{ cx: 510 }}, duration: 0.5, ease: 'power2.inOut' }}, 13.95);
+flash(14.4, 0.14);
+tl.fromTo('#proc2', {{ opacity: 0, y: 24, scale: 0.92 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.45, ease: 'back.out(1.7)' }}, 14.4);
+
+// line draws from step 2 to step 3, then step 3 appears
+tl.to(procLine, {{ strokeDashoffset: 0, duration: 0.5, ease: 'power2.inOut' }}, 14.9);
+tl.to('#process-line-dot', {{ attr: {{ cx: 850 }}, duration: 0.5, ease: 'power2.inOut' }}, 14.9);
+flash(15.35, 0.14);
+tl.fromTo('#proc3', {{ opacity: 0, y: 24, scale: 0.92 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.45, ease: 'back.out(1.7)' }}, 15.35);
 
 tl.to('#scene-process', {{ opacity: 0, duration: 0.4 }}, 17.6);
 
@@ -493,8 +510,8 @@ tl.to('#scene-platform .heading', {{ opacity: 1, y: 0, duration: 0.5, ease: 'pow
 tl.to('#scene-platform', {{ opacity: 0, duration: 0.4 }}, 31.8);
 tl.to('#corner-logo', {{ opacity: 0, duration: 0.3 }}, 31.8);
 
-// 32.2  ZOOM PUNCH into CTA
-zoomPunch(32.2);
+// 32.2  NAVY WIPE into CTA (white -> navy background, masked transition)
+navyWipe(32.2);
 tl.set('#scene-cta', {{ opacity: 1 }}, 32.22);
 
 tl.fromTo('#cta-logo', {{ scale: 0.7, opacity: 0 }}, {{ scale: 1, opacity: 1, duration: 0.55, ease: 'back.out(1.5)' }}, 32.35);
@@ -505,10 +522,11 @@ tl.fromTo('#cta-logo', {{ scale: 0.7, opacity: 0 }}, {{ scale: 1, opacity: 1, du
 }});
 tl.fromTo('#cta-headline', {{ opacity: 0, y: 22, filter: 'blur(8px)' }}, {{ opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.6, ease: 'power2.out' }}, 33.1);
 flash(33.6, 0.28);
-gsap.set('#cta-btn', {{ scale: 0.7 }});
-tl.to('#cta-btn', {{ opacity: 1, scale: 1, duration: 0.45, ease: 'back.out(1.7)' }}, 33.6);
-tl.to('#cta-shimmer', {{ left: '120%', duration: 1.1, repeat: 3, ease: 'power1.inOut' }}, 33.8);
-tl.to('#cta-url', {{ opacity: 1, y: -4, duration: 0.45 }}, 34.2);
+gsap.set('#cta-qr-wrap', {{ scale: 0.7, rotation: -6 }});
+tl.to('#cta-qr-wrap', {{ opacity: 1, scale: 1, rotation: 0, duration: 0.5, ease: 'back.out(1.7)' }}, 33.6);
+tl.fromTo('#cta-qr-ring', {{ scale: 1, opacity: 0.9 }}, {{ scale: 1.18, opacity: 0, duration: 1.0, repeat: 2, ease: 'power1.out' }}, 34.1);
+tl.to('#cta-qr-label', {{ opacity: 1, duration: 0.4 }}, 34.2);
+tl.to('#cta-url', {{ opacity: 1, y: -4, duration: 0.45 }}, 34.35);
 
 // 41.0 — fade out, loop
 tl.to('#scene-cta', {{ opacity: 0, duration: 0.45 }}, 41.0);
@@ -542,7 +560,8 @@ tl.call(() => {{
   gsap.set('#plat2', {{ opacity: 0, x: 40 }});
   gsap.set('#plat3', {{ opacity: 0, x: -40 }});
   gsap.set(['#ctaring1', '#ctaring2', '#ctaring3'], {{ opacity: 0 }});
-  gsap.set('#cta-btn', {{ opacity: 0, scale: 0.7 }});
+  gsap.set('#cta-qr-wrap', {{ opacity: 0, scale: 0.7, rotation: -6 }});
+  gsap.set('#cta-qr-label', {{ opacity: 0 }});
   gsap.set('#cta-url', {{ opacity: 0 }});
   gsap.set('#cta-logo', {{ opacity: 0, scale: 0.7 }});
   gsap.set('#cta-headline', {{ opacity: 0 }});
