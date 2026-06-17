@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<title>NORLEADS — Signal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#000000;
+    --gold:#D4AF37;
+    --gold-light:#F0D060;
+    --white:#FFFFFF;
+    --gray:#888888;
+    --c1:#D4AF37;
+    --c2:#7C5CFF;
+    --c3:#FF4FA0;
+    --c4:#37C7FF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{
+    width:100%;height:100%;
+    background:#000;
+    overflow:hidden;
+    font-family:'Manrope',sans-serif;
+  }
+  #viewport{
+    position:fixed; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    background:#000;
+  }
+  #canvas{
+    position:relative;
+    width:1920px; height:1080px;
+    background:var(--bg);
+    overflow:hidden;
+    transform-origin:center center;
+  }
+
+  /* ---------- ambient backdrop ---------- */
+  #bg-glow{
+    position:absolute; inset:0;
+    background:radial-gradient(circle at 50% 46%, rgba(212,175,55,0.05) 0%, rgba(212,175,55,0.0) 50%);
+  }
+  #vignette{
+    position:absolute; inset:0;
+    background:radial-gradient(circle at 50% 50%, transparent 45%, rgba(0,0,0,0.55) 100%);
+    pointer-events:none;
+  }
+  #grain{
+    position:absolute; inset:-50%;
+    width:200%; height:200%;
+    opacity:0.035;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode:overlay;
+    pointer-events:none;
+  }
+  .particle{
+    position:absolute;
+    width:3px; height:3px;
+    border-radius:50%;
+    background:var(--gray);
+    opacity:0;
+  }
+  .ring{
+    position:absolute;
+    left:50%; top:46%;
+    width:10px; height:10px;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,0.35);
+    transform:translate(-50%,-50%);
+    opacity:0;
+    pointer-events:none;
+  }
+
+  /* ---------- monogram stage ---------- */
+  #mono-wrap{
+    position:absolute;
+    left:50%; top:46%;
+    width:380px; height:387px;
+  }
+  #mono-svg{ width:100%; height:100%; overflow:visible; }
+  .mono-stroke{
+    fill:none;
+    stroke:url(#flowGradient);
+    stroke-width:28;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+  }
+  .mono-fill{
+    fill:var(--white);
+    opacity:0;
+  }
+
+  /* ---------- intro: leads implode into the exact shape of the mark ---------- */
+  #intro-stage{
+    position:absolute; inset:0;
+    pointer-events:none;
+  }
+  .assemble-dot{
+    fill:url(#flowGradient);
+  }
+  #seed{
+    fill:#fff;
+    opacity:0;
+  }
+  #core-flash{
+    position:absolute;
+    left:50%; top:46%;
+    width:14px; height:14px;
+    border-radius:50%;
+    background:#fff;
+    opacity:0;
+    transform:translate(-50%,-50%) scale(0);
+  }
+
+  /* ---------- lockup (wordmark + url) ---------- */
+  #lockup{
+    position:absolute;
+    left:50%; top:46%;
+    text-align:center;
+    pointer-events:none;
+    padding-top:0px;
+  }
+  #divider{
+    width:0px; height:2px; margin:30px auto 0;
+    background:linear-gradient(90deg, transparent, var(--c1) 15%, var(--c2) 40%, var(--c3) 60%, var(--c4) 85%, transparent);
+    opacity:0;
+  }
+  #wordmark{
+    margin-top:26px;
+    font-weight:800;
+    font-size:64px;
+    letter-spacing:1px;
+    background:linear-gradient(90deg, var(--c1), var(--c2), var(--c3), var(--c4), var(--c1));
+    background-size:300% 100%;
+    background-position:0% 0;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    clip-path:inset(0 100% 0 0);
+  }
+  #urlmark{
+    margin-top:18px;
+    font-weight:500;
+    font-size:18px;
+    letter-spacing:6px;
+    text-transform:uppercase;
+    color:rgba(212,175,55,0.55);
+    opacity:0;
+  }
+
+  #blackout{
+    position:absolute; inset:0;
+    background:#000;
+    opacity:1;
+    pointer-events:none;
+    z-index:50;
+  }
+</style>
+</head>
+<body>
+
+<div id="viewport">
+  <div id="canvas">
+    <div id="bg-glow"></div>
+    <div id="grain"></div>
+    <div id="particles"></div>
+    <div class="ring" id="ring1"></div>
+    <div class="ring" id="ring2"></div>
+    <div class="ring" id="ring3"></div>
+
+    <div id="intro-stage">
+      <div id="core-flash"></div>
+    </div>
+
+    <div id="mono-wrap">
+      <svg id="mono-svg" viewBox="0 0 588.319981 598.987083">
+        <defs>
+          <linearGradient id="flowGradient" x1="0%" y1="0%" x2="100%" y2="0%" spreadMethod="repeat" gradientUnits="objectBoundingBox">
+            <stop offset="0%"  style="stop-color:var(--c1)"/>
+            <stop offset="25%" style="stop-color:var(--c2)"/>
+            <stop offset="50%" style="stop-color:var(--c3)"/>
+            <stop offset="75%" style="stop-color:var(--c4)"/>
+            <stop offset="100%" style="stop-color:var(--c1)"/>
+          </linearGradient>
+        </defs>
+        <g id="mono-fill-group" transform="translate(-20.180019,618.971223) scale(0.100000,-0.100000)">
+          <path class="mono-fill" d="M1940 6132 c-30 -31 -68 -68 -85 -82 -16 -14 -36 -33 -43 -41 -10
+-13 -12 -295 -12 -1375 l0 -1359 52 -45 c29 -25 85 -75 125 -112 40 -38 74
+-68 77 -68 2 0 5 611 6 1357 0 747 4 1361 8 1364 4 4 81 -65 172 -153 91 -88
+246 -237 345 -331 99 -94 230 -218 290 -277 61 -58 144 -137 185 -175 41 -38
+131 -123 200 -189 69 -67 152 -146 185 -176 33 -30 105 -97 160 -150 55 -52
+161 -151 235 -220 74 -69 176 -163 226 -210 50 -47 159 -148 244 -225 244
+-223 289 -265 385 -355 49 -47 109 -100 133 -119 23 -18 47 -42 54 -54 8 -15
+12 -232 14 -745 l2 -725 79 -67 c43 -36 84 -74 92 -83 7 -9 18 -17 24 -17 6 0
+21 -10 34 -22 l23 -21 0 2037 0 2038 -87 91 c-48 51 -130 137 -183 192 l-95
+100 505 5 c278 3 508 4 512 2 10 -4 10 -5294 0 -5309 -5 -8 -42 19 -113 85
+-132 122 -324 293 -392 351 -29 24 -86 76 -127 115 -118 112 -251 226 -264
+226 -3 0 -6 -74 -6 -164 l0 -165 72 -63 c39 -35 111 -99 160 -143 49 -44 108
+-95 131 -114 23 -18 65 -54 93 -80 43 -39 118 -103 224 -190 l25 -20 -352 -1
+-353 0 0 -125 0 -125 593 2 592 3 0 2985 0 2985 -820 0 -820 0 -3 -976 -2
+-975 92 -80 c50 -43 106 -94 124 -112 18 -19 38 -31 43 -27 8 4 11 254 11 803
+l0 797 53 -55 c64 -68 110 -121 121 -138 8 -13 9 -1912 1 -1920 -5 -6 -252
+218 -540 488 -55 52 -148 138 -205 190 -57 52 -152 140 -210 195 -58 55 -173
+163 -255 239 -368 342 -723 678 -960 906 -82 80 -242 233 -355 340 -113 107
+-239 228 -281 268 -41 39 -77 72 -80 72 -2 0 -29 -26 -59 -58z"/>
+          <path class="mono-fill" d="M205 6168 c-3 -7 -4 -1352 -3 -2988 l3 -2975 925 0 925 0 3 976 2
+976 -27 28 c-36 36 -224 177 -229 172 -2 -2 -5 -431 -7 -953 l-2 -949 -662 -3
+-663 -2 -2 2646 c-2 1455 1 2648 5 2651 5 3 95 -80 200 -184 106 -103 233
+-226 282 -273 50 -46 185 -178 302 -292 116 -114 215 -208 220 -208 4 0 6 79
+3 175 l-5 174 -230 226 c-126 125 -306 299 -398 388 l-169 162 399 5 398 5 0
+125 0 125 -633 3 c-501 2 -634 0 -637 -10z"/>
+          <path class="mono-fill" d="M1217 3842 l2 -727 39 -35 c59 -54 302 -254 321 -265 9 -5 46 -35 82
+-66 57 -49 306 -252 410 -334 21 -16 104 -84 185 -150 81 -66 163 -133 184
+-150 21 -16 57 -46 81 -66 24 -19 98 -78 164 -130 66 -53 165 -131 220 -175
+55 -43 111 -88 126 -99 31 -23 270 -214 314 -251 17 -13 53 -41 80 -62 28 -20
+140 -109 250 -197 236 -188 248 -198 344 -273 41 -31 89 -68 106 -82 18 -14
+75 -57 126 -97 52 -40 148 -115 214 -167 66 -53 127 -95 135 -93 20 3 21 119
+12 1545 l-7 1173 -55 52 c-30 29 -77 72 -105 97 -70 62 -275 251 -370 341 -44
+42 -98 92 -120 112 l-39 37 -163 0 c-90 0 -163 -4 -163 -8 0 -9 465 -472 635
+-633 55 -52 105 -101 112 -109 17 -21 19 -2100 2 -2100 -6 0 -28 15 -49 33
+-21 17 -63 52 -95 77 -63 49 -90 71 -150 123 -22 18 -72 58 -111 88 -67 51
+-152 119 -363 288 -52 42 -108 87 -125 101 -233 184 -729 581 -757 604 -19 17
+-46 40 -60 51 -46 37 -124 100 -134 107 -5 4 -33 27 -61 50 -29 24 -80 66
+-114 93 -35 28 -68 55 -74 60 -14 12 -195 159 -247 200 -128 101 -431 352
+-471 390 l-48 46 0 575 c0 534 -1 575 -17 590 -46 41 -220 164 -233 164 -13 0
+-15 -87 -13 -728z"/>
+          <path class="mono-fill" d="M2295 4272 c-3 -3 -5 -85 -5 -183 l0 -178 483 -488 c266 -268 625
+-631 798 -807 361 -366 552 -555 592 -586 l27 -21 0 179 0 179 -57 55 c-120
+116 -973 978 -1082 1093 -196 207 -750 762 -756 757z"/>
+          <path class="mono-fill" d="M1220 2693 c0 -5 0 -422 0 -928 l0 -920 23 -20 c13 -11 59 -47 102
+-80 43 -33 85 -68 94 -77 42 -47 41 -63 41 916 l0 934 -39 35 c-21 19 -70 55
+-109 81 -39 25 -74 50 -77 56 -7 12 -35 14 -35 3z"/>
+        </g>
+        <g id="assemble-group" transform="translate(-20.180019,618.971223) scale(0.100000,-0.100000)">
+          <circle id="seed" cx="2940" cy="3000" r="55"/>
+        </g>
+        <g id="mono-stroke-group" transform="translate(-20.180019,618.971223) scale(0.100000,-0.100000)">
+          <path id="s0" class="mono-stroke" d="M1940 6132 c-30 -31 -68 -68 -85 -82 -16 -14 -36 -33 -43 -41 -10
+-13 -12 -295 -12 -1375 l0 -1359 52 -45 c29 -25 85 -75 125 -112 40 -38 74
+-68 77 -68 2 0 5 611 6 1357 0 747 4 1361 8 1364 4 4 81 -65 172 -153 91 -88
+246 -237 345 -331 99 -94 230 -218 290 -277 61 -58 144 -137 185 -175 41 -38
+131 -123 200 -189 69 -67 152 -146 185 -176 33 -30 105 -97 160 -150 55 -52
+161 -151 235 -220 74 -69 176 -163 226 -210 50 -47 159 -148 244 -225 244
+-223 289 -265 385 -355 49 -47 109 -100 133 -119 23 -18 47 -42 54 -54 8 -15
+12 -232 14 -745 l2 -725 79 -67 c43 -36 84 -74 92 -83 7 -9 18 -17 24 -17 6 0
+21 -10 34 -22 l23 -21 0 2037 0 2038 -87 91 c-48 51 -130 137 -183 192 l-95
+100 505 5 c278 3 508 4 512 2 10 -4 10 -5294 0 -5309 -5 -8 -42 19 -113 85
+-132 122 -324 293 -392 351 -29 24 -86 76 -127 115 -118 112 -251 226 -264
+226 -3 0 -6 -74 -6 -164 l0 -165 72 -63 c39 -35 111 -99 160 -143 49 -44 108
+-95 131 -114 23 -18 65 -54 93 -80 43 -39 118 -103 224 -190 l25 -20 -352 -1
+-353 0 0 -125 0 -125 593 2 592 3 0 2985 0 2985 -820 0 -820 0 -3 -976 -2
+-975 92 -80 c50 -43 106 -94 124 -112 18 -19 38 -31 43 -27 8 4 11 254 11 803
+l0 797 53 -55 c64 -68 110 -121 121 -138 8 -13 9 -1912 1 -1920 -5 -6 -252
+218 -540 488 -55 52 -148 138 -205 190 -57 52 -152 140 -210 195 -58 55 -173
+163 -255 239 -368 342 -723 678 -960 906 -82 80 -242 233 -355 340 -113 107
+-239 228 -281 268 -41 39 -77 72 -80 72 -2 0 -29 -26 -59 -58z"/>
+          <path id="s1" class="mono-stroke" d="M205 6168 c-3 -7 -4 -1352 -3 -2988 l3 -2975 925 0 925 0 3 976 2
+976 -27 28 c-36 36 -224 177 -229 172 -2 -2 -5 -431 -7 -953 l-2 -949 -662 -3
+-663 -2 -2 2646 c-2 1455 1 2648 5 2651 5 3 95 -80 200 -184 106 -103 233
+-226 282 -273 50 -46 185 -178 302 -292 116 -114 215 -208 220 -208 4 0 6 79
+3 175 l-5 174 -230 226 c-126 125 -306 299 -398 388 l-169 162 399 5 398 5 0
+125 0 125 -633 3 c-501 2 -634 0 -637 -10z"/>
+          <path id="s2" class="mono-stroke" d="M1217 3842 l2 -727 39 -35 c59 -54 302 -254 321 -265 9 -5 46 -35 82
+-66 57 -49 306 -252 410 -334 21 -16 104 -84 185 -150 81 -66 163 -133 184
+-150 21 -16 57 -46 81 -66 24 -19 98 -78 164 -130 66 -53 165 -131 220 -175
+55 -43 111 -88 126 -99 31 -23 270 -214 314 -251 17 -13 53 -41 80 -62 28 -20
+140 -109 250 -197 236 -188 248 -198 344 -273 41 -31 89 -68 106 -82 18 -14
+75 -57 126 -97 52 -40 148 -115 214 -167 66 -53 127 -95 135 -93 20 3 21 119
+12 1545 l-7 1173 -55 52 c-30 29 -77 72 -105 97 -70 62 -275 251 -370 341 -44
+42 -98 92 -120 112 l-39 37 -163 0 c-90 0 -163 -4 -163 -8 0 -9 465 -472 635
+-633 55 -52 105 -101 112 -109 17 -21 19 -2100 2 -2100 -6 0 -28 15 -49 33
+-21 17 -63 52 -95 77 -63 49 -90 71 -150 123 -22 18 -72 58 -111 88 -67 51
+-152 119 -363 288 -52 42 -108 87 -125 101 -233 184 -729 581 -757 604 -19 17
+-46 40 -60 51 -46 37 -124 100 -134 107 -5 4 -33 27 -61 50 -29 24 -80 66
+-114 93 -35 28 -68 55 -74 60 -14 12 -195 159 -247 200 -128 101 -431 352
+-471 390 l-48 46 0 575 c0 534 -1 575 -17 590 -46 41 -220 164 -233 164 -13 0
+-15 -87 -13 -728z"/>
+          <path id="s3" class="mono-stroke" d="M2295 4272 c-3 -3 -5 -85 -5 -183 l0 -178 483 -488 c266 -268 625
+-631 798 -807 361 -366 552 -555 592 -586 l27 -21 0 179 0 179 -57 55 c-120
+116 -973 978 -1082 1093 -196 207 -750 762 -756 757z"/>
+          <path id="s4" class="mono-stroke" d="M1220 2693 c0 -5 0 -422 0 -928 l0 -920 23 -20 c13 -11 59 -47 102
+-80 43 -33 85 -68 94 -77 42 -47 41 -63 41 916 l0 934 -39 35 c-21 19 -70 55
+-109 81 -39 25 -74 50 -77 56 -7 12 -35 14 -35 3z"/>
+        </g>
+      </svg>
+    </div>
+
+    <div id="lockup">
+      <div id="divider"></div>
+      <div id="wordmark">norleads</div>
+      <div id="urlmark">norleads.no</div>
+    </div>
+
+    <div id="blackout"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script>
+/* ---------- responsive fixed-aspect stage ---------- */
+function fitStage(){
+  const cv = document.getElementById('canvas');
+  const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+  cv.style.transform = `scale(${scale})`;
+}
+window.addEventListener('resize', fitStage);
+fitStage();
+
+/* ---------- ambient particle field ---------- */
+const particleHost = document.getElementById('particles');
+const particles = [];
+for (let i = 0; i < 36; i++){
+  const p = document.createElement('div');
+  p.className = 'particle';
+  const x = Math.random()*1920, y = Math.random()*1080;
+  p.style.left = x+'px';
+  p.style.top  = y+'px';
+  particleHost.appendChild(p);
+  particles.push(p);
+}
+gsap.to(particles, {
+  opacity: () => 0.15 + Math.random()*0.35,
+  y: '+=' + (-40 - Math.random()*40),
+  duration: () => 6 + Math.random()*6,
+  repeat: -1,
+  yoyo: true,
+  ease: 'sine.inOut',
+  stagger: { each: 0.08, from: 'random' }
+});
+
+/* ---------- core elements ---------- */
+const monoWrap    = document.getElementById('mono-wrap');
+const fillPaths   = Array.from(document.querySelectorAll('.mono-fill'));
+const strokeOrder = ['s1','s0','s2','s3','s4'].map(id => document.getElementById(id));
+
+strokeOrder.forEach(p => {
+  const len = p.getTotalLength();
+  p.style.strokeDasharray = len;
+  p.style.strokeDashoffset = len;
+});
+
+gsap.set('#mono-wrap', { xPercent: -50, yPercent: -50, scale: 1 });
+gsap.set('#lockup', { xPercent: -50, yPercent: 0 });
+
+/* ---------- flowing multi-color gradient ---------- */
+const gradEl = document.getElementById('flowGradient');
+const gradProxy = { x: 0 };
+gsap.to(gradProxy, {
+  x: 1,
+  duration: 3.2,
+  repeat: -1,
+  ease: 'none',
+  onUpdate: () => gradEl.setAttribute('gradientTransform', `translate(${gradProxy.x} 0)`)
+});
+gsap.to('#wordmark', {
+  backgroundPosition: '-300% 0',
+  duration: 3.2,
+  repeat: -1,
+  ease: 'none'
+});
+
+/* ---------- intro: leads implode into the exact shape of the mark ----------
+   Technique: particle assembly. We sample points along the logo's own stroke
+   paths, then start each particle far out along the ray from the logo's center
+   through its target, and slide it precisely onto the outline. Fully
+   deterministic (no Math.random) — the scatter is a clean radial explosion that
+   resolves into the brand. The leads literally become the mark. */
+const coreFlash = document.getElementById('core-flash');
+const SVG_NS = 'http://www.w3.org/2000/svg';
+const assembleGroup = document.getElementById('assemble-group');
+const seed = document.getElementById('seed');
+
+// 1) sample target points along every stroke path (shared coord space => direct cx/cy)
+const SAMPLE_STEP = 95; // path units between particles (~9.5px on screen)
+const targets = [];
+strokeOrder.forEach(p => {
+  const L = p.getTotalLength();
+  for (let d = 0; d < L; d += SAMPLE_STEP){
+    const pt = p.getPointAtLength(d);
+    targets.push({ x: pt.x, y: pt.y });
+  }
+});
+
+// 2) logo centroid in path space (for the radial implosion)
+const ctr = targets.reduce((a, t) => ({ x: a.x + t.x, y: a.y + t.y }), { x: 0, y: 0 });
+ctr.x /= targets.length; ctr.y /= targets.length;
+seed.setAttribute('cx', ctr.x);
+seed.setAttribute('cy', ctr.y);
+
+// 3) build a particle per target; ordered by angle so assembly sweeps cleanly (not random)
+targets.forEach(t => { t.ang = Math.atan2(t.y - ctr.y, t.x - ctr.x); });
+targets.sort((a, b) => a.ang - b.ang);
+
+const SCATTER = 2.7; // how far out along the ray each particle starts
+const dots = targets.map(t => {
+  const c = document.createElementNS(SVG_NS, 'circle');
+  c.setAttribute('class', 'assemble-dot');
+  c.setAttribute('r', 30);
+  // start position: out along the ray from center through the target
+  const sx = ctr.x + (t.x - ctr.x) * SCATTER;
+  const sy = ctr.y + (t.y - ctr.y) * SCATTER;
+  c.setAttribute('cx', sx);
+  c.setAttribute('cy', sy);
+  c.style.opacity = 0;
+  assembleGroup.appendChild(c);
+  return { el: c, tx: t.x, ty: t.y };
+});
+
+/* ---------- master timeline, ~45.5s: particles assemble the mark, then it crystallizes ---------- */
+const tl = gsap.timeline({ repeat: -1, repeatDelay: 1.4 });
+window.masterTL = tl;
+const dotEls = dots.map(d => d.el);
+
+// 0.0 - 0.7  black hold
+tl.set('#blackout', { opacity: 1 });
+tl.to('#blackout', { opacity: 0, duration: 0.8, ease: 'power1.in' }, 0.0);
+
+// ===== PARTICLE ASSEMBLY: scattered leads implode into the exact outline of the mark =====
+// 1) seed pulse from the center — anticipation, the source everything comes from
+tl.to(seed, { opacity: 0.9, attr: { r: 120 }, duration: 0.35, ease: 'power2.out' }, 0.85);
+tl.to(seed, { opacity: 0, attr: { r: 30 }, duration: 0.45, ease: 'power2.in' }, 1.2);
+
+// 2) the leads flash into existence, exploded outward along their rays
+tl.to(dotEls, { opacity: 0.9, duration: 0.3, stagger: 0.004, ease: 'none' }, 1.15);
+
+// 3) they implode precisely onto the mark's outline — angular order makes it sweep, never random
+tl.to(dotEls, {
+  attr: { cx: (i) => dots[i].tx, cy: (i) => dots[i].ty },
+  duration: 1.5, ease: 'power3.inOut', stagger: 0.004
+}, 1.5);
+
+// 4) the shape resolves — a confirmation flash at the moment it locks into form
+tl.to(coreFlash, { opacity: 0.9, scale: 1, duration: 0.16, ease: 'back.out(3)' }, 4.5);
+tl.to(coreFlash, { scale: 2.2, opacity: 0, duration: 0.5, ease: 'power2.out' }, 4.66);
+
+// 5) the assembled outline breathes with the flowing gradient, holding the form
+tl.to(dotEls, { opacity: 0.6, duration: 0.7, ease: 'sine.inOut' }, 5.1);
+
+// 6) crystallize: the particles dissolve as the clean stroke is about to take over
+tl.to(dotEls, { opacity: 0, duration: 0.8, stagger: 0.003, ease: 'power1.in' }, 6.1);
+tl.to(coreFlash, { opacity: 0.8, scale: 1, duration: 0.14, ease: 'back.out(3)' }, 6.55);
+tl.to(coreFlash, { scale: 2.5, opacity: 0, duration: 0.45, ease: 'power2.out' }, 6.7);
+
+// 7.0 -> 21.3  draw the monogram (pure stroke reveal, no tracer dot) — the signal becomes the mark
+const drawStart = 7.0, drawEnd = 21.3;
+const drawBudget = drawEnd - drawStart;
+const lens = strokeOrder.map(p => p.getTotalLength());
+const totalLen = lens.reduce((a, b) => a + b, 0);
+let cursor = drawStart;
+
+strokeOrder.forEach((p, idx) => {
+  const len = lens[idx];
+  const dur = drawBudget * (len / totalLen);
+  tl.to(p, { strokeDashoffset: 0, duration: dur, ease: 'none' }, cursor);
+  cursor += dur;
+});
+
+// 21.3 - 22.1  lock-in: fill fades in, stroke fades out (sharp, no glow)
+tl.to(strokeOrder, { stroke: '#FFFFFF', opacity: 0.9, duration: 0.25 }, 21.3);
+tl.to(fillPaths, { opacity: 1, duration: 0.7, ease: 'power2.out' }, 21.5);
+tl.to(strokeOrder, { opacity: 0, duration: 0.8, ease: 'power1.in' }, 21.9);
+
+// 23.3 - 24.9 hold + gentle scale breathing (no glow)
+tl.to(monoWrap, {
+  scale: 1.03, duration: 0.9, ease: 'sine.inOut', yoyo: true, repeat: 1
+}, 23.3);
+
+// 25.1 - 28.5  move to lockup position, scale down
+tl.to(monoWrap, {
+  top: '30%', scale: 0.62, duration: 2.6, ease: 'power3.inOut'
+}, 25.1);
+tl.to('#lockup', { top: '30%', paddingTop: '150px', duration: 2.6, ease: 'power3.inOut' }, 25.1);
+tl.to('#divider', { opacity: 1, width: '480px', duration: 1.6, ease: 'power2.out' }, 26.9);
+
+// 28.7 - 32.1  wordmark reveal
+tl.to('#wordmark', { clipPath: 'inset(0 0% 0 0)', duration: 1.8, ease: 'power3.out' }, 28.7);
+
+// 31.9 - 35.9  radiating signal rings (reach / network motif)
+[ '#ring1', '#ring2', '#ring3' ].forEach((sel, i) => {
+  tl.fromTo(sel, {
+    opacity: 0.4, width: '10px', height: '10px'
+  }, {
+    opacity: 0, width: '900px', height: '900px', duration: 2.6, ease: 'power1.out'
+  }, 31.9 + i * 0.55);
+});
+
+// 36.7 - 40.7  url reveal + hold
+tl.to('#urlmark', { opacity: 1, y: -4, duration: 1.2, ease: 'power2.out' }, 36.7);
+tl.to('#canvas', { scale: 1.012, duration: 3.5, ease: 'sine.inOut' }, 40.3);
+
+// 43.7 - 45.2  fade to black, ready to loop
+tl.to('#blackout', { opacity: 1, duration: 1.5, ease: 'power2.in' }, 43.7);
+tl.set(['#wordmark'], { clipPath: 'inset(0 100% 0 0)' }, 45.3);
+tl.set(['#divider'], { width: '0px', opacity: 0 }, 45.3);
+tl.set(['#urlmark'], { opacity: 0 }, 45.3);
+tl.set(monoWrap, { top: '46%', scale: 1 }, 45.3);
+tl.set('#lockup', { top: '46%', paddingTop: '0px' }, 45.3);
+tl.set(fillPaths, { opacity: 0 }, 45.3);
+tl.set(strokeOrder, { opacity: 1, strokeDashoffset: (i, t) => t.getTotalLength() }, 45.3);
+tl.set('#canvas', { scale: 1 }, 45.3);
+tl.set(coreFlash, { opacity: 0, scale: 0 }, 45.3);
+tl.set(seed, { opacity: 0 }, 45.3);
+// reset every particle back to its exploded start position for the next loop
+tl.call(() => {
+  dots.forEach(d => {
+    const sx = ctr.x + (d.tx - ctr.x) * SCATTER;
+    const sy = ctr.y + (d.ty - ctr.y) * SCATTER;
+    d.el.setAttribute('cx', sx);
+    d.el.setAttribute('cy', sy);
+    d.el.style.opacity = 0;
+  });
+}, [], 45.3);
+</script>
+</body>
+</html>
