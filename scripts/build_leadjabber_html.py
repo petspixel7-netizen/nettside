@@ -62,12 +62,21 @@ HTML = f"""<!DOCTYPE html>
   #corner-logo .w2{{font-size:26px;font-weight:700;color:var(--navy);}}
 
   /* headline scene */
-  #headline-text{{font-size:66px;font-weight:700;color:var(--navy);text-align:center;line-height:1.25;}}
-  #headline-sub{{font-size:27px;color:var(--body);text-align:center;max-width:900px;margin-top:26px;opacity:0;line-height:1.5;}}
-  #headline-btns{{display:flex;gap:22px;margin-top:34px;opacity:0;}}
-  .btn-outline{{font-weight:700;font-size:22px;color:var(--navy);padding:18px 38px;border-radius:50px;border:2px solid rgba(41,43,60,0.2);}}
-  .btn-solid{{font-weight:700;font-size:22px;color:#fff;padding:18px 38px;border-radius:50px;background:var(--teal);box-shadow:0 10px 30px rgba(25,148,181,0.4);position:relative;overflow:hidden;}}
-  .btn-shimmer{{position:absolute;top:0;bottom:0;left:-60px;width:60px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);transform:skewX(-20deg);}}
+  #headline-text{{font-size:72px;font-weight:700;color:var(--navy);text-align:center;line-height:1.25;}}
+
+  /* stats */
+  #stats-grid{{display:flex;gap:36px;margin-top:48px;}}
+  .stat-card{{background:#fff;border:1px solid rgba(25,148,181,0.22);border-radius:18px;padding:38px 46px;width:300px;text-align:center;opacity:0;box-shadow:0 14px 36px rgba(25,148,181,0.1);}}
+  .stat-num{{font-size:58px;font-weight:700;color:var(--teal);}}
+  .stat-label{{font-size:18px;color:var(--gray);margin-top:10px;}}
+
+  /* process */
+  #process-row{{display:flex;align-items:flex-start;gap:0;margin-top:54px;position:relative;}}
+  .proc-step{{display:flex;flex-direction:column;align-items:center;width:340px;opacity:0;position:relative;z-index:2;}}
+  .proc-num{{width:64px;height:64px;border-radius:50%;background:var(--teal);color:#fff;font-size:26px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 26px rgba(25,148,181,.4);}}
+  .proc-title{{font-size:22px;font-weight:700;color:var(--navy);margin-top:18px;text-align:center;}}
+  .proc-sub{{font-size:16px;color:var(--gray);margin-top:8px;text-align:center;max-width:280px;}}
+  #process-line{{position:absolute;top:32px;left:170px;right:170px;height:3px;background:linear-gradient(90deg,var(--teal),var(--tealDeep),var(--teal));width:0;z-index:1;}}
 
   /* solutions */
   #solutions-grid{{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:46px;}}
@@ -148,15 +157,36 @@ HTML = f"""<!DOCTYPE html>
     <div class="scene" id="scene-headline">
       <div style="text-align:center;max-width:1300px;">
         <div id="headline-text">Få bedre produktivitet og<br>bygg mer <span class="accent">pipeline</span></div>
-        <div id="headline-sub">LeadJabber gjør hele salgsteamet ditt mer effektivt. Slutt å ringe kaldt og ha en-til-en-samtaler i stor skala.</div>
-        <div id="headline-btns">
-          <div class="btn-outline">Finn ut mer</div>
-          <div class="btn-solid"><span style="position:relative;z-index:1;">Be om demo</span><div class="btn-shimmer" id="headline-shimmer"></div></div>
-        </div>
       </div>
     </div>
 
-    <!-- SCENE 3: solutions -->
+    <!-- SCENE 3: stats -->
+    <div class="scene" id="scene-stats">
+      <div style="text-align:center;">
+        <div class="heading">Resultater som <span class="accent">teller</span></div>
+        <div class="divider" id="stats-divider"></div>
+      </div>
+      <div id="stats-grid">
+        <div class="stat-card" id="stat1"><div class="stat-num" id="stat1-num">0</div><div class="stat-label">mer pipeline</div></div>
+        <div class="stat-card" id="stat2"><div class="stat-num" id="stat2-num">0%</div><div class="stat-label">mindre tid på kaldt ringing</div></div>
+        <div class="stat-card" id="stat3"><div class="stat-num" id="stat3-num">0+</div><div class="stat-label">fornøyde kunder</div></div>
+      </div>
+    </div>
+
+    <!-- SCENE 4: process -->
+    <div class="scene" id="scene-process">
+      <div style="text-align:center;">
+        <div class="heading">Slik <span class="accent">fungerer</span> det</div>
+      </div>
+      <div id="process-row">
+        <div id="process-line"></div>
+        <div class="proc-step" id="proc1"><div class="proc-num">1</div><div class="proc-title">Vi identifiserer</div><div class="proc-sub">Dine ideelle kunder kartlegges og kvalifiseres.</div></div>
+        <div class="proc-step" id="proc2"><div class="proc-num">2</div><div class="proc-title">Vi booker</div><div class="proc-sub">Møter legges rett inn i kalenderen din.</div></div>
+        <div class="proc-step" id="proc3"><div class="proc-num">3</div><div class="proc-title">Du selger</div><div class="proc-sub">Du møter opp og fokuserer på å lande avtalen.</div></div>
+      </div>
+    </div>
+
+    <!-- SCENE 5: solutions -->
     <div class="scene" id="scene-solutions">
       <div style="text-align:center;">
         <div class="heading">Våre <span class="accent">løsninger</span></div>
@@ -170,7 +200,7 @@ HTML = f"""<!DOCTYPE html>
       </div>
     </div>
 
-    <!-- SCENE 4: testimonial -->
+    <!-- SCENE 6: testimonial -->
     <div class="scene" id="scene-testimonial">
       <div id="quote-mark">&ldquo;</div>
       <div id="quote-text">Jeg har brukt LeadJabber i flere år, og det har blitt helt avgjørende for min salgsprosess. Systemet har forvandlet måten jeg jobber på.</div>
@@ -178,7 +208,7 @@ HTML = f"""<!DOCTYPE html>
       <div id="quote-title">Sales Manager</div>
     </div>
 
-    <!-- SCENE 5: CTA -->
+    <!-- SCENE 7: CTA -->
     <div class="scene" id="scene-cta">
       <div class="cta-ring" id="ctaring1" style="width:560px;height:560px;"></div>
       <div class="cta-ring" id="ctaring2" style="width:680px;height:680px;"></div>
@@ -246,7 +276,9 @@ const dots = targets.map(t => {{
   return {{ el: c, sx, sy, tx: t.x, ty: t.y }};
 }});
 
-/* ---------- master timeline — 30s, loops, distinct transition per cut ---------- */
+gsap.set(['#scene-stats .heading', '#scene-process .heading', '#scene-solutions .heading'], {{ opacity: 0, y: 20 }});
+
+/* ---------- master timeline — loops, distinct transition per cut ---------- */
 const tl = gsap.timeline({{ repeat: -1, repeatDelay: 0.5 }});
 
 function irisWipe(time) {{
@@ -264,6 +296,18 @@ function splitWipe(time) {{
   tl.to('#wipe-split-bottom', {{ transform: 'translateY(0%)', duration: 0.24, ease: 'power2.in' }}, time - 0.24);
   tl.to('#wipe-split-top', {{ transform: 'translateY(-100%)', duration: 0.24, ease: 'power2.out' }}, time);
   tl.to('#wipe-split-bottom', {{ transform: 'translateY(100%)', duration: 0.24, ease: 'power2.out' }}, time);
+}}
+function diagWipe(time) {{
+  tl.set('#wipe-diag', {{ transform: 'rotate(-14deg) translateX(-100%)' }}, time - 0.3);
+  tl.to('#wipe-diag', {{ transform: 'rotate(-14deg) translateX(0%)', duration: 0.26, ease: 'power2.in' }}, time - 0.26);
+  tl.to('#wipe-diag', {{ transform: 'rotate(-14deg) translateX(100%)', duration: 0.26, ease: 'power2.out' }}, time);
+}}
+function countUp(id, time, target, suffix, dur = 1.0) {{
+  const el = document.getElementById(id);
+  tl.to({{ v: 0 }}, {{
+    v: target, duration: dur, ease: 'power2.out',
+    onUpdate() {{ el.textContent = Math.round(this.targets()[0].v) + suffix; }},
+  }}, time);
 }}
 function zoomPunch(time) {{
   tl.to('#stage-content', {{ scale: 1.06, filter: 'blur(6px)', duration: 0.16, ease: 'power2.in' }}, time - 0.16);
@@ -308,60 +352,86 @@ tl.set('#scene-headline', {{ opacity: 1 }}, 5.02);
 tl.to('#corner-logo', {{ opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }}, 5.1);
 
 tl.fromTo('#headline-text', {{ opacity: 0, y: 26, filter: 'blur(10px)' }}, {{ opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.7, ease: 'power2.out' }}, 5.2);
-tl.fromTo('#headline-sub', {{ opacity: 0, y: 16 }}, {{ opacity: 1, y: 0, duration: 0.55, ease: 'power2.out' }}, 6.0);
-flash(6.6, 0.18);
-tl.fromTo('#headline-btns', {{ opacity: 0, y: 16 }}, {{ opacity: 1, y: 0, duration: 0.5, ease: 'back.out(1.5)' }}, 6.6);
-tl.to('#headline-shimmer', {{ left: '120%', duration: 1.1, repeat: 1, ease: 'power1.inOut' }}, 7.2);
 
-tl.to('#scene-headline', {{ opacity: 0, duration: 0.4 }}, 9.3);
+tl.to('#scene-headline', {{ opacity: 0, duration: 0.4 }}, 8.0);
 
-// 9.7  SLIDE WIPE into solutions
-slideWipe(9.7);
-tl.set('#scene-solutions', {{ opacity: 1 }}, 9.72);
+// 8.4  SLIDE WIPE into stats
+slideWipe(8.4);
+tl.set('#scene-stats', {{ opacity: 1 }}, 8.42);
 
-gsap.set('.scene#scene-solutions .heading', {{ opacity: 0, y: 20 }});
-tl.to('#scene-solutions .heading', {{ opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }}, 9.85);
-tl.to('#solutions-divider', {{ width: '420px', duration: 0.5, ease: 'power2.out' }}, 10.05);
+tl.to('#scene-stats .heading', {{ opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }}, 8.55);
+tl.to('#stats-divider', {{ width: '420px', duration: 0.5, ease: 'power2.out' }}, 8.75);
 
-flash(10.5, 0.2);
-['sol1', 'sol2', 'sol3', 'sol4'].forEach((id, i) => {{
-  tl.fromTo('#' + id, {{ opacity: 0, y: 28, scale: 0.94 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.45, ease: 'back.out(1.6)' }}, 10.5 + i * 0.22);
+flash(9.2, 0.2);
+['stat1', 'stat2', 'stat3'].forEach((id, i) => {{
+  tl.fromTo('#' + id, {{ opacity: 0, y: 28, scale: 0.9 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.45, ease: 'back.out(1.6)' }}, 9.2 + i * 0.18);
+}});
+countUp('stat1-num', 9.5, 3, 'x', 1.0);
+countUp('stat2-num', 9.68, 50, '%', 1.0);
+countUp('stat3-num', 9.86, 100, '+', 1.0);
+
+tl.to('#scene-stats', {{ opacity: 0, duration: 0.4 }}, 12.6);
+
+// 13.0  DIAGONAL WIPE into process
+diagWipe(13.0);
+tl.set('#scene-process', {{ opacity: 1 }}, 13.02);
+
+tl.to('#scene-process .heading', {{ opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }}, 13.15);
+tl.to('#process-line', {{ width: '100%', duration: 0.7, ease: 'power2.out' }}, 13.4);
+
+flash(13.6, 0.18);
+['proc1', 'proc2', 'proc3'].forEach((id, i) => {{
+  tl.fromTo('#' + id, {{ opacity: 0, y: 24, scale: 0.92 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.45, ease: 'back.out(1.7)' }}, 13.6 + i * 0.32);
 }});
 
-tl.to('#scene-solutions', {{ opacity: 0, duration: 0.4 }}, 14.6);
+tl.to('#scene-process', {{ opacity: 0, duration: 0.4 }}, 17.6);
 
-// 15.0  SPLIT WIPE into testimonial
-splitWipe(15.0);
-tl.set('#scene-testimonial', {{ opacity: 1 }}, 15.02);
+// 18.0  SPLIT WIPE into solutions
+splitWipe(18.0);
+tl.set('#scene-solutions', {{ opacity: 1 }}, 18.02);
 
-tl.fromTo('#quote-mark', {{ opacity: 0, scale: 0.6 }}, {{ opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.8)' }}, 15.15);
-tl.fromTo('#quote-text', {{ opacity: 0, y: 22, filter: 'blur(8px)' }}, {{ opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.7, ease: 'power2.out' }}, 15.4);
-tl.to('#quote-name', {{ opacity: 1, duration: 0.45 }}, 16.6);
-tl.to('#quote-title', {{ opacity: 1, duration: 0.45 }}, 16.8);
+tl.to('#scene-solutions .heading', {{ opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }}, 18.15);
+tl.to('#solutions-divider', {{ width: '420px', duration: 0.5, ease: 'power2.out' }}, 18.35);
 
-tl.to('#scene-testimonial', {{ opacity: 0, duration: 0.4 }}, 19.2);
-tl.to('#corner-logo', {{ opacity: 0, duration: 0.3 }}, 19.2);
+flash(18.8, 0.2);
+['sol1', 'sol2', 'sol3', 'sol4'].forEach((id, i) => {{
+  tl.fromTo('#' + id, {{ opacity: 0, y: 28, scale: 0.94 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.45, ease: 'back.out(1.6)' }}, 18.8 + i * 0.22);
+}});
 
-// 19.6  ZOOM PUNCH into CTA
-zoomPunch(19.6);
-tl.set('#scene-cta', {{ opacity: 1 }}, 19.62);
+tl.to('#scene-solutions', {{ opacity: 0, duration: 0.4 }}, 23.0);
 
-tl.fromTo('#cta-logo', {{ scale: 0.7, opacity: 0 }}, {{ scale: 1, opacity: 1, duration: 0.55, ease: 'back.out(1.5)' }}, 19.75);
+// 23.4  IRIS WIPE into testimonial
+irisWipe(23.4);
+tl.set('#scene-testimonial', {{ opacity: 1 }}, 23.42);
+
+tl.fromTo('#quote-mark', {{ opacity: 0, scale: 0.6 }}, {{ opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.8)' }}, 23.55);
+tl.fromTo('#quote-text', {{ opacity: 0, y: 22, filter: 'blur(8px)' }}, {{ opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.7, ease: 'power2.out' }}, 23.8);
+tl.to('#quote-name', {{ opacity: 1, duration: 0.45 }}, 25.0);
+tl.to('#quote-title', {{ opacity: 1, duration: 0.45 }}, 25.2);
+
+tl.to('#scene-testimonial', {{ opacity: 0, duration: 0.4 }}, 27.4);
+tl.to('#corner-logo', {{ opacity: 0, duration: 0.3 }}, 27.4);
+
+// 27.8  ZOOM PUNCH into CTA
+zoomPunch(27.8);
+tl.set('#scene-cta', {{ opacity: 1 }}, 27.82);
+
+tl.fromTo('#cta-logo', {{ scale: 0.7, opacity: 0 }}, {{ scale: 1, opacity: 1, duration: 0.55, ease: 'back.out(1.5)' }}, 27.95);
 ['ctaring1', 'ctaring2', 'ctaring3'].forEach((id, i) => {{
   gsap.set('#' + id, {{ opacity: 0 }});
-  tl.to('#' + id, {{ opacity: 1, duration: 0.35 }}, 19.75);
-  tl.to('#' + id, {{ scale: 1.03, duration: 1.1, repeat: 3, yoyo: true, ease: 'sine.inOut' }}, 19.9 + i * 0.08);
+  tl.to('#' + id, {{ opacity: 1, duration: 0.35 }}, 27.95);
+  tl.to('#' + id, {{ scale: 1.03, duration: 1.1, repeat: 3, yoyo: true, ease: 'sine.inOut' }}, 28.1 + i * 0.08);
 }});
-tl.fromTo('#cta-headline', {{ opacity: 0, y: 22, filter: 'blur(8px)' }}, {{ opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.6, ease: 'power2.out' }}, 20.5);
-flash(21.0, 0.28);
+tl.fromTo('#cta-headline', {{ opacity: 0, y: 22, filter: 'blur(8px)' }}, {{ opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.6, ease: 'power2.out' }}, 28.7);
+flash(29.2, 0.28);
 gsap.set('#cta-btn', {{ scale: 0.7 }});
-tl.to('#cta-btn', {{ opacity: 1, scale: 1, duration: 0.45, ease: 'back.out(1.7)' }}, 21.0);
-tl.to('#cta-shimmer', {{ left: '120%', duration: 1.1, repeat: 3, ease: 'power1.inOut' }}, 21.2);
-tl.to('#cta-url', {{ opacity: 1, y: -4, duration: 0.45 }}, 21.6);
+tl.to('#cta-btn', {{ opacity: 1, scale: 1, duration: 0.45, ease: 'back.out(1.7)' }}, 29.2);
+tl.to('#cta-shimmer', {{ left: '120%', duration: 1.1, repeat: 3, ease: 'power1.inOut' }}, 29.4);
+tl.to('#cta-url', {{ opacity: 1, y: -4, duration: 0.45 }}, 29.8);
 
-// 28.4 — fade out, loop
-tl.to('#scene-cta', {{ opacity: 0, duration: 0.45 }}, 28.4);
-tl.to('#blackout', {{ opacity: 1, duration: 0.9, ease: 'power2.in' }}, 28.6);
+// 36.6 — fade out, loop
+tl.to('#scene-cta', {{ opacity: 0, duration: 0.45 }}, 36.6);
+tl.to('#blackout', {{ opacity: 1, duration: 0.9, ease: 'power2.in' }}, 36.8);
 
 // reset for next loop
 tl.call(() => {{
@@ -370,7 +440,15 @@ tl.call(() => {{
   gsap.set(strokePath, {{ opacity: 1, strokeDashoffset: len }});
   gsap.set(fillPath, {{ opacity: 0 }});
   gsap.set('#corner-logo', {{ opacity: 0 }});
-  gsap.set(['#headline-sub', '#headline-btns'], {{ opacity: 0 }});
+  gsap.set('#stats-divider', {{ width: '0px' }});
+  gsap.set('#scene-stats .heading', {{ opacity: 0, y: 20 }});
+  gsap.set(['#stat1', '#stat2', '#stat3'], {{ opacity: 0, y: 28, scale: 0.9 }});
+  document.getElementById('stat1-num').textContent = '0x';
+  document.getElementById('stat2-num').textContent = '0%';
+  document.getElementById('stat3-num').textContent = '0+';
+  gsap.set('#scene-process .heading', {{ opacity: 0, y: 20 }});
+  gsap.set('#process-line', {{ width: '0%' }});
+  gsap.set(['#proc1', '#proc2', '#proc3'], {{ opacity: 0, y: 24, scale: 0.92 }});
   gsap.set('#solutions-divider', {{ width: '0px' }});
   gsap.set('#scene-solutions .heading', {{ opacity: 0, y: 20 }});
   gsap.set(['#sol1', '#sol2', '#sol3', '#sol4'], {{ opacity: 0, y: 28, scale: 0.94 }});
@@ -381,7 +459,7 @@ tl.call(() => {{
   gsap.set('#cta-logo', {{ opacity: 0, scale: 0.7 }});
   gsap.set('#cta-headline', {{ opacity: 0 }});
   dots.forEach(d => {{ d.el.setAttribute('cx', d.sx); d.el.setAttribute('cy', d.sy); d.el.style.opacity = 0; }});
-}}, [], 29.5);
+}}, [], 37.9);
 
 window.__tl = tl;
 (function() {{
