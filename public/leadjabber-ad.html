@@ -107,6 +107,9 @@
   #wipe-split-top{position:absolute;left:0;top:0;width:100%;height:50%;background:var(--bg);transform:translateY(-100%);z-index:40;pointer-events:none;box-shadow:0 4px 30px rgba(25,148,181,.2);}
   #wipe-split-bottom{position:absolute;left:0;bottom:0;width:100%;height:50%;background:var(--bg);transform:translateY(100%);z-index:40;pointer-events:none;box-shadow:0 -4px 30px rgba(25,148,181,.2);}
   #wipe-diag{position:absolute;top:-25%;left:-65%;width:170%;height:150%;background:var(--bg2);transform:rotate(-14deg) translateX(-100%);z-index:40;pointer-events:none;}
+  #wipe-bars{position:absolute;inset:0;display:flex;z-index:40;pointer-events:none;}
+  .wipe-bar{flex:1;background:var(--bg2);transform:scaleY(0);}
+  #wipe-curtain{position:absolute;inset:0;background:var(--bg2);transform:translateY(-100%);z-index:40;pointer-events:none;}
 
   #flash{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:35;pointer-events:none;opacity:0;}
   .flash-glow{width:1400px;height:1400px;border-radius:50%;background:radial-gradient(circle, rgba(255,255,255,.95) 0%, rgba(25,148,181,.3) 35%, transparent 70%);}
@@ -249,6 +252,11 @@
     <div id="wipe-split-top"></div>
     <div id="wipe-split-bottom"></div>
     <div id="wipe-diag"></div>
+    <div id="wipe-bars">
+      <div class="wipe-bar"></div><div class="wipe-bar"></div><div class="wipe-bar"></div>
+      <div class="wipe-bar"></div><div class="wipe-bar"></div><div class="wipe-bar"></div>
+    </div>
+    <div id="wipe-curtain"></div>
     <div id="flash"><div class="flash-glow"></div></div>
     <div id="blackout"></div>
   </div>
@@ -337,6 +345,21 @@ function diagWipe(time) {
   tl.to('#wipe-diag', { transform: 'rotate(-14deg) translateX(0%)', duration: 0.26, ease: 'power2.in' }, time - 0.26);
   tl.to('#wipe-diag', { transform: 'rotate(-14deg) translateX(100%)', duration: 0.26, ease: 'power2.out' }, time);
 }
+function barsWipe(time) {
+  const bars = '.wipe-bar';
+  tl.to(bars, { scaleY: 1, duration: 0.22, stagger: 0.03, ease: 'power2.in' }, time - 0.34);
+  tl.to(bars, { scaleY: 0, duration: 0.22, stagger: 0.03, ease: 'power2.out' }, time);
+}
+function curtainWipe(time) {
+  tl.set('#wipe-curtain', { transform: 'translateY(-100%)' }, time - 0.3);
+  tl.to('#wipe-curtain', { transform: 'translateY(0%)', duration: 0.26, ease: 'power2.in' }, time - 0.26);
+  tl.to('#wipe-curtain', { transform: 'translateY(100%)', duration: 0.26, ease: 'power2.out' }, time);
+}
+function zoomSpin(time) {
+  tl.to('#stage-content', { scale: 1.08, rotation: 1.5, filter: 'blur(7px)', duration: 0.18, ease: 'power2.in' }, time - 0.18);
+  tl.to('#stage-content', { scale: 1, rotation: 0, filter: 'blur(0px)', duration: 0.24, ease: 'power2.out' }, time);
+  flash(time - 0.04, 0.4, 0.3);
+}
 function countUp(id, time, target, suffix, dur = 1.0) {
   const el = document.getElementById(id);
   tl.to({ v: 0 }, {
@@ -421,8 +444,8 @@ flash(13.6, 0.18);
 
 tl.to('#scene-process', { opacity: 0, duration: 0.4 }, 17.6);
 
-// 18.0  SPLIT WIPE into solutions
-splitWipe(18.0);
+// 18.0  BARS WIPE into solutions
+barsWipe(18.0);
 tl.set('#scene-solutions', { opacity: 1 }, 18.02);
 
 tl.to('#scene-solutions .heading', { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 18.15);
@@ -430,13 +453,13 @@ tl.to('#solutions-divider', { width: '420px', duration: 0.5, ease: 'power2.out' 
 
 flash(18.8, 0.2);
 ['sol1', 'sol2', 'sol3', 'sol4'].forEach((id, i) => {
-  tl.fromTo('#' + id, { opacity: 0, y: 28, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: 'back.out(1.6)' }, 18.8 + i * 0.22);
+  tl.fromTo('#' + id, { opacity: 0, y: 28, scale: 0.94, rotation: -4 }, { opacity: 1, y: 0, scale: 1, rotation: 0, duration: 0.45, ease: 'back.out(1.6)' }, 18.8 + i * 0.22);
 });
 
 tl.to('#scene-solutions', { opacity: 0, duration: 0.4 }, 23.0);
 
-// 23.4  IRIS WIPE into benefits
-irisWipe(23.4);
+// 23.4  CURTAIN WIPE into benefits
+curtainWipe(23.4);
 tl.set('#scene-benefits', { opacity: 1 }, 23.42);
 
 tl.to('#scene-benefits .heading', { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 23.55);
@@ -449,13 +472,12 @@ flash(24.2, 0.2);
 
 tl.to('#scene-benefits', { opacity: 0, duration: 0.4 }, 27.6);
 
-// 28.0  SLIDE WIPE into platform
-slideWipe(28.0);
+// 28.0  ZOOM SPIN into platform
+zoomSpin(28.0);
 tl.set('#scene-platform', { opacity: 1 }, 28.02);
 
 tl.to('#scene-platform .heading', { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 28.15);
 
-flash(28.6, 0.18);
 ['plat1', 'plat2', 'plat3'].forEach((id, i) => {
   const fromX = i % 2 === 0 ? -40 : 40;
   tl.fromTo('#' + id, { opacity: 0, x: fromX }, { opacity: 1, x: 0, duration: 0.45, ease: 'back.out(1.6)' }, 28.6 + i * 0.2);
@@ -463,8 +485,8 @@ flash(28.6, 0.18);
 
 tl.to('#scene-platform', { opacity: 0, duration: 0.4 }, 31.8);
 
-// 32.2  DIAGONAL WIPE into testimonial
-diagWipe(32.2);
+// 32.2  SPLIT WIPE into testimonial
+splitWipe(32.2);
 tl.set('#scene-testimonial', { opacity: 1 }, 32.22);
 
 tl.fromTo('#quote-mark', { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.8)' }, 32.35);
@@ -514,7 +536,7 @@ tl.call(() => {
   gsap.set(['#proc1', '#proc2', '#proc3'], { opacity: 0, y: 24, scale: 0.92 });
   gsap.set('#solutions-divider', { width: '0px' });
   gsap.set('#scene-solutions .heading', { opacity: 0, y: 20 });
-  gsap.set(['#sol1', '#sol2', '#sol3', '#sol4'], { opacity: 0, y: 28, scale: 0.94 });
+  gsap.set(['#sol1', '#sol2', '#sol3', '#sol4'], { opacity: 0, y: 28, scale: 0.94, rotation: -4 });
   gsap.set('#benefits-divider', { width: '0px' });
   gsap.set('#scene-benefits .heading', { opacity: 0, y: 20 });
   gsap.set(['#ben1', '#ben2', '#ben3', '#ben4'], { opacity: 0, x: -32 });
