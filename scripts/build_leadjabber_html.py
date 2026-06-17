@@ -62,6 +62,7 @@ HTML = f"""<!DOCTYPE html>
   #tagline{{font-size:25px;font-weight:400;color:var(--body);text-align:center;max-width:780px;opacity:0;}}
 
   .heading{{font-size:60px;font-weight:700;color:var(--navy);text-align:center;}}
+  .heading .word,#headline-text .word,#cta-headline .word{{display:inline-block;opacity:0;}}
   .divider{{height:3px;width:0;margin:16px auto 0;background:linear-gradient(90deg,var(--teal),var(--tealDeep),var(--teal));box-shadow:0 0 14px rgba(25,148,181,.4);}}
 
   /* corner logo */
@@ -177,14 +178,14 @@ HTML = f"""<!DOCTYPE html>
     <!-- SCENE 2: headline (real homepage hero copy) -->
     <div class="scene" id="scene-headline">
       <div style="text-align:center;max-width:1300px;">
-        <div id="headline-text">Få bedre produktivitet og<br>bygg mer <span class="accent">pipeline</span></div>
+        <div id="headline-text"><span class="word">Få</span> <span class="word">bedre</span> <span class="word">produktivitet</span> <span class="word">og</span><br><span class="word">bygg</span> <span class="word">mer</span> <span class="word accent">pipeline</span></div>
       </div>
     </div>
 
     <!-- SCENE 3: stats -->
     <div class="scene" id="scene-stats">
       <div style="text-align:center;">
-        <div class="heading">Resultater som <span class="accent">teller</span></div>
+        <div class="heading"><span class="word">Resultater</span> <span class="word">som</span> <span class="word accent">teller</span></div>
         <div class="divider" id="stats-divider"></div>
       </div>
       <div id="stats-grid">
@@ -197,7 +198,7 @@ HTML = f"""<!DOCTYPE html>
     <!-- SCENE 4: process -->
     <div class="scene" id="scene-process">
       <div style="text-align:center;">
-        <div class="heading">Slik <span class="accent">fungerer</span> det</div>
+        <div class="heading"><span class="word">Slik</span> <span class="word accent">fungerer</span> <span class="word">det</span></div>
       </div>
       <div id="process-row">
         <svg id="process-line-svg" viewBox="0 0 1020 14" preserveAspectRatio="none">
@@ -213,7 +214,7 @@ HTML = f"""<!DOCTYPE html>
     <!-- SCENE 5: solutions -->
     <div class="scene" id="scene-solutions">
       <div style="text-align:center;">
-        <div class="heading">Våre <span class="accent">løsninger</span></div>
+        <div class="heading"><span class="word">Våre</span> <span class="word accent">løsninger</span></div>
         <div class="divider" id="solutions-divider"></div>
       </div>
       <div id="solutions-grid">
@@ -227,7 +228,7 @@ HTML = f"""<!DOCTYPE html>
     <!-- SCENE 6: benefits -->
     <div class="scene" id="scene-benefits">
       <div style="text-align:center;">
-        <div class="heading">Hvorfor <span class="accent">LeadJabber</span></div>
+        <div class="heading"><span class="word">Hvorfor</span> <span class="word accent">LeadJabber</span></div>
         <div class="divider" id="benefits-divider"></div>
       </div>
       <div id="benefits-list">
@@ -241,7 +242,7 @@ HTML = f"""<!DOCTYPE html>
     <!-- SCENE 7: platform -->
     <div class="scene" id="scene-platform">
       <div style="text-align:center;">
-        <div class="heading">Alt i <span class="accent">én plattform</span></div>
+        <div class="heading"><span class="word">Alt</span> <span class="word">i</span> <span class="word accent">én</span> <span class="word accent">plattform</span></div>
       </div>
       <div id="platform-row">
         <div class="platform-pill" id="plat1"><span class="platform-dot"></span><span class="platform-label">CRM-integrasjon</span></div>
@@ -256,7 +257,7 @@ HTML = f"""<!DOCTYPE html>
       <div class="cta-ring" id="ctaring2" style="width:680px;height:680px;"></div>
       <div class="cta-ring" id="ctaring3" style="width:800px;height:800px;"></div>
       <img id="cta-logo" src="data:image/png;base64,{LOGOWHITE_B64}" alt="LeadJabber">
-      <div id="cta-headline">Klar til å stupe inn?</div>
+      <div id="cta-headline"><span class="word">Klar</span> <span class="word">til</span> <span class="word">å</span> <span class="word">stupe</span> <span class="word">inn?</span></div>
       <div id="cta-qr-wrap"><div id="cta-qr-ring"></div><img src="data:image/png;base64,{QRBOOK_B64}" alt="QR til leadjabber.no"></div>
       <div id="cta-qr-label">Skann for å besøke siden</div>
       <div id="cta-url">leadjabber.no</div>
@@ -325,7 +326,7 @@ const dots = targets.map(t => {{
   return {{ el: c, sx, sy, tx: t.x, ty: t.y }};
 }});
 
-gsap.set(['#scene-stats .heading', '#scene-process .heading', '#scene-solutions .heading', '#scene-benefits .heading', '#scene-platform .heading'], {{ opacity: 0, y: 20 }});
+gsap.set('.heading .word', {{ opacity: 0, y: 22, filter: 'blur(6px)' }});
 
 /* ---------- process line draw setup ---------- */
 const procLine = document.getElementById('process-line-path');
@@ -423,7 +424,7 @@ irisWipe(5.0);
 tl.set('#scene-headline', {{ opacity: 1 }}, 5.02);
 tl.to('#corner-logo', {{ opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }}, 5.1);
 
-tl.fromTo('#headline-text', {{ opacity: 0, y: 26, filter: 'blur(10px)' }}, {{ opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.7, ease: 'power2.out' }}, 5.2);
+tl.fromTo('#headline-text .word', {{ opacity: 0, y: 30, filter: 'blur(9px)' }}, {{ opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.55, stagger: 0.045, ease: 'power3.out' }}, 5.2);
 
 tl.to('#scene-headline', {{ opacity: 0, duration: 0.4 }}, 8.0);
 
@@ -431,12 +432,12 @@ tl.to('#scene-headline', {{ opacity: 0, duration: 0.4 }}, 8.0);
 slideWipe(8.4);
 tl.set('#scene-stats', {{ opacity: 1 }}, 8.42);
 
-tl.to('#scene-stats .heading', {{ opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }}, 8.55);
+tl.to('#scene-stats .heading .word', {{ opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.45, stagger: 0.05, ease: 'power3.out' }}, 8.55);
 tl.to('#stats-divider', {{ width: '420px', duration: 0.5, ease: 'power2.out' }}, 8.75);
 
 flash(9.2, 0.2);
 ['stat1', 'stat2', 'stat3'].forEach((id, i) => {{
-  tl.fromTo('#' + id, {{ opacity: 0, y: 28, scale: 0.9 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.45, ease: 'back.out(1.6)' }}, 9.2 + i * 0.18);
+  tl.fromTo('#' + id, {{ opacity: 0, y: 28, scale: 0.9, filter: 'blur(6px)' }}, {{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: 0.45, ease: 'back.out(1.6)' }}, 9.2 + i * 0.18);
 }});
 countUp('stat1-num', 9.5, 3, 'x', 1.0);
 countUp('stat2-num', 9.68, 50, '%', 1.0);
@@ -448,7 +449,7 @@ tl.to('#scene-stats', {{ opacity: 0, duration: 0.4 }}, 12.6);
 diagWipe(13.0);
 tl.set('#scene-process', {{ opacity: 1 }}, 13.02);
 
-tl.to('#scene-process .heading', {{ opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }}, 13.15);
+tl.to('#scene-process .heading .word', {{ opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.45, stagger: 0.05, ease: 'power3.out' }}, 13.15);
 
 // step 1 appears first
 flash(13.45, 0.16);
@@ -472,12 +473,12 @@ tl.to('#scene-process', {{ opacity: 0, duration: 0.4 }}, 17.6);
 barsWipe(18.0);
 tl.set('#scene-solutions', {{ opacity: 1 }}, 18.02);
 
-tl.to('#scene-solutions .heading', {{ opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }}, 18.15);
+tl.to('#scene-solutions .heading .word', {{ opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.45, stagger: 0.05, ease: 'power3.out' }}, 18.15);
 tl.to('#solutions-divider', {{ width: '420px', duration: 0.5, ease: 'power2.out' }}, 18.35);
 
 flash(18.8, 0.2);
 ['sol1', 'sol2', 'sol3', 'sol4'].forEach((id, i) => {{
-  tl.fromTo('#' + id, {{ opacity: 0, y: 28, scale: 0.94, rotation: -4 }}, {{ opacity: 1, y: 0, scale: 1, rotation: 0, duration: 0.45, ease: 'back.out(1.6)' }}, 18.8 + i * 0.22);
+  tl.fromTo('#' + id, {{ opacity: 0, y: 28, scale: 0.94, rotation: -4, filter: 'blur(6px)' }}, {{ opacity: 1, y: 0, scale: 1, rotation: 0, filter: 'blur(0px)', duration: 0.45, ease: 'back.out(1.6)' }}, 18.8 + i * 0.22);
 }});
 
 tl.to('#scene-solutions', {{ opacity: 0, duration: 0.4 }}, 23.0);
@@ -486,12 +487,12 @@ tl.to('#scene-solutions', {{ opacity: 0, duration: 0.4 }}, 23.0);
 curtainWipe(23.4);
 tl.set('#scene-benefits', {{ opacity: 1 }}, 23.42);
 
-tl.to('#scene-benefits .heading', {{ opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }}, 23.55);
+tl.to('#scene-benefits .heading .word', {{ opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.45, stagger: 0.05, ease: 'power3.out' }}, 23.55);
 tl.to('#benefits-divider', {{ width: '420px', duration: 0.5, ease: 'power2.out' }}, 23.75);
 
 flash(24.2, 0.2);
 ['ben1', 'ben2', 'ben3', 'ben4'].forEach((id, i) => {{
-  tl.fromTo('#' + id, {{ opacity: 0, x: -32 }}, {{ opacity: 1, x: 0, duration: 0.45, ease: 'power2.out' }}, 24.2 + i * 0.22);
+  tl.fromTo('#' + id, {{ opacity: 0, x: -32, filter: 'blur(6px)' }}, {{ opacity: 1, x: 0, filter: 'blur(0px)', duration: 0.45, ease: 'power2.out' }}, 24.2 + i * 0.22);
 }});
 
 tl.to('#scene-benefits', {{ opacity: 0, duration: 0.4 }}, 27.6);
@@ -500,11 +501,11 @@ tl.to('#scene-benefits', {{ opacity: 0, duration: 0.4 }}, 27.6);
 zoomSpin(28.0);
 tl.set('#scene-platform', {{ opacity: 1 }}, 28.02);
 
-tl.to('#scene-platform .heading', {{ opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }}, 28.15);
+tl.to('#scene-platform .heading .word', {{ opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.45, stagger: 0.05, ease: 'power3.out' }}, 28.15);
 
 ['plat1', 'plat2', 'plat3'].forEach((id, i) => {{
   const fromX = i % 2 === 0 ? -40 : 40;
-  tl.fromTo('#' + id, {{ opacity: 0, x: fromX }}, {{ opacity: 1, x: 0, duration: 0.45, ease: 'back.out(1.6)' }}, 28.6 + i * 0.2);
+  tl.fromTo('#' + id, {{ opacity: 0, x: fromX, filter: 'blur(6px)' }}, {{ opacity: 1, x: 0, filter: 'blur(0px)', duration: 0.45, ease: 'back.out(1.6)' }}, 28.6 + i * 0.2);
 }});
 
 tl.to('#scene-platform', {{ opacity: 0, duration: 0.4 }}, 31.8);
@@ -520,7 +521,7 @@ tl.fromTo('#cta-logo', {{ scale: 0.7, opacity: 0 }}, {{ scale: 1, opacity: 1, du
   tl.to('#' + id, {{ opacity: 1, duration: 0.35 }}, 32.35);
   tl.to('#' + id, {{ scale: 1.03, duration: 1.1, repeat: 3, yoyo: true, ease: 'sine.inOut' }}, 32.5 + i * 0.08);
 }});
-tl.fromTo('#cta-headline', {{ opacity: 0, y: 22, filter: 'blur(8px)' }}, {{ opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.6, ease: 'power2.out' }}, 33.1);
+tl.fromTo('#cta-headline .word', {{ opacity: 0, y: 22, filter: 'blur(8px)' }}, {{ opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.5, stagger: 0.05, ease: 'power3.out' }}, 33.1);
 flash(33.6, 0.28);
 gsap.set('#cta-qr-wrap', {{ scale: 0.7, rotation: -6 }});
 tl.to('#cta-qr-wrap', {{ opacity: 1, scale: 1, rotation: 0, duration: 0.5, ease: 'back.out(1.7)' }}, 33.6);
@@ -540,22 +541,22 @@ tl.call(() => {{
   gsap.set(fillPath, {{ opacity: 0 }});
   gsap.set('#corner-logo', {{ opacity: 0 }});
   gsap.set('#stats-divider', {{ width: '0px' }});
-  gsap.set('#scene-stats .heading', {{ opacity: 0, y: 20 }});
+  gsap.set('#scene-stats .heading .word', {{ opacity: 0, y: 22, filter: 'blur(6px)' }});
   gsap.set(['#stat1', '#stat2', '#stat3'], {{ opacity: 0, y: 28, scale: 0.9 }});
   document.getElementById('stat1-num').textContent = '0x';
   document.getElementById('stat2-num').textContent = '0%';
   document.getElementById('stat3-num').textContent = '0+';
-  gsap.set('#scene-process .heading', {{ opacity: 0, y: 20 }});
+  gsap.set('#scene-process .heading .word', {{ opacity: 0, y: 22, filter: 'blur(6px)' }});
   gsap.set(procLine, {{ strokeDashoffset: procLineLen }});
   gsap.set('#process-line-dot', {{ attr: {{ cx: 170 }} }});
   gsap.set(['#proc1', '#proc2', '#proc3'], {{ opacity: 0, y: 24, scale: 0.92 }});
   gsap.set('#solutions-divider', {{ width: '0px' }});
-  gsap.set('#scene-solutions .heading', {{ opacity: 0, y: 20 }});
+  gsap.set('#scene-solutions .heading .word', {{ opacity: 0, y: 22, filter: 'blur(6px)' }});
   gsap.set(['#sol1', '#sol2', '#sol3', '#sol4'], {{ opacity: 0, y: 28, scale: 0.94, rotation: -4 }});
   gsap.set('#benefits-divider', {{ width: '0px' }});
-  gsap.set('#scene-benefits .heading', {{ opacity: 0, y: 20 }});
+  gsap.set('#scene-benefits .heading .word', {{ opacity: 0, y: 22, filter: 'blur(6px)' }});
   gsap.set(['#ben1', '#ben2', '#ben3', '#ben4'], {{ opacity: 0, x: -32 }});
-  gsap.set('#scene-platform .heading', {{ opacity: 0, y: 20 }});
+  gsap.set('#scene-platform .heading .word', {{ opacity: 0, y: 22, filter: 'blur(6px)' }});
   gsap.set('#plat1', {{ opacity: 0, x: -40 }});
   gsap.set('#plat2', {{ opacity: 0, x: 40 }});
   gsap.set('#plat3', {{ opacity: 0, x: -40 }});
