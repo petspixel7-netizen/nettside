@@ -19,7 +19,7 @@
 
   #vignette{position:absolute;inset:0;background:radial-gradient(circle at 50% 48%, transparent 35%, rgba(0,0,0,.75) 100%);pointer-events:none;z-index:30;}
   #scanline-overlay{position:absolute;inset:0;pointer-events:none;z-index:32;opacity:.06;
-    background:repeating-linear-gradient(0deg, #fff 0px, #fff 1px, transparent 1px, transparent 4px);}
+    background:repeating-linear-gradient(0deg, #bdf5ff 0px, #bdf5ff 1px, transparent 1px, transparent 4px);}
 
   /* ---------- LED grid ---------- */
   #grid{position:absolute;inset:0;z-index:5;}
@@ -30,7 +30,7 @@
     background:linear-gradient(90deg, transparent, rgba(200,255,0,.35), rgba(0,229,255,.5), rgba(200,255,0,.35), transparent);
     mix-blend-mode:screen;opacity:0;}
 
-  #flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:20;}
+  #flash{position:absolute;inset:0;background:#d9ffae;opacity:0;pointer-events:none;z-index:20;}
 
   /* ---------- rain-built logo (closing scene) ---------- */
   #rainGrid{position:absolute;inset:0;z-index:11;}
@@ -82,12 +82,14 @@ for (let r = 0; r < ROWS; r++) {
 }
 grid.appendChild(frag);
 
+const brightMap = { 'var(--lime)': '#eaffae', 'var(--cyan)': '#aef5ff', 'var(--amber)': '#ffe3a8' };
 const cx0 = 1920 / 2, cy0 = 1080 / 2;
 cells.forEach(cell => {
   cell.distFromCenter = Math.hypot(cell.cx - cx0, cell.cy - cy0);
   cell.distFromEdge = Math.min(cell.cx, 1920 - cell.cx, cell.cy, 1080 - cell.cy);
   /* puzzle-piece zones: contiguous diagonal bands instead of a checkerboard */
   cell.color = palette[Math.floor((cell.r + cell.c) / 5) % palette.length];
+  cell.brightColor = brightMap[cell.color];
 });
 const maxEdgeDist = Math.max(...cells.map(c => c.distFromEdge));
 const maxCenterDist = Math.max(...cells.map(c => c.distFromCenter));
@@ -119,75 +121,75 @@ for (let i = 0; i < MASK_FLAT.length; i += 2) {
 rainGrid.appendChild(rainFrag);
 const maxLandY = Math.max(...rainCells.map(c => c.landY));
 
-/* ---------- master timeline, ~14.6s loop — longer & punchier so it sticks ---------- */
-const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.5 });
+/* ---------- master timeline, ~16s loop — slower & longer, especially the closing scene ---------- */
+const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.6 });
 window.masterTL = tl;
 window.cellsData = cells;
 window.rainCellsData = rainCells;
 
 tl.set('#blackout', { opacity: 1 });
-tl.to('#blackout', { opacity: 0, duration: 0.35, ease: 'power1.in' }, 0.0);
+tl.to('#blackout', { opacity: 0, duration: 0.5, ease: 'power1.in' }, 0.0);
 
-/* 0.0 - 1.3  BOOT — faster diagonal wave flicker-on, double-flicker for more energy */
+/* 0.1 - 2.5  BOOT — diagonal wave flicker-on, slowed down so each cell's flicker reads clearly */
 cells.forEach(cell => {
   const wave = (cell.r + cell.c) / (ROWS + COLS);
-  const t0 = 0.04 + wave * 1.0;
-  tl.to(cell.el, { backgroundColor: cell.color, duration: 0.08, ease: 'none' }, t0);
-  tl.to(cell.el, { backgroundColor: '#0a1018', duration: 0.07, ease: 'none' }, t0 + 0.08);
-  tl.to(cell.el, { backgroundColor: cell.color, duration: 0.08, ease: 'none' }, t0 + 0.15 + Math.random() * 0.1);
-  tl.to(cell.el, { backgroundColor: '#0a1018', duration: 0.12, ease: 'none' }, t0 + 0.23 + Math.random() * 0.1);
-  tl.to(cell.el, { backgroundColor: cell.color, opacity: 0.9, duration: 0.2, ease: 'none' }, t0 + 0.4);
+  const t0 = 0.1 + wave * 1.6;
+  tl.to(cell.el, { backgroundColor: cell.color, duration: 0.11, ease: 'none' }, t0);
+  tl.to(cell.el, { backgroundColor: '#0a1018', duration: 0.1, ease: 'none' }, t0 + 0.11);
+  tl.to(cell.el, { backgroundColor: cell.color, duration: 0.11, ease: 'none' }, t0 + 0.21 + Math.random() * 0.12);
+  tl.to(cell.el, { backgroundColor: '#0a1018', duration: 0.17, ease: 'none' }, t0 + 0.32 + Math.random() * 0.12);
+  tl.to(cell.el, { backgroundColor: cell.color, opacity: 0.9, duration: 0.28, ease: 'none' }, t0 + 0.55);
 });
 
-/* 1.3 - 3.1  CHASE — bright scanbar rips across twice, faster + brighter flashes */
-tl.set('#scanbar', { opacity: 1 }, 1.3);
-tl.fromTo('#scanbar', { left: -200 }, { left: 1920, duration: 0.75, ease: 'power1.inOut' }, 1.35);
-tl.fromTo('#scanbar', { left: -200 }, { left: 1920, duration: 0.75, ease: 'power1.inOut' }, 2.2);
-tl.to('#scanbar', { opacity: 0, duration: 0.18 }, 2.95);
+/* 2.6 - 5.2  CHASE — scanbar sweeps across twice, slower, flashes tinted brand-bright (never white) */
+tl.set('#scanbar', { opacity: 1 }, 2.6);
+tl.fromTo('#scanbar', { left: -200 }, { left: 1920, duration: 1.1, ease: 'power1.inOut' }, 2.65);
+tl.fromTo('#scanbar', { left: -200 }, { left: 1920, duration: 1.1, ease: 'power1.inOut' }, 3.9);
+tl.to('#scanbar', { opacity: 0, duration: 0.25 }, 4.9);
 cells.forEach(cell => {
-  const passT1 = 1.35 + (cell.cx + 200) / 2120 * 0.75;
-  const passT2 = 2.2 + (cell.cx + 200) / 2120 * 0.75;
-  tl.to(cell.el, { backgroundColor: '#ffffff', duration: 0.05 }, passT1);
-  tl.to(cell.el, { backgroundColor: cell.color, duration: 0.14 }, passT1 + 0.05);
-  tl.to(cell.el, { backgroundColor: '#ffffff', duration: 0.05 }, passT2);
-  tl.to(cell.el, { backgroundColor: cell.color, duration: 0.14 }, passT2 + 0.05);
+  const passT1 = 2.65 + (cell.cx + 200) / 2120 * 1.1;
+  const passT2 = 3.9 + (cell.cx + 200) / 2120 * 1.1;
+  tl.to(cell.el, { backgroundColor: cell.brightColor, duration: 0.08 }, passT1);
+  tl.to(cell.el, { backgroundColor: cell.color, duration: 0.22 }, passT1 + 0.08);
+  tl.to(cell.el, { backgroundColor: cell.brightColor, duration: 0.08 }, passT2);
+  tl.to(cell.el, { backgroundColor: cell.color, duration: 0.22 }, passT2 + 0.08);
 });
 
-/* 3.1 - 3.95  COLOR DRAIN — each color group vanishes piece by piece, one color at a time */
+/* 5.3 - 7.0  COLOR DRAIN — each color group vanishes piece by piece, one color at a time, until black */
 const colorGroups = palette.map(col => cells.filter(c => c.color === col));
-const groupStarts = [3.1, 3.4, 3.7];
+const groupStarts = [5.3, 5.8, 6.3];
 colorGroups.forEach((group, gi) => {
   group.sort((a, b) => (a.r + a.c) - (b.r + b.c));
   tl.to(group.map(c => c.el), {
-    opacity: 0, scale: 0.25, duration: 0.3, ease: 'power2.in',
-    stagger: 0.15 / group.length
+    opacity: 0, scale: 0.25, duration: 0.45, ease: 'power2.in',
+    stagger: 0.25 / group.length
   }, groupStarts[gi]);
 });
 
-/* 4.15 - 6.7  RAIN — grid cells fall from the sky straight into the logo mark, no text, no detour */
-tl.to('#flash', { opacity: 0.5, duration: 0.04 }, 4.2);
-tl.to('#flash', { opacity: 0, duration: 0.25 }, 4.25);
-tl.to('#rainGlow', { opacity: 1, duration: 0.6 }, 4.3);
+/* 7.1 - 10.1  RAIN — grid cells fall from the sky, slowly and gently, straight into the logo mark */
+tl.to('#flash', { opacity: 0.4, duration: 0.05 }, 7.1);
+tl.to('#flash', { opacity: 0, duration: 0.3 }, 7.16);
+tl.to('#rainGlow', { opacity: 1, duration: 0.8 }, 7.25);
 rainCells.forEach(cell => {
-  const fallDelay = 4.25 + (cell.landY / maxLandY) * 1.1 + Math.random() * 0.15;
+  const fallDelay = 7.15 + (cell.landY / maxLandY) * 1.8 + Math.random() * 0.3;
   tl.fromTo(cell.el,
-    { y: -(cell.landY + 200 + Math.random() * 300), opacity: 0, scale: 0.6 },
-    { y: 0, opacity: 1, scale: 1, duration: 0.6, ease: 'bounce.out', immediateRender: false },
+    { y: -(cell.landY + 250 + Math.random() * 350), opacity: 0, scale: 0.6 },
+    { y: 0, opacity: 1, scale: 1, duration: 0.9, ease: 'bounce.out', immediateRender: false },
     fallDelay);
 });
 
-/* 6.7 - 10.0  HOLD the finished logo, glow pulses gently so it lingers in memory */
-tl.to('#rainGlow', { opacity: 0.55, duration: 1.1, ease: 'sine.inOut' }, 7.1);
-tl.to('#rainGlow', { opacity: 1, duration: 1.1, ease: 'sine.inOut' }, 8.2);
-tl.to('#rainGlow', { opacity: 0.55, duration: 1.1, ease: 'sine.inOut' }, 9.3);
+/* 10.1 - 14.5  HOLD the finished logo for a long while, glow pulses gently so it lingers in memory */
+tl.to('#rainGlow', { opacity: 0.5, duration: 1.3, ease: 'sine.inOut' }, 10.7);
+tl.to('#rainGlow', { opacity: 1, duration: 1.3, ease: 'sine.inOut' }, 12.0);
+tl.to('#rainGlow', { opacity: 0.5, duration: 1.3, ease: 'sine.inOut' }, 13.3);
 
-/* 10.0 - 10.8  fade to black, ready to loop */
-tl.to('#rainGlow', { opacity: 0, duration: 0.6 }, 10.0);
-tl.to('#blackout', { opacity: 1, duration: 0.8, ease: 'power2.in' }, 10.0);
+/* 14.5 - 15.6  fade to black, ready to loop */
+tl.to('#rainGlow', { opacity: 0, duration: 0.7 }, 14.6);
+tl.to('#blackout', { opacity: 1, duration: 1.0, ease: 'power2.in' }, 14.6);
 
 /* reset for next loop */
-tl.set(cells.map(c => c.el), { x: 0, y: 0, scale: 1, opacity: 1, backgroundColor: '#0a1018' }, 10.8);
-tl.set(rainCells.map(c => c.el), { y: 0, opacity: 0, scale: 0.6 }, 10.8);
+tl.set(cells.map(c => c.el), { x: 0, y: 0, scale: 1, opacity: 1, backgroundColor: '#0a1018' }, 15.7);
+tl.set(rainCells.map(c => c.el), { y: 0, opacity: 0, scale: 0.6 }, 15.7);
 </script>
 </body>
 </html>
