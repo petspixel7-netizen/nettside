@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<title>NORLEADS — Broadcast</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#000000;
+    --c1:#D4AF37; --c2:#7C5CFF; --c3:#FF4FA0; --c4:#37C7FF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Manrope',sans-serif;}
+  #viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#000;}
+  #canvas{position:relative;width:1920px;height:1080px;background:var(--bg);overflow:hidden;transform-origin:center center;}
+
+  #bg-glow{position:absolute;inset:0;background:radial-gradient(circle at 50% 46%, rgba(124,92,255,0.05) 0%, transparent 55%);}
+  #scanlines{position:absolute;inset:0;opacity:.05;pointer-events:none;
+    background:repeating-linear-gradient(to bottom, rgba(255,255,255,.6) 0px, rgba(255,255,255,.6) 1px, transparent 1px, transparent 4px);}
+  #vignette{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%, transparent 45%, rgba(0,0,0,.6) 100%);pointer-events:none;}
+  #grain{position:absolute;inset:-50%;width:200%;height:200%;opacity:.035;mix-blend-mode:overlay;pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+
+  /* ---------- status readout (pre-signal) ---------- */
+  #status{
+    position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    font-family:'JetBrains Mono',monospace; font-size:22px; letter-spacing:3px;
+    color:rgba(212,175,55,0.75); white-space:nowrap; opacity:0;
+    z-index:41;
+  }
+  #status .cursor{display:inline-block;width:11px;height:22px;background:rgba(212,175,55,.85);
+    transform:translateY(3px);margin-left:4px;}
+
+  /* ---------- the mark + lockup, fully formed underneath the blinds ---------- */
+  #content{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  #mono-wrap{width:300px;height:305px;position:relative;}
+  #mono-svg{width:100%;height:100%;overflow:visible;}
+  .mono-fill{fill:url(#flowGradient);}
+  .glitch-copy{position:absolute;inset:0;mix-blend-mode:screen;opacity:0;pointer-events:none;}
+
+  #lockup{margin-top:34px;text-align:center;position:relative;}
+  #divider{width:0px;height:2px;margin:0 auto 26px;
+    background:linear-gradient(90deg, transparent, var(--c1) 15%, var(--c2) 40%, var(--c3) 60%, var(--c4) 85%, transparent);
+    opacity:0;}
+  #wordmark{font-weight:800;font-size:80px;letter-spacing:1px;position:relative;
+    background:linear-gradient(90deg, var(--c1), var(--c2), var(--c3), var(--c4), var(--c1));
+    background-size:300% 100%;background-position:0% 0;
+    -webkit-background-clip:text;background-clip:text;color:transparent;opacity:0;}
+  #wordmark .glitch-r, #wordmark .glitch-b{position:absolute;inset:0;opacity:0;mix-blend-mode:screen;}
+  #wordmark .glitch-r{color:#ff2d6a;-webkit-text-fill-color:#ff2d6a;}
+  #wordmark .glitch-b{color:#37c7ff;-webkit-text-fill-color:#37c7ff;}
+  #urlmark{margin-top:20px;font-family:'JetBrains Mono',monospace;font-weight:500;font-size:21px;
+    letter-spacing:5px;text-transform:uppercase;color:rgba(212,175,55,0.6);opacity:0;}
+  #urlmark .tcursor{display:inline-block;width:10px;height:20px;background:rgba(212,175,55,.7);
+    transform:translateY(4px);margin-left:2px;}
+
+  /* ---------- broadcast blinds: stacked black strips covering everything ---------- */
+  #blinds{position:absolute;inset:0;z-index:40;pointer-events:none;}
+  .blind{position:absolute;left:0;width:100%;background:#000;}
+
+  #flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:45;}
+  #blackout{position:absolute;inset:0;background:#000;opacity:1;pointer-events:none;z-index:50;}
+</style>
+</head>
+<body>
+
+<div id="viewport">
+  <div id="canvas">
+    <div id="bg-glow"></div>
+    <div id="scanlines"></div>
+    <div id="grain"></div>
+
+    <div id="status">ESTABLISHING SIGNAL<span class="cursor"></span></div>
+
+    <div id="content">
+      <div id="mono-wrap">
+        <svg id="mono-svg" viewBox="0 0 588.319981 598.987083">
+          <defs>
+            <linearGradient id="flowGradient" x1="0%" y1="0%" x2="100%" y2="0%" spreadMethod="repeat" gradientUnits="objectBoundingBox">
+              <stop offset="0%"  style="stop-color:var(--c1)"/>
+              <stop offset="25%" style="stop-color:var(--c2)"/>
+              <stop offset="50%" style="stop-color:var(--c3)"/>
+              <stop offset="75%" style="stop-color:var(--c4)"/>
+              <stop offset="100%" style="stop-color:var(--c1)"/>
+            </linearGradient>
+          </defs>
+          <g id="mono-fill-group" transform="translate(-20.180019,618.971223) scale(0.100000,-0.100000)">
+            <path class="mono-fill" d="M1940 6132 c-30 -31 -68 -68 -85 -82 -16 -14 -36 -33 -43 -41 -10
+-13 -12 -295 -12 -1375 l0 -1359 52 -45 c29 -25 85 -75 125 -112 40 -38 74
+-68 77 -68 2 0 5 611 6 1357 0 747 4 1361 8 1364 4 4 81 -65 172 -153 91 -88
+246 -237 345 -331 99 -94 230 -218 290 -277 61 -58 144 -137 185 -175 41 -38
+131 -123 200 -189 69 -67 152 -146 185 -176 33 -30 105 -97 160 -150 55 -52
+161 -151 235 -220 74 -69 176 -163 226 -210 50 -47 159 -148 244 -225 244
+-223 289 -265 385 -355 49 -47 109 -100 133 -119 23 -18 47 -42 54 -54 8 -15
+12 -232 14 -745 l2 -725 79 -67 c43 -36 84 -74 92 -83 7 -9 18 -17 24 -17 6 0
+21 -10 34 -22 l23 -21 0 2037 0 2038 -87 91 c-48 51 -130 137 -183 192 l-95
+100 505 5 c278 3 508 4 512 2 10 -4 10 -5294 0 -5309 -5 -8 -42 19 -113 85
+-132 122 -324 293 -392 351 -29 24 -86 76 -127 115 -118 112 -251 226 -264
+226 -3 0 -6 -74 -6 -164 l0 -165 72 -63 c39 -35 111 -99 160 -143 49 -44 108
+-95 131 -114 23 -18 65 -54 93 -80 43 -39 118 -103 224 -190 l25 -20 -352 -1
+-353 0 0 -125 0 -125 593 2 592 3 0 2985 0 2985 -820 0 -820 0 -3 -976 -2
+-975 92 -80 c50 -43 106 -94 124 -112 18 -19 38 -31 43 -27 8 4 11 254 11 803
+l0 797 53 -55 c64 -68 110 -121 121 -138 8 -13 9 -1912 1 -1920 -5 -6 -252
+218 -540 488 -55 52 -148 138 -205 190 -57 52 -152 140 -210 195 -58 55 -173
+163 -255 239 -368 342 -723 678 -960 906 -82 80 -242 233 -355 340 -113 107
+-239 228 -281 268 -41 39 -77 72 -80 72 -2 0 -29 -26 -59 -58z"/>
+            <path class="mono-fill" d="M205 6168 c-3 -7 -4 -1352 -3 -2988 l3 -2975 925 0 925 0 3 976 2
+976 -27 28 c-36 36 -224 177 -229 172 -2 -2 -5 -431 -7 -953 l-2 -949 -662 -3
+-663 -2 -2 2646 c-2 1455 1 2648 5 2651 5 3 95 -80 200 -184 106 -103 233
+-226 282 -273 50 -46 185 -178 302 -292 116 -114 215 -208 220 -208 4 0 6 79
+3 175 l-5 174 -230 226 c-126 125 -306 299 -398 388 l-169 162 399 5 398 5 0
+125 0 125 -633 3 c-501 2 -634 0 -637 -10z"/>
+            <path class="mono-fill" d="M1217 3842 l2 -727 39 -35 c59 -54 302 -254 321 -265 9 -5 46 -35 82
+-66 57 -49 306 -252 410 -334 21 -16 104 -84 185 -150 81 -66 163 -133 184
+-150 21 -16 57 -46 81 -66 24 -19 98 -78 164 -130 66 -53 165 -131 220 -175
+55 -43 111 -88 126 -99 31 -23 270 -214 314 -251 17 -13 53 -41 80 -62 28 -20
+140 -109 250 -197 236 -188 248 -198 344 -273 41 -31 89 -68 106 -82 18 -14
+75 -57 126 -97 52 -40 148 -115 214 -167 66 -53 127 -95 135 -93 20 3 21 119
+12 1545 l-7 1173 -55 52 c-30 29 -77 72 -105 97 -70 62 -275 251 -370 341 -44
+42 -98 92 -120 112 l-39 37 -163 0 c-90 0 -163 -4 -163 -8 0 -9 465 -472 635
+-633 55 -52 105 -101 112 -109 17 -21 19 -2100 2 -2100 -6 0 -28 15 -49 33
+-21 17 -63 52 -95 77 -63 49 -90 71 -150 123 -22 18 -72 58 -111 88 -67 51
+-152 119 -363 288 -52 42 -108 87 -125 101 -233 184 -729 581 -757 604 -19 17
+-46 40 -60 51 -46 37 -124 100 -134 107 -5 4 -33 27 -61 50 -29 24 -80 66
+-114 93 -35 28 -68 55 -74 60 -14 12 -195 159 -247 200 -128 101 -431 352
+-471 390 l-48 46 0 575 c0 534 -1 575 -17 590 -46 41 -220 164 -233 164 -13 0
+-15 -87 -13 -728z"/>
+            <path class="mono-fill" d="M2295 4272 c-3 -3 -5 -85 -5 -183 l0 -178 483 -488 c266 -268 625
+-631 798 -807 361 -366 552 -555 592 -586 l27 -21 0 179 0 179 -57 55 c-120
+116 -973 978 -1082 1093 -196 207 -750 762 -756 757z"/>
+            <path class="mono-fill" d="M1220 2693 c0 -5 0 -422 0 -928 l0 -920 23 -20 c13 -11 59 -47 102
+-80 43 -33 85 -68 94 -77 42 -47 41 -63 41 916 l0 934 -39 35 c-21 19 -70 55
+-109 81 -39 25 -74 50 -77 56 -7 12 -35 14 -35 3z"/>
+          </g>
+        </svg>
+        <div class="glitch-copy" id="glitch-r"></div>
+        <div class="glitch-copy" id="glitch-b"></div>
+      </div>
+
+      <div id="lockup">
+        <div id="divider"></div>
+        <div id="wordmark">norleads
+          <span class="glitch-r">norleads</span>
+          <span class="glitch-b">norleads</span>
+        </div>
+        <div id="urlmark">norleads.no</div>
+      </div>
+    </div>
+
+    <div id="blinds"></div>
+    <div id="flash"></div>
+    <div id="blackout"></div>
+  </div>
+</div>
+
+<script src="../vendor/anim/gsap.min.js"></script>
+<script src="../vendor/anim/TextPlugin.min.js"></script>
+<script>
+gsap.registerPlugin(TextPlugin);
+
+/* ---------- responsive fixed-aspect stage ---------- */
+function fitStage(){
+  const cv = document.getElementById('canvas');
+  const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+  cv.style.transform = `scale(${scale})`;
+}
+window.addEventListener('resize', fitStage);
+fitStage();
+
+/* ---------- flowing multi-color gradient on the mark ---------- */
+const gradEl = document.getElementById('flowGradient');
+const gradProxy = { x: 0 };
+gsap.to(gradProxy, {
+  x: 1, duration: 3.2, repeat: -1, ease: 'none',
+  onUpdate: () => gradEl.setAttribute('gradientTransform', `translate(${gradProxy.x} 0)`)
+});
+gsap.to('#wordmark', { backgroundPosition: '-300% 0', duration: 3.2, repeat: -1, ease: 'none' });
+
+/* duplicate the mono SVG markup into the two glitch-color layers (for the RGB-split flicker) */
+document.getElementById('glitch-r').innerHTML = document.getElementById('mono-svg').outerHTML;
+document.getElementById('glitch-b').innerHTML = document.getElementById('mono-svg').outerHTML;
+document.querySelectorAll('#glitch-r .mono-fill').forEach(p => p.setAttribute('fill', '#ff2d6a'));
+document.querySelectorAll('#glitch-b .mono-fill').forEach(p => p.setAttribute('fill', '#37c7ff'));
+
+/* ---------- build the venetian-blind cover: 18 stacked black strips ---------- */
+const blindsHost = document.getElementById('blinds');
+const ROWS = 18;
+const rowH = 1080 / ROWS;
+const blinds = [];
+for (let i = 0; i < ROWS; i++){
+  const b = document.createElement('div');
+  b.className = 'blind';
+  b.style.top = (i * rowH) + 'px';
+  b.style.height = rowH + 'px';
+  b.style.transformOrigin = (i % 2 === 0) ? 'left center' : 'right center';
+  blindsHost.appendChild(b);
+  blinds.push(b);
+}
+
+/* ---------- master timeline ---------- */
+const tl = gsap.timeline({ repeat: -1, repeatDelay: 1.2 });
+window.masterTL = tl;
+
+tl.set('#blackout', { opacity: 1 });
+tl.set(blinds, { scaleX: 1 });
+tl.set(['#wordmark','#urlmark','#divider','#status'], { opacity: 0 });
+tl.set('#urlmark', { text: 'NORLEADS.NO' });
+
+// 0.0 - 0.3  cut to black, signal hunt begins
+tl.to('#blackout', { opacity: 0, duration: 0.2 }, 0.0);
+
+// 0.2 - 1.6  terminal readout: "ESTABLISHING SIGNAL..." typed out, then blinks
+tl.to('#status', { opacity: 1, duration: 0.15 }, 0.2);
+tl.to('.cursor', { opacity: 0, duration: 0.18, repeat: 5, yoyo: true }, 0.35);
+tl.to('#status', { opacity: 0, duration: 0.18 }, 1.55);
+
+// 1.75  hard flash — signal acquired
+tl.to('#flash', { opacity: 0.9, duration: 0.04 }, 1.75);
+tl.to('#flash', { opacity: 0, duration: 0.22, ease: 'power2.out' }, 1.79);
+
+// 1.8 - 2.7  the blinds snap open in a fast diagonal sweep, revealing the fully-formed mark + lockup beneath
+tl.set(['#wordmark','#divider'], { opacity: 1 }, 1.78);
+blinds.forEach((b, i) => {
+  tl.to(b, { scaleX: 0, duration: 0.5, ease: 'power4.out' }, 1.8 + i * 0.05);
+});
+
+// 2.3 - 2.9  RGB-split glitch flicker on the mark + wordmark as the signal locks
+tl.to(['#glitch-r'], { opacity: 0.7, x: -10, duration: 0.06 }, 2.3);
+tl.to(['#glitch-b'], { opacity: 0.7, x: 10, duration: 0.06 }, 2.33);
+tl.to(['#glitch-r'], { opacity: 0, x: -4, duration: 0.06 }, 2.4);
+tl.to(['#glitch-b'], { opacity: 0, x: 4, duration: 0.06 }, 2.44);
+tl.to(['#glitch-r'], { opacity: 0.5, x: 14, duration: 0.05 }, 2.55);
+tl.to(['#glitch-b'], { opacity: 0.5, x: -14, duration: 0.05 }, 2.58);
+tl.to(['#glitch-r','#glitch-b'], { opacity: 0, x: 0, duration: 0.18, ease: 'power2.out' }, 2.66);
+
+document.querySelectorAll('#wordmark .glitch-r, #wordmark .glitch-b').forEach(s => gsap.set(s, { opacity: 0 }));
+tl.to('#wordmark .glitch-r', { opacity: 0.7, x: -6, duration: 0.06 }, 2.3);
+tl.to('#wordmark .glitch-b', { opacity: 0.7, x: 6, duration: 0.06 }, 2.33);
+tl.to('#wordmark .glitch-r', { opacity: 0, x: 8, duration: 0.06 }, 2.55);
+tl.to('#wordmark .glitch-b', { opacity: 0, x: -8, duration: 0.06 }, 2.58);
+
+// 3.1 - 4.5  signal settles: gentle scale snap-back on the mark (anticipation + overshoot)
+tl.fromTo('#mono-wrap', { scale: 1.05 }, { scale: 1, duration: 0.6, ease: 'back.out(2)' }, 3.0);
+
+// 3.6 - 4.6  divider grows, url types in like a confirmed connection
+tl.to('#divider', { width: '560px', duration: 0.9, ease: 'power3.out' }, 3.6);
+tl.to('#urlmark', { opacity: 1, duration: 0.3 }, 4.0);
+tl.to('#urlmark', { text: { value: 'NORLEADS.NO', delimiter: '' }, duration: 1.1, ease: 'none' }, 4.0);
+
+// 5.4 - 8.4  clean hold — let the brand breathe, gradient still flowing
+tl.to('#canvas', { scale: 1.01, duration: 3.0, ease: 'sine.inOut' }, 5.4);
+
+// 8.6 - 9.2  one more quick glitch flicker — feels alive, not static
+tl.to('#glitch-r', { opacity: 0.5, x: -8, duration: 0.05 }, 8.6);
+tl.to('#glitch-b', { opacity: 0.5, x: 8, duration: 0.05 }, 8.63);
+tl.to(['#glitch-r','#glitch-b'], { opacity: 0, x: 0, duration: 0.15 }, 8.72);
+
+// 9.6 - 10.6  blinds slam back shut, signal lost — same diagonal sweep, reversed direction
+blinds.forEach((b, i) => {
+  b.style.transformOrigin = (i % 2 === 0) ? 'right center' : 'left center';
+  tl.to(b, { scaleX: 1, duration: 0.45, ease: 'power3.in' }, 9.6 + (ROWS - 1 - i) * 0.045);
+});
+tl.to('#blackout', { opacity: 1, duration: 0.3 }, 10.6);
+
+// reset for loop
+tl.set(['#wordmark .glitch-r','#wordmark .glitch-b','#glitch-r','#glitch-b'], { opacity: 0, x: 0 }, 10.95);
+tl.set('#mono-wrap', { scale: 1 }, 10.95);
+tl.set('#divider', { width: '0px', opacity: 0 }, 10.95);
+tl.set('#urlmark', { opacity: 0 }, 10.95);
+tl.set('#wordmark', { opacity: 0 }, 10.95);
+tl.set('#canvas', { scale: 1 }, 10.95);
+tl.set(blinds, { scaleX: 1 }, 10.95);
+tl.call(() => {
+  blinds.forEach((b, i) => { b.style.transformOrigin = (i % 2 === 0) ? 'left center' : 'right center'; });
+}, [], 10.95);
+</script>
+</body>
+</html>
