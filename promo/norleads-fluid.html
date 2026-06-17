@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<title>NORLEADS — Fluid</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#03070a;
+    --m1:#00FFA3; --m2:#00C2FF; --m3:#FFD600; --m4:#FF5400;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Manrope',sans-serif;}
+  #viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#000;perspective:1400px;}
+  #canvas{position:relative;width:1920px;height:1080px;background:var(--bg);overflow:hidden;transform-style:preserve-3d;}
+
+  #vignette{position:absolute;inset:0;background:radial-gradient(circle at 50% 48%, transparent 40%, rgba(0,0,0,.65) 100%);pointer-events:none;z-index:30;}
+  #grain{position:absolute;inset:-50%;width:200%;height:200%;opacity:.04;mix-blend-mode:overlay;pointer-events:none;z-index:31;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+
+  /* ---------- liquid metaball field ---------- */
+  #goo{position:absolute;left:50%;top:46%;width:1100px;height:1100px;transform:translate(-50%,-50%);
+    filter:blur(22px) contrast(26);mix-blend-mode:screen;pointer-events:none;z-index:5;}
+  .blob{position:absolute;left:50%;top:50%;border-radius:50%;opacity:0;}
+
+  /* ---------- monogram ---------- */
+  #mono-wrap{position:absolute;left:50%;top:30%;width:300px;height:305px;z-index:10;opacity:0;}
+  #mono-svg{width:100%;height:100%;overflow:visible;}
+  .mono-fill{fill:url(#flowGradient);}
+
+  #flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:20;}
+  .pulse{position:absolute;left:50%;top:30%;width:10px;height:10px;border-radius:50%;
+    border:2px solid rgba(255,255,255,.85);filter:blur(1px);transform:translate(-50%,-50%);opacity:0;pointer-events:none;z-index:15;}
+
+  /* ---------- lockup ---------- */
+  #lockup{position:absolute;left:50%;top:58%;text-align:center;perspective:600px;z-index:10;}
+  #divider{width:480px;height:2px;margin:0 auto 26px;transform:scaleX(0);
+    background:linear-gradient(90deg, transparent, var(--m1) 15%, var(--m2) 40%, var(--m3) 60%, var(--m4) 85%, transparent);}
+  #wordmark{font-weight:800;font-size:78px;letter-spacing:1px;transform-style:preserve-3d;}
+  #wordmark span{
+    display:inline-block;
+    background:linear-gradient(90deg, var(--m1), var(--m2), var(--m3), var(--m4), var(--m1));
+    background-size:600% 100%;background-position:0% 0;
+    -webkit-background-clip:text;background-clip:text;color:transparent;}
+  #urlmark{margin-top:20px;font-weight:500;font-size:20px;letter-spacing:18px;
+    text-transform:uppercase;color:rgba(0,255,163,0.55);opacity:0;}
+
+  #blackout{position:absolute;inset:0;background:#000;opacity:1;pointer-events:none;z-index:50;}
+</style>
+</head>
+<body>
+
+<div id="viewport">
+  <div id="canvas">
+    <div id="goo">
+      <div class="blob" id="b1" style="width:260px;height:260px;background:var(--m1);"></div>
+      <div class="blob" id="b2" style="width:300px;height:300px;background:var(--m2);"></div>
+      <div class="blob" id="b3" style="width:230px;height:230px;background:var(--m3);"></div>
+      <div class="blob" id="b4" style="width:270px;height:270px;background:var(--m4);"></div>
+    </div>
+    <div id="vignette"></div>
+    <div id="grain"></div>
+
+    <div class="pulse" id="pulse"></div>
+
+    <div id="mono-wrap">
+      <svg id="mono-svg" viewBox="0 0 588.319981 598.987083">
+        <defs>
+          <linearGradient id="flowGradient" x1="0%" y1="0%" x2="100%" y2="0%" spreadMethod="repeat" gradientUnits="objectBoundingBox">
+            <stop offset="0%"  style="stop-color:var(--m1)"/>
+            <stop offset="25%" style="stop-color:var(--m2)"/>
+            <stop offset="50%" style="stop-color:var(--m3)"/>
+            <stop offset="75%" style="stop-color:var(--m4)"/>
+            <stop offset="100%" style="stop-color:var(--m1)"/>
+          </linearGradient>
+        </defs>
+        <g id="mono-fill-group" transform="translate(-20.180019,618.971223) scale(0.100000,-0.100000)">
+          <path class="mono-fill" d="M1940 6132 c-30 -31 -68 -68 -85 -82 -16 -14 -36 -33 -43 -41 -10
+-13 -12 -295 -12 -1375 l0 -1359 52 -45 c29 -25 85 -75 125 -112 40 -38 74
+-68 77 -68 2 0 5 611 6 1357 0 747 4 1361 8 1364 4 4 81 -65 172 -153 91 -88
+246 -237 345 -331 99 -94 230 -218 290 -277 61 -58 144 -137 185 -175 41 -38
+131 -123 200 -189 69 -67 152 -146 185 -176 33 -30 105 -97 160 -150 55 -52
+161 -151 235 -220 74 -69 176 -163 226 -210 50 -47 159 -148 244 -225 244
+-223 289 -265 385 -355 49 -47 109 -100 133 -119 23 -18 47 -42 54 -54 8 -15
+12 -232 14 -745 l2 -725 79 -67 c43 -36 84 -74 92 -83 7 -9 18 -17 24 -17 6 0
+21 -10 34 -22 l23 -21 0 2037 0 2038 -87 91 c-48 51 -130 137 -183 192 l-95
+100 505 5 c278 3 508 4 512 2 10 -4 10 -5294 0 -5309 -5 -8 -42 19 -113 85
+-132 122 -324 293 -392 351 -29 24 -86 76 -127 115 -118 112 -251 226 -264
+226 -3 0 -6 -74 -6 -164 l0 -165 72 -63 c39 -35 111 -99 160 -143 49 -44 108
+-95 131 -114 23 -18 65 -54 93 -80 43 -39 118 -103 224 -190 l25 -20 -352 -1
+-353 0 0 -125 0 -125 593 2 592 3 0 2985 0 2985 -820 0 -820 0 -3 -976 -2
+-975 92 -80 c50 -43 106 -94 124 -112 18 -19 38 -31 43 -27 8 4 11 254 11 803
+l0 797 53 -55 c64 -68 110 -121 121 -138 8 -13 9 -1912 1 -1920 -5 -6 -252
+218 -540 488 -55 52 -148 138 -205 190 -57 52 -152 140 -210 195 -58 55 -173
+163 -255 239 -368 342 -723 678 -960 906 -82 80 -242 233 -355 340 -113 107
+-239 228 -281 268 -41 39 -77 72 -80 72 -2 0 -29 -26 -59 -58z"/>
+          <path class="mono-fill" d="M205 6168 c-3 -7 -4 -1352 -3 -2988 l3 -2975 925 0 925 0 3 976 2
+976 -27 28 c-36 36 -224 177 -229 172 -2 -2 -5 -431 -7 -953 l-2 -949 -662 -3
+-663 -2 -2 2646 c-2 1455 1 2648 5 2651 5 3 95 -80 200 -184 106 -103 233
+-226 282 -273 50 -46 185 -178 302 -292 116 -114 215 -208 220 -208 4 0 6 79
+3 175 l-5 174 -230 226 c-126 125 -306 299 -398 388 l-169 162 399 5 398 5 0
+125 0 125 -633 3 c-501 2 -634 0 -637 -10z"/>
+          <path class="mono-fill" d="M1217 3842 l2 -727 39 -35 c59 -54 302 -254 321 -265 9 -5 46 -35 82
+-66 57 -49 306 -252 410 -334 21 -16 104 -84 185 -150 81 -66 163 -133 184
+-150 21 -16 57 -46 81 -66 24 -19 98 -78 164 -130 66 -53 165 -131 220 -175
+55 -43 111 -88 126 -99 31 -23 270 -214 314 -251 17 -13 53 -41 80 -62 28 -20
+140 -109 250 -197 236 -188 248 -198 344 -273 41 -31 89 -68 106 -82 18 -14
+75 -57 126 -97 52 -40 148 -115 214 -167 66 -53 127 -95 135 -93 20 3 21 119
+12 1545 l-7 1173 -55 52 c-30 29 -77 72 -105 97 -70 62 -275 251 -370 341 -44
+42 -98 92 -120 112 l-39 37 -163 0 c-90 0 -163 -4 -163 -8 0 -9 465 -472 635
+-633 55 -52 105 -101 112 -109 17 -21 19 -2100 2 -2100 -6 0 -28 15 -49 33
+-21 17 -63 52 -95 77 -63 49 -90 71 -150 123 -22 18 -72 58 -111 88 -67 51
+-152 119 -363 288 -52 42 -108 87 -125 101 -233 184 -729 581 -757 604 -19 17
+-46 40 -60 51 -46 37 -124 100 -134 107 -5 4 -33 27 -61 50 -29 24 -80 66
+-114 93 -35 28 -68 55 -74 60 -14 12 -195 159 -247 200 -128 101 -431 352
+-471 390 l-48 46 0 575 c0 534 -1 575 -17 590 -46 41 -220 164 -233 164 -13 0
+-15 -87 -13 -728z"/>
+          <path class="mono-fill" d="M2295 4272 c-3 -3 -5 -85 -5 -183 l0 -178 483 -488 c266 -268 625
+-631 798 -807 361 -366 552 -555 592 -586 l27 -21 0 179 0 179 -57 55 c-120
+116 -973 978 -1082 1093 -196 207 -750 762 -756 757z"/>
+          <path class="mono-fill" d="M1220 2693 c0 -5 0 -422 0 -928 l0 -920 23 -20 c13 -11 59 -47 102
+-80 43 -33 85 -68 94 -77 42 -47 41 -63 41 916 l0 934 -39 35 c-21 19 -70 55
+-109 81 -39 25 -74 50 -77 56 -7 12 -35 14 -35 3z"/>
+        </g>
+      </svg>
+    </div>
+
+    <div id="lockup">
+      <div id="divider"></div>
+      <div id="wordmark">norleads</div>
+      <div id="urlmark">norleads.no</div>
+    </div>
+
+    <div id="flash"></div>
+    <div id="blackout"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script>
+/* ---------- responsive fixed-aspect stage ---------- */
+function fitStage(){
+  const cv = document.getElementById('canvas');
+  const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+  cv.style.transform = `scale(${scale})`;
+}
+window.addEventListener('resize', fitStage);
+fitStage();
+
+/* ---------- subtle always-on 3D drift of the whole stage (perspective tilt) ---------- */
+gsap.to('#canvas', { rotateY: 1.6, rotateX: -1.0, duration: 6, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+
+/* ---------- flowing multi-color gradient on the mark + wordmark ---------- */
+const gradEl = document.getElementById('flowGradient');
+const gradProxy = { x: 0 };
+gsap.to(gradProxy, {
+  x: 1, duration: 3.4, repeat: -1, ease: 'none',
+  onUpdate: () => gradEl.setAttribute('gradientTransform', `translate(${gradProxy.x} 0)`)
+});
+gsap.to('#wordmark span', { backgroundPosition: '-600% 0', duration: 3.4, repeat: -1, ease: 'none' });
+
+/* ---------- split the wordmark into letters for a 3D flip-in (no plugin needed) ---------- */
+const wordmarkEl = document.getElementById('wordmark');
+const letters = [...wordmarkEl.textContent].map(ch => {
+  const span = document.createElement('span');
+  span.textContent = ch;
+  span.style.transformOrigin = '50% 100%';
+  return span;
+});
+wordmarkEl.textContent = '';
+letters.forEach(s => wordmarkEl.appendChild(s));
+gsap.set(letters, { rotateX: -100, opacity: 0, y: -14 });
+
+/* ---------- liquid metaball blobs ---------- */
+const blobs = ['#b1','#b2','#b3','#b4'].map(sel => document.querySelector(sel));
+gsap.set(blobs, { xPercent: -50, yPercent: -50 });
+
+/* ---------- master timeline, ~20s ---------- */
+const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.8 });
+window.masterTL = tl;
+
+tl.set('#blackout', { opacity: 1 });
+tl.to('#blackout', { opacity: 0, duration: 0.5, ease: 'power1.in' }, 0.0);
+
+// 0.3 - 1.0  the liquid field switches on
+tl.to(blobs, { opacity: 0.9, duration: 0.6, stagger: 0.08, ease: 'sine.out' }, 0.3);
+
+// 0.5 - 5.0  organic drifting — each blob wanders on its own arc, fully deterministic
+tl.to('#b1', { x: -210, y: -90, duration: 1.6, ease: 'sine.inOut' }, 0.5);
+tl.to('#b1', { x: 60,   y: 140, duration: 1.8, ease: 'sine.inOut' }, 2.1);
+tl.to('#b1', { x: -90,  y: 40,  duration: 1.5, ease: 'sine.inOut' }, 3.9);
+
+tl.to('#b2', { x: 230,  y: 100, duration: 1.7, ease: 'sine.inOut' }, 0.5);
+tl.to('#b2', { x: -40,  y: -150,duration: 1.6, ease: 'sine.inOut' }, 2.2);
+tl.to('#b2', { x: 110,  y: -30, duration: 1.6, ease: 'sine.inOut' }, 3.8);
+
+tl.to('#b3', { x: -60,  y: 170, duration: 1.5, ease: 'sine.inOut' }, 0.5);
+tl.to('#b3', { x: 180,  y: -40, duration: 1.8, ease: 'sine.inOut' }, 2.0);
+tl.to('#b3', { x: -120, y: -120,duration: 1.7, ease: 'sine.inOut' }, 3.8);
+
+tl.to('#b4', { x: 80,   y: -160,duration: 1.6, ease: 'sine.inOut' }, 0.5);
+tl.to('#b4', { x: -190, y: 20,  duration: 1.7, ease: 'sine.inOut' }, 2.1);
+tl.to('#b4', { x: 150,  y: 110, duration: 1.6, ease: 'sine.inOut' }, 3.8);
+
+// 5.0 - 5.8  the blobs rush inward and merge into one mass
+blobs.forEach((b, i) => {
+  tl.to(b, { x: 0, y: 0, scale: 1.3, duration: 0.7, ease: 'power3.in' }, 5.0 + i * 0.04);
+});
+
+// 5.8 - 6.1  the pop: flash + shockwave, blobs vanish, the mark appears
+tl.to('#flash', { opacity: 0.85, duration: 0.05 }, 5.8);
+tl.to('#flash', { opacity: 0, duration: 0.3, ease: 'power2.out' }, 5.85);
+tl.to(blobs, { opacity: 0, scale: 0.2, duration: 0.35, ease: 'power2.in' }, 5.8);
+tl.fromTo('#pulse', { opacity: 0.8, width: '10px', height: '10px' },
+  { opacity: 0, width: '760px', height: '760px', duration: 1.2, ease: 'power1.out', immediateRender: false }, 5.85);
+tl.fromTo('#mono-wrap', { opacity: 0, scale: 0.25 },
+  { opacity: 1, scale: 1, duration: 0.8, ease: 'back.out(1.8)', immediateRender: false }, 5.85);
+
+// 7.0 - 7.9  gentle breathing hold
+tl.to('#mono-wrap', { scale: 1.04, duration: 0.9, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 7.0);
+
+// 8.6 - 9.95  letters flip in, one by one, like cards landing
+tl.to(letters, { rotateX: 0, opacity: 1, y: 0, duration: 0.6, ease: 'back.out(1.7)', stagger: 0.05 }, 8.6);
+
+// 9.6 - 10.1  divider snaps open from the center
+tl.to('#divider', { scaleX: 1, duration: 0.5, ease: 'back.out(2)' }, 9.6);
+
+// 10.2 - 11.0  url breathes in as its tracking tightens
+tl.to('#urlmark', { opacity: 1, letterSpacing: '6px', duration: 0.9, ease: 'power3.out' }, 10.2);
+
+// 11.0 - 15.0  clean hold, gradient + 3D drift keep it alive
+tl.to('#canvas', { z: 20, duration: 4.0, ease: 'sine.inOut' }, 11.0);
+
+// 15.0 - 15.5  letters flip back out, fast
+tl.to(letters, { rotateX: 90, opacity: 0, duration: 0.35, ease: 'power2.in', stagger: 0.03 }, 15.0);
+tl.to('#divider', { scaleX: 0, duration: 0.35, ease: 'power2.in' }, 15.1);
+tl.to('#urlmark', { opacity: 0, letterSpacing: '18px', duration: 0.35, ease: 'power2.in' }, 15.1);
+
+// 15.4 - 16.2  the mark dissolves back into the liquid — reverse pop
+tl.to('#flash', { opacity: 0.6, duration: 0.05 }, 15.4);
+tl.to('#flash', { opacity: 0, duration: 0.3 }, 15.45);
+tl.to('#mono-wrap', { opacity: 0, scale: 0.25, duration: 0.5, ease: 'power2.in' }, 15.4);
+tl.fromTo(blobs, { opacity: 0, scale: 0.2, x: 0, y: 0 },
+  { opacity: 0.85, scale: 1, duration: 0.5, ease: 'power2.out', immediateRender: false }, 15.55);
+
+// 16.0 - 18.4  blobs scatter outward and fade — the liquid disperses
+tl.to('#b1', { x: -260, y: -130, opacity: 0, duration: 2.2, ease: 'sine.in' }, 16.0);
+tl.to('#b2', { x: 280,  y: 120,  opacity: 0, duration: 2.2, ease: 'sine.in' }, 16.05);
+tl.to('#b3', { x: -100, y: 220,  opacity: 0, duration: 2.2, ease: 'sine.in' }, 16.1);
+tl.to('#b4', { x: 220,  y: -180, opacity: 0, duration: 2.2, ease: 'sine.in' }, 16.15);
+
+// 18.0 - 19.4  fade to black, ready to loop
+tl.to('#blackout', { opacity: 1, duration: 1.4, ease: 'power2.in' }, 18.0);
+
+// reset for the next loop
+tl.set(letters, { rotateX: -100, opacity: 0, y: -14 }, 19.5);
+tl.set('#divider', { scaleX: 0 }, 19.5);
+tl.set('#urlmark', { opacity: 0, letterSpacing: '18px' }, 19.5);
+tl.set('#mono-wrap', { opacity: 0, scale: 0.25 }, 19.5);
+tl.set(blobs, { x: 0, y: 0, scale: 1, opacity: 0 }, 19.5);
+tl.set('#pulse', { opacity: 0, width: '10px', height: '10px' }, 19.5);
+tl.set('#canvas', { z: 0 }, 19.5);
+</script>
+</body>
+</html>
