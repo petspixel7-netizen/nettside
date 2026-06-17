@@ -61,8 +61,14 @@
   #cta-shimmer{position:absolute;top:0;bottom:0;left:-60px;width:60px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);transform:skewX(-20deg);}
   #cta-url{font-size:18px;color:var(--cyan);letter-spacing:4px;text-transform:uppercase;opacity:0;margin-top:8px;}
 
+  #stage-content{position:absolute;inset:0;}
+
   #wipe{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:40;pointer-events:none;}
   #wipe-circle{width:3400px;height:3400px;border-radius:50%;background:var(--bg);transform:scale(0);}
+  #wipe-slide{position:absolute;inset:0;background:var(--bg2);transform:translateX(-100%);z-index:40;pointer-events:none;}
+  #wipe-split-top{position:absolute;left:0;top:0;width:100%;height:50%;background:var(--bg);transform:translateY(-100%);z-index:40;pointer-events:none;box-shadow:0 4px 30px rgba(66,217,255,.25);}
+  #wipe-split-bottom{position:absolute;left:0;bottom:0;width:100%;height:50%;background:var(--bg);transform:translateY(100%);z-index:40;pointer-events:none;box-shadow:0 -4px 30px rgba(66,217,255,.25);}
+  #wipe-diag{position:absolute;top:-25%;left:-65%;width:170%;height:150%;background:var(--bg2);transform:rotate(-14deg) translateX(-100%);z-index:40;pointer-events:none;}
 
   #flash{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:35;pointer-events:none;opacity:0;}
   .flash-glow{width:1400px;height:1400px;border-radius:50%;background:radial-gradient(circle, rgba(255,255,255,.9) 0%, rgba(66,217,255,.35) 35%, transparent 70%);}
@@ -85,6 +91,7 @@
 
 <div id="viewport">
   <div id="canvas">
+   <div id="stage-content">
     <div id="grid"></div>
     <div id="orbs"></div>
     <div id="vignette"></div>
@@ -198,8 +205,13 @@
       <div id="cta-btn"><div id="cta-btn-inner">Se priser</div><div id="cta-shimmer"></div></div>
       <div id="cta-url">mobino.no</div>
     </div>
+   </div>
 
     <div id="wipe"><div id="wipe-circle"></div></div>
+    <div id="wipe-slide"></div>
+    <div id="wipe-split-top"></div>
+    <div id="wipe-split-bottom"></div>
+    <div id="wipe-diag"></div>
     <div id="flash"><div class="flash-glow"></div></div>
     <div id="blackout"></div>
   </div>
@@ -284,16 +296,39 @@ const dots = targets.map(t => {
   return { el: c, sx, sy, tx: t.x, ty: t.y };
 });
 
-/* ---------- master timeline — ~49s, loops forever ---------- */
-const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.8 });
+/* ---------- master timeline — ~30s, loops forever, faster ad pacing ---------- */
+const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.5 });
 
-function wipeAt(time) {
-  tl.to('#wipe-circle', { scale: 1, duration: 0.5, ease: 'power2.inOut' }, time - 0.5);
-  tl.to('#wipe-circle', { scale: 0, duration: 0.5, ease: 'power2.inOut' }, time);
+// each scene cut uses a DIFFERENT physical transition, so cuts read as distinct beats
+function irisWipe(time) {
+  tl.to('#wipe-circle', { scale: 1, duration: 0.32, ease: 'power2.in' }, time - 0.32);
+  tl.to('#wipe-circle', { scale: 0, duration: 0.32, ease: 'power2.out' }, time);
+}
+function slideWipe(time) {
+  tl.set('#wipe-slide', { transform: 'translateX(-100%)' }, time - 0.3);
+  tl.to('#wipe-slide', { transform: 'translateX(0%)', duration: 0.26, ease: 'power2.in' }, time - 0.26);
+  tl.to('#wipe-slide', { transform: 'translateX(100%)', duration: 0.26, ease: 'power2.out' }, time);
+}
+function splitWipe(time) {
+  tl.set(['#wipe-split-top', '#wipe-split-bottom'], { transform: (i) => i === 0 ? 'translateY(-100%)' : 'translateY(100%)' }, time - 0.28);
+  tl.to('#wipe-split-top', { transform: 'translateY(0%)', duration: 0.24, ease: 'power2.in' }, time - 0.24);
+  tl.to('#wipe-split-bottom', { transform: 'translateY(0%)', duration: 0.24, ease: 'power2.in' }, time - 0.24);
+  tl.to('#wipe-split-top', { transform: 'translateY(-100%)', duration: 0.24, ease: 'power2.out' }, time);
+  tl.to('#wipe-split-bottom', { transform: 'translateY(100%)', duration: 0.24, ease: 'power2.out' }, time);
+}
+function diagonalWipe(time) {
+  tl.set('#wipe-diag', { transform: 'rotate(-14deg) translateX(-100%)' }, time - 0.34);
+  tl.to('#wipe-diag', { transform: 'rotate(-14deg) translateX(0%)', duration: 0.3, ease: 'power2.in' }, time - 0.3);
+  tl.to('#wipe-diag', { transform: 'rotate(-14deg) translateX(100%)', duration: 0.3, ease: 'power2.out' }, time);
+}
+function zoomPunch(time) {
+  tl.to('#stage-content', { scale: 1.06, filter: 'blur(6px)', duration: 0.16, ease: 'power2.in' }, time - 0.16);
+  tl.to('#stage-content', { scale: 1, filter: 'blur(0px)', duration: 0.22, ease: 'power2.out' }, time);
+  flash(time - 0.04, 0.6, 0.3);
 }
 
-// soft brand-colored flash — fired every time a new element/scene appears
-function flash(time, opacity = 0.4, dur = 0.45) {
+// soft brand-colored flash — fired alongside each cut and key reveal
+function flash(time, opacity = 0.4, dur = 0.4) {
   tl.fromTo('#flash', { opacity: 0, scale: 0.6 },
     { opacity, scale: 1, duration: dur * 0.4, ease: 'power2.out' }, time);
   tl.to('#flash', { opacity: 0, scale: 1.35, duration: dur * 0.6, ease: 'power2.in' }, time + dur * 0.4);
@@ -301,139 +336,134 @@ function flash(time, opacity = 0.4, dur = 0.45) {
 
 // 0.0 — blackout fades in scene
 tl.set('#blackout', { opacity: 1 });
-tl.to('#blackout', { opacity: 0, duration: 0.6, ease: 'power1.in' }, 0.0);
+tl.to('#blackout', { opacity: 0, duration: 0.4, ease: 'power1.in' }, 0.0);
 tl.set('#scene-intro', { opacity: 1 }, 0.0);
 
-// 0.3 — 2.3  particles implode into the logo outline
-tl.to(dots.map(d => d.el), { opacity: 0.9, duration: 0.3, stagger: 0.003 }, 0.3);
+// 0.2 — 1.7  particles implode into the logo outline
+tl.to(dots.map(d => d.el), { opacity: 0.9, duration: 0.2, stagger: 0.002 }, 0.2);
 tl.to(dots.map(d => d.el), {
   attr: { cx: (i) => dots[i].tx, cy: (i) => dots[i].ty },
-  duration: 1.5, ease: 'power3.inOut', stagger: 0.003,
-}, 0.6);
-tl.to(dots.map(d => d.el), { opacity: 0, duration: 0.5, stagger: 0.002 }, 2.2);
+  duration: 1.0, ease: 'power3.inOut', stagger: 0.002,
+}, 0.4);
+tl.to(dots.map(d => d.el), { opacity: 0, duration: 0.35, stagger: 0.0015 }, 1.4);
 
-// 2.0 — 4.3  outline draws itself
-tl.to(strokePath, { strokeDashoffset: 0, duration: 2.3, ease: 'none' }, 2.0);
+// 1.3 — 2.9  outline draws itself
+tl.to(strokePath, { strokeDashoffset: 0, duration: 1.6, ease: 'none' }, 1.3);
 
-// 4.3 — 5.0  fill locks in, stroke fades
-flash(4.3, 0.5);
-tl.to(fillPath, { opacity: 1, duration: 0.6, ease: 'power2.out' }, 4.3);
-tl.to(strokePath, { opacity: 0, duration: 0.5, ease: 'power1.in' }, 4.4);
+// 2.9 — 3.4  fill locks in, stroke fades
+flash(2.9, 0.5);
+tl.to(fillPath, { opacity: 1, duration: 0.4, ease: 'power2.out' }, 2.9);
+tl.to(strokePath, { opacity: 0, duration: 0.35, ease: 'power1.in' }, 3.0);
 
-// 5.0 — 6.5  wordmark reveal
-tl.to('#wordmark', { clipPath: 'inset(0 0% 0 0)', duration: 1.4, ease: 'power3.out' }, 5.0);
+// 3.4 — 4.4  wordmark reveal
+tl.to('#wordmark', { clipPath: 'inset(0 0% 0 0)', duration: 1.0, ease: 'power3.out' }, 3.4);
 
-// 5.8 — 7.0  tagline
-tl.to('#tagline', { opacity: 1, y: -4, duration: 1.0, ease: 'power2.out' }, 5.8);
+// 4.0 — 4.8  tagline
+tl.to('#tagline', { opacity: 1, y: -4, duration: 0.7, ease: 'power2.out' }, 4.0);
 
-// 7.7 — 8.2  WIPE into benefits
-wipeAt(8.2);
-flash(8.25, 0.35);
-tl.to('#scene-intro', { opacity: 0, duration: 0.1 }, 8.2);
-tl.set('#scene-benefits', { opacity: 1 }, 8.25);
+// 5.3  IRIS WIPE into benefits
+irisWipe(5.3);
+tl.to('#scene-intro', { opacity: 0, duration: 0.1 }, 5.3);
+tl.set('#scene-benefits', { opacity: 1 }, 5.32);
 
-// 8.7 — heading + divider
+// heading + divider
 gsap.set('.heading', { opacity: 0, y: 20 });
-tl.to('.heading', { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, 8.7);
-tl.to('#benefits-divider', { width: '520px', duration: 0.8, ease: 'power2.out' }, 9.0);
+tl.to('.heading', { opacity: 1, y: 0, duration: 0.55, ease: 'power3.out' }, 5.5);
+tl.to('#benefits-divider', { width: '520px', duration: 0.55, ease: 'power2.out' }, 5.7);
 
 // counters
 const ring1Len = 2 * Math.PI * 92;
 const ringCounter1 = { v: 0 };
 tl.to(ringCounter1, {
-  v: 500, duration: 2.6, ease: 'power2.inOut',
+  v: 500, duration: 1.6, ease: 'power2.inOut',
   onUpdate: () => {
     document.getElementById('ring1-val').textContent = Math.round(ringCounter1.v) + ' GB';
     document.getElementById('ring1').setAttribute('stroke-dashoffset', ring1Len * (1 - ringCounter1.v / 500));
   },
-}, 9.9);
+}, 6.2);
 const ringCounter2 = { v: 0 };
 tl.to(ringCounter2, {
-  v: 80, duration: 2.6, ease: 'power2.inOut',
+  v: 80, duration: 1.6, ease: 'power2.inOut',
   onUpdate: () => {
     document.getElementById('ring2-val').textContent = Math.round(ringCounter2.v) + '+';
     document.getElementById('ring2').setAttribute('stroke-dashoffset', ring1Len * (1 - ringCounter2.v / 80));
   },
-}, 10.5);
+}, 6.5);
 
-flash(11.1, 0.22);
+flash(7.0, 0.22);
 ['card1', 'card2', 'card3'].forEach((id, i) => {
-  tl.fromTo('#' + id, { opacity: 0, y: 30, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: 'back.out(1.6)' }, 11.1 + i * 0.6);
+  tl.fromTo('#' + id, { opacity: 0, y: 30, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: 'back.out(1.6)' }, 7.0 + i * 0.35);
 });
 
 // hold, fade out benefits
-tl.to('#scene-benefits', { opacity: 0, duration: 0.6 }, 17.4);
+tl.to('#scene-benefits', { opacity: 0, duration: 0.4 }, 10.3);
 
-// 17.7 — 18.2  WIPE into network
-wipeAt(18.2);
-flash(18.25, 0.35);
-tl.set('#scene-network', { opacity: 1 }, 18.25);
+// 10.8  SLIDE WIPE into network
+slideWipe(10.8);
+tl.set('#scene-network', { opacity: 1 }, 10.82);
 
-tl.fromTo('#network-badge', { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, 18.4);
+tl.fromTo('#network-badge', { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' }, 10.95);
 gsap.set('#scene-network .heading', { opacity: 0, y: 20 });
-tl.to('#scene-network .heading', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 18.8);
+tl.to('#scene-network .heading', { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 11.25);
 
-flash(19.2, 0.2);
-tl.to('.sig-bar', { scaleY: 1, duration: 0.6, stagger: 0.12, ease: 'back.out(2)' }, 19.2);
+flash(11.6, 0.2);
+tl.to('.sig-bar', { scaleY: 1, duration: 0.45, stagger: 0.09, ease: 'back.out(2)' }, 11.6);
 
 const coverageCounter = { v: 0 };
 tl.to(coverageCounter, {
-  v: 99.5, duration: 1.6, ease: 'power2.out',
+  v: 99.5, duration: 1.0, ease: 'power2.out',
   onUpdate: () => { document.getElementById('coverage-val').textContent = coverageCounter.v.toFixed(1) + '%'; },
-}, 20.0);
+}, 12.1);
 
-tl.to('#scene-network', { opacity: 0, duration: 0.6 }, 24.5);
+tl.to('#scene-network', { opacity: 0, duration: 0.4 }, 14.6);
 
-// 24.8 — 25.3  WIPE into statement
-wipeAt(25.3);
-flash(25.35, 0.35);
-tl.set('#scene-statement', { opacity: 1 }, 25.35);
+// 15.0  SPLIT WIPE into statement
+splitWipe(15.0);
+tl.set('#scene-statement', { opacity: 1 }, 15.02);
 
-tl.fromTo('#statement-text', { opacity: 0, y: 24, filter: 'blur(8px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1.0, ease: 'power2.out' }, 25.5);
-tl.to('#statement-sub', { opacity: 1, duration: 0.8 }, 26.8);
-flash(27.0, 0.18);
+tl.fromTo('#statement-text', { opacity: 0, y: 24, filter: 'blur(8px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.7, ease: 'power2.out' }, 15.15);
+tl.to('#statement-sub', { opacity: 1, duration: 0.55 }, 16.0);
+flash(16.2, 0.18);
 ['cov1', 'cov2', 'cov3'].forEach((id, i) => {
-  tl.fromTo('#' + id, { opacity: 0, scale: 0.05 }, { opacity: 0.5 - i * 0.1, scale: 1, duration: 2.2, ease: 'power1.out' }, 27.0 + i * 0.3);
+  tl.fromTo('#' + id, { opacity: 0, scale: 0.05 }, { opacity: 0.5 - i * 0.1, scale: 1, duration: 1.4, ease: 'power1.out' }, 16.2 + i * 0.2);
 });
 
-tl.to('#scene-statement', { opacity: 0, duration: 0.6 }, 32.5);
+tl.to('#scene-statement', { opacity: 0, duration: 0.4 }, 19.4);
 
-// 32.8 — 33.3  WIPE into trust
-wipeAt(33.3);
-flash(33.35, 0.35);
-tl.set('#scene-trust', { opacity: 1 }, 33.35);
+// 19.8  DIAGONAL WIPE into trust
+diagonalWipe(19.8);
+tl.set('#scene-trust', { opacity: 1 }, 19.82);
 
 gsap.set('#scene-trust .heading', { opacity: 0, y: 20 });
-tl.to('#scene-trust .heading', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 33.5);
-flash(34.0, 0.22);
+tl.to('#scene-trust .heading', { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 19.95);
+flash(20.3, 0.22);
 ['.trust-pill:nth-child(1)', '.trust-pill:nth-child(2)', '.trust-pill:nth-child(3)'].forEach((sel, i) => {
-  tl.fromTo(sel, { opacity: 0, y: 30, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: 'back.out(1.6)' }, 34.0 + i * 0.35);
+  tl.fromTo(sel, { opacity: 0, y: 30, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: 'back.out(1.6)' }, 20.3 + i * 0.22);
 });
 
-tl.to('#scene-trust', { opacity: 0, duration: 0.6 }, 38.5);
+tl.to('#scene-trust', { opacity: 0, duration: 0.4 }, 23.0);
 
-// 38.8 — 39.3  WIPE into CTA
-wipeAt(39.3);
-flash(39.35, 0.4);
-tl.set('#scene-cta', { opacity: 1 }, 39.35);
+// 23.4  ZOOM PUNCH into CTA
+zoomPunch(23.4);
+tl.set('#scene-cta', { opacity: 1 }, 23.42);
 
-tl.fromTo('#cta-logo-wrap', { scale: 0.7, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8, ease: 'back.out(1.5)' }, 39.5);
+tl.fromTo('#cta-logo-wrap', { scale: 0.7, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.55, ease: 'back.out(1.5)' }, 23.55);
 ['ctaring1', 'ctaring2', 'ctaring3'].forEach((id, i) => {
   gsap.set('#' + id, { opacity: 0 });
-  tl.to('#' + id, { opacity: 1, duration: 0.5 }, 39.5);
-  tl.to('#' + id, { scale: 1.03, duration: 1.4, repeat: 3, yoyo: true, ease: 'sine.inOut' }, 39.7 + i * 0.1);
+  tl.to('#' + id, { opacity: 1, duration: 0.35 }, 23.55);
+  tl.to('#' + id, { scale: 1.03, duration: 1.1, repeat: 2, yoyo: true, ease: 'sine.inOut' }, 23.7 + i * 0.08);
 });
-tl.fromTo('#cta-headline-1', { opacity: 0, y: 24, filter: 'blur(8px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.9, ease: 'power2.out' }, 40.9);
-tl.fromTo('#cta-headline-2', { opacity: 0, y: 24, filter: 'blur(8px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.9, ease: 'power2.out' }, 41.05);
-flash(41.8, 0.3);
+tl.fromTo('#cta-headline-1', { opacity: 0, y: 24, filter: 'blur(8px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.6, ease: 'power2.out' }, 24.4);
+tl.fromTo('#cta-headline-2', { opacity: 0, y: 24, filter: 'blur(8px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.6, ease: 'power2.out' }, 24.55);
+flash(25.0, 0.3);
 gsap.set('#cta-btn', { scale: 0.7 });
-tl.to('#cta-btn', { opacity: 1, scale: 1, duration: 0.6, ease: 'back.out(1.7)' }, 41.8);
-tl.to('#cta-shimmer', { left: '120%', duration: 1.4, repeat: 2, ease: 'power1.inOut' }, 42.0);
-tl.to('#cta-url', { opacity: 1, y: -4, duration: 0.6 }, 42.6);
+tl.to('#cta-btn', { opacity: 1, scale: 1, duration: 0.45, ease: 'back.out(1.7)' }, 25.0);
+tl.to('#cta-shimmer', { left: '120%', duration: 1.1, repeat: 2, ease: 'power1.inOut' }, 25.15);
+tl.to('#cta-url', { opacity: 1, y: -4, duration: 0.45 }, 25.6);
 
-// 46.6 — fade out, loop
-tl.to('#scene-cta', { opacity: 0, duration: 0.6 }, 46.6);
-tl.to('#blackout', { opacity: 1, duration: 1.3, ease: 'power2.in' }, 46.9);
+// 28.2 — fade out, loop
+tl.to('#scene-cta', { opacity: 0, duration: 0.45 }, 28.2);
+tl.to('#blackout', { opacity: 1, duration: 0.9, ease: 'power2.in' }, 28.4);
 
 // reset for next loop
 tl.call(() => {
@@ -458,7 +488,7 @@ tl.call(() => {
   gsap.set('#cta-btn', { opacity: 0, scale: 0.7 });
   gsap.set('#cta-url', { opacity: 0 });
   dots.forEach(d => { d.el.setAttribute('cx', d.sx); d.el.setAttribute('cy', d.sy); d.el.style.opacity = 0; });
-}, [], 48.2);
+}, [], 29.5);
 </script>
 </body>
 </html>
