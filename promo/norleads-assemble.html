@@ -172,9 +172,7 @@
     <div class="ring" id="ring2"></div>
     <div class="ring" id="ring3"></div>
 
-    <div id="intro-stage">
-      <div id="core-flash"></div>
-    </div>
+    <div id="intro-stage"></div>
 
     <div id="mono-wrap">
       <svg id="mono-svg" viewBox="0 0 588.319981 598.987083">
@@ -236,8 +234,6 @@ l0 797 53 -55 c64 -68 110 -121 121 -138 8 -13 9 -1912 1 -1920 -5 -6 -252
 -109 81 -39 25 -74 50 -77 56 -7 12 -35 14 -35 3z"/>
         </g>
         <g id="assemble-group" transform="translate(-20.180019,618.971223) scale(0.100000,-0.100000)">
-          <circle id="seed" cx="2940" cy="3000" r="55"/>
-        </g>
         <g id="mono-stroke-group" transform="translate(-20.180019,618.971223) scale(0.100000,-0.100000)">
           <path id="s0" class="mono-stroke" d="M1940 6132 c-30 -31 -68 -68 -85 -82 -16 -14 -36 -33 -43 -41 -10
 -13 -12 -295 -12 -1375 l0 -1359 52 -45 c29 -25 85 -75 125 -112 40 -38 74
@@ -369,10 +365,8 @@ gsap.to('#wordmark', {
    through its target, and slide it precisely onto the outline. Fully
    deterministic (no Math.random) — the scatter is a clean radial explosion that
    resolves into the brand. The leads literally become the mark. */
-const coreFlash = document.getElementById('core-flash');
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const assembleGroup = document.getElementById('assemble-group');
-const seed = document.getElementById('seed');
 
 // 1) sample target points along every stroke path (shared coord space => direct cx/cy)
 const SAMPLE_STEP = 95; // path units between particles (~9.5px on screen)
@@ -388,8 +382,6 @@ strokeOrder.forEach(p => {
 // 2) logo centroid in path space (for the radial implosion)
 const ctr = targets.reduce((a, t) => ({ x: a.x + t.x, y: a.y + t.y }), { x: 0, y: 0 });
 ctr.x /= targets.length; ctr.y /= targets.length;
-seed.setAttribute('cx', ctr.x);
-seed.setAttribute('cy', ctr.y);
 
 // 3) build a particle per target; ordered by angle so assembly sweeps cleanly (not random)
 targets.forEach(t => { t.ang = Math.atan2(t.y - ctr.y, t.x - ctr.x); });
@@ -420,12 +412,8 @@ tl.set('#blackout', { opacity: 1 });
 tl.to('#blackout', { opacity: 0, duration: 0.8, ease: 'power1.in' }, 0.0);
 
 // ===== PARTICLE ASSEMBLY: scattered leads implode into the exact outline of the mark =====
-// 1) seed pulse from the center — anticipation, the source everything comes from
-tl.to(seed, { opacity: 0.9, attr: { r: 120 }, duration: 0.35, ease: 'power2.out' }, 0.85);
-tl.to(seed, { opacity: 0, attr: { r: 30 }, duration: 0.45, ease: 'power2.in' }, 1.2);
-
-// 2) the leads flash into existence, exploded outward along their rays
-tl.to(dotEls, { opacity: 0.9, duration: 0.3, stagger: 0.004, ease: 'none' }, 1.15);
+// 1) the leads flash into existence, exploded outward along their rays
+tl.to(dotEls, { opacity: 0.9, duration: 0.3, stagger: 0.004, ease: 'none' }, 1.0);
 
 // 3) they implode precisely onto the mark's outline — angular order makes it sweep, never random
 tl.to(dotEls, {
@@ -433,17 +421,11 @@ tl.to(dotEls, {
   duration: 1.5, ease: 'power3.inOut', stagger: 0.004
 }, 1.5);
 
-// 4) the shape resolves — a confirmation flash at the moment it locks into form
-tl.to(coreFlash, { opacity: 0.9, scale: 1, duration: 0.16, ease: 'back.out(3)' }, 4.5);
-tl.to(coreFlash, { scale: 2.2, opacity: 0, duration: 0.5, ease: 'power2.out' }, 4.66);
-
-// 5) the assembled outline breathes with the flowing gradient, holding the form
+// 4) the assembled outline holds, breathing with the flowing gradient
 tl.to(dotEls, { opacity: 0.6, duration: 0.7, ease: 'sine.inOut' }, 5.1);
 
-// 6) crystallize: the particles dissolve as the clean stroke is about to take over
+// 5) crystallize: the particles dissolve as the clean stroke is about to take over
 tl.to(dotEls, { opacity: 0, duration: 0.8, stagger: 0.003, ease: 'power1.in' }, 6.1);
-tl.to(coreFlash, { opacity: 0.8, scale: 1, duration: 0.14, ease: 'back.out(3)' }, 6.55);
-tl.to(coreFlash, { scale: 2.5, opacity: 0, duration: 0.45, ease: 'power2.out' }, 6.7);
 
 // 7.0 -> 21.3  draw the monogram (pure stroke reveal, no tracer dot) — the signal becomes the mark
 const drawStart = 7.0, drawEnd = 21.3;
@@ -484,7 +466,8 @@ tl.to('#wordmark', { clipPath: 'inset(0 0% 0 0)', duration: 1.8, ease: 'power3.o
   tl.fromTo(sel, {
     opacity: 0.4, width: '10px', height: '10px'
   }, {
-    opacity: 0, width: '900px', height: '900px', duration: 2.6, ease: 'power1.out'
+    opacity: 0, width: '900px', height: '900px', duration: 2.6, ease: 'power1.out',
+    immediateRender: false
   }, 31.9 + i * 0.55);
 });
 
@@ -502,8 +485,6 @@ tl.set('#lockup', { top: '46%', paddingTop: '0px' }, 45.3);
 tl.set(fillPaths, { opacity: 0 }, 45.3);
 tl.set(strokeOrder, { opacity: 1, strokeDashoffset: (i, t) => t.getTotalLength() }, 45.3);
 tl.set('#canvas', { scale: 1 }, 45.3);
-tl.set(coreFlash, { opacity: 0, scale: 0 }, 45.3);
-tl.set(seed, { opacity: 0 }, 45.3);
 // reset every particle back to its exploded start position for the next loop
 tl.call(() => {
   dots.forEach(d => {
