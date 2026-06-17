@@ -64,6 +64,18 @@
   .proc-sub{font-size:16px;color:var(--gray);margin-top:8px;text-align:center;max-width:280px;}
   #process-line{position:absolute;top:32px;left:170px;right:170px;height:3px;background:linear-gradient(90deg,var(--teal),var(--tealDeep),var(--teal));width:0;z-index:1;}
 
+  /* benefits */
+  #benefits-list{display:flex;flex-direction:column;gap:24px;margin-top:50px;}
+  .benefit-row{display:flex;align-items:center;gap:20px;opacity:0;width:880px;}
+  .benefit-check{width:38px;height:38px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:20px;flex-shrink:0;box-shadow:0 8px 20px rgba(25,148,181,.35);}
+  .benefit-text{font-size:25px;color:var(--navy);font-weight:500;}
+
+  /* platform */
+  #platform-row{display:flex;gap:26px;margin-top:50px;}
+  .platform-pill{background:#fff;border:1px solid rgba(25,148,181,.22);border-radius:50px;padding:24px 40px;display:flex;align-items:center;gap:14px;opacity:0;box-shadow:0 14px 30px rgba(25,148,181,.1);}
+  .platform-dot{width:12px;height:12px;border-radius:50%;background:var(--teal);}
+  .platform-label{font-size:23px;font-weight:700;color:var(--navy);}
+
   /* solutions */
   #solutions-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:46px;}
   .sol-card{background:#fff;border:1px solid rgba(25,148,181,0.22);border-radius:18px;padding:32px 40px;width:480px;opacity:0;box-shadow:0 14px 36px rgba(25,148,181,0.1);}
@@ -186,7 +198,33 @@
       </div>
     </div>
 
-    <!-- SCENE 6: testimonial -->
+    <!-- SCENE 6: benefits -->
+    <div class="scene" id="scene-benefits">
+      <div style="text-align:center;">
+        <div class="heading">Hvorfor <span class="accent">LeadJabber</span></div>
+        <div class="divider" id="benefits-divider"></div>
+      </div>
+      <div id="benefits-list">
+        <div class="benefit-row" id="ben1"><div class="benefit-check">✓</div><div class="benefit-text">Dedikert salgsteam som jobber for deg</div></div>
+        <div class="benefit-row" id="ben2"><div class="benefit-check">✓</div><div class="benefit-text">Kvalitetssikrede møter rett i kalenderen</div></div>
+        <div class="benefit-row" id="ben3"><div class="benefit-check">✓</div><div class="benefit-text">Skalerbar pipeline uten å øke staben</div></div>
+        <div class="benefit-row" id="ben4"><div class="benefit-check">✓</div><div class="benefit-text">Fullt innsyn i prosessen, alltid</div></div>
+      </div>
+    </div>
+
+    <!-- SCENE 7: platform -->
+    <div class="scene" id="scene-platform">
+      <div style="text-align:center;">
+        <div class="heading">Alt i <span class="accent">én plattform</span></div>
+      </div>
+      <div id="platform-row">
+        <div class="platform-pill" id="plat1"><span class="platform-dot"></span><span class="platform-label">CRM-integrasjon</span></div>
+        <div class="platform-pill" id="plat2"><span class="platform-dot"></span><span class="platform-label">Sanntidsrapportering</span></div>
+        <div class="platform-pill" id="plat3"><span class="platform-dot"></span><span class="platform-label">Dedikert kundeteam</span></div>
+      </div>
+    </div>
+
+    <!-- SCENE 8: testimonial -->
     <div class="scene" id="scene-testimonial">
       <div id="quote-mark">&ldquo;</div>
       <div id="quote-text">Jeg har brukt LeadJabber i flere år, og det har blitt helt avgjørende for min salgsprosess. Systemet har forvandlet måten jeg jobber på.</div>
@@ -194,7 +232,7 @@
       <div id="quote-title">Sales Manager</div>
     </div>
 
-    <!-- SCENE 7: CTA -->
+    <!-- SCENE 9: CTA -->
     <div class="scene" id="scene-cta">
       <div class="cta-ring" id="ctaring1" style="width:560px;height:560px;"></div>
       <div class="cta-ring" id="ctaring2" style="width:680px;height:680px;"></div>
@@ -273,7 +311,7 @@ const dots = targets.map(t => {
   return { el: c, sx, sy, tx: t.x, ty: t.y };
 });
 
-gsap.set(['#scene-stats .heading', '#scene-process .heading', '#scene-solutions .heading'], { opacity: 0, y: 20 });
+gsap.set(['#scene-stats .heading', '#scene-process .heading', '#scene-solutions .heading', '#scene-benefits .heading', '#scene-platform .heading'], { opacity: 0, y: 20 });
 
 /* ---------- master timeline — loops, distinct transition per cut ---------- */
 const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.5 });
@@ -397,38 +435,66 @@ flash(18.8, 0.2);
 
 tl.to('#scene-solutions', { opacity: 0, duration: 0.4 }, 23.0);
 
-// 23.4  IRIS WIPE into testimonial
+// 23.4  IRIS WIPE into benefits
 irisWipe(23.4);
-tl.set('#scene-testimonial', { opacity: 1 }, 23.42);
+tl.set('#scene-benefits', { opacity: 1 }, 23.42);
 
-tl.fromTo('#quote-mark', { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.8)' }, 23.55);
-tl.fromTo('#quote-text', { opacity: 0, y: 22, filter: 'blur(8px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.7, ease: 'power2.out' }, 23.8);
-tl.to('#quote-name', { opacity: 1, duration: 0.45 }, 25.0);
-tl.to('#quote-title', { opacity: 1, duration: 0.45 }, 25.2);
+tl.to('#scene-benefits .heading', { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 23.55);
+tl.to('#benefits-divider', { width: '420px', duration: 0.5, ease: 'power2.out' }, 23.75);
 
-tl.to('#scene-testimonial', { opacity: 0, duration: 0.4 }, 27.4);
-tl.to('#corner-logo', { opacity: 0, duration: 0.3 }, 27.4);
+flash(24.2, 0.2);
+['ben1', 'ben2', 'ben3', 'ben4'].forEach((id, i) => {
+  tl.fromTo('#' + id, { opacity: 0, x: -32 }, { opacity: 1, x: 0, duration: 0.45, ease: 'power2.out' }, 24.2 + i * 0.22);
+});
 
-// 27.8  ZOOM PUNCH into CTA
-zoomPunch(27.8);
-tl.set('#scene-cta', { opacity: 1 }, 27.82);
+tl.to('#scene-benefits', { opacity: 0, duration: 0.4 }, 27.6);
 
-tl.fromTo('#cta-logo', { scale: 0.7, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.55, ease: 'back.out(1.5)' }, 27.95);
+// 28.0  SLIDE WIPE into platform
+slideWipe(28.0);
+tl.set('#scene-platform', { opacity: 1 }, 28.02);
+
+tl.to('#scene-platform .heading', { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 28.15);
+
+flash(28.6, 0.18);
+['plat1', 'plat2', 'plat3'].forEach((id, i) => {
+  const fromX = i % 2 === 0 ? -40 : 40;
+  tl.fromTo('#' + id, { opacity: 0, x: fromX }, { opacity: 1, x: 0, duration: 0.45, ease: 'back.out(1.6)' }, 28.6 + i * 0.2);
+});
+
+tl.to('#scene-platform', { opacity: 0, duration: 0.4 }, 31.8);
+
+// 32.2  DIAGONAL WIPE into testimonial
+diagWipe(32.2);
+tl.set('#scene-testimonial', { opacity: 1 }, 32.22);
+
+tl.fromTo('#quote-mark', { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.8)' }, 32.35);
+tl.fromTo('#quote-text', { opacity: 0, y: 22, filter: 'blur(8px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.7, ease: 'power2.out' }, 32.6);
+tl.to('#quote-name', { opacity: 1, duration: 0.45 }, 33.8);
+tl.to('#quote-title', { opacity: 1, duration: 0.45 }, 34.0);
+
+tl.to('#scene-testimonial', { opacity: 0, duration: 0.4 }, 36.2);
+tl.to('#corner-logo', { opacity: 0, duration: 0.3 }, 36.2);
+
+// 36.6  ZOOM PUNCH into CTA
+zoomPunch(36.6);
+tl.set('#scene-cta', { opacity: 1 }, 36.62);
+
+tl.fromTo('#cta-logo', { scale: 0.7, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.55, ease: 'back.out(1.5)' }, 36.75);
 ['ctaring1', 'ctaring2', 'ctaring3'].forEach((id, i) => {
   gsap.set('#' + id, { opacity: 0 });
-  tl.to('#' + id, { opacity: 1, duration: 0.35 }, 27.95);
-  tl.to('#' + id, { scale: 1.03, duration: 1.1, repeat: 3, yoyo: true, ease: 'sine.inOut' }, 28.1 + i * 0.08);
+  tl.to('#' + id, { opacity: 1, duration: 0.35 }, 36.75);
+  tl.to('#' + id, { scale: 1.03, duration: 1.1, repeat: 3, yoyo: true, ease: 'sine.inOut' }, 36.9 + i * 0.08);
 });
-tl.fromTo('#cta-headline', { opacity: 0, y: 22, filter: 'blur(8px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.6, ease: 'power2.out' }, 28.7);
-flash(29.2, 0.28);
+tl.fromTo('#cta-headline', { opacity: 0, y: 22, filter: 'blur(8px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.6, ease: 'power2.out' }, 37.5);
+flash(38.0, 0.28);
 gsap.set('#cta-btn', { scale: 0.7 });
-tl.to('#cta-btn', { opacity: 1, scale: 1, duration: 0.45, ease: 'back.out(1.7)' }, 29.2);
-tl.to('#cta-shimmer', { left: '120%', duration: 1.1, repeat: 3, ease: 'power1.inOut' }, 29.4);
-tl.to('#cta-url', { opacity: 1, y: -4, duration: 0.45 }, 29.8);
+tl.to('#cta-btn', { opacity: 1, scale: 1, duration: 0.45, ease: 'back.out(1.7)' }, 38.0);
+tl.to('#cta-shimmer', { left: '120%', duration: 1.1, repeat: 3, ease: 'power1.inOut' }, 38.2);
+tl.to('#cta-url', { opacity: 1, y: -4, duration: 0.45 }, 38.6);
 
-// 36.6 — fade out, loop
-tl.to('#scene-cta', { opacity: 0, duration: 0.45 }, 36.6);
-tl.to('#blackout', { opacity: 1, duration: 0.9, ease: 'power2.in' }, 36.8);
+// 45.4 — fade out, loop
+tl.to('#scene-cta', { opacity: 0, duration: 0.45 }, 45.4);
+tl.to('#blackout', { opacity: 1, duration: 0.9, ease: 'power2.in' }, 45.6);
 
 // reset for next loop
 tl.call(() => {
@@ -449,6 +515,13 @@ tl.call(() => {
   gsap.set('#solutions-divider', { width: '0px' });
   gsap.set('#scene-solutions .heading', { opacity: 0, y: 20 });
   gsap.set(['#sol1', '#sol2', '#sol3', '#sol4'], { opacity: 0, y: 28, scale: 0.94 });
+  gsap.set('#benefits-divider', { width: '0px' });
+  gsap.set('#scene-benefits .heading', { opacity: 0, y: 20 });
+  gsap.set(['#ben1', '#ben2', '#ben3', '#ben4'], { opacity: 0, x: -32 });
+  gsap.set('#scene-platform .heading', { opacity: 0, y: 20 });
+  gsap.set('#plat1', { opacity: 0, x: -40 });
+  gsap.set('#plat2', { opacity: 0, x: 40 });
+  gsap.set('#plat3', { opacity: 0, x: -40 });
   gsap.set(['#quote-mark', '#quote-text', '#quote-name', '#quote-title'], { opacity: 0 });
   gsap.set(['#ctaring1', '#ctaring2', '#ctaring3'], { opacity: 0 });
   gsap.set('#cta-btn', { opacity: 0, scale: 0.7 });
@@ -456,7 +529,7 @@ tl.call(() => {
   gsap.set('#cta-logo', { opacity: 0, scale: 0.7 });
   gsap.set('#cta-headline', { opacity: 0 });
   dots.forEach(d => { d.el.setAttribute('cx', d.sx); d.el.setAttribute('cy', d.sy); d.el.style.opacity = 0; });
-}, [], 37.9);
+}, [], 46.7);
 
 window.__tl = tl;
 (function() {
