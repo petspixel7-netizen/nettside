@@ -438,6 +438,7 @@ tl.to('#stats-divider', {{ width: '420px', duration: 0.5, ease: 'power2.out' }},
 flash(9.2, 0.2);
 ['stat1', 'stat2', 'stat3'].forEach((id, i) => {{
   tl.fromTo('#' + id, {{ opacity: 0, y: 28, scale: 0.9, filter: 'blur(6px)' }}, {{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: 0.45, ease: 'back.out(1.6)' }}, 9.2 + i * 0.18);
+  tl.to('#' + id, {{ y: -10, duration: 0.9, repeat: 3, yoyo: true, ease: 'sine.inOut' }}, 9.2 + i * 0.18 + 0.5);
 }});
 countUp('stat1-num', 9.5, 3, 'x', 1.0);
 countUp('stat2-num', 9.68, 50, '%', 1.0);
@@ -454,18 +455,21 @@ tl.to('#scene-process .heading .word', {{ opacity: 1, y: 0, filter: 'blur(0px)',
 // step 1 appears first
 flash(13.45, 0.16);
 tl.fromTo('#proc1', {{ opacity: 0, y: 24, scale: 0.92 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.45, ease: 'back.out(1.7)' }}, 13.45);
+tl.to('#proc1 .proc-num', {{ y: -6, scale: 1.06, duration: 0.7, repeat: 5, yoyo: true, ease: 'sine.inOut' }}, 13.95);
 
 // line draws from step 1 to step 2, then step 2 appears
 tl.to(procLine, {{ strokeDashoffset: procLineLen / 2, duration: 0.5, ease: 'power2.inOut' }}, 13.95);
 tl.to('#process-line-dot', {{ attr: {{ cx: 510 }}, duration: 0.5, ease: 'power2.inOut' }}, 13.95);
 flash(14.4, 0.14);
 tl.fromTo('#proc2', {{ opacity: 0, y: 24, scale: 0.92 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.45, ease: 'back.out(1.7)' }}, 14.4);
+tl.to('#proc2 .proc-num', {{ y: -6, scale: 1.06, duration: 0.7, repeat: 3, yoyo: true, ease: 'sine.inOut' }}, 14.9);
 
 // line draws from step 2 to step 3, then step 3 appears
 tl.to(procLine, {{ strokeDashoffset: 0, duration: 0.5, ease: 'power2.inOut' }}, 14.9);
 tl.to('#process-line-dot', {{ attr: {{ cx: 850 }}, duration: 0.5, ease: 'power2.inOut' }}, 14.9);
 flash(15.35, 0.14);
 tl.fromTo('#proc3', {{ opacity: 0, y: 24, scale: 0.92 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.45, ease: 'back.out(1.7)' }}, 15.35);
+tl.to('#proc3 .proc-num', {{ y: -6, scale: 1.06, duration: 0.7, repeat: 2, yoyo: true, ease: 'sine.inOut' }}, 15.85);
 
 tl.to('#scene-process', {{ opacity: 0, duration: 0.4 }}, 17.6);
 
@@ -479,6 +483,7 @@ tl.to('#solutions-divider', {{ width: '420px', duration: 0.5, ease: 'power2.out'
 flash(18.8, 0.2);
 ['sol1', 'sol2', 'sol3', 'sol4'].forEach((id, i) => {{
   tl.fromTo('#' + id, {{ opacity: 0, y: 28, scale: 0.94, rotation: -4, filter: 'blur(6px)' }}, {{ opacity: 1, y: 0, scale: 1, rotation: 0, filter: 'blur(0px)', duration: 0.45, ease: 'back.out(1.6)' }}, 18.8 + i * 0.22);
+  tl.to('#' + id, {{ y: -9, duration: 1.0, repeat: 3, yoyo: true, ease: 'sine.inOut' }}, 18.8 + i * 0.22 + 0.5);
 }});
 
 tl.to('#scene-solutions', {{ opacity: 0, duration: 0.4 }}, 23.0);
@@ -493,6 +498,7 @@ tl.to('#benefits-divider', {{ width: '420px', duration: 0.5, ease: 'power2.out' 
 flash(24.2, 0.2);
 ['ben1', 'ben2', 'ben3', 'ben4'].forEach((id, i) => {{
   tl.fromTo('#' + id, {{ opacity: 0, x: -32, filter: 'blur(6px)' }}, {{ opacity: 1, x: 0, filter: 'blur(0px)', duration: 0.45, ease: 'power2.out' }}, 24.2 + i * 0.22);
+  tl.to('#' + id + ' .benefit-check', {{ scale: 1.15, rotation: 8, duration: 0.8, repeat: 3, yoyo: true, ease: 'sine.inOut' }}, 24.2 + i * 0.22 + 0.5);
 }});
 
 tl.to('#scene-benefits', {{ opacity: 0, duration: 0.4 }}, 27.6);
@@ -506,6 +512,7 @@ tl.to('#scene-platform .heading .word', {{ opacity: 1, y: 0, filter: 'blur(0px)'
 ['plat1', 'plat2', 'plat3'].forEach((id, i) => {{
   const fromX = i % 2 === 0 ? -40 : 40;
   tl.fromTo('#' + id, {{ opacity: 0, x: fromX, filter: 'blur(6px)' }}, {{ opacity: 1, x: 0, filter: 'blur(0px)', duration: 0.45, ease: 'back.out(1.6)' }}, 28.6 + i * 0.2);
+  tl.to('#' + id, {{ y: -8, duration: 0.9, repeat: 2, yoyo: true, ease: 'sine.inOut' }}, 28.6 + i * 0.2 + 0.5);
 }});
 
 tl.to('#scene-platform', {{ opacity: 0, duration: 0.4 }}, 31.8);
