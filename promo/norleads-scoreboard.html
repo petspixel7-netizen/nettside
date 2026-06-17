@@ -10,7 +10,7 @@
 <style>
   :root{
     --bg:#040810;
-    --lime:#C8FF00; --cyan:#00E5FF; --amber:#FFB000; --pink:#FF3D7F;
+    --lime:#C8FF00; --cyan:#00E5FF; --amber:#FFB000;
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Manrope',sans-serif;}
@@ -48,6 +48,11 @@
   #wordmark span{display:inline-block;opacity:0;transform:translateY(10px);}
   #urlmark{margin-top:18px;font-family:'JetBrains Mono',monospace;font-weight:500;font-size:19px;letter-spacing:10px;
     text-transform:uppercase;color:rgba(200,255,0,.6);opacity:0;}
+
+  /* ---------- rain-built logo (closing scene) ---------- */
+  #rainGrid{position:absolute;inset:0;z-index:11;}
+  .rcell{position:absolute;width:16px;height:16px;border-radius:2px;}
+  #rainGlow{position:absolute;inset:0;background:radial-gradient(circle at 50% 44%, rgba(200,255,0,.18), transparent 55%);z-index:9;opacity:0;pointer-events:none;}
 
   #blackout{position:absolute;inset:0;background:#000;opacity:1;pointer-events:none;z-index:50;}
 </style>
@@ -132,6 +137,9 @@ l0 797 53 -55 c64 -68 110 -121 121 -138 8 -13 9 -1912 1 -1920 -5 -6 -252
       <div id="urlmark">norleads.no</div>
     </div>
 
+    <div id="rainGlow"></div>
+    <div id="rainGrid"></div>
+
     <div id="flash"></div>
     <div id="blackout"></div>
   </div>
@@ -143,7 +151,7 @@ const COLS = 56, ROWS = 32, SIZE = 34, GAP = 2;
 const STEP = SIZE + GAP;
 const totalW = COLS * STEP, totalH = ROWS * STEP;
 const offX = (1920 - totalW) / 2, offY = (1080 - totalH) / 2;
-const palette = ['var(--lime)','var(--cyan)','var(--amber)','var(--pink)'];
+const palette = ['var(--lime)','var(--cyan)','var(--amber)'];
 
 const grid = document.getElementById('grid');
 const frag = document.createDocumentFragment();
@@ -166,92 +174,129 @@ const cx0 = 1920 / 2, cy0 = 1080 / 2;
 cells.forEach(cell => {
   cell.distFromCenter = Math.hypot(cell.cx - cx0, cell.cy - cy0);
   cell.distFromEdge = Math.min(cell.cx, 1920 - cell.cx, cell.cy, 1080 - cell.cy);
-  cell.color = palette[(cell.r + cell.c) % palette.length];
+  /* puzzle-piece zones: contiguous diagonal bands instead of a checkerboard */
+  cell.color = palette[Math.floor((cell.r + cell.c) / 5) % palette.length];
 });
 const maxEdgeDist = Math.max(...cells.map(c => c.distFromEdge));
 const maxCenterDist = Math.max(...cells.map(c => c.distFromCenter));
 
-/* ---------- master timeline, ~11s loop ---------- */
+/* ---------- rain-built logo data (pre-rasterized from the NorLeads mark) ---------- */
+const MASK_W = 56, MASK_H = 57;
+const MASK_FLAT = [0,0,1,0,2,0,3,0,4,0,5,0,6,0,7,0,8,0,9,0,10,0,11,0,16,0,17,0,40,0,41,0,42,0,43,0,44,0,45,0,46,0,47,0,48,0,49,0,50,0,51,0,52,0,53,0,54,0,55,0,0,1,1,1,2,1,3,1,4,1,5,1,6,1,7,1,8,1,9,1,10,1,11,1,15,1,16,1,17,1,18,1,40,1,41,1,42,1,43,1,44,1,45,1,46,1,47,1,48,1,49,1,50,1,51,1,52,1,53,1,54,1,55,1,0,2,1,2,2,2,3,2,4,2,5,2,6,2,7,2,8,2,9,2,10,2,11,2,15,2,16,2,17,2,18,2,19,2,40,2,41,2,42,2,43,2,44,2,45,2,46,2,47,2,48,2,49,2,50,2,51,2,52,2,53,2,54,2,55,2,0,3,1,3,2,3,3,3,4,3,5,3,15,3,16,3,17,3,18,3,19,3,20,3,40,3,41,3,42,3,43,3,44,3,53,3,54,3,55,3,0,4,1,4,2,4,3,4,4,4,5,4,6,4,15,4,16,4,17,4,18,4,19,4,20,4,21,4,40,4,41,4,42,4,43,4,44,4,45,4,53,4,54,4,55,4,0,5,1,5,2,5,4,5,5,5,6,5,7,5,15,5,16,5,17,5,19,5,20,5,21,5,22,5,40,5,41,5,42,5,43,5,44,5,45,5,53,5,54,5,55,5,0,6,1,6,2,6,5,6,6,6,7,6,8,6,15,6,16,6,17,6,20,6,21,6,22,6,23,6,40,6,41,6,42,6,44,6,45,6,46,6,53,6,54,6,55,6,0,7,1,7,2,7,6,7,7,7,8,7,9,7,15,7,16,7,17,7,21,7,22,7,23,7,24,7,40,7,41,7,42,7,44,7,45,7,46,7,53,7,54,7,55,7,0,8,1,8,2,8,7,8,8,8,9,8,10,8,15,8,16,8,17,8,22,8,23,8,24,8,25,8,40,8,41,8,42,8,44,8,45,8,46,8,53,8,54,8,55,8,0,9,1,9,2,9,8,9,9,9,10,9,11,9,15,9,16,9,17,9,23,9,24,9,25,9,26,9,40,9,41,9,42,9,44,9,45,9,46,9,53,9,54,9,55,9,0,10,1,10,2,10,9,10,10,10,11,10,15,10,16,10,17,10,25,10,26,10,27,10,40,10,41,10,42,10,44,10,45,10,46,10,53,10,54,10,55,10,0,11,1,11,2,11,10,11,11,11,15,11,16,11,17,11,25,11,26,11,27,11,28,11,40,11,41,11,42,11,44,11,45,11,46,11,53,11,54,11,55,11,0,12,1,12,2,12,11,12,15,12,16,12,17,12,26,12,27,12,28,12,29,12,40,12,41,12,42,12,44,12,45,12,46,12,53,12,54,12,55,12,0,13,1,13,2,13,15,13,16,13,17,13,28,13,29,13,30,13,31,13,40,13,41,13,42,13,44,13,45,13,46,13,53,13,54,13,55,13,0,14,1,14,2,14,15,14,16,14,17,14,29,14,30,14,31,14,32,14,40,14,41,14,42,14,44,14,45,14,46,14,53,14,54,14,55,14,0,15,1,15,2,15,15,15,16,15,17,15,30,15,31,15,32,15,33,15,40,15,41,15,42,15,44,15,45,15,46,15,53,15,54,15,55,15,0,16,1,16,2,16,9,16,10,16,15,16,16,16,17,16,31,16,32,16,33,16,34,16,40,16,41,16,42,16,44,16,45,16,46,16,53,16,54,16,55,16,0,17,1,17,2,17,9,17,10,17,11,17,15,17,16,17,17,17,32,17,33,17,34,17,35,17,40,17,41,17,42,17,44,17,45,17,46,17,53,17,54,17,55,17,0,18,1,18,2,18,9,18,10,18,11,18,15,18,16,18,17,18,33,18,34,18,35,18,36,18,40,18,41,18,42,18,44,18,45,18,46,18,53,18,54,18,55,18,0,19,1,19,2,19,9,19,10,19,11,19,15,19,16,19,17,19,20,19,34,19,35,19,36,19,37,19,41,19,42,19,44,19,45,19,46,19,53,19,54,19,55,19,0,20,1,20,2,20,9,20,10,20,11,20,15,20,16,20,17,20,20,20,21,20,35,20,36,20,37,20,38,20,42,20,44,20,45,20,46,20,53,20,54,20,55,20,0,21,1,21,2,21,9,21,10,21,11,21,15,21,16,21,17,21,20,21,21,21,22,21,36,21,37,21,38,21,39,21,44,21,45,21,46,21,53,21,54,21,55,21,0,22,1,22,2,22,9,22,10,22,11,22,15,22,16,22,17,22,20,22,21,22,22,22,23,22,37,22,38,22,39,22,40,22,44,22,45,22,46,22,53,22,54,22,55,22,0,23,1,23,2,23,9,23,10,23,11,23,15,23,16,23,17,23,21,23,22,23,23,23,24,23,32,23,33,23,34,23,35,23,38,23,39,23,40,23,41,23,44,23,45,23,46,23,53,23,54,23,55,23,0,24,1,24,2,24,9,24,10,24,11,24,15,24,16,24,17,24,22,24,23,24,24,24,25,24,34,24,35,24,36,24,39,24,40,24,41,24,42,24,44,24,45,24,46,24,53,24,54,24,55,24,0,25,1,25,2,25,9,25,10,25,11,25,15,25,16,25,17,25,24,25,25,25,26,25,34,25,35,25,36,25,37,25,41,25,42,25,43,25,44,25,45,25,46,25,53,25,54,25,55,25,0,26,1,26,2,26,9,26,10,26,11,26,15,26,16,26,17,26,25,26,26,26,27,26,35,26,36,26,37,26,38,26,39,26,42,26,43,26,44,26,45,26,46,26,53,26,54,26,55,26,0,27,1,27,2,27,9,27,10,27,11,27,15,27,16,27,17,27,26,27,27,27,28,27,36,27,37,27,38,27,39,27,40,27,43,27,44,27,45,27,46,27,53,27,54,27,55,27,0,28,1,28,2,28,10,28,11,28,12,28,16,28,17,28,27,28,28,28,29,28,38,28,39,28,40,28,41,28,44,28,45,28,46,28,53,28,54,28,55,28,0,29,1,29,2,29,10,29,11,29,12,29,13,29,17,29,27,29,28,29,29,29,30,29,39,29,40,29,41,29,44,29,45,29,46,29,53,29,54,29,55,29,0,30,1,30,2,30,11,30,12,30,13,30,14,30,28,30,29,30,30,30,31,30,39,30,40,30,41,30,44,30,45,30,46,30,53,30,54,30,55,30,0,31,1,31,2,31,12,31,13,31,14,31,15,31,29,31,30,31,31,31,32,31,39,31,40,31,41,31,44,31,45,31,46,31,53,31,54,31,55,31,0,32,1,32,2,32,13,32,14,32,15,32,16,32,17,32,30,32,31,32,32,32,33,32,39,32,40,32,41,32,44,32,45,32,46,32,53,32,54,32,55,32,0,33,1,33,2,33,10,33,15,33,16,33,17,33,18,33,31,33,32,33,33,33,34,33,39,33,40,33,41,33,44,33,45,33,46,33,53,33,54,33,55,33,0,34,1,34,2,34,10,34,11,34,16,34,17,34,18,34,19,34,32,34,33,34,34,34,35,34,39,34,40,34,41,34,44,34,45,34,46,34,53,34,54,34,55,34,0,35,1,35,2,35,10,35,11,35,17,35,18,35,19,35,20,35,33,35,34,35,35,35,36,35,39,35,40,35,41,35,44,35,45,35,46,35,53,35,54,35,55,35,0,36,1,36,2,36,10,36,11,36,18,36,19,36,20,36,21,36,22,36,34,36,35,36,36,36,37,36,39,36,40,36,41,36,44,36,45,36,46,36,53,36,54,36,55,36,0,37,1,37,2,37,10,37,11,37,15,37,16,37,20,37,21,37,22,37,23,37,35,37,36,37,37,37,39,37,40,37,41,37,44,37,45,37,46,37,53,37,54,37,55,37,0,38,1,38,2,38,10,38,11,38,15,38,16,38,17,38,21,38,22,38,23,38,24,38,36,38,37,38,39,38,40,38,41,38,45,38,46,38,53,38,54,38,55,38,0,39,1,39,2,39,10,39,11,39,15,39,16,39,17,39,22,39,23,39,24,39,25,39,39,39,40,39,41,39,45,39,46,39,53,39,54,39,55,39,0,40,1,40,2,40,10,40,11,40,15,40,16,40,17,40,23,40,24,40,25,40,26,40,27,40,39,40,40,40,41,40,45,40,46,40,53,40,54,40,55,40,0,41,1,41,2,41,10,41,11,41,15,41,16,41,17,41,24,41,25,41,26,41,27,41,28,41,39,41,40,41,41,41,45,41,46,41,53,41,54,41,55,41,0,42,1,42,2,42,10,42,11,42,15,42,16,42,17,42,26,42,27,42,28,42,29,42,39,42,40,42,41,42,45,42,46,42,53,42,54,42,55,42,0,43,1,43,2,43,10,43,11,43,15,43,16,43,17,43,27,43,28,43,29,43,30,43,39,43,40,43,41,43,45,43,46,43,53,43,54,43,55,43,0,44,1,44,2,44,10,44,11,44,15,44,16,44,17,44,28,44,29,44,30,44,31,44,32,44,39,44,40,44,41,44,46,44,53,44,54,44,55,44,0,45,1,45,2,45,10,45,11,45,15,45,16,45,17,45,29,45,30,45,31,45,32,45,33,45,39,45,40,45,41,45,53,45,54,45,55,45,0,46,1,46,2,46,10,46,11,46,15,46,16,46,17,46,31,46,32,46,33,46,34,46,39,46,40,46,41,46,45,46,53,46,54,46,55,46,0,47,1,47,2,47,10,47,11,47,15,47,16,47,17,47,32,47,33,47,34,47,35,47,39,47,40,47,41,47,45,47,46,47,53,47,54,47,55,47,0,48,1,48,2,48,10,48,11,48,15,48,16,48,17,48,33,48,34,48,35,48,36,48,37,48,39,48,40,48,41,48,45,48,46,48,47,48,53,48,54,48,55,48,0,49,1,49,2,49,10,49,11,49,15,49,16,49,17,49,35,49,36,49,37,49,38,49,39,49,40,49,41,49,45,49,46,49,47,49,48,49,53,49,54,49,55,49,0,50,1,50,2,50,10,50,11,50,15,50,16,50,17,50,36,50,37,50,38,50,39,50,40,50,41,50,46,50,47,50,48,50,49,50,53,50,54,50,55,50,0,51,1,51,2,51,10,51,11,51,15,51,16,51,17,51,37,51,38,51,39,51,40,51,41,51,47,51,48,51,49,51,50,51,53,51,54,51,55,51,0,52,1,52,2,52,15,52,16,52,17,52,38,52,39,52,40,52,41,52,49,52,50,52,51,52,52,52,53,52,54,52,55,52,0,53,1,53,2,53,15,53,16,53,17,53,40,53,41,53,50,53,51,53,52,53,53,53,54,53,55,53,0,54,1,54,2,54,3,54,4,54,5,54,6,54,7,54,8,54,9,54,10,54,11,54,12,54,13,54,14,54,15,54,16,54,17,54,41,54,45,54,46,54,47,54,48,54,49,54,50,54,51,54,52,54,53,54,54,54,55,54,0,55,1,55,2,55,3,55,4,55,5,55,6,55,7,55,8,55,9,55,10,55,11,55,12,55,13,55,14,55,15,55,16,55,17,55,45,55,46,55,47,55,48,55,49,55,50,55,51,55,52,55,53,55,54,55,55,55,0,56,1,56,2,56,3,56,4,56,5,56,6,56,7,56,8,56,9,56,10,56,11,56,12,56,13,56,14,56,15,56,16,56,17,56,45,56,46,56,47,56,48,56,49,56,50,56,51,56,52,56,53,56,54,56,55,56];
+const RCELL = 16, RGAP = 2, RSTEP = RCELL + RGAP;
+const logoW = MASK_W * RSTEP, logoH = MASK_H * RSTEP;
+const logoBaseX = cx0 - logoW / 2, logoBaseY = cy0 - logoH / 2 - 20;
+
+const rainGrid = document.getElementById('rainGrid');
+const rainFrag = document.createDocumentFragment();
+const rainCells = [];
+for (let i = 0; i < MASK_FLAT.length; i += 2) {
+  const mx = MASK_FLAT[i], my = MASK_FLAT[i + 1];
+  const el = document.createElement('div');
+  el.className = 'rcell';
+  const landX = logoBaseX + mx * RSTEP, landY = logoBaseY + my * RSTEP;
+  el.style.left = landX + 'px';
+  el.style.top = landY + 'px';
+  const band = Math.floor((mx + my) / 7) % palette.length;
+  el.style.background = palette[band];
+  el.style.boxShadow = `0 0 8px ${palette[band]}`;
+  el.style.opacity = 0;
+  rainFrag.appendChild(el);
+  rainCells.push({ el, mx, my, landY });
+}
+rainGrid.appendChild(rainFrag);
+const maxLandY = Math.max(...rainCells.map(c => c.landY));
+
+/* ---------- master timeline, ~14.6s loop — longer & punchier so it sticks ---------- */
 const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.5 });
 window.masterTL = tl;
 window.cellsData = cells;
+window.rainCellsData = rainCells;
 
 tl.set('#blackout', { opacity: 1 });
-tl.to('#blackout', { opacity: 0, duration: 0.4, ease: 'power1.in' }, 0.0);
+tl.to('#blackout', { opacity: 0, duration: 0.35, ease: 'power1.in' }, 0.0);
 
-/* 0.0 - 1.5  BOOT — diagonal wave flicker-on, bottom-left to top-right */
+/* 0.0 - 1.3  BOOT — faster diagonal wave flicker-on, double-flicker for more energy */
 cells.forEach(cell => {
   const wave = (cell.r + cell.c) / (ROWS + COLS);
-  const t0 = 0.05 + wave * 1.2;
-  tl.to(cell.el, { backgroundColor: cell.color, duration: 0.12, ease: 'none' }, t0);
-  tl.to(cell.el, { backgroundColor: '#0a1018', duration: 0.18, ease: 'none' }, t0 + 0.12 + Math.random() * 0.15);
-  tl.to(cell.el, { backgroundColor: cell.color, opacity: 0.85, duration: 0.25, ease: 'none' }, t0 + 0.35);
+  const t0 = 0.04 + wave * 1.0;
+  tl.to(cell.el, { backgroundColor: cell.color, duration: 0.08, ease: 'none' }, t0);
+  tl.to(cell.el, { backgroundColor: '#0a1018', duration: 0.07, ease: 'none' }, t0 + 0.08);
+  tl.to(cell.el, { backgroundColor: cell.color, duration: 0.08, ease: 'none' }, t0 + 0.15 + Math.random() * 0.1);
+  tl.to(cell.el, { backgroundColor: '#0a1018', duration: 0.12, ease: 'none' }, t0 + 0.23 + Math.random() * 0.1);
+  tl.to(cell.el, { backgroundColor: cell.color, opacity: 0.9, duration: 0.2, ease: 'none' }, t0 + 0.4);
 });
 
-/* 1.5 - 3.5  CHASE — bright scanbar sweeps across twice, cells flash as it passes */
-tl.set('#scanbar', { opacity: 1 }, 1.5);
-tl.fromTo('#scanbar', { left: -200 }, { left: 1920, duration: 0.9, ease: 'power1.inOut' }, 1.55);
-tl.fromTo('#scanbar', { left: -200 }, { left: 1920, duration: 0.9, ease: 'power1.inOut' }, 2.55);
-tl.to('#scanbar', { opacity: 0, duration: 0.2 }, 3.4);
+/* 1.3 - 3.1  CHASE — bright scanbar rips across twice, faster + brighter flashes */
+tl.set('#scanbar', { opacity: 1 }, 1.3);
+tl.fromTo('#scanbar', { left: -200 }, { left: 1920, duration: 0.75, ease: 'power1.inOut' }, 1.35);
+tl.fromTo('#scanbar', { left: -200 }, { left: 1920, duration: 0.75, ease: 'power1.inOut' }, 2.2);
+tl.to('#scanbar', { opacity: 0, duration: 0.18 }, 2.95);
 cells.forEach(cell => {
-  const passT1 = 1.55 + (cell.cx + 200) / 2120 * 0.9;
-  const passT2 = 2.55 + (cell.cx + 200) / 2120 * 0.9;
-  tl.to(cell.el, { backgroundColor: '#ffffff', duration: 0.06 }, passT1);
-  tl.to(cell.el, { backgroundColor: cell.color, duration: 0.18 }, passT1 + 0.06);
-  tl.to(cell.el, { backgroundColor: '#ffffff', duration: 0.06 }, passT2);
-  tl.to(cell.el, { backgroundColor: cell.color, duration: 0.18 }, passT2 + 0.06);
+  const passT1 = 1.35 + (cell.cx + 200) / 2120 * 0.75;
+  const passT2 = 2.2 + (cell.cx + 200) / 2120 * 0.75;
+  tl.to(cell.el, { backgroundColor: '#ffffff', duration: 0.05 }, passT1);
+  tl.to(cell.el, { backgroundColor: cell.color, duration: 0.14 }, passT1 + 0.05);
+  tl.to(cell.el, { backgroundColor: '#ffffff', duration: 0.05 }, passT2);
+  tl.to(cell.el, { backgroundColor: cell.color, duration: 0.14 }, passT2 + 0.05);
 });
 
-/* 3.5 - 4.5  COLLAPSE — cells ripple inward from edges toward center, fading as they go */
+/* 3.1 - 3.9  COLLAPSE — cells slam inward toward center, fast & sharp */
 cells.forEach(cell => {
-  const delay = 3.5 + (1 - cell.distFromCenter / maxCenterDist) * 0.15;
+  const delay = 3.1 + (1 - cell.distFromCenter / maxCenterDist) * 0.12;
   tl.to(cell.el, {
     x: (cx0 - cell.cx) * 0.96, y: (cy0 - cell.cy) * 0.96,
-    opacity: 0, scale: 0.2, duration: 0.55, ease: 'power2.in'
+    opacity: 0, scale: 0.15, duration: 0.45, ease: 'power3.in'
   }, delay);
 });
 
-/* 4.5 - 5.3  POP — flash + mark snaps in at center */
-tl.to('#flash', { opacity: 0.9, duration: 0.04 }, 4.55);
-tl.to('#flash', { opacity: 0, duration: 0.3, ease: 'power2.out' }, 4.6);
-tl.fromTo('#mono-wrap', { opacity: 0, scale: 0.25 },
-  { opacity: 1, scale: 1, duration: 0.55, ease: 'back.out(2)', immediateRender: false }, 4.6);
-tl.fromTo('#mono-glow', { opacity: 0 }, { opacity: 1, duration: 0.4, immediateRender: false }, 4.65);
-tl.fromTo('.mono-scan', { top: '0%', opacity: 0.8 }, { top: '100%', opacity: 0, duration: 0.5, ease: 'power1.in', immediateRender: false }, 4.7);
+/* 3.9 - 4.7  POP — hard flash + mark snaps in at center */
+tl.to('#flash', { opacity: 1, duration: 0.035 }, 3.95);
+tl.to('#flash', { opacity: 0, duration: 0.28, ease: 'power2.out' }, 3.99);
+tl.fromTo('#mono-wrap', { opacity: 0, scale: 0.2 },
+  { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(2.4)', immediateRender: false }, 4.0);
+tl.fromTo('#mono-glow', { opacity: 0 }, { opacity: 1, duration: 0.35, immediateRender: false }, 4.05);
+tl.fromTo('.mono-scan', { top: '0%', opacity: 0.9 }, { top: '100%', opacity: 0, duration: 0.45, ease: 'power1.in', immediateRender: false }, 4.1);
 
-/* 5.3 - 8.3  HOLD — wordmark + url type on, periodic scanline sweeps the mark */
-tl.to('#divider', { scaleX: 1, duration: 0.5, ease: 'power2.out' }, 5.3);
-tl.to('#wordmark span', { opacity: 1, y: 0, duration: 0.4, stagger: 0.04, ease: 'power2.out' }, 5.5);
-tl.to('#urlmark', { opacity: 1, duration: 0.5 }, 6.0);
-[5.8, 7.0].forEach(t => {
-  tl.fromTo('.mono-scan', { top: '0%', opacity: 0.7 }, { top: '100%', opacity: 0, duration: 0.6, ease: 'power1.in', immediateRender: false }, t);
+/* 4.7 - 7.7  HOLD — wordmark + url type on, periodic scanline sweeps the mark */
+tl.to('#divider', { scaleX: 1, duration: 0.45, ease: 'power2.out' }, 4.7);
+tl.to('#wordmark span', { opacity: 1, y: 0, duration: 0.35, stagger: 0.035, ease: 'power2.out' }, 4.9);
+tl.to('#urlmark', { opacity: 1, duration: 0.45 }, 5.35);
+[5.2, 6.2, 7.1].forEach(t => {
+  tl.fromTo('.mono-scan', { top: '0%', opacity: 0.7 }, { top: '100%', opacity: 0, duration: 0.55, ease: 'power1.in', immediateRender: false }, t);
 });
 
-/* 8.3 - 9.0  fade lockup, mark shrinks back to a point */
-tl.to(['#divider', '#wordmark span', '#urlmark'], { opacity: 0, duration: 0.3 }, 8.3);
-tl.to('#mono-glow', { opacity: 0, duration: 0.3 }, 8.3);
-tl.to('#mono-wrap', { opacity: 0, scale: 0.2, duration: 0.4, ease: 'power2.in' }, 8.3);
+/* 7.7 - 8.3  fade lockup, mark shrinks back to a point */
+tl.to(['#divider', '#wordmark span', '#urlmark'], { opacity: 0, duration: 0.25 }, 7.7);
+tl.to('#mono-glow', { opacity: 0, duration: 0.25 }, 7.7);
+tl.to('#mono-wrap', { opacity: 0, scale: 0.15, duration: 0.35, ease: 'power2.in' }, 7.7);
 
-/* 9.0 - 10.2  EXPLODE — grid bursts back outward from center to fill the screen again */
-tl.to('#flash', { opacity: 0.5, duration: 0.04 }, 9.0);
-tl.to('#flash', { opacity: 0, duration: 0.3 }, 9.05);
-cells.forEach(cell => {
-  const delay = 9.0 + (cell.distFromCenter / maxCenterDist) * 0.25;
+/* 8.3 - 10.6  RAIN — grid cells fall from the sky and snap into the logo mark, no wordmark */
+tl.to('#flash', { opacity: 0.45, duration: 0.04 }, 8.3);
+tl.to('#flash', { opacity: 0, duration: 0.25 }, 8.35);
+tl.to('#rainGlow', { opacity: 1, duration: 0.6 }, 8.4);
+rainCells.forEach(cell => {
+  const fallDelay = 8.35 + (cell.landY / maxLandY) * 1.1 + Math.random() * 0.15;
   tl.fromTo(cell.el,
-    { x: (cx0 - cell.cx) * 0.96, y: (cy0 - cell.cy) * 0.96, opacity: 0, scale: 0.2 },
-    { x: 0, y: 0, opacity: 0.85, scale: 1, duration: 0.55, ease: 'power2.out', immediateRender: false },
-    delay);
+    { y: -(cell.landY + 200 + Math.random() * 300), opacity: 0, scale: 0.6 },
+    { y: 0, opacity: 1, scale: 1, duration: 0.6, ease: 'bounce.out', immediateRender: false },
+    fallDelay);
 });
 
-/* 10.2 - 10.6  hold full grid briefly */
-/* 10.6 - 11.4  fade to black, ready to loop */
-tl.to('#blackout', { opacity: 1, duration: 0.8, ease: 'power2.in' }, 10.6);
+/* 10.6 - 13.0  HOLD the finished logo, glow pulses gently so it lingers in memory */
+tl.to('#rainGlow', { opacity: 0.55, duration: 1.1, ease: 'sine.inOut' }, 11.0);
+tl.to('#rainGlow', { opacity: 1, duration: 1.1, ease: 'sine.inOut' }, 12.1);
+
+/* 13.0 - 13.8  fade to black, ready to loop */
+tl.to('#rainGlow', { opacity: 0, duration: 0.6 }, 13.0);
+tl.to('#blackout', { opacity: 1, duration: 0.8, ease: 'power2.in' }, 13.0);
 
 /* reset for next loop */
-tl.set('#wordmark span', { opacity: 0, y: 10 }, 11.4);
-tl.set('#urlmark', { opacity: 0 }, 11.4);
-tl.set('#mono-wrap', { opacity: 0, scale: 0.25 }, 11.4);
-tl.set(cells.map(c => c.el), { x: 0, y: 0, scale: 1, opacity: 1, backgroundColor: '#0a1018' }, 11.4);
+tl.set('#wordmark span', { opacity: 0, y: 10 }, 13.8);
+tl.set('#urlmark', { opacity: 0 }, 13.8);
+tl.set('#mono-wrap', { opacity: 0, scale: 0.2 }, 13.8);
+tl.set(cells.map(c => c.el), { x: 0, y: 0, scale: 1, opacity: 1, backgroundColor: '#0a1018' }, 13.8);
+tl.set(rainCells.map(c => c.el), { y: 0, opacity: 0, scale: 0.6 }, 13.8);
 </script>
 </body>
 </html>
