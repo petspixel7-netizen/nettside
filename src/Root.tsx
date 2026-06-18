@@ -43,7 +43,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="ColumbiAd"
         component={ColumbiAd}
-        durationInFrames={600}
+        durationInFrames={620}
         fps={30}
         width={1920}
         height={1080}
