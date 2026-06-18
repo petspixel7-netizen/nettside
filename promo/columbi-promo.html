@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<title>Columbi — Promo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#070d1a;
+    --navy2:#0d1830;
+    --blue:#2f6bff;
+    --blue2:#5ea1ff;
+    --ice:#eaf2ff;
+    --white:#ffffff;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:1920px;height:1080px;overflow:hidden;background:var(--navy);font-family:'Manrope',sans-serif;}
+  #canvas{position:relative;width:1920px;height:1080px;background:var(--navy);overflow:hidden;}
+
+  #bgGrad{position:absolute;inset:0;z-index:0;
+    background:radial-gradient(circle at 30% 20%, #0f1f42 0%, var(--navy) 55%), radial-gradient(circle at 80% 85%, #0c1a35 0%, var(--navy) 60%);}
+  #bgLines{position:absolute;inset:0;z-index:1;opacity:.5;
+    background-image:
+      linear-gradient(90deg, rgba(80,130,255,.06) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(80,130,255,.06) 1px, transparent 1px);
+    background-size:64px 64px;}
+  #vignette{position:absolute;inset:0;z-index:30;pointer-events:none;
+    background:radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 45%, rgba(0,0,0,.6) 100%);}
+  #grain{position:absolute;inset:0;z-index:31;pointer-events:none;opacity:.05;
+    background-image:repeating-linear-gradient(0deg, #fff 0px, #fff 1px, transparent 1px, transparent 3px);}
+  #blackout{position:absolute;inset:0;background:#000;opacity:1;z-index:60;pointer-events:none;}
+  #flash{position:absolute;inset:0;background:var(--ice);opacity:0;z-index:55;pointer-events:none;mix-blend-mode:normal;}
+
+  .scene{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:10;}
+
+  /* ---- shared text styles ---- */
+  .big{font-family:'Space Grotesk',sans-serif;font-weight:700;color:var(--white);letter-spacing:-2px;}
+  .accent{color:var(--blue2);}
+  .label{font-family:'Manrope',sans-serif;font-weight:600;letter-spacing:6px;text-transform:uppercase;color:var(--blue2);}
+
+  /* LOGO scene */
+  #sceneLogo{flex-direction:column;gap:18px;}
+  #logoMark{width:160px;height:160px;position:relative;}
+  #logoMark svg{width:100%;height:100%;}
+  #logoWord{font-size:96px;font-weight:700;letter-spacing:2px;color:var(--white);font-family:'Space Grotesk',sans-serif;opacity:0;}
+  #logoSub{font-size:22px;letter-spacing:8px;color:var(--blue2);text-transform:uppercase;opacity:0;}
+
+  /* WORD slam scenes */
+  .wordScene{flex-direction:column;gap:8px;}
+  .wordScene .kicker{font-size:28px;color:var(--blue2);letter-spacing:6px;text-transform:uppercase;font-weight:600;opacity:0;}
+  .wordScene .word{font-size:180px;line-height:1;opacity:0;}
+
+  /* tagline assembly */
+  #sceneTagline{gap:28px;}
+  .tword{font-size:96px;opacity:0;}
+  .tdot{width:14px;height:14px;border-radius:50%;background:var(--blue);opacity:0;}
+
+  /* egg scene */
+  #sceneEgg{flex-direction:column;gap:30px;}
+  #eggWrap{width:280px;height:340px;position:relative;}
+  #eggWrap svg{width:100%;height:100%;}
+  #eggLine1{font-size:52px;font-weight:700;color:var(--white);opacity:0;text-align:center;}
+  #eggLine2{font-size:26px;font-weight:500;color:var(--blue2);opacity:0;text-align:center;letter-spacing:1px;}
+
+  /* services rapid fire */
+  #sceneServices{}
+  .svcRow{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+  .svcWord{font-size:140px;font-weight:800;opacity:0;font-family:'Space Grotesk',sans-serif;}
+
+  /* badge scene */
+  #sceneBadge{flex-direction:column;gap:22px;}
+  #badgeRing{width:220px;height:220px;border-radius:50%;border:3px solid var(--blue);display:flex;align-items:center;justify-content:center;opacity:0;position:relative;}
+  #badgeRing::before{content:'';position:absolute;inset:-3px;border-radius:50%;border:1px solid rgba(94,161,255,.4);}
+  #badgeStar{font-size:64px;color:var(--blue2);}
+  #badgeText{font-size:34px;font-weight:700;color:var(--white);text-align:center;opacity:0;letter-spacing:1px;}
+  #badgeSub{font-size:20px;color:var(--blue2);letter-spacing:4px;text-transform:uppercase;opacity:0;}
+
+  /* close scene */
+  #sceneClose{flex-direction:column;gap:20px;}
+  #closeWord{font-size:120px;font-weight:700;color:var(--white);font-family:'Space Grotesk',sans-serif;opacity:0;}
+  #closeTag{font-size:26px;color:var(--blue2);letter-spacing:4px;opacity:0;}
+  #closeUrl{font-size:30px;font-weight:600;color:var(--white);opacity:0;border-top:1px solid rgba(94,161,255,.3);padding-top:18px;}
+
+  /* sweeping bar transitions */
+  .wipe{position:absolute;top:0;bottom:0;width:120%;left:-160%;background:var(--blue);z-index:40;}
+  .wipe.skew{transform:skewX(-12deg);}
+</style>
+</head>
+<body>
+<div id="canvas">
+  <div id="bgGrad"></div>
+  <div id="bgLines"></div>
+
+  <!-- SCENE 0: logo intro -->
+  <div class="scene" id="sceneLogo">
+    <div id="logoMark">
+      <svg viewBox="0 0 100 100" fill="none">
+        <ellipse id="eggShapeIntro" cx="50" cy="52" rx="34" ry="44" stroke="#5ea1ff" stroke-width="3" />
+      </svg>
+    </div>
+    <div id="logoWord">columbi</div>
+    <div id="logoSub">Økonomi · HR · IT</div>
+  </div>
+
+  <!-- SCENE 1: word ØKONOMI -->
+  <div class="scene wordScene" id="sceneW1">
+    <div class="kicker">Alt du trenger innen</div>
+    <div class="word big">ØKONOMI</div>
+  </div>
+
+  <!-- SCENE 2: word HR -->
+  <div class="scene wordScene" id="sceneW2">
+    <div class="kicker">Pluss alt innen</div>
+    <div class="word big">HR</div>
+  </div>
+
+  <!-- SCENE 3: word IT -->
+  <div class="scene wordScene" id="sceneW3">
+    <div class="kicker">Og selvfølgelig</div>
+    <div class="word big">IT</div>
+  </div>
+
+  <!-- SCENE 4: tagline assembly -->
+  <div class="scene" id="sceneTagline">
+    <div class="tword big">ØKONOMI</div>
+    <div class="tdot"></div>
+    <div class="tword big accent">HR</div>
+    <div class="tdot"></div>
+    <div class="tword big">IT</div>
+  </div>
+
+  <!-- SCENE 5: egg metaphor -->
+  <div class="scene" id="sceneEgg">
+    <div id="eggWrap">
+      <svg viewBox="0 0 100 120" fill="none">
+        <path id="eggPath" d="M50 4 C72 4 88 40 88 70 C88 98 71 116 50 116 C29 116 12 98 12 70 C12 40 28 4 50 4 Z" stroke="#5ea1ff" stroke-width="2.5"/>
+      </svg>
+    </div>
+    <div id="eggLine1">Columbi-egget</div>
+    <div id="eggLine2">smarte løsninger på vanskelige problemer</div>
+  </div>
+
+  <!-- SCENE 6: services rapid fire -->
+  <div class="scene" id="sceneServices">
+    <div class="svcRow"><div class="svcWord big" id="svc1">ERP</div></div>
+    <div class="svcRow"><div class="svcWord big" id="svc2">CRM</div></div>
+    <div class="svcRow"><div class="svcWord big" id="svc3">LØNN</div></div>
+    <div class="svcRow"><div class="svcWord big" id="svc4">REGNSKAP</div></div>
+    <div class="svcRow"><div class="svcWord big" id="svc5">RAPPORTERING</div></div>
+  </div>
+
+  <!-- SCENE 7: badge -->
+  <div class="scene" id="sceneBadge">
+    <div id="badgeRing"><div id="badgeStar">★</div></div>
+    <div id="badgeText">NORDIC PARTNER<br>OF THE YEAR</div>
+    <div id="badgeSub">Visma-sertifisert partner</div>
+  </div>
+
+  <!-- SCENE 8: close -->
+  <div class="scene" id="sceneClose">
+    <div id="closeWord">columbi</div>
+    <div id="closeTag">Alt du trenger innen økonomi, HR og IT</div>
+    <div id="closeUrl">columbi.no</div>
+  </div>
+
+  <div class="wipe skew" id="wipe1"></div>
+  <div class="wipe skew" id="wipe2"></div>
+  <div class="wipe skew" id="wipe3"></div>
+
+  <div id="flash"></div>
+  <div id="vignette"></div>
+  <div id="grain"></div>
+  <div id="blackout"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script>
+// manual SVG line-draw helper (no DrawSVGPlugin dependency)
+function prepLineDraw(sel){
+  const el = document.querySelector(sel);
+  const len = el.getTotalLength();
+  el.style.strokeDasharray = len;
+  el.style.strokeDashoffset = len;
+  return len;
+}
+const eggIntroLen = prepLineDraw('#eggShapeIntro');
+const eggPathLen = prepLineDraw('#eggPath');
+
+const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.8 });
+window.masterTL = tl;
+
+// start black
+tl.set('#blackout', { opacity: 1 });
+tl.to('#blackout', { opacity: 0, duration: 0.4 }, 0.0);
+
+/* ============ SCENE 0 — LOGO INTRO  0.0 - 3.0 ============ */
+tl.fromTo('#eggShapeIntro', { strokeDashoffset: eggIntroLen }, { strokeDashoffset: 0, duration: 0.9, ease: 'power2.out', immediateRender:false }, 0.15);
+tl.fromTo('#logoMark', { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: 'back.out(1.7)' }, 0.15);
+tl.fromTo('#logoWord', { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.55, ease: 'power3.out' }, 0.85);
+tl.fromTo('#logoSub', { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }, 1.15);
+tl.to(['#logoMark','#logoWord','#logoSub'], { y: -20, opacity: 0, duration: 0.4, ease: 'power2.in', stagger:0.03 }, 2.55);
+
+/* wipe transition 1 */
+tl.set('#wipe1', { left: '-160%' }, 2.85);
+tl.to('#wipe1', { left: '160%', duration: 0.45, ease: 'power2.inOut' }, 2.85);
+
+/* ============ SCENE 1 — ØKONOMI  3.0 - 5.6 ============ */
+tl.fromTo('#sceneW1 .kicker', { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.4, ease: 'power3.out' }, 3.05);
+tl.fromTo('#sceneW1 .word', { opacity: 0, scale: 1.4, letterSpacing: '20px' }, { opacity: 1, scale: 1, letterSpacing: '-2px', duration: 0.55, ease: 'power3.out' }, 3.2);
+tl.to('#sceneW1 .word', { color: '#5ea1ff', duration: 0.25, yoyo:true, repeat:1 }, 3.85);
+tl.to(['#sceneW1 .kicker','#sceneW1 .word'], { opacity: 0, y: -30, duration: 0.35, ease: 'power2.in', stagger:0.04 }, 5.15);
+
+tl.set('#wipe2', { left: '-160%' }, 5.4);
+tl.to('#wipe2', { left: '160%', duration: 0.4, ease: 'power2.inOut' }, 5.4);
+
+/* ============ SCENE 2 — HR  5.6 - 7.7 ============ */
+tl.fromTo('#sceneW2 .kicker', { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.35, ease: 'power3.out' }, 5.65);
+tl.fromTo('#sceneW2 .word', { opacity: 0, rotateX: 70, y: 60 }, { opacity: 1, rotateX: 0, y: 0, duration: 0.5, ease: 'power3.out' }, 5.8);
+tl.to(['#sceneW2 .kicker','#sceneW2 .word'], { opacity: 0, scale: 0.85, duration: 0.3, ease: 'power2.in', stagger:0.03 }, 7.3);
+
+tl.set('#wipe3', { left: '-160%' }, 7.5);
+tl.to('#wipe3', { left: '160%', duration: 0.4, ease: 'power2.inOut' }, 7.5);
+
+/* ============ SCENE 3 — IT  7.7 - 9.6 ============ */
+tl.fromTo('#sceneW3 .kicker', { opacity: 0, y: -30 }, { opacity: 1, y: 0, duration: 0.35, ease: 'power3.out' }, 7.6);
+tl.fromTo('#sceneW3 .word', { opacity: 0, x: -200, skewX: 12 }, { opacity: 1, x: 0, skewX: 0, duration: 0.5, ease: 'power3.out' }, 7.75);
+tl.to('#flash', { opacity: 0.5, duration: 0.06 }, 8.15);
+tl.to('#flash', { opacity: 0, duration: 0.25 }, 8.21);
+tl.to(['#sceneW3 .kicker','#sceneW3 .word'], { opacity: 0, y: 30, duration: 0.3, ease: 'power2.in', stagger:0.03 }, 9.25);
+
+/* ============ SCENE 4 — TAGLINE ASSEMBLY  9.6 - 12.4 ============ */
+tl.fromTo('#sceneTagline .tword:nth-child(1)', { opacity: 0, x: -120 }, { opacity: 1, x: 0, duration: 0.4, ease: 'power3.out' }, 9.7);
+tl.fromTo('#sceneTagline .tdot:nth-child(2)', { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.25 }, 10.0);
+tl.fromTo('#sceneTagline .tword:nth-child(3)', { opacity: 0, y: -80 }, { opacity: 1, y: 0, duration: 0.4, ease: 'back.out(2)' }, 10.1);
+tl.fromTo('#sceneTagline .tdot:nth-child(4)', { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.25 }, 10.4);
+tl.fromTo('#sceneTagline .tword:nth-child(5)', { opacity: 0, x: 120 }, { opacity: 1, x: 0, duration: 0.4, ease: 'power3.out' }, 10.5);
+tl.to('#sceneTagline', { scale: 1.06, duration: 0.9, ease: 'sine.inOut', yoyo:true, repeat:1 }, 11.0);
+tl.to('#sceneTagline', { opacity: 0, scale: 0.9, duration: 0.4, ease: 'power2.in' }, 12.0);
+
+/* ============ SCENE 5 — EGG METAPHOR  12.4 - 16.6 ============ */
+tl.fromTo('#eggPath', { strokeDashoffset: eggPathLen }, { strokeDashoffset: 0, duration: 1.1, ease: 'power2.inOut', immediateRender:false }, 12.5);
+tl.fromTo('#eggWrap', { scale: 0.7, opacity: 0, rotate: -8 }, { scale: 1, opacity: 1, rotate: 0, duration: 0.7, ease: 'power3.out' }, 12.5);
+tl.fromTo('#eggLine1', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' }, 13.5);
+tl.fromTo('#eggLine2', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' }, 13.75);
+tl.to('#eggWrap', { y: -8, duration: 1.0, ease: 'sine.inOut', yoyo:true, repeat: 1 }, 14.3);
+tl.to(['#eggWrap','#eggLine1','#eggLine2'], { opacity: 0, scale: 0.85, duration: 0.35, ease: 'power2.in', stagger: 0.03 }, 16.0);
+
+/* ============ SCENE 6 — SERVICES RAPID FIRE  16.6 - 21.6 ============ */
+const svcDur = 0.85;
+const svcStart = 16.7;
+['svc1','svc2','svc3','svc4','svc5'].forEach((id, i) => {
+  const t0 = svcStart + i * svcDur;
+  const dir = i % 2 === 0 ? -260 : 260;
+  tl.fromTo('#'+id, { opacity: 0, x: dir, scale: 1.2 }, { opacity: 1, x: 0, scale: 1, duration: 0.3, ease: 'power3.out' }, t0);
+  tl.to('#'+id, { opacity: 0, x: -dir, scale: 0.85, duration: 0.3, ease: 'power2.in' }, t0 + 0.5);
+});
+
+/* ============ SCENE 7 — BADGE  21.6 - 25.4 ============ */
+tl.fromTo('#badgeRing', { opacity: 0, scale: 0.5, rotate: -90 }, { opacity: 1, scale: 1, rotate: 0, duration: 0.6, ease: 'back.out(1.6)' }, 21.7);
+tl.fromTo('#badgeStar', { scale: 0 }, { scale: 1, duration: 0.4, ease: 'back.out(3)' }, 22.15);
+tl.fromTo('#badgeText', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.4 }, 22.35);
+tl.fromTo('#badgeSub', { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.4 }, 22.6);
+tl.to('#badgeRing', { rotate: 360, duration: 2.2, ease: 'none' }, 22.7);
+tl.to(['#badgeRing','#badgeText','#badgeSub'], { opacity: 0, y: -20, duration: 0.35, ease:'power2.in', stagger:0.03 }, 24.9);
+
+/* ============ SCENE 8 — CLOSE  25.4 - 29.6 ============ */
+tl.to('#flash', { opacity: 0.6, duration: 0.06 }, 25.5);
+tl.to('#flash', { opacity: 0, duration: 0.3 }, 25.56);
+tl.fromTo('#closeWord', { opacity: 0, scale: 0.7, letterSpacing: '14px' }, { opacity: 1, scale: 1, letterSpacing: '2px', duration: 0.6, ease: 'power3.out' }, 25.6);
+tl.fromTo('#closeTag', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.45 }, 26.15);
+tl.fromTo('#closeUrl', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.45 }, 26.5);
+tl.to('#closeWord', { textShadow: '0 0 40px rgba(94,161,255,.6)', duration: 1.0, yoyo:true, repeat:1 }, 27.0);
+tl.to('#sceneClose', { opacity: 0, duration: 0.5, ease: 'power2.in' }, 28.9);
+
+/* fade to black, ready to loop */
+tl.to('#blackout', { opacity: 1, duration: 0.6, ease: 'power2.in' }, 29.1);
+
+/* reset everything for next loop */
+tl.set('.scene', { opacity: 1 }, 29.7);
+tl.set('#sceneW1 .kicker, #sceneW1 .word, #sceneW2 .kicker, #sceneW2 .word, #sceneW3 .kicker, #sceneW3 .word', { opacity: 0, x:0, y:0, scale:1, rotateX:0, skewX:0, color:'#ffffff' }, 29.7);
+tl.set('#sceneTagline', { opacity: 1, scale: 1 }, 29.7);
+tl.set('#sceneTagline .tword, #sceneTagline .tdot', { opacity: 0, x:0, y:0, scale:1 }, 29.7);
+tl.set(['#eggWrap','#eggLine1','#eggLine2'], { opacity: 0, scale:1, rotate:0, y:0 }, 29.7);
+tl.set('#eggPath', { strokeDashoffset: eggPathLen }, 29.7);
+tl.set(['#svc1','#svc2','#svc3','#svc4','#svc5'], { opacity: 0, x:0, scale:1 }, 29.7);
+tl.set(['#badgeRing','#badgeText','#badgeSub'], { opacity: 0, scale:1, rotate:0, y:0 }, 29.7);
+tl.set('#badgeStar', { scale: 0 }, 29.7);
+tl.set(['#logoMark','#logoWord','#logoSub'], { opacity: 0, scale:1, y:0 }, 29.7);
+tl.set('#eggShapeIntro', { strokeDashoffset: eggIntroLen }, 29.7);
+tl.set(['#closeWord','#closeTag','#closeUrl'], { opacity: 0, scale:1, y:0, letterSpacing:'2px', textShadow:'none' }, 29.7);
+</script>
+</body>
+</html>
