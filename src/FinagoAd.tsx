@@ -48,6 +48,53 @@ const FEATURES: { key: keyof typeof ICON_PATHS; name: string; desc: string }[] =
   { key: 'tasks', name: 'Oppdragsstyring', desc: 'Bygget for regnskapsbyråer' },
 ];
 
+// Three different brand colors for the three "old" systems — they all
+// converge to Finago blue once they merge into one product.
+const SYS_COLORS: Record<string, string> = { office: '#3B82F6', payday: '#34D399', time: '#A78BFA' };
+const SYS_LABELS: Record<string, string> = { office: 'Regnskapssystem', payday: 'Lønnssystem', time: 'Timeregistrering' };
+
+// ── A literal floating app window — title bar + skeleton content — used to
+// sell "three separate systems" before they collide into one product ──────
+const AppWindow: React.FC<{
+  x: number; y: number; rotate: number; scale?: number; opacity?: number;
+  sys: 'office' | 'payday' | 'time'; colorMix?: number; // colorMix 0 = own color, 1 = Finago blue
+}> = ({ x, y, rotate, scale = 1, opacity = 1, sys, colorMix = 0 }) => {
+  const own = SYS_COLORS[sys];
+  const mix = (a: string, b: string, t: number) => {
+    const pa = a.match(/\w\w/g)!.map(h => parseInt(h, 16));
+    const pb = b.match(/\w\w/g)!.map(h => parseInt(h, 16));
+    return `rgb(${pa.map((v, i) => Math.round(lerp(v, pb[i], t))).join(',')})`;
+  };
+  const accent = mix(own.replace('#', '#'), BLUE, colorMix);
+
+  return (
+    <div style={{
+      position: 'absolute', left: x, top: y,
+      transform: `translate(-50%,-50%) rotate(${rotate}deg) scale(${scale})`,
+      opacity, width: 320, height: 210, borderRadius: 14, overflow: 'hidden',
+      background: '#101115', border: `1px solid ${accent}55`,
+      boxShadow: `0 20px 50px rgba(0,0,0,0.5), 0 0 30px ${accent}33`,
+    }}>
+      <div style={{ height: 30, display: 'flex', alignItems: 'center', gap: 6, padding: '0 12px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+        {['#FF5F57', '#FEBC2E', '#28C840'].map(c => (
+          <div key={c} style={{ width: 7, height: 7, borderRadius: '50%', background: c, opacity: 0.8 }} />
+        ))}
+        <div style={{ marginLeft: 8, fontFamily: '"Helvetica Neue", Arial, sans-serif', fontSize: 11, color: GRAY }}>
+          {SYS_LABELS[sys]}
+        </div>
+      </div>
+      <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ width: 36, height: 36, borderRadius: 9, background: `${accent}33`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Icon name={sys} size={18} color={accent} draw={1} />
+        </div>
+        {[0.9, 0.65, 0.8].map((w, i) => (
+          <div key={i} style={{ height: 8, width: `${w * 100}%`, borderRadius: 4, background: 'rgba(255,255,255,0.1)' }} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
 // ── Shared background ──────────────────────────────────────────────────
 const FinagoBackground: React.FC<{ pulse?: number; camPush?: number }> = ({ pulse = 0, camPush = 1 }) => {
   const frame = useCurrentFrame();
@@ -202,128 +249,80 @@ const DashboardMockup: React.FC<{
   );
 };
 
-// ── Scene 1 (0-90, 3s): hook — three icons orbit chaotically ──────────────
+// ── Scene 1 (0-90, 3s): hook — three real app windows scattered and
+// jittering chaotically, each its own color, selling "three separate
+// systems" before a word-collision snaps the title onscreen ──────────────
 const HookScene: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const word1 = springValue(frame, fps, { ...springPresets.bouncy, delayFrames: 2 });
-  const word2 = springValue(frame, fps, { ...springPresets.bouncy, delayFrames: 14 });
+  const word1 = springValue(frame, fps, { ...springPresets.bouncy, delayFrames: 30 });
   const fade = 1 - easeInOutCubic(clamp(prog(frame, 72, 89)));
-  const iconShow = easeOutExpo(clamp(prog(frame, 6, 26)));
+  const winShow = easeOutExpo(clamp(prog(frame, 0, 18)));
 
-  const orbit = [
-    { key: 'office' as const, r: 280, speed: 0.025, offset: 0 },
-    { key: 'payday' as const, r: 320, speed: -0.02, offset: 2.1 },
-    { key: 'time' as const, r: 260, speed: 0.018, offset: 4.2 },
+  const windows = [
+    { sys: 'office' as const, baseX: 540, baseY: 360, baseR: -12 },
+    { sys: 'payday' as const, baseX: 1420, baseY: 340, baseR: 8 },
+    { sys: 'time' as const, baseX: 660, baseY: 800, baseR: 14 },
   ];
 
   return (
     <AbsoluteFill style={{ opacity: fade }}>
-      <FinagoBackground pulse={Math.max(word1, word2)} />
+      <FinagoBackground pulse={word1} />
       <LightsOut atFrame={0} holdFrames={2} />
 
-      {orbit.map((o, i) => {
-        const a = frame * o.speed + o.offset;
-        const x = 960 + Math.cos(a) * o.r;
-        const y = 540 + Math.sin(a) * o.r * 0.5 - 60;
+      {windows.map((w, i) => {
+        const jitterX = Math.sin(frame * 0.18 + i * 2) * 6;
+        const jitterY = Math.cos(frame * 0.14 + i * 3) * 6;
+        const jitterR = Math.sin(frame * 0.1 + i) * 2;
         return (
-          <div key={o.key} style={{
-            position: 'absolute', left: x, top: y, transform: 'translate(-50%,-50%)',
-            opacity: iconShow, width: 64, height: 64, borderRadius: 16,
-            background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.14)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <Icon name={o.key} size={28} color={WHITE} draw={iconShow} />
-          </div>
+          <AppWindow
+            key={w.sys}
+            sys={w.sys}
+            x={w.baseX + jitterX}
+            y={w.baseY + jitterY}
+            rotate={w.baseR + jitterR}
+            scale={winShow}
+            opacity={winShow}
+          />
         );
       })}
 
       <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center' }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{
-            opacity: clamp(word1), transform: `scale(${0.7 + Math.min(word1, 1.15) * 0.3})`,
-            fontFamily: '"Helvetica Neue", Arial, sans-serif',
-            fontSize: 96, fontWeight: 800, color: WHITE, letterSpacing: '-3px', lineHeight: 1.0,
-          }}>
-            Tre systemer.
-          </div>
-          <div style={{
-            opacity: clamp(word2), transform: `scale(${0.7 + Math.min(word2, 1.15) * 0.3})`,
-            fontFamily: '"Helvetica Neue", Arial, sans-serif',
-            fontSize: 96, fontWeight: 800, color: BLUE_LIGHT, letterSpacing: '-3px', lineHeight: 1.0,
-            textShadow: `0 0 40px ${BLUE}99`,
-          }}>
-            Ett kaos.
-          </div>
+        <div style={{
+          opacity: clamp(word1), transform: `scale(${0.7 + Math.min(word1, 1.15) * 0.3})`,
+          fontFamily: '"Helvetica Neue", Arial, sans-serif', textAlign: 'center',
+          fontSize: 92, fontWeight: 800, color: WHITE, letterSpacing: '-3px', lineHeight: 1.05,
+          textShadow: '0 8px 40px rgba(0,0,0,0.6)',
+        }}>
+          3 systemer.<br /><span style={{ color: BLUE_LIGHT, textShadow: `0 0 40px ${BLUE}99` }}>0 oversikt.</span>
         </div>
       </AbsoluteFill>
     </AbsoluteFill>
   );
 };
 
-// ── Scene 2 (0-180, 6s): problem beats — one caption + icon per beat ─────
-const PROBLEM_BEATS = [
-  { key: 'office' as const, text: 'Regnskap i ett system.' },
-  { key: 'payday' as const, text: 'Lønn i et annet.' },
-  { key: 'time' as const, text: 'Timer registrert et tredje sted.' },
-];
-
-const ProblemScene: React.FC = () => {
-  const frame = useCurrentFrame();
-  const camPush = lerp(1.06, 1, easeOutExpo(clamp(frame / 20)));
-  const fade = 1 - easeInOutCubic(clamp(prog(frame, 150, 178)));
-  const perBeat = 50;
-
-  return (
-    <AbsoluteFill style={{ opacity: fade }}>
-      <FinagoBackground camPush={camPush} />
-      {PROBLEM_BEATS.map((b, i) => {
-        const start = i * perBeat;
-        const local = frame - start;
-        if (local < -8 || local > perBeat + 8) return null;
-        const inT = easeOutExpo(clamp(local / 16));
-        const outT = 1 - easeInOutCubic(clamp((local - (perBeat - 14)) / 14));
-        const a = inT * outT;
-        return (
-          <AbsoluteFill key={b.key} style={{ justifyContent: 'center', alignItems: 'center' }}>
-            <div style={{ opacity: a, transform: `scale(${lerp(0.85, 1, inT)})`, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 22 }}>
-              <div style={{
-                width: 110, height: 110, borderRadius: 24,
-                background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.16)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <Icon name={b.key} size={48} color={BLUE_LIGHT} draw={inT} />
-              </div>
-              <div style={{ fontFamily: '"Helvetica Neue", Arial, sans-serif', fontSize: 44, fontWeight: 700, color: WHITE }}>
-                {b.text}
-              </div>
-            </div>
-          </AbsoluteFill>
-        );
-      })}
-    </AbsoluteFill>
-  );
-};
-
-// ── Scene 3 (0-180, 6s): converge — icons fly into the dashboard window,
-// lights-out flash, then the fully-formed product reveals ────────────────
+// ── Scene 2 (0-220, ~7.3s): the three windows fly together, collide,
+// shed their separate colors, and resolve into the one real Finago
+// dashboard — the literal "scattered systems become one" beat ───────────
 const MergeScene: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const revealFrame = 70;
-  const converge = springValue(frame, fps, { ...springPresets.gentle, delayFrames: 0 });
-  const camPush = lerp(1, 1.04, easeOutExpo(clamp(prog(frame, 55, 80))));
+  const revealFrame = 130;
+  const converge = springValue(frame, fps, { ...springPresets.gentle, delayFrames: 10 });
+  const colorMix = easeInOutCubic(clamp(prog(frame, 60, 110)));
+  const camPush = lerp(1, 1.05, easeOutExpo(clamp(prog(frame, 110, 135))));
   const dashIn = springValue(frame, fps, { ...springPresets.gentle, delayFrames: revealFrame });
-  const captionT = easeOutExpo(clamp(prog(frame, revealFrame + 16, revealFrame + 40)));
-  const fade = 1 - easeInOutCubic(clamp(prog(frame, 150, 178)));
+  const captionT = easeOutExpo(clamp(prog(frame, revealFrame + 18, revealFrame + 44)));
+  const fade = 1 - easeInOutCubic(clamp(prog(frame, 190, 218)));
 
   const starts = [
-    { key: 'office' as const, x: 420, y: 280 },
-    { key: 'payday' as const, x: 1480, y: 260 },
-    { key: 'time' as const, x: 480, y: 800 },
+    { sys: 'office' as const, x: 540, y: 360, r0: -12 },
+    { sys: 'payday' as const, x: 1420, y: 340, r0: 8 },
+    { sys: 'time' as const, x: 660, y: 800, r0: 14 },
   ];
   const centerX = 960, centerY = 540;
   const heroVisible = frame >= revealFrame;
+  const shrink = clamp(prog(frame, 95, 128));
 
   return (
     <AbsoluteFill style={{ opacity: fade }}>
@@ -331,17 +330,16 @@ const MergeScene: React.FC = () => {
       <LightsOut atFrame={revealFrame} holdFrames={4} />
 
       {!heroVisible && starts.map((s) => (
-        <div key={s.key} style={{
-          position: 'absolute',
-          left: lerp(s.x, centerX, clamp(converge)), top: lerp(s.y, centerY, clamp(converge)),
-          transform: 'translate(-50%,-50%)',
-          opacity: 1 - clamp(converge) * 0.9,
-          width: 64, height: 64, borderRadius: 16,
-          background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.14)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <Icon name={s.key} size={28} color={WHITE} draw={1} />
-        </div>
+        <AppWindow
+          key={s.sys}
+          sys={s.sys}
+          x={lerp(s.x, centerX, clamp(converge))}
+          y={lerp(s.y, centerY, clamp(converge))}
+          rotate={lerp(s.r0, 0, clamp(converge))}
+          scale={1 - shrink * 0.55}
+          opacity={1 - shrink * 0.4}
+          colorMix={colorMix}
+        />
       ))}
 
       {heroVisible && (
@@ -352,7 +350,7 @@ const MergeScene: React.FC = () => {
         </AbsoluteFill>
       )}
 
-      <CaptionBar text="Ett system for alle behov." visible={captionT} />
+      <CaptionBar text="Ett system. Alt på ett sted." visible={captionT} />
     </AbsoluteFill>
   );
 };
@@ -361,7 +359,7 @@ const MergeScene: React.FC = () => {
 // active panel per feature with a synced caption ─────────────────────────
 const FeatureScene: React.FC = () => {
   const frame = useCurrentFrame();
-  const perFeature = 78;
+  const perFeature = 100;
 
   return (
     <AbsoluteFill>
@@ -374,9 +372,13 @@ const FeatureScene: React.FC = () => {
         const outT = 1 - easeInOutCubic(clamp((local - (perFeature - 16)) / 16));
         const a = inT * outT;
         const content = clamp(local / 50);
-        const camPush = lerp(1.05, 1, inT);
+        const camPush = lerp(1.06, 1, inT);
+        // alternate pan direction per feature so the "camera" feels like
+        // it's touring across the dashboard rather than sitting still
+        const panDir = i % 2 === 0 ? 1 : -1;
+        const panX = lerp(panDir * 34, 0, inT);
         return (
-          <AbsoluteFill key={f.key} style={{ transform: `scale(${camPush})`, opacity: a }}>
+          <AbsoluteFill key={f.key} style={{ transform: `scale(${camPush}) translateX(${panX}px)`, opacity: a }}>
             <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center', paddingTop: 20 }}>
               <DashboardMockup scale={0.78} opacity={1} activeIndex={i} content={content} />
               <div style={{
@@ -539,12 +541,11 @@ export const FinagoAd: React.FC = () => {
   return (
     <AbsoluteFill style={{ backgroundColor: BG }}>
       <Sequence durationInFrames={90}><HookScene /></Sequence>
-      <Sequence from={90} durationInFrames={150}><ProblemScene /></Sequence>
-      <Sequence from={240} durationInFrames={180}><MergeScene /></Sequence>
-      <Sequence from={420} durationInFrames={312}><FeatureScene /></Sequence>
-      <Sequence from={732} durationInFrames={150}><TestimonialScene /></Sequence>
-      <Sequence from={882} durationInFrames={138}><ValuesScene /></Sequence>
-      <Sequence from={1020} durationInFrames={180}><CTAScene /></Sequence>
+      <Sequence from={90} durationInFrames={220}><MergeScene /></Sequence>
+      <Sequence from={310} durationInFrames={410}><FeatureScene /></Sequence>
+      <Sequence from={720} durationInFrames={150}><TestimonialScene /></Sequence>
+      <Sequence from={870} durationInFrames={140}><ValuesScene /></Sequence>
+      <Sequence from={1010} durationInFrames={190}><CTAScene /></Sequence>
     </AbsoluteFill>
   );
 };
