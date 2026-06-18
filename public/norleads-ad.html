@@ -56,11 +56,9 @@
   #logo-wrap{width:160px;height:160px;position:relative;}
   #logo-wrap svg{width:100%;height:100%;display:block;filter:drop-shadow(0 0 24px rgba(182,255,61,.45));overflow:visible;}
 
-  /* monogram assemble-logo (shared rules, namespaced via id on svg) */
+  /* monogram stroke-draw logo (shared rules, namespaced via id on svg) */
   .mono-fill{opacity:0;}
-  .mono-stroke{fill:none;stroke:var(--lime);stroke-width:6;stroke-linecap:round;stroke-linejoin:round;opacity:0;}
-  .mono-core{opacity:0;}
-  .assemble-dot{fill:var(--lime);opacity:0;}
+  .mono-stroke{fill:none;stroke:var(--lime);stroke-width:6;stroke-linecap:round;stroke-linejoin:round;opacity:1;}
 
   #wordmark{font-family:var(--display);font-weight:900;font-size:96px;letter-spacing:-1px;color:var(--white);text-transform:uppercase;overflow:hidden;clip-path:inset(0 100% 0 0);white-space:nowrap;}
   #wordmark .acc{color:var(--lime);}
@@ -179,8 +177,6 @@
               <stop offset="100%" stop-color="var(--c4)"/>
             </linearGradient>
           </defs>
-          <g class="dots-layer"></g>
-          <circle class="mono-core" cx="100" cy="100" r="14" fill="url(#flowGradient-intro)"/>
           <g class="mono-stroke-layer">
             <path class="mono-stroke" d="M 46 158 L 46 42 L 134 158 L 134 42"/>
           </g>
@@ -284,8 +280,6 @@
               <stop offset="100%" stop-color="var(--c4)"/>
             </linearGradient>
           </defs>
-          <g class="dots-layer"></g>
-          <circle class="mono-core" cx="100" cy="100" r="14" fill="url(#flowGradient-cta)"/>
           <g class="mono-stroke-layer">
             <path class="mono-stroke" d="M 46 158 L 46 42 L 134 158 L 134 42"/>
           </g>
@@ -407,92 +401,45 @@ function flash(time, opacity = 0.4, dur = 0.4) {
   tl.to('#flash', { opacity: 0, scale: 1.35, duration: dur * 0.6, ease: 'power2.in' }, time + dur * 0.4);
 }
 
-/* ---------- particle-assembly SVG logo: setup + playback ---------- */
+/* ---------- stroke-draw SVG logo: setup + playback ---------- */
 const __assembleData = {};
 
 function setupAssembleLogo(svgSelector) {
   const svg = document.querySelector(svgSelector);
   if (!svg) return;
   const strokes = Array.from(svg.querySelectorAll('.mono-stroke'));
-  const dotsLayer = svg.querySelector('.dots-layer');
-  const SAMPLES_PER_PATH = 22;
 
   const pathInfo = strokes.map((path) => {
     const len = path.getTotalLength();
     path.style.strokeDasharray = String(len);
     path.style.strokeDashoffset = String(len);
-    const pts = [];
-    for (let i = 0; i <= SAMPLES_PER_PATH; i++) {
-      const p = path.getPointAtLength((len * i) / SAMPLES_PER_PATH);
-      pts.push({ x: p.x, y: p.y });
-    }
-    return { path, len, pts };
+    return { path, len };
   });
 
-  const allPts = pathInfo.flatMap((info) => info.pts);
-  const centroid = allPts.reduce((acc, p) => ({ x: acc.x + p.x, y: acc.y + p.y }), { x: 0, y: 0 });
-  centroid.x /= allPts.length;
-  centroid.y /= allPts.length;
-
-  const dots = allPts.map((p) => {
-    const sx = centroid.x + (p.x - centroid.x) * 2.7;
-    const sy = centroid.y + (p.y - centroid.y) * 2.7;
-    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    circle.setAttribute('class', 'assemble-dot');
-    circle.setAttribute('r', '1.8');
-    circle.setAttribute('cx', String(sx));
-    circle.setAttribute('cy', String(sy));
-    dotsLayer.appendChild(circle);
-    return { el: circle, fromX: sx, fromY: sy, toX: p.x, toY: p.y };
-  });
-
-  __assembleData[svgSelector] = { pathInfo, dots, centroid };
+  __assembleData[svgSelector] = { pathInfo };
 }
 
 function playAssembleLogo(timeline, startTime, svgIdSuffix) {
   const svgSelector = '#mono-svg-' + svgIdSuffix;
   const data = __assembleData[svgSelector];
   if (!data) return;
-  const { pathInfo, dots } = data;
-  const core = document.querySelector(svgSelector + ' .mono-core');
-  const dotEls = dots.map((d) => d.el);
+  const { pathInfo } = data;
 
   // reset state at start of each loop pass
-  timeline.set(dotEls, { cx: (i) => dots[i].fromX, cy: (i) => dots[i].fromY, opacity: 0 }, startTime);
-  timeline.set(core, { opacity: 0, scale: 0.4, transformOrigin: '50% 50%' }, startTime);
-  timeline.set(pathInfo.map((p) => p.path), { opacity: 0, stroke: 'var(--lime)' }, startTime);
+  timeline.set(pathInfo.map((p) => p.path), { opacity: 1, strokeDashoffset: (i) => pathInfo[i].len, stroke: 'var(--lime)' }, startTime);
   timeline.set(svgIdSuffix === 'intro' ? '#mono-svg-intro .mono-fill' : '#mono-svg-cta .mono-fill', { opacity: 0 }, startTime);
 
-  // 1. seed pulse
-  timeline.fromTo(core, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.12, ease: 'power2.out' }, startTime + 0.0);
-
-  // 2. dots flash in
-  timeline.to(dotEls, { opacity: 0.9, duration: 0.15, stagger: { amount: 0.1 } }, startTime + 0.05);
-
-  // 3. implode to outline
-  dots.forEach((d, i) => {
-    timeline.to(d.el, { attr: { cx: d.toX, cy: d.toY }, duration: 1.1, ease: 'power3.inOut' }, startTime + 0.20);
-  });
-
-  // 4. core flash / burst
-  timeline.to(core, { scale: 1.6, opacity: 0.8, duration: 0.12, ease: 'power2.out' }, startTime + 1.30);
-  timeline.to(core, { scale: 1, opacity: 0, duration: 0.13, ease: 'power2.in' }, startTime + 1.42);
-
-  // dots fade out as strokes take over
-  timeline.to(dotEls, { opacity: 0, duration: 0.6, stagger: { amount: 0.15 } }, startTime + 1.40);
-
-  // 5. proportioned stroke draw (longer paths get proportionally more of the window, all finish by +3.00)
-  const drawStart = startTime + 1.40;
+  // proportioned stroke draw (longer paths get proportionally more of the window, all finish by +3.00)
+  const drawStart = startTime + 0.05;
   const drawEnd = startTime + 3.00;
   const totalLen = pathInfo.reduce((s, p) => s + p.len, 0) || 1;
   pathInfo.forEach((p) => {
     const dur = Math.max(0.5, (p.len / totalLen) * (drawEnd - drawStart) * pathInfo.length);
     const start = Math.min(drawStart, drawEnd - dur);
-    timeline.set(p.path, { opacity: 1 }, drawStart);
     timeline.to(p.path, { strokeDashoffset: 0, duration: dur, ease: 'power2.inOut' }, start);
   });
 
-  // 6. fill-in / stroke lock
+  // fill-in / stroke lock
   const fillSel = svgIdSuffix === 'intro' ? '#mono-svg-intro .mono-fill' : '#mono-svg-cta .mono-fill';
   const strokeEls = pathInfo.map((p) => p.path);
   timeline.to(strokeEls, { stroke: '#ffffff', duration: 0.2, ease: 'power1.inOut' }, startTime + 3.00);
