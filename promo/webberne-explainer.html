@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<title>Webberne — Forklaringsvideo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --char:#171A1D;
+    --char2:#22272b;
+    --orange:#F88D2E;
+    --orange2:#ffab5c;
+    --red:#F54F2D;
+    --cream:#F4F2EC;
+    --tan:#E4CAB5;
+    --mut:#a89a86;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:1920px;height:1080px;overflow:hidden;background:var(--char);font-family:'Poppins',sans-serif;}
+  #canvas{position:relative;width:1920px;height:1080px;background:var(--char);overflow:hidden;}
+
+  /* ---------- ambient depth background ---------- */
+  #bgBase{position:absolute;inset:0;z-index:0;background:var(--char);}
+  .orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.55;will-change:transform;}
+  #orb1{width:780px;height:780px;left:-180px;top:-220px;background:radial-gradient(circle, #8a4a14 0%, rgba(138,74,20,0) 70%);}
+  #orb2{width:680px;height:680px;right:-160px;bottom:-200px;background:radial-gradient(circle, #6e2014 0%, rgba(110,32,20,0) 70%);}
+  #orb3{width:520px;height:520px;left:50%;top:38%;transform:translate(-50%,-50%);background:radial-gradient(circle, #a8590f 0%, rgba(168,89,15,0) 72%);opacity:.32;}
+  #bgLines{position:absolute;inset:0;z-index:1;opacity:.3;
+    background-image:
+      linear-gradient(90deg, rgba(248,141,46,.06) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(248,141,46,.06) 1px, transparent 1px);
+    background-size:72px 72px;
+    mask-image:radial-gradient(circle at 50% 50%, rgba(0,0,0,.9) 0%, transparent 72%);}
+  .spark{position:absolute;width:4px;height:4px;border-radius:50%;background:var(--orange2);opacity:0;z-index:2;}
+
+  #vignette{position:absolute;inset:0;z-index:40;pointer-events:none;
+    background:radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 42%, rgba(0,0,0,.62) 100%);}
+  #grain{position:absolute;inset:0;z-index:41;pointer-events:none;opacity:.045;
+    background-image:repeating-linear-gradient(0deg, #fff 0px, #fff 1px, transparent 1px, transparent 3px);}
+  #blackout{position:absolute;inset:0;background:#000;opacity:1;z-index:90;pointer-events:none;}
+  #flash{position:absolute;inset:0;background:var(--cream);opacity:0;z-index:80;pointer-events:none;}
+
+  .scene{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:10;}
+  .eyebrow{font-size:24px;font-weight:700;letter-spacing:6px;text-transform:uppercase;color:var(--orange);opacity:0;}
+
+  /* ---------- SCENE: logo intro ---------- */
+  #sceneLogo{flex-direction:column;gap:22px;}
+  #logoMark{width:140px;height:140px;position:relative;filter:drop-shadow(0 0 24px rgba(248,141,46,.4));}
+  #logoMark svg{width:100%;height:100%;}
+  #logoWordWrap{overflow:hidden;}
+  #logoWord{font-size:104px;font-weight:700;letter-spacing:1px;color:var(--cream);font-family:'Poppins',sans-serif;}
+  #logoWord .char{display:inline-block;opacity:0;transform:translateY(40px);}
+  #logoSub{font-size:24px;letter-spacing:3px;color:var(--orange2);text-transform:uppercase;opacity:0;font-weight:600;font-style:italic;font-family:'Libre Baskerville',serif;}
+
+  /* ---------- SCENE: problem ---------- */
+  #sceneProblem{padding:0 220px;flex-direction:column;gap:26px;}
+  #problemText{font-family:'Libre Baskerville',serif;font-weight:700;font-size:62px;line-height:1.35;color:var(--cream);text-align:center;max-width:1500px;}
+  #problemText .hl{color:var(--orange);}
+  #problemFix{font-size:26px;color:var(--orange2);font-weight:600;opacity:0;letter-spacing:.5px;}
+  .word-unit{display:inline-block;opacity:0;filter:blur(10px);transform:translateY(18px);will-change:transform,filter,opacity;}
+
+  /* ---------- SCENE: step explainer (reused 4x) ---------- */
+  .stepScene{flex-direction:column;gap:30px;padding:0 240px;}
+  .stepEyebrow{font-family:'Poppins',sans-serif;font-size:22px;font-weight:700;letter-spacing:4px;color:var(--orange2);text-transform:uppercase;opacity:0;}
+  .stepTitleWrap{overflow:hidden;}
+  .stepTitle{font-family:'Poppins',sans-serif;font-size:96px;font-weight:800;color:var(--cream);}
+  .stepTitle .ch{display:inline-block;opacity:0;transform:translateY(50px);}
+  .stepDesc{font-family:'Libre Baskerville',serif;font-style:italic;font-size:34px;color:var(--mut);text-align:center;max-width:1400px;line-height:1.5;opacity:0;}
+  .stepNum{position:absolute;font-family:'Poppins',sans-serif;font-weight:800;font-size:300px;color:rgba(248,141,46,.08);top:50%;left:50%;transform:translate(-50%,-54%);z-index:0;pointer-events:none;}
+
+  /* ---------- SCENE: testimonials ---------- */
+  #sceneTestimonials{flex-direction:column;gap:30px;padding:0 250px;}
+  .quoteWrap{position:absolute;width:1420px;text-align:center;opacity:0;}
+  .quoteMark{font-family:'Libre Baskerville',serif;font-size:64px;color:var(--orange);opacity:.55;line-height:0;}
+  .quoteText{font-family:'Libre Baskerville',serif;font-style:italic;font-size:42px;font-weight:400;color:var(--cream);line-height:1.4;margin-top:6px;}
+  .quoteBy{margin-top:22px;font-size:20px;letter-spacing:3px;text-transform:uppercase;color:var(--orange2);font-weight:700;}
+
+  /* ---------- SCENE: pricing ---------- */
+  #scenePricing{flex-direction:column;gap:50px;}
+  #pricingHead{text-align:center;opacity:0;}
+  #pricingHead h2{font-family:'Poppins',sans-serif;font-size:46px;color:var(--cream);font-weight:700;}
+  #priceRow{display:flex;gap:40px;}
+  .priceCard{width:380px;border-radius:20px;background:linear-gradient(160deg, rgba(248,141,46,.14), rgba(23,26,29,.6));
+    border:1px solid rgba(248,141,46,.25);padding:32px;text-align:center;opacity:0;transform:translateY(40px);}
+  .priceCard .amt{font-family:'Poppins',sans-serif;font-size:48px;font-weight:800;color:var(--orange);}
+  .priceCard .lbl{font-size:18px;color:var(--cream);font-weight:600;margin-top:8px;}
+  .priceCard .sub{font-size:15px;color:var(--mut);margin-top:6px;}
+
+  /* ---------- SCENE: CTA / booking ---------- */
+  #sceneCTA{flex-direction:column;gap:46px;}
+  #ctaHead{font-family:'Poppins',sans-serif;font-size:54px;font-weight:800;color:var(--cream);text-align:center;opacity:0;}
+  #ctaHead .hl{color:var(--orange);}
+  #stepsRow{display:flex;gap:50px;}
+  .bookStep{width:280px;text-align:center;opacity:0;transform:translateY(30px);}
+  .bookStep .n{width:54px;height:54px;border-radius:50%;border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;
+    font-family:'Poppins',sans-serif;font-weight:800;color:var(--orange);margin:0 auto 14px;font-size:22px;}
+  .bookStep .t{font-size:20px;color:var(--cream);font-weight:600;}
+  #ctaPhone{font-size:28px;color:var(--orange2);font-weight:700;letter-spacing:1px;opacity:0;}
+
+  /* ---------- SCENE: close ---------- */
+  #sceneClose{flex-direction:column;gap:24px;}
+  #closeWord{font-size:124px;font-weight:700;color:var(--cream);font-family:'Poppins',sans-serif;opacity:0;}
+  #closeTag{font-size:27px;color:var(--mut);letter-spacing:1px;opacity:0;font-weight:400;font-family:'Libre Baskerville',serif;font-style:italic;}
+  #closeContact{font-size:25px;font-weight:600;color:var(--orange);opacity:0;border-top:1px solid rgba(248,141,46,.3);padding-top:22px;letter-spacing:1px;}
+</style>
+</head>
+<body>
+<div id="canvas">
+  <div id="bgBase"></div>
+  <div class="orb" id="orb1"></div>
+  <div class="orb" id="orb2"></div>
+  <div class="orb" id="orb3"></div>
+  <div id="bgLines"></div>
+  <div id="sparkLayer"></div>
+
+  <!-- SCENE: logo intro -->
+  <div class="scene" id="sceneLogo">
+    <div id="logoMark">
+      <svg viewBox="0 0 100 100" fill="none">
+        <path id="growthArrow" d="M10 78 L38 50 L56 64 L90 22" stroke="#F88D2E" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path id="growthArrowHead" d="M68 22 L90 22 L90 44" stroke="#F88D2E" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div id="logoWordWrap"><div id="logoWord">webberne</div></div>
+    <div id="logoSub">Vi tar knekken på nettsideskam</div>
+  </div>
+
+  <!-- SCENE: problem -->
+  <div class="scene" id="sceneProblem">
+    <div id="problemText">De fleste bedriftsnettsider er laget av <span class="hl">amatører</span> eller useriøse aktører.</div>
+    <div id="problemFix">Vi i Webberne jobber annerledes — for å få reelle resultater.</div>
+  </div>
+
+  <!-- SCENE: step 1 — strategi -->
+  <div class="scene stepScene" id="step1">
+    <div class="stepNum">1</div>
+    <div class="stepEyebrow">Steg 1 av 4</div>
+    <div class="stepTitleWrap"><div class="stepTitle" id="step1Title">Strategi</div></div>
+    <div class="stepDesc" id="step1Desc">Hvem gjør vi alt dette for? Hva er det de trenger å oppleve på nettsiden, slik at vi kan hjelpe dem dit de ønsker?</div>
+  </div>
+
+  <!-- SCENE: step 2 — SEO -->
+  <div class="scene stepScene" id="step2">
+    <div class="stepNum">2</div>
+    <div class="stepEyebrow">Steg 2 av 4</div>
+    <div class="stepTitleWrap"><div class="stepTitle" id="step2Title">SEO</div></div>
+    <div class="stepDesc" id="step2Desc">Hva søker folk på Google for å finne deres tjenester? Vi møter dem med de riktige ordene — når det gjelder.</div>
+  </div>
+
+  <!-- SCENE: step 3 — tekstforfatting -->
+  <div class="scene stepScene" id="step3">
+    <div class="stepNum">3</div>
+    <div class="stepEyebrow">Steg 3 av 4</div>
+    <div class="stepTitleWrap"><div class="stepTitle" id="step3Title">Tekstforfatting</div></div>
+    <div class="stepDesc" id="step3Desc">Det finnes fem stadier av brukerbevissthet. Vi skriver og designer for å veilede brukerne mot sluttfasen.</div>
+  </div>
+
+  <!-- SCENE: step 4 — nettside -->
+  <div class="scene stepScene" id="step4">
+    <div class="stepNum">4</div>
+    <div class="stepEyebrow">Steg 4 av 4</div>
+    <div class="stepTitleWrap"><div class="stepTitle" id="step4Title">Nettside</div></div>
+    <div class="stepDesc" id="step4Desc">Nettsiden er en selger 24/7. Gjort riktig, skaper den nye kunder for deg. Gjort feil — nye kunder for konkurrenten.</div>
+  </div>
+
+  <!-- SCENE: testimonials -->
+  <div class="scene" id="sceneTestimonials">
+    <div class="quoteWrap" id="q1">
+      <div class="quoteMark">"</div>
+      <div class="quoteText">Vil takke deg for en flott gjennomført og profesjonelt produsert hjemmeside.</div>
+      <div class="quoteBy">Geir Eriksen, Din Ventilasjon</div>
+    </div>
+    <div class="quoteWrap" id="q2">
+      <div class="quoteMark">"</div>
+      <div class="quoteText">Veldig fornøyd med samarbeidet vi har hatt med Webberne. Kan absolutt anbefales.</div>
+      <div class="quoteBy">Eddy Authen, Maskinagenten</div>
+    </div>
+    <div class="quoteWrap" id="q3">
+      <div class="quoteMark">"</div>
+      <div class="quoteText">Hvis du vil ha flere kunder, da kan jeg absolutt anbefale Levent.</div>
+      <div class="quoteBy">Aleksandra F. Eriksen, Rödl & Partner</div>
+    </div>
+  </div>
+
+  <!-- SCENE: pricing -->
+  <div class="scene" id="scenePricing">
+    <div id="pricingHead"><span class="eyebrow">Vedlikehold, gjort enkelt</span><h2>Alltid oppdatert. Aldri dyrt.</h2></div>
+    <div id="priceRow">
+      <div class="priceCard" id="pc1"><div class="amt">300 kr</div><div class="lbl">per måned, fra</div><div class="sub">Enkel oppdatering og hosting</div></div>
+      <div class="priceCard" id="pc2"><div class="amt">1200 kr</div><div class="lbl">per måned, anbefalt</div><div class="sub">15-minutters oppdatering inkludert</div></div>
+      <div class="priceCard" id="pc3"><div class="amt">SSL</div><div class="lbl">sikkerhet alltid på</div><div class="sub">Oppdateringer og backup daglig</div></div>
+    </div>
+  </div>
+
+  <!-- SCENE: CTA / booking -->
+  <div class="scene" id="sceneCTA">
+    <div id="ctaHead">Få en gratis <span class="hl">NETTSIDEANALYSE</span></div>
+    <div id="stepsRow">
+      <div class="bookStep" id="bs1"><div class="n">1</div><div class="t">Fyll ut skjema</div></div>
+      <div class="bookStep" id="bs2"><div class="n">2</div><div class="t">Avtal et møte</div></div>
+      <div class="bookStep" id="bs3"><div class="n">3</div><div class="t">Kom i gang</div></div>
+    </div>
+    <div id="ctaPhone">+47 929 929 90</div>
+  </div>
+
+  <!-- SCENE: close -->
+  <div class="scene" id="sceneClose">
+    <div id="closeWord">webberne</div>
+    <div id="closeTag">Vi lager nettsider som skaper kunder</div>
+    <div id="closeContact">webberne.no &nbsp;·&nbsp; +47 929 929 90 &nbsp;·&nbsp; Bestill nå</div>
+  </div>
+
+  <div id="flash"></div>
+  <div id="vignette"></div>
+  <div id="grain"></div>
+  <div id="blackout"></div>
+</div>
+
+<script src="../vendor/anim/gsap.min.js"></script>
+<script src="../vendor/anim/SplitText.min.js"></script>
+<script>
+gsap.registerPlugin(SplitText);
+
+function prepLineDraw(sel){
+  const el = document.querySelector(sel);
+  const len = el.getTotalLength();
+  el.style.strokeDasharray = len;
+  el.style.strokeDashoffset = len;
+  return len;
+}
+const arrowLen = prepLineDraw('#growthArrow');
+const arrowHeadLen = prepLineDraw('#growthArrowHead');
+
+const logoSplit = new SplitText('#logoWord', { type: 'chars' });
+gsap.set(logoSplit.chars, { display: 'inline-block' });
+
+const problemSplit = new SplitText('#problemText', { type: 'words', wordsClass: 'word-unit' });
+
+const step1Split = new SplitText('#step1Title', { type: 'chars' });
+const step2Split = new SplitText('#step2Title', { type: 'chars' });
+const step3Split = new SplitText('#step3Title', { type: 'chars' });
+const step4Split = new SplitText('#step4Title', { type: 'chars' });
+[step1Split, step2Split, step3Split, step4Split].forEach(s => gsap.set(s.chars, { display: 'inline-block' }));
+
+/* ambient floating sparks for depth */
+const sparkLayer = document.getElementById('sparkLayer');
+const sparkEls = [];
+for (let i = 0; i < 26; i++) {
+  const s = document.createElement('div');
+  s.className = 'spark';
+  const x = Math.random() * 1920, y = Math.random() * 1080;
+  s.style.left = x + 'px';
+  s.style.top = y + 'px';
+  sparkLayer.appendChild(s);
+  sparkEls.push(s);
+}
+
+const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.7 });
+window.masterTL = tl;
+
+tl.set('#blackout', { opacity: 1 });
+tl.to('#blackout', { opacity: 0, duration: 0.5 }, 0.0);
+
+/* ambient orbs drift continuously across full ~47s runtime */
+tl.to('#orb1', { x: 70, y: 50, duration: 20, ease: 'sine.inOut' }, 0);
+tl.to('#orb2', { x: -60, y: -40, duration: 23, ease: 'sine.inOut' }, 0);
+tl.to('#orb3', { x: 40, y: -25, scale: 1.08, duration: 17, ease: 'sine.inOut' }, 0);
+
+sparkEls.forEach((s, i) => {
+  const t0 = (i * 0.6) % 30;
+  tl.to(s, { opacity: 0.7, duration: 0.6, repeat: 20, repeatDelay: 1.4 + (i % 5) * 0.2, yoyo: true, ease: 'sine.inOut' }, t0);
+});
+
+function stepIn(stepSel, titleChars, descSel, eyebrowSel, numSel, t0){
+  tl.fromTo(eyebrowSel, { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.4 }, t0);
+  tl.fromTo(numSel, { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.6 }, t0);
+  tl.fromTo(titleChars, { opacity: 0, y: 50, rotateZ: 4 }, { opacity: 1, y: 0, rotateZ: 0, duration: 0.55, ease: 'power3.out', stagger: 0.03 }, t0 + 0.15);
+  tl.fromTo(descSel, { opacity: 0, y: 18, filter: 'blur(8px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.6, ease: 'power2.out' }, t0 + 0.6);
+}
+function stepOut(stepSel, titleChars, descSel, eyebrowSel, numSel, t0){
+  tl.to([eyebrowSel, descSel, numSel], { opacity: 0, y: -16, duration: 0.4, ease: 'power2.in', stagger: 0.02 }, t0);
+  tl.to(titleChars, { opacity: 0, y: -30, filter: 'blur(6px)', duration: 0.35, ease: 'power2.in', stagger: 0.01 }, t0);
+}
+
+/* ============ SCENE A — LOGO INTRO  0.0 - 4.0 ============ */
+tl.fromTo('#growthArrow', { strokeDashoffset: arrowLen }, { strokeDashoffset: 0, duration: 0.6, ease: 'power2.out', immediateRender:false }, 0.15);
+tl.fromTo('#growthArrowHead', { strokeDashoffset: arrowHeadLen }, { strokeDashoffset: 0, duration: 0.3, ease: 'power2.out', immediateRender:false }, 0.6);
+tl.fromTo('#logoMark', { scale: 0.55, opacity: 0, y: 20 }, { scale: 1, opacity: 1, y: 0, duration: 0.7, ease: 'back.out(1.6)' }, 0.15);
+tl.fromTo(logoSplit.chars, { opacity: 0, y: 46, rotateZ: 6 }, { opacity: 1, y: 0, rotateZ: 0, duration: 0.6, ease: 'power3.out', stagger: 0.035 }, 0.95);
+tl.fromTo('#logoSub', { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }, 1.55);
+tl.to('#logoMark', { y: -6, duration: 1.4, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 1.8);
+tl.to(['#logoMark','#logoWord','#logoSub'], { opacity: 0, y: -26, scale: 0.96, filter: 'blur(8px)', duration: 0.45, ease: 'power2.in', stagger: 0.02 }, 3.5);
+
+/* ============ SCENE B — PROBLEM  4.0 - 8.5 ============ */
+tl.fromTo(problemSplit.words, { opacity: 0, y: 22, filter: 'blur(12px)' },
+  { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.5, ease: 'power3.out', stagger: 0.05 }, 4.15);
+tl.fromTo('#problemFix', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5 }, 6.6);
+tl.to([problemSplit.words, '#problemFix'], { opacity: 0, y: -16, filter: 'blur(8px)', duration: 0.4, ease: 'power2.in', stagger: 0.01 }, 8.05);
+
+/* ============ SCENES C-F — 4 STEP EXPLAINERS  8.5 - 28.5 (5s each) ============ */
+stepIn('#step1', step1Split.chars, '#step1Desc', '#step1 .stepEyebrow', '#step1 .stepNum', 8.65);
+stepOut('#step1', step1Split.chars, '#step1Desc', '#step1 .stepEyebrow', '#step1 .stepNum', 13.1);
+
+stepIn('#step2', step2Split.chars, '#step2Desc', '#step2 .stepEyebrow', '#step2 .stepNum', 13.65);
+stepOut('#step2', step2Split.chars, '#step2Desc', '#step2 .stepEyebrow', '#step2 .stepNum', 18.1);
+
+stepIn('#step3', step3Split.chars, '#step3Desc', '#step3 .stepEyebrow', '#step3 .stepNum', 18.65);
+stepOut('#step3', step3Split.chars, '#step3Desc', '#step3 .stepEyebrow', '#step3 .stepNum', 23.1);
+
+stepIn('#step4', step4Split.chars, '#step4Desc', '#step4 .stepEyebrow', '#step4 .stepNum', 23.65);
+stepOut('#step4', step4Split.chars, '#step4Desc', '#step4 .stepEyebrow', '#step4 .stepNum', 28.1);
+
+/* ============ SCENE G — TESTIMONIALS  28.5 - 34.5 ============ */
+const quoteStart = 28.65, quoteDur = 2.0;
+['q1','q2','q3'].forEach((id, i) => {
+  const t0 = quoteStart + i * quoteDur;
+  tl.fromTo('#'+id, { opacity: 0, y: 26, scale: 0.97, filter: 'blur(6px)' },
+    { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: 0.45, ease: 'power3.out' }, t0);
+  tl.to('#'+id, { opacity: 0, y: -22, scale: 0.98, filter: 'blur(6px)', duration: 0.4, ease: 'power2.in' }, t0 + quoteDur - 0.45);
+});
+
+/* ============ SCENE H — PRICING  34.5 - 39.0 ============ */
+const priceStart = 34.65;
+tl.fromTo('#pricingHead', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, priceStart);
+['pc1','pc2','pc3'].forEach((id, i) => {
+  tl.fromTo('#'+id, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.55, ease: 'power3.out' }, priceStart + 0.3 + i * 0.15);
+});
+tl.to(['#pricingHead','#pc1','#pc2','#pc3'], { opacity: 0, y: -20, duration: 0.35, ease: 'power2.in', stagger: 0.03 }, priceStart + 3.9);
+
+/* ============ SCENE I — CTA / BOOKING  39.0 - 44.0 ============ */
+const ctaStart = 39.15;
+tl.fromTo('#ctaHead', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, ctaStart);
+['bs1','bs2','bs3'].forEach((id, i) => {
+  tl.fromTo('#'+id, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, ctaStart + 0.5 + i * 0.15);
+});
+tl.fromTo('#ctaPhone', { opacity: 0 }, { opacity: 1, duration: 0.5 }, ctaStart + 1.6);
+tl.to(['#ctaHead','#bs1','#bs2','#bs3','#ctaPhone'], { opacity: 0, y: -20, duration: 0.35, ease: 'power2.in', stagger: 0.03 }, ctaStart + 4.0);
+
+/* ============ SCENE J — CLOSE  44.0 - 47.0 ============ */
+const closeStart = 44.15;
+tl.to('#flash', { opacity: 0.55, duration: 0.06 }, closeStart - 0.1);
+tl.to('#flash', { opacity: 0, duration: 0.3 }, closeStart - 0.04);
+tl.fromTo('#closeWord', { opacity: 0, scale: 0.7, letterSpacing: '14px' }, { opacity: 1, scale: 1, letterSpacing: '2px', duration: 0.6, ease: 'power3.out' }, closeStart);
+tl.fromTo('#closeTag', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.45 }, closeStart + 0.5);
+tl.fromTo('#closeContact', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.45 }, closeStart + 0.85);
+tl.to('#closeWord', { textShadow: '0 0 40px rgba(248,141,46,.55)', duration: 1.0, yoyo: true, repeat: 1 }, closeStart + 1.2);
+
+/* fade to black, ready to loop */
+tl.to('#blackout', { opacity: 1, duration: 0.6, ease: 'power2.in' }, closeStart + 2.4);
+
+/* reset everything for next loop */
+const resetT = closeStart + 3.0;
+tl.set(['#logoMark','#logoSub'], { opacity: 0, scale: 1, y: 0, filter: 'blur(0px)' }, resetT);
+tl.set(logoSplit.chars, { opacity: 0, y: 46, rotateZ: 6 }, resetT);
+tl.set('#growthArrow', { strokeDashoffset: arrowLen }, resetT);
+tl.set('#growthArrowHead', { strokeDashoffset: arrowHeadLen }, resetT);
+tl.set(problemSplit.words, { opacity: 0, y: 22, filter: 'blur(12px)' }, resetT);
+tl.set('#problemFix', { opacity: 0, y: 0 }, resetT);
+[ [step1Split,'#step1'], [step2Split,'#step2'], [step3Split,'#step3'], [step4Split,'#step4'] ].forEach(([split, sel]) => {
+  tl.set(split.chars, { opacity: 0, y: 50, rotateZ: 4, filter: 'blur(0px)' }, resetT);
+  tl.set(sel + ' .stepEyebrow', { opacity: 0, y: 0 }, resetT);
+  tl.set(sel + ' .stepDesc', { opacity: 0, y: 0, filter: 'blur(0px)' }, resetT);
+  tl.set(sel + ' .stepNum', { opacity: 0, scale: 1 }, resetT);
+});
+tl.set(['#q1','#q2','#q3'], { opacity: 0, y: 26, scale: 0.97, filter: 'blur(6px)' }, resetT);
+tl.set(['#pricingHead','#pc1','#pc2','#pc3'], { opacity: 0, y: 0 }, resetT);
+tl.set(['#ctaHead','#bs1','#bs2','#bs3','#ctaPhone'], { opacity: 0, y: 0 }, resetT);
+tl.set(['#closeWord','#closeTag','#closeContact'], { opacity: 0, scale: 1, y: 0, letterSpacing: '2px', textShadow: 'none' }, resetT);
+</script>
+</body>
+</html>
