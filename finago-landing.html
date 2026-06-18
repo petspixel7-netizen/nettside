@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<title>Finago — Ett system for alle behov</title>
+<style>
+  :root {
+    --bg: #0A0A0C;
+    --blue: #2D7FF9;
+    --blue-light: #6FA8FF;
+    --white: #FFFFFF;
+    --gray: #8A8F98;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    overflow-x: hidden;
+  }
+  canvas#particles {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  }
+  .progress {
+    position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+    background: linear-gradient(90deg, var(--blue), var(--blue-light));
+    box-shadow: 0 0 12px var(--blue);
+    z-index: 100; transition: width 0.1s linear;
+  }
+  section {
+    position: relative; min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    text-align: center; padding: 80px 24px; z-index: 1;
+    overflow: hidden;
+  }
+  .grid-bg {
+    position: absolute; inset: -50%; z-index: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 64px 64px;
+    animation: gridDrift 14s linear infinite;
+  }
+  @keyframes gridDrift {
+    from { transform: translate(0,0); }
+    to { transform: translate(64px, 64px); }
+  }
+  .vignette {
+    position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    background: radial-gradient(ellipse 85% 85% at 50% 50%, transparent 35%, rgba(0,0,0,0.65) 100%);
+  }
+  .glow-orb {
+    position: absolute; border-radius: 50%; filter: blur(60px); z-index: 0; pointer-events: none;
+    animation: orbFloat 8s ease-in-out infinite;
+  }
+  @keyframes orbFloat {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    50% { transform: translate(30px,-20px) scale(1.15); }
+  }
+
+  h1 { font-size: clamp(40px, 7vw, 100px); font-weight: 800; letter-spacing: -3px; line-height: 1.05; }
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s cubic-bezier(.16,1,.3,1), transform 0.8s cubic-bezier(.16,1,.3,1); }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal.scale-in { transform: scale(0.7); }
+  .reveal.scale-in.visible { transform: scale(1); }
+  .reveal.from-left { transform: translateX(-60px); }
+  .reveal.from-left.visible { transform: translateX(0); }
+  .reveal.from-right { transform: translateX(60px); }
+  .reveal.from-right.visible { transform: translateX(0); }
+
+  .blue-glow { color: var(--blue-light); text-shadow: 0 0 40px rgba(45,127,249,0.6); animation: pulseGlow 2.4s ease-in-out infinite; }
+  @keyframes pulseGlow {
+    0%, 100% { text-shadow: 0 0 30px rgba(45,127,249,0.5); }
+    50% { text-shadow: 0 0 55px rgba(45,127,249,0.9); }
+  }
+
+  .flash {
+    position: fixed; inset: 0; background: #000; z-index: 99; pointer-events: none;
+    opacity: 0; transition: opacity 0.15s ease;
+  }
+  .flash.active { opacity: 1; transition: opacity 0.05s ease; }
+
+  /* Skeleton cards */
+  .skel-wrap { position: absolute; width: 220px; }
+  .skel-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 14px; padding: 16px 22px;
+    transition: transform 0.2s ease;
+    will-change: transform;
+  }
+  .skel-bar { height: 22px; border-radius: 6px; background: rgba(255,255,255,0.09); overflow: hidden; position: relative; margin-bottom: 10px; }
+  .skel-bar::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+    transform: translateX(-100%);
+    animation: shimmer 1.8s ease-in-out infinite;
+  }
+  @keyframes shimmer { to { transform: translateX(100%); } }
+  .skel-bar.short { width: 65%; height: 8px; }
+  .skel-label { font-size: 22px; font-weight: 700; opacity: 0; transition: opacity 0.4s; }
+  .skel-card.resolved .skel-bar.full { opacity: 0; }
+  .skel-card.resolved .skel-label { opacity: 1; }
+
+  .float1 { top: 14%; left: 12%; animation: float1 6s ease-in-out infinite; }
+  .float2 { top: 12%; right: 10%; animation: float2 7s ease-in-out infinite; filter: blur(2px); }
+  .float3 { bottom: 16%; right: 12%; animation: float3 6.5s ease-in-out infinite; filter: blur(3px); }
+  .float4 { bottom: 14%; left: 10%; animation: float4 7.5s ease-in-out infinite; filter: blur(2px); }
+  @keyframes float1 { 0%,100%{transform:translate(0,0) rotate(-2deg)} 50%{transform:translate(10px,-14px) rotate(2deg)} }
+  @keyframes float2 { 0%,100%{transform:translate(0,0) rotate(3deg)} 50%{transform:translate(-12px,10px) rotate(-2deg)} }
+  @keyframes float3 { 0%,100%{transform:translate(0,0) rotate(-3deg)} 50%{transform:translate(8px,12px) rotate(2deg)} }
+  @keyframes float4 { 0%,100%{transform:translate(0,0) rotate(2deg)} 50%{transform:translate(-10px,-8px) rotate(-3deg)} }
+
+  /* Merge SVG */
+  .merge-svg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+  .merge-line { stroke: var(--blue-light); stroke-width: 1.5; fill: none; stroke-dasharray: 6 6; opacity: 0.35; stroke-dashoffset: 0; animation: dashFlow 2s linear infinite; }
+  @keyframes dashFlow { to { stroke-dashoffset: -24; } }
+
+  .hero-card {
+    width: 260px; padding: 28px 34px; border-radius: 22px;
+    background: linear-gradient(150deg, rgba(45,127,249,0.22), rgba(255,255,255,0.05));
+    border: 1.5px solid rgba(111,168,255,0.5);
+    box-shadow: 0 0 60px rgba(45,127,249,0.4);
+    font-family: Georgia, serif; font-size: 36px; font-weight: 900;
+    animation: heroPulse 3s ease-in-out infinite;
+  }
+  @keyframes heroPulse {
+    0%, 100% { box-shadow: 0 0 50px rgba(45,127,249,0.3); transform: scale(1); }
+    50% { box-shadow: 0 0 90px rgba(45,127,249,0.55); transform: scale(1.03); }
+  }
+
+  /* Feature cards with mouse tilt */
+  .features-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; max-width: 1000px; margin-top: 40px; }
+  .feature-card {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 18px; padding: 32px; text-align: left;
+    transform-style: preserve-3d; transition: transform 0.15s ease, border-color 0.3s;
+    cursor: default;
+  }
+  .feature-card:hover { border-color: rgba(111,168,255,0.5); }
+  .feature-tag {
+    display: inline-block; padding: 5px 14px; border-radius: 999px;
+    background: rgba(45,127,249,0.16); border: 1px solid rgba(45,127,249,0.4);
+    color: var(--blue-light); font-size: 13px; font-weight: 700; letter-spacing: 1.5; margin-bottom: 14px;
+  }
+  .feature-icon {
+    width: 44px; height: 44px; margin-bottom: 16px;
+  }
+  .feature-icon path { stroke: var(--blue-light); stroke-width: 2; fill: none; stroke-dasharray: 100; stroke-dashoffset: 100; transition: stroke-dashoffset 1.2s ease; }
+  .feature-card.visible .feature-icon path { stroke-dashoffset: 0; }
+  .feature-card h3 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 8px; }
+  .feature-card p { color: var(--gray); font-size: 16px; }
+
+  /* Testimonial */
+  .quote-card {
+    width: min(900px, 88vw); padding: 48px 56px; border-radius: 24px;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    text-align: left; position: relative;
+  }
+  .quote-mark { font-size: 64px; font-family: Georgia, serif; color: var(--blue-light); line-height: 0.5; }
+  .quote-text { font-size: clamp(22px, 3vw, 32px); font-weight: 500; line-height: 1.4; margin: 12px 0 26px; }
+  .avatar-row { display: flex; align-items: center; gap: 14px; }
+  .avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), var(--blue-light)); animation: avatarPulse 2.5s ease-in-out infinite; }
+  @keyframes avatarPulse { 0%,100%{box-shadow:0 0 0 0 rgba(45,127,249,0.5)} 50%{box-shadow:0 0 0 8px rgba(45,127,249,0)} }
+  .avatar-name { font-weight: 700; }
+  .avatar-role { color: var(--gray); font-size: 14px; }
+
+  .logo-marquee { width: 100%; overflow: hidden; margin-top: 50px; }
+  .logo-track { display: flex; gap: 60px; width: max-content; animation: marquee 18s linear infinite; opacity: 0.4; }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .logo-pill { padding: 10px 22px; border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; font-size: 15px; font-weight: 600; color: var(--gray); white-space: nowrap; }
+
+  /* Value props */
+  .value-line {
+    font-size: clamp(36px, 6vw, 68px); font-weight: 800; letter-spacing: -1.5px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .value-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--blue-light); box-shadow: 0 0 10px var(--blue-light); }
+
+  /* CTA */
+  .logo-big { font-family: Georgia, serif; font-size: clamp(60px, 10vw, 110px); font-weight: 900; }
+  .terminal {
+    margin-top: 30px; padding: 18px 32px; border-radius: 12px;
+    background: #0F2C5C; border: 1px solid rgba(45,127,249,0.55);
+    display: flex; align-items: center; gap: 12px;
+    box-shadow: 0 0 50px rgba(45,127,249,0.35);
+    animation: termGlow 2.6s ease-in-out infinite;
+  }
+  @keyframes termGlow { 0%,100%{box-shadow:0 0 30px rgba(45,127,249,0.25)} 50%{box-shadow:0 0 60px rgba(45,127,249,0.5)} }
+  .term-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--blue-light); box-shadow: 0 0 8px var(--blue-light); }
+  .term-text { font-family: "SF Mono", "Courier New", monospace; font-size: clamp(20px, 3vw, 28px); font-weight: 700; }
+  .cursor { display: inline-block; width: 12px; background: var(--blue-light); animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .scroll-cue {
+    position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+    font-size: 13px; color: var(--gray); letter-spacing: 2px; opacity: 0.6;
+    animation: bobCue 1.8s ease-in-out infinite;
+  }
+  @keyframes bobCue { 0%,100%{transform:translate(-50%,0)} 50%{transform:translate(-50%,6px)} }
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+<div class="progress" id="progress"></div>
+<div class="flash" id="flash"></div>
+
+<!-- 1: HOOK -->
+<section id="s1">
+  <div class="grid-bg"></div>
+  <div class="vignette"></div>
+  <div class="glow-orb" style="width:500px;height:500px;background:radial-gradient(circle,rgba(45,127,249,0.18),transparent 70%);top:20%;left:10%;"></div>
+
+  <div class="skel-wrap float2" style="top:62%; right:14%;">
+    <div class="skel-card resolved">
+      <div class="skel-bar full"><span class="skel-label">Lønn</span></div>
+      <div class="skel-bar short"></div>
+    </div>
+  </div>
+
+  <h1 class="reveal scale-in visible">Tre systemer.</h1>
+  <h1 class="reveal scale-in visible blue-glow" style="transition-delay:0.25s;">Ett kaos.</h1>
+  <div class="scroll-cue">SCROLL ▾</div>
+</section>
+
+<!-- 2: CHAOS -->
+<section id="s2">
+  <div class="grid-bg"></div>
+  <div class="vignette"></div>
+
+  <div class="skel-wrap float1"><div class="skel-card"><div class="skel-bar full"><span class="skel-label">Regnskap</span></div><div class="skel-bar short"></div></div></div>
+  <div class="skel-wrap float2"><div class="skel-card"><div class="skel-bar full"><span class="skel-label">Lønn</span></div><div class="skel-bar short"></div></div></div>
+  <div class="skel-wrap float3"><div class="skel-card"><div class="skel-bar full"><span class="skel-label">Timeregistrering</span></div><div class="skel-bar short"></div></div></div>
+  <div class="skel-wrap float4"><div class="skel-card"><div class="skel-bar full"><span class="skel-label">Oppdragsstyring</span></div><div class="skel-bar short"></div></div></div>
+
+  <h2 class="reveal" style="font-size:clamp(28px,4vw,52px); font-weight:700; max-width:800px;">
+    Alt spredt. Ingenting snakker sammen.
+  </h2>
+</section>
+
+<!-- 3: MERGE -->
+<section id="s3">
+  <div class="grid-bg"></div>
+  <div class="vignette"></div>
+  <svg class="merge-svg"><line class="merge-line" x1="20%" y1="25%" x2="50%" y2="50%"/><line class="merge-line" x1="80%" y1="22%" x2="50%" y2="50%"/><line class="merge-line" x1="78%" y1="78%" x2="50%" y2="50%"/><line class="merge-line" x1="22%" y1="80%" x2="50%" y2="50%"/></svg>
+
+  <div class="hero-card reveal scale-in">Fin<span class="blue-glow">ago</span></div>
+  <h2 class="reveal" style="margin-top:36px; font-size:clamp(28px,4.5vw,56px); font-weight:800;">Ett system for alle behov.</h2>
+</section>
+
+<!-- 4: FEATURES -->
+<section id="s4">
+  <div class="grid-bg"></div>
+  <div class="vignette"></div>
+  <h2 class="reveal" style="font-size:clamp(30px,4.5vw,52px); font-weight:800; margin-bottom:10px;">Fire systemer. Én flate.</h2>
+  <div class="features-grid">
+
+    <div class="feature-card reveal from-left" data-tilt>
+      <div class="feature-tag">01 / 04</div>
+      <svg class="feature-icon" viewBox="0 0 24 24"><path d="M4 4h16v16H4z M4 9h16 M9 4v16"/></svg>
+      <h3>Finago Office</h3>
+      <p>Regnskap med automatisk bilagsbehandling.</p>
+    </div>
+
+    <div class="feature-card reveal from-right" data-tilt>
+      <div class="feature-tag">02 / 04</div>
+      <svg class="feature-icon" viewBox="0 0 24 24"><path d="M12 2v20 M5 7h14 M5 17h14"/></svg>
+      <h3>Finago Payday</h3>
+      <p>Lønn med alltid oppdaterte satser.</p>
+    </div>
+
+    <div class="feature-card reveal from-left" data-tilt>
+      <div class="feature-tag">03 / 04</div>
+      <svg class="feature-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+      <h3>Timeregistrering</h3>
+      <p>Integrert rett mot lønn og regnskap.</p>
+    </div>
+
+    <div class="feature-card reveal from-right" data-tilt>
+      <div class="feature-tag">04 / 04</div>
+      <svg class="feature-icon" viewBox="0 0 24 24"><path d="M4 20h16 M8 20V10 M14 20V4 M20 20v-7"/></svg>
+      <h3>Oppdragsstyring</h3>
+      <p>Bygget for regnskapsbyråer.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- 5: TESTIMONIAL -->
+<section id="s5">
+  <div class="grid-bg"></div>
+  <div class="vignette"></div>
+  <div class="quote-card reveal scale-in">
+    <div class="quote-mark">"</div>
+    <div class="quote-text">Jeg kunne ikke kjøpt et hotell til hvis jeg ikke hadde hatt et system som deres, noe jeg faktisk kan stole på.</div>
+    <div class="avatar-row">
+      <div class="avatar"></div>
+      <div>
+        <div class="avatar-name">Morten Christensen</div>
+        <div class="avatar-role">CEO, Unike Hoteller</div>
+      </div>
+    </div>
+  </div>
+  <div class="logo-marquee">
+    <div class="logo-track">
+      <span class="logo-pill">Unike Hoteller</span><span class="logo-pill">Regnskapsbyrå AS</span><span class="logo-pill">Nordlys Consulting</span><span class="logo-pill">Fjell & Fjord Eiendom</span><span class="logo-pill">Atlas Logistikk</span>
+      <span class="logo-pill">Unike Hoteller</span><span class="logo-pill">Regnskapsbyrå AS</span><span class="logo-pill">Nordlys Consulting</span><span class="logo-pill">Fjell & Fjord Eiendom</span><span class="logo-pill">Atlas Logistikk</span>
+    </div>
+  </div>
+</section>
+
+<!-- 6: VALUES -->
+<section id="s6">
+  <div class="grid-bg"></div>
+  <div class="vignette"></div>
+  <div style="display:flex; flex-direction:column; gap:18px; align-items:flex-start;">
+    <div class="value-line reveal from-left"><span class="value-dot"></span>Tilpasset deg.</div>
+    <div class="value-line reveal from-left blue-glow" style="transition-delay:0.15s;"><span class="value-dot"></span>Ved din side.</div>
+    <div class="value-line reveal from-left" style="transition-delay:0.3s;"><span class="value-dot"></span>Gode priser.</div>
+  </div>
+</section>
+
+<!-- 7: CTA -->
+<section id="s7">
+  <div class="grid-bg"></div>
+  <div class="vignette"></div>
+  <div class="glow-orb" style="width:600px;height:600px;background:radial-gradient(circle,rgba(45,127,249,0.2),transparent 70%);"></div>
+  <div class="logo-big reveal scale-in">Fin<span class="blue-glow">ago</span></div>
+  <div class="reveal" style="margin-top:16px; color:var(--gray); font-size:clamp(18px,2.5vw,30px);">Ett system for alle behov.</div>
+  <div class="terminal reveal">
+    <div class="term-dot"></div>
+    <span class="term-text"><span id="typed"></span><span class="cursor">&nbsp;</span></span>
+  </div>
+</section>
+
+<script>
+  // Scroll progress bar
+  const progress = document.getElementById('progress');
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progress.style.width = pct + '%';
+  });
+
+  // Reveal-on-scroll
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.35 });
+  revealEls.forEach(el => io.observe(el));
+
+  // Feature card icon-draw trigger
+  document.querySelectorAll('.feature-card').forEach(el => {
+    const fio = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.4 });
+    fio.observe(el);
+  });
+
+  // Lights-out flash when section 3 (merge) enters view
+  const flash = document.getElementById('flash');
+  let flashed = false;
+  const s3io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting && !flashed) {
+        flashed = true;
+        flash.classList.add('active');
+        setTimeout(() => flash.classList.remove('active'), 130);
+      }
+    });
+  }, { threshold: 0.5 });
+  s3io.observe(document.getElementById('s3'));
+
+  // Mouse-parallax tilt on feature cards
+  document.querySelectorAll('[data-tilt]').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+      card.style.transform = `perspective(600px) rotateY(${x * 10}deg) rotateX(${-y * 10}deg) scale(1.02)`;
+    });
+    card.addEventListener('mouseleave', () => { card.style.transform = ''; });
+  });
+
+  // Typing effect cycling through commands in the CTA terminal
+  const commands = ['finago.no', 'prøv gratis →', 'finago.no'];
+  const typedEl = document.getElementById('typed');
+  let ci = 0, charI = 0, deleting = false;
+  function typeLoop() {
+    const word = commands[ci];
+    typedEl.textContent = word.slice(0, charI);
+    if (!deleting && charI < word.length) { charI++; setTimeout(typeLoop, 80); }
+    else if (!deleting && charI === word.length) { deleting = true; setTimeout(typeLoop, 1400); }
+    else if (deleting && charI > 0) { charI--; setTimeout(typeLoop, 40); }
+    else { deleting = false; ci = (ci + 1) % commands.length; setTimeout(typeLoop, 200); }
+  }
+  typeLoop();
+
+  // Ambient particle canvas (full-page, continuous drifting dots)
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+  resize(); window.addEventListener('resize', resize);
+
+  const N = 70;
+  const particles = Array.from({ length: N }, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: 0.6 + Math.random() * 1.8,
+    vy: -(0.15 + Math.random() * 0.35),
+    vx: (Math.random() - 0.5) * 0.15,
+    op: 0.1 + Math.random() * 0.35,
+    blue: Math.random() < 0.6,
+    phase: Math.random() * Math.PI * 2,
+  }));
+
+  let mouseX = canvas.width / 2, mouseY = canvas.height / 2;
+  window.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+
+  function tick() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const t = performance.now() * 0.001;
+    particles.forEach(p => {
+      p.x += p.vx + Math.sin(t + p.phase) * 0.08;
+      p.y += p.vy;
+      if (p.y < -10) { p.y = canvas.height + 10; p.x = Math.random() * canvas.width; }
+      if (p.x < -10) p.x = canvas.width + 10;
+      if (p.x > canvas.width + 10) p.x = -10;
+      const dx = p.x - mouseX, dy = p.y - mouseY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const push = dist < 120 ? (120 - dist) / 120 : 0;
+      const drawX = p.x + (dx / (dist || 1)) * push * 18;
+      const drawY = p.y + (dy / (dist || 1)) * push * 18;
+      const pulse = 0.6 + 0.4 * Math.sin(t * 1.5 + p.phase);
+      ctx.beginPath();
+      ctx.arc(drawX, drawY, p.r + pulse * 0.6, 0, Math.PI * 2);
+      ctx.fillStyle = p.blue ? `rgba(111,168,255,${p.op * pulse})` : `rgba(255,255,255,${p.op * pulse * 0.6})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(tick);
+  }
+  tick();
+</script>
+</body>
+</html>
