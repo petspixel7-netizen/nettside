@@ -54,115 +54,130 @@ HTML = f"""<!DOCTYPE html>
 <style>
   {FONT_FACES_CSS}
   :root{{
-    --bg:#171310; --surface:#221c17; --surface2:#2c241d; --border:#3c322a;
-    --terracotta:#C56448; --terracotta-dim:#8d544b; --brown:#6b4a3c; --cream:#F3ECE2; --gold:#C9A567;
-    --text:#d8cfc3; --white:#f6f0e7; --dim:#9c8f80;
+    --paper:#EAE1D2; --paper2:#E1D5C0; --ink:#2C2520; --ink-dim:#6b5d4f;
+    --clay:#B5563A; --clay-deep:#8a3f29; --moss:#5c6650; --gold:#A9803F;
+    --line:#c9b89e; --card:#F4ECDD;
     --display:'Instrument Serif',serif; --sans:'Poppins',sans-serif;
   }}
   *{{margin:0;padding:0;box-sizing:border-box;}}
   html,body{{width:100%;height:100%;background:#000;overflow:hidden;font-family:var(--sans);}}
   #viewport{{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#000;}}
-  #canvas{{position:relative;width:1920px;height:1080px;background:var(--bg);overflow:hidden;transform-origin:center center;}}
+  #canvas{{position:relative;width:1920px;height:1080px;background:var(--paper);overflow:hidden;transform-origin:center center;}}
 
-  @keyframes grainDrift{{0%{{background-position:0 0;}}100%{{background-position:120px 90px;}}}}
-  #grain{{position:absolute;inset:-10%;opacity:.05;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' result='t'/><feColorMatrix in='t' type='matrix' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.4 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");animation:grainDrift 9s steps(6) infinite;pointer-events:none;z-index:6;}}
-  @keyframes washPulse{{0%,100%{{opacity:.55;transform:scale(1);}}50%{{opacity:.9;transform:scale(1.06);}}}}
-  #wash{{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 30%, rgba(197,100,72,0.14) 0%, transparent 70%);animation:washPulse 8s ease-in-out infinite;}}
+  /* paper fiber texture */
+  #paper-tex{{position:absolute;inset:0;opacity:.5;mix-blend-mode:multiply;pointer-events:none;z-index:3;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' result='t'/><feColorMatrix in='t' type='matrix' values='0 0 0 0 0.9  0 0 0 0 0.85  0 0 0 0 0.78  0 0 0 0.18 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");}}
+  @keyframes paperDrift{{0%{{background-position:0 0;}}100%{{background-position:90px 70px;}}}}
+  #paper-tex{{animation:paperDrift 14s steps(4) infinite;}}
 
-  #orbs{{position:absolute;inset:0;overflow:hidden;}}
-  .orb{{position:absolute;border-radius:50%;filter:blur(50px);opacity:.28;mix-blend-mode:screen;}}
-  #orb1{{width:360px;height:360px;left:6%;top:12%;background:radial-gradient(circle,var(--terracotta),transparent 70%);animation:orbDrift1 14s ease-in-out infinite;}}
-  #orb2{{width:280px;height:280px;right:8%;top:55%;background:radial-gradient(circle,var(--gold),transparent 70%);animation:orbDrift2 12s ease-in-out infinite;}}
-  #orb3{{width:300px;height:300px;left:18%;bottom:8%;background:radial-gradient(circle,var(--brown),transparent 70%);animation:orbDrift3 16s ease-in-out infinite;}}
-  @keyframes orbDrift1{{0%,100%{{transform:translate(0,0) scale(1);}}50%{{transform:translate(70px,50px) scale(1.2);}}}}
-  @keyframes orbDrift2{{0%,100%{{transform:translate(0,0) scale(1);}}50%{{transform:translate(-60px,-40px) scale(0.85);}}}}
-  @keyframes orbDrift3{{0%,100%{{transform:translate(0,0) scale(1);}}50%{{transform:translate(50px,-50px) scale(1.15);}}}}
+  /* hand-drawn organic blobs instead of glow orbs */
+  #blobs{{position:absolute;inset:0;overflow:hidden;z-index:1;}}
+  .blob{{position:absolute;opacity:.5;}}
+  #blob1{{width:520px;height:520px;left:-120px;top:-100px;background:var(--clay);opacity:.10;border-radius:38% 62% 63% 37% / 41% 44% 56% 59%;animation:blobMove1 18s ease-in-out infinite;}}
+  #blob2{{width:420px;height:420px;right:-100px;bottom:-80px;background:var(--moss);opacity:.10;border-radius:56% 44% 41% 59% / 60% 38% 62% 40%;animation:blobMove2 20s ease-in-out infinite;}}
+  #blob3{{width:300px;height:300px;left:62%;top:58%;background:var(--gold);opacity:.08;border-radius:46% 54% 60% 40% / 50% 46% 54% 50%;animation:blobMove3 16s ease-in-out infinite;}}
+  @keyframes blobMove1{{0%,100%{{transform:translate(0,0) rotate(0deg);}}50%{{transform:translate(40px,30px) rotate(8deg);}}}}
+  @keyframes blobMove2{{0%,100%{{transform:translate(0,0) rotate(0deg);}}50%{{transform:translate(-35px,-25px) rotate(-6deg);}}}}
+  @keyframes blobMove3{{0%,100%{{transform:translate(0,0) scale(1);}}50%{{transform:translate(-20px,20px) scale(1.1);}}}}
 
-  .scene{{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;opacity:0;pointer-events:none;}}
-  .accent{{color:var(--terracotta);font-style:italic;}}
+  .scene{{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;opacity:0;pointer-events:none;z-index:4;}}
+  .accent{{color:var(--clay);font-style:italic;}}
 
-  /* full-bleed photo panel with vignette */
-  .photo-panel{{position:absolute;inset:0;overflow:hidden;}}
-  .photo-panel img{{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1);animation:kenBurns 9s ease-out forwards;}}
-  @keyframes kenBurns{{0%{{transform:scale(1.0) translate(0,0);}}100%{{transform:scale(1.13) translate(-1%,-1%);}}}}
-  .photo-vignette{{position:absolute;inset:0;background:radial-gradient(ellipse 90% 80% at 50% 50%, transparent 35%, rgba(15,11,8,.86) 100%),linear-gradient(180deg, rgba(15,11,8,.55) 0%, rgba(15,11,8,.25) 35%, rgba(15,11,8,.78) 100%);}}
+  /* organic-framed photo, off-center, not full-bleed */
+  .photo-organic{{position:absolute;overflow:hidden;box-shadow:0 30px 70px rgba(44,37,32,.25);border:1px solid rgba(44,37,32,.08);}}
+  .photo-organic img{{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1);animation:kenBurns 9s ease-out forwards;filter:saturate(.92) contrast(1.04);}}
+  @keyframes kenBurns{{0%{{transform:scale(1.0) translate(0,0);}}100%{{transform:scale(1.1) translate(-1%,-1%);}}}}
 
-  #logo-wrap-intro{{width:480px;opacity:0;}}
-  #logo-wrap-intro svg{{width:100%;display:block;color:var(--cream);filter:drop-shadow(0 0 30px rgba(197,100,72,.35));}}
-  #tagline{{font-family:var(--display);font-style:italic;font-size:30px;color:var(--terracotta);text-align:center;letter-spacing:.5px;opacity:0;}}
-  #sub-tagline{{font-size:18px;font-weight:300;color:var(--dim);text-align:center;letter-spacing:2px;text-transform:uppercase;opacity:0;}}
+  #logo-wrap-intro{{width:460px;opacity:0;}}
+  #logo-wrap-intro svg{{width:100%;display:block;color:var(--ink);}}
+  #tagline{{font-family:var(--display);font-style:italic;font-size:30px;color:var(--clay);text-align:center;letter-spacing:.5px;opacity:0;}}
+  #sub-tagline{{font-size:16px;font-weight:300;color:var(--ink-dim);text-align:center;letter-spacing:3px;text-transform:uppercase;opacity:0;}}
+  .hairline{{height:1px;width:0;background:var(--line);}}
 
-  .heading{{font-family:var(--display);font-weight:400;font-size:78px;color:var(--white);text-align:center;letter-spacing:-.5px;}}
+  .heading{{font-family:var(--display);font-weight:400;font-size:76px;color:var(--ink);text-align:center;letter-spacing:-.5px;}}
   .heading .word{{display:inline-block;opacity:0;}}
   #headline-text .word,#cta-headline .word{{display:inline-block;opacity:0;}}
-  .divider{{height:2px;width:0;margin:18px auto 0;background:linear-gradient(90deg,transparent,var(--terracotta),transparent);box-shadow:0 0 14px rgba(197,100,72,.5);}}
+  .divider{{height:1px;width:0;margin:18px auto 0;background:var(--clay);}}
 
   /* corner logo */
   #corner-logo{{position:absolute;top:54px;left:64px;display:flex;align-items:center;gap:0;opacity:0;z-index:20;}}
-  #corner-logo svg{{width:160px;color:var(--cream);}}
+  #corner-logo svg{{width:150px;color:var(--ink);}}
+  #corner-mark{{position:absolute;top:50px;right:64px;width:14px;height:14px;border-radius:46% 54% 60% 40% / 50% 46% 54% 50%;background:var(--clay);opacity:0;z-index:20;}}
 
-  /* headline scene */
-  #headline-text{{font-family:var(--display);font-weight:400;font-size:92px;color:var(--white);text-align:center;line-height:1.12;letter-spacing:-1px;}}
-  #headline-sub{{font-size:22px;font-weight:300;color:var(--cream);text-align:center;margin-top:18px;opacity:0;letter-spacing:.5px;}}
+  /* headline scene — asymmetric split, photo right, text left on paper */
+  #scene-headline{{flex-direction:row;align-items:center;justify-content:flex-start;gap:0;}}
+  #headline-textwrap{{position:relative;width:860px;padding-left:140px;z-index:5;}}
+  #headline-text{{font-family:var(--display);font-weight:400;font-size:88px;color:var(--ink);text-align:left;line-height:1.14;letter-spacing:-1px;}}
+  #headline-sub{{font-size:21px;font-weight:300;color:var(--ink-dim);text-align:left;margin-top:20px;opacity:0;letter-spacing:.3px;max-width:480px;}}
+  #headline-photo{{right:0;top:0;width:920px;height:1080px;border-radius:0;}}
+  #headline-photo::after{{content:'';position:absolute;inset:0;background:linear-gradient(90deg, var(--paper) 0%, transparent 8%);}}
 
-  /* workshop cards */
-  #workshop-grid{{display:flex;gap:30px;margin-top:48px;}}
-  .ws-card{{position:relative;width:380px;height:480px;border-radius:6px;overflow:hidden;opacity:0;box-shadow:0 30px 60px rgba(0,0,0,.55);border:1px solid var(--border);}}
-  .ws-card img{{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}}
-  .ws-card .ws-overlay{{position:absolute;inset:0;background:linear-gradient(180deg, rgba(23,19,16,.05) 0%, rgba(23,19,16,.92) 78%);}}
-  .ws-card .ws-num{{position:absolute;top:24px;left:24px;font-family:var(--display);font-style:italic;font-size:30px;color:var(--terracotta);}}
-  .ws-card .ws-title{{position:absolute;bottom:78px;left:26px;right:26px;font-family:var(--display);font-size:34px;color:var(--white);}}
-  .ws-card .ws-sub{{position:absolute;bottom:30px;left:26px;right:26px;font-size:15px;font-weight:300;color:var(--cream);line-height:1.4;}}
+  /* workshop cards — paper card, photo inset top, organic corner */
+  #workshop-grid{{display:flex;gap:36px;margin-top:46px;}}
+  .ws-card{{position:relative;width:368px;opacity:0;background:var(--card);border-radius:4px 28px 4px 4px;box-shadow:0 18px 40px rgba(44,37,32,.16);border:1px solid var(--line);overflow:hidden;}}
+  .ws-photo{{position:relative;width:100%;height:300px;overflow:hidden;}}
+  .ws-photo img{{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.9) contrast(1.03) sepia(.06);}}
+  .ws-body{{padding:24px 26px 30px;}}
+  .ws-num{{font-family:var(--display);font-style:italic;font-size:24px;color:var(--clay);}}
+  .ws-title{{font-family:var(--display);font-size:32px;color:var(--ink);margin-top:6px;}}
+  .ws-sub{{font-size:14.5px;font-weight:300;color:var(--ink-dim);line-height:1.5;margin-top:8px;}}
 
   /* process */
-  #process-row{{display:flex;align-items:flex-start;gap:0;margin-top:56px;position:relative;}}
+  #process-row{{display:flex;align-items:flex-start;gap:0;margin-top:54px;position:relative;}}
   .proc-step{{display:flex;flex-direction:column;align-items:center;width:340px;opacity:0;position:relative;z-index:2;}}
-  .proc-num{{width:62px;height:62px;border-radius:50%;border:1px solid var(--terracotta);color:var(--terracotta);font-family:var(--display);font-style:italic;font-size:26px;display:flex;align-items:center;justify-content:center;background:var(--surface);box-shadow:0 10px 26px rgba(0,0,0,.4);}}
-  .proc-title{{font-family:var(--display);font-size:26px;font-weight:400;color:var(--white);margin-top:20px;text-align:center;}}
-  .proc-sub{{font-size:15px;font-weight:300;color:var(--dim);margin-top:8px;text-align:center;max-width:290px;}}
-  #process-line-svg{{position:absolute;top:31px;left:0;width:100%;height:14px;overflow:visible;z-index:1;}}
-  #process-line-dot{{filter:drop-shadow(0 0 6px rgba(197,100,72,.8));}}
+  .proc-num{{width:60px;height:60px;border-radius:42% 58% 60% 40% / 54% 46% 54% 46%;border:1.5px solid var(--clay);color:var(--clay);font-family:var(--display);font-style:italic;font-size:25px;display:flex;align-items:center;justify-content:center;background:var(--card);}}
+  .proc-title{{font-family:var(--display);font-size:25px;font-weight:400;color:var(--ink);margin-top:20px;text-align:center;}}
+  .proc-sub{{font-size:14.5px;font-weight:300;color:var(--ink-dim);margin-top:8px;text-align:center;max-width:288px;}}
+  #process-line-svg{{position:absolute;top:30px;left:0;width:100%;height:14px;overflow:visible;z-index:1;}}
+  #process-line-dot{{filter:none;}}
 
   /* benefits */
-  #benefits-list{{display:flex;flex-direction:column;gap:26px;margin-top:50px;}}
-  .benefit-row{{display:flex;align-items:center;gap:22px;opacity:0;width:880px;}}
-  .benefit-check{{width:14px;height:14px;border-radius:50%;background:var(--terracotta);flex-shrink:0;box-shadow:0 0 16px rgba(197,100,72,.6);}}
-  .benefit-text{{font-family:var(--display);font-size:28px;font-weight:400;color:var(--white);}}
+  #benefits-list{{display:flex;flex-direction:column;gap:24px;margin-top:48px;}}
+  .benefit-row{{display:flex;align-items:center;gap:20px;opacity:0;width:860px;}}
+  .benefit-check{{width:10px;height:10px;border-radius:42% 58% 60% 40% / 54% 46% 54% 46%;background:var(--clay);flex-shrink:0;}}
+  .benefit-text{{font-family:var(--display);font-size:27px;font-weight:400;color:var(--ink);}}
 
-  /* location scene */
-  #location-card{{text-align:center;opacity:0;}}
-  #location-name{{font-family:var(--display);font-style:italic;font-size:46px;color:var(--terracotta);}}
-  #location-addr{{font-size:20px;font-weight:300;color:var(--cream);margin-top:10px;letter-spacing:.5px;}}
-  #location-phone{{font-size:18px;font-weight:300;color:var(--dim);margin-top:6px;letter-spacing:.5px;}}
+  /* location scene — asymmetric split mirrored */
+  #scene-location{{flex-direction:row;align-items:center;justify-content:flex-end;gap:0;}}
+  #location-photo{{left:0;top:0;width:920px;height:1080px;}}
+  #location-photo::after{{content:'';position:absolute;inset:0;background:linear-gradient(270deg, var(--paper) 0%, transparent 8%);}}
+  #location-card{{position:relative;width:860px;padding-right:150px;text-align:right;opacity:0;}}
+  #location-name{{font-family:var(--display);font-style:italic;font-size:44px;color:var(--clay);}}
+  #location-addr{{font-size:19px;font-weight:300;color:var(--ink);margin-top:12px;letter-spacing:.3px;}}
+  #location-phone{{font-size:16px;font-weight:300;color:var(--ink-dim);margin-top:6px;letter-spacing:.3px;}}
 
   /* cta */
-  #scene-cta{{background:radial-gradient(circle at 50% 28%, #241d17, var(--bg) 75%);}}
-  #cta-logo-wrap{{width:340px;opacity:0;}}
-  #cta-logo-wrap svg{{width:100%;display:block;color:var(--cream);filter:drop-shadow(0 0 30px rgba(197,100,72,.4));}}
-  #cta-headline{{font-family:var(--display);font-size:46px;font-weight:400;color:var(--white);margin-top:10px;text-align:center;}}
-  #cta-headline .acc{{color:var(--terracotta);font-style:italic;}}
-  #cta-qr-wrap{{position:relative;opacity:0;margin-top:24px;background:#fff;border-radius:14px;padding:18px;box-shadow:0 0 50px rgba(197,100,72,.35);}}
+  #scene-cta{{background:var(--paper2);}}
+  #cta-logo-wrap{{width:320px;opacity:0;}}
+  #cta-logo-wrap svg{{width:100%;display:block;color:var(--ink);}}
+  #cta-headline{{font-family:var(--display);font-size:44px;font-weight:400;color:var(--ink);margin-top:10px;text-align:center;}}
+  #cta-headline .acc{{color:var(--clay);font-style:italic;}}
+  #cta-qr-wrap{{position:relative;opacity:0;margin-top:24px;background:#fff;border-radius:4px 20px 4px 4px;padding:18px;box-shadow:0 14px 36px rgba(44,37,32,.2);border:1px solid var(--line);}}
   #cta-qr-wrap img{{width:150px;height:150px;display:block;}}
-  #cta-qr-ring{{position:absolute;inset:-6px;border-radius:18px;border:2px solid rgba(197,100,72,.55);pointer-events:none;}}
-  #cta-qr-label{{font-size:15px;font-weight:300;color:var(--dim);margin-top:14px;opacity:0;letter-spacing:1px;text-transform:uppercase;}}
-  #cta-url{{font-family:var(--display);font-style:italic;font-size:26px;color:var(--terracotta);opacity:0;margin-top:4px;}}
-  .cta-ring{{position:absolute;border-radius:50%;border:1px solid rgba(197,100,72,.22);top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;}}
+  #cta-qr-label{{font-size:14px;font-weight:300;color:var(--ink-dim);margin-top:14px;opacity:0;letter-spacing:1px;text-transform:uppercase;}}
+  #cta-url{{font-family:var(--display);font-style:italic;font-size:25px;color:var(--clay);opacity:0;margin-top:4px;}}
+  .cta-ring{{position:absolute;border-radius:48% 52% 56% 44% / 50% 48% 52% 50%;border:1px solid rgba(44,37,32,.14);top:50%;left:50%;transform:translate(-50%,-50%);opacity:0;}}
 
   #stage-content{{position:absolute;inset:0;}}
 
-  #wipe{{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:40;pointer-events:none;}}
-  #wipe-circle{{width:3400px;height:3400px;border-radius:50%;background:var(--surface2);transform:scale(0);}}
-  #wipe-neon{{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%, var(--terracotta), #6b3424);transform:scale(0);border-radius:50%;width:3400px;height:3400px;left:50%;top:50%;margin-left:-1700px;margin-top:-1700px;z-index:41;pointer-events:none;}}
-  #wipe-slide{{position:absolute;inset:0;background:var(--surface2);transform:translateX(-100%);z-index:40;pointer-events:none;}}
-  #wipe-diag{{position:absolute;top:-25%;left:-65%;width:170%;height:150%;background:var(--surface2);transform:rotate(-14deg) translateX(-100%);z-index:40;pointer-events:none;}}
+  /* ink-bleed wipe: organic irregular blob expands */
+  #wipe-ink{{position:absolute;left:50%;top:50%;width:3000px;height:3000px;margin-left:-1500px;margin-top:-1500px;background:var(--ink);transform:scale(0);border-radius:43% 57% 61% 39% / 49% 44% 56% 51%;z-index:40;pointer-events:none;}}
+  /* torn-paper slide wipe */
+  #wipe-tear{{position:absolute;inset:0;background:var(--ink);transform:translateX(-100%);z-index:40;pointer-events:none;clip-path:polygon(0 0,100% 0,100% 100%,0 100%);}}
+  /* brush-stroke diagonal wipe */
+  #wipe-brush{{position:absolute;top:-30%;left:-70%;width:180%;height:160%;background:var(--ink);transform:rotate(-9deg) translateX(-100%);z-index:40;pointer-events:none;}}
+  /* fiber bars wipe */
   #wipe-bars{{position:absolute;inset:0;display:flex;z-index:40;pointer-events:none;}}
-  .wipe-bar{{flex:1;background:var(--surface2);transform:scaleY(0);}}
-  #wipe-curtain{{position:absolute;inset:0;background:var(--surface2);transform:translateY(-100%);z-index:40;pointer-events:none;}}
+  .wipe-bar{{flex:1;background:var(--ink);transform:scaleY(0);}}
+  /* fold wipe (curtain-like, top down) */
+  #wipe-fold{{position:absolute;inset:0;background:var(--ink);transform:translateY(-100%);z-index:40;pointer-events:none;}}
+  /* clay-bloom wipe for finale */
+  #wipe-clay{{position:absolute;left:50%;top:50%;width:3000px;height:3000px;margin-left:-1500px;margin-top:-1500px;background:radial-gradient(circle, var(--clay), var(--clay-deep));transform:scale(0);border-radius:50%;z-index:41;pointer-events:none;}}
 
-  #flash{{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:35;pointer-events:none;opacity:0;}}
-  .flash-glow{{width:1400px;height:1400px;border-radius:50%;background:radial-gradient(circle, rgba(197,100,72,.9) 0%, rgba(197,100,72,.22) 35%, transparent 70%);}}
+  #dust{{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:35;pointer-events:none;opacity:0;}}
+  .dust-glow{{width:1300px;height:1300px;border-radius:50%;background:radial-gradient(circle, rgba(181,86,58,.5) 0%, rgba(181,86,58,.12) 35%, transparent 70%);}}
 
-  #blackout{{position:absolute;inset:0;background:#000;opacity:1;pointer-events:none;z-index:50;}}
+  #blackout{{position:absolute;inset:0;background:var(--ink);opacity:1;pointer-events:none;z-index:50;}}
 </style>
 </head>
 <body>
@@ -170,32 +185,32 @@ HTML = f"""<!DOCTYPE html>
 <div id="viewport">
   <div id="canvas">
    <div id="stage-content">
-    <div id="wash"></div>
-    <div id="orbs">
-      <div class="orb" id="orb1"></div>
-      <div class="orb" id="orb2"></div>
-      <div class="orb" id="orb3"></div>
+    <div id="blobs">
+      <div class="blob" id="blob1"></div>
+      <div class="blob" id="blob2"></div>
+      <div class="blob" id="blob3"></div>
     </div>
-    <div id="grain"></div>
+    <div id="paper-tex"></div>
 
     <!-- corner logo (appears after intro) -->
     <div id="corner-logo">{LOGO_SVG_CORNER}</div>
+    <div id="corner-mark"></div>
 
     <!-- SCENE 1: intro -->
     <div class="scene" id="scene-intro">
-      <div style="position:absolute;width:820px;height:820px;border-radius:50%;background:radial-gradient(circle,rgba(197,100,72,.12) 0%, transparent 65%);"></div>
       <div id="logo-wrap-intro">{LOGO_SVG_INTRO}</div>
+      <div class="hairline" id="intro-hairline" style="width:0;"></div>
       <div id="tagline">Beauty in imperfection</div>
       <div id="sub-tagline">Lag ditt eget smykke i Tromsø</div>
     </div>
 
-    <!-- SCENE 2: headline w/ photo -->
+    <!-- SCENE 2: headline w/ asymmetric photo -->
     <div class="scene" id="scene-headline">
-      <div class="photo-panel"><img src="data:image/jpeg;base64,{HERO1_B64}" alt=""><div class="photo-vignette"></div></div>
-      <div style="position:relative;text-align:center;max-width:1500px;">
+      <div id="headline-textwrap">
         <div id="headline-text"><span class="word">Lag</span> <span class="word">ditt</span> <span class="word accent">eget</span><br><span class="word accent">smykke</span></div>
         <div id="headline-sub">Med god veiledning fra en gullsmed, hele veien.</div>
       </div>
+      <div class="photo-organic" id="headline-photo"><img src="data:image/jpeg;base64,{HERO1_B64}" alt=""></div>
     </div>
 
     <!-- SCENE 3: workshop types -->
@@ -206,25 +221,28 @@ HTML = f"""<!DOCTYPE html>
       </div>
       <div id="workshop-grid">
         <div class="ws-card" id="ws1">
-          <img src="data:image/jpeg;base64,{MINGLE_B64}" alt="">
-          <div class="ws-overlay"></div>
-          <div class="ws-num">01</div>
-          <div class="ws-title">Mingle</div>
-          <div class="ws-sub">Lag din egen sølvring fra start til slutt.</div>
+          <div class="ws-photo"><img src="data:image/jpeg;base64,{MINGLE_B64}" alt=""></div>
+          <div class="ws-body">
+            <div class="ws-num">01</div>
+            <div class="ws-title">Mingle</div>
+            <div class="ws-sub">Lag din egen sølvring fra start til slutt.</div>
+          </div>
         </div>
         <div class="ws-card" id="ws2">
-          <img src="data:image/jpeg;base64,{SANDSTOP_B64}" alt="">
-          <div class="ws-overlay"></div>
-          <div class="ws-num">02</div>
-          <div class="ws-title">Sandstøp</div>
-          <div class="ws-sub">Skap unike gullsmykker med klassisk sandstøp.</div>
+          <div class="ws-photo"><img src="data:image/jpeg;base64,{SANDSTOP_B64}" alt=""></div>
+          <div class="ws-body">
+            <div class="ws-num">02</div>
+            <div class="ws-title">Sandstøp</div>
+            <div class="ws-sub">Skap unike gullsmykker med klassisk sandstøp.</div>
+          </div>
         </div>
         <div class="ws-card" id="ws3">
-          <img src="data:image/jpeg;base64,{HERO1_B64}" alt="">
-          <div class="ws-overlay"></div>
-          <div class="ws-num">03</div>
-          <div class="ws-title">Omsmelting</div>
-          <div class="ws-sub">Gi gamle gullsmykker nytt liv og ny form.</div>
+          <div class="ws-photo"><img src="data:image/jpeg;base64,{HERO1_B64}" alt=""></div>
+          <div class="ws-body">
+            <div class="ws-num">03</div>
+            <div class="ws-title">Omsmelting</div>
+            <div class="ws-sub">Gi gamle gullsmykker nytt liv og ny form.</div>
+          </div>
         </div>
       </div>
     </div>
@@ -236,8 +254,8 @@ HTML = f"""<!DOCTYPE html>
       </div>
       <div id="process-row">
         <svg id="process-line-svg" viewBox="0 0 1020 14" preserveAspectRatio="none">
-          <line id="process-line-path" x1="170" y1="7" x2="850" y2="7" stroke="#C56448" stroke-width="2" stroke-linecap="round" fill="none"/>
-          <circle id="process-line-dot" cx="170" cy="7" r="6" fill="var(--terracotta)"/>
+          <line id="process-line-path" x1="170" y1="7" x2="850" y2="7" stroke="#B5563A" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+          <circle id="process-line-dot" cx="170" cy="7" r="5" fill="var(--clay)"/>
         </svg>
         <div class="proc-step" id="proc1"><div class="proc-num">1</div><div class="proc-title">Book en workshop</div><div class="proc-sub">Velg Mingle, Sandstøp eller omsmelting — alene eller med følge.</div></div>
         <div class="proc-step" id="proc2"><div class="proc-num">2</div><div class="proc-title">Skap med en gullsmed</div><div class="proc-sub">Du formgir, vi veileder deg gjennom hele prosessen.</div></div>
@@ -247,12 +265,11 @@ HTML = f"""<!DOCTYPE html>
 
     <!-- SCENE 5: benefits -->
     <div class="scene" id="scene-benefits">
-      <div class="photo-panel" style="opacity:.4;"><img src="data:image/jpeg;base64,{HERO2_B64}" alt=""><div class="photo-vignette"></div></div>
-      <div style="position:relative;text-align:center;">
+      <div style="text-align:center;">
         <div class="heading"><span class="word">Hvorfor</span> <span class="word accent">Wabi</span> <span class="word accent">Sabi</span></div>
         <div class="divider" id="benefits-divider"></div>
       </div>
-      <div id="benefits-list" style="position:relative;">
+      <div id="benefits-list">
         <div class="benefit-row" id="ben1"><div class="benefit-check"></div><div class="benefit-text">Alt håndlaget i vårt eget verksted i Tromsø</div></div>
         <div class="benefit-row" id="ben2"><div class="benefit-check"></div><div class="benefit-text">Du finner aldri to smykker som er helt like</div></div>
         <div class="benefit-row" id="ben3"><div class="benefit-check"></div><div class="benefit-text">En opplevelse å dele med venner eller kjæresten</div></div>
@@ -262,7 +279,7 @@ HTML = f"""<!DOCTYPE html>
 
     <!-- SCENE 6: location -->
     <div class="scene" id="scene-location">
-      <div class="photo-panel"><img src="data:image/jpeg;base64,{SANDSTOP_B64}" alt=""><div class="photo-vignette"></div></div>
+      <div class="photo-organic" id="location-photo"><img src="data:image/jpeg;base64,{SANDSTOP_B64}" alt=""></div>
       <div id="location-card">
         <div id="location-name">Velkommen til Tromsø</div>
         <div id="location-addr">Skippergata 15, 9008 Tromsø</div>
@@ -272,27 +289,27 @@ HTML = f"""<!DOCTYPE html>
 
     <!-- SCENE 7: CTA -->
     <div class="scene" id="scene-cta">
-      <div class="cta-ring" id="ctaring1" style="width:560px;height:560px;"></div>
-      <div class="cta-ring" id="ctaring2" style="width:680px;height:680px;"></div>
-      <div class="cta-ring" id="ctaring3" style="width:800px;height:800px;"></div>
+      <div class="cta-ring" id="ctaring1" style="width:540px;height:540px;"></div>
+      <div class="cta-ring" id="ctaring2" style="width:660px;height:660px;"></div>
+      <div class="cta-ring" id="ctaring3" style="width:780px;height:780px;"></div>
       <div id="cta-logo-wrap">{LOGO_SVG_CTA}</div>
       <div id="cta-headline"><span class="word">Bli</span> <span class="word">med</span> <span class="word accent">på</span> <span class="word accent">workshop</span></div>
-      <div id="cta-qr-wrap"><div id="cta-qr-ring"></div><img src="data:image/png;base64,{QR_B64}" alt="QR til wabisabi.no"></div>
+      <div id="cta-qr-wrap"><img src="data:image/png;base64,{QR_B64}" alt="QR til wabisabi.no"></div>
       <div id="cta-qr-label">Skann for å booke plass</div>
       <div id="cta-url">wabisabi.no/lag-ditt-eget-smykke</div>
     </div>
    </div>
 
-    <div id="wipe"><div id="wipe-circle"></div></div>
-    <div id="wipe-slide"></div>
-    <div id="wipe-diag"></div>
+    <div id="wipe-ink"></div>
+    <div id="wipe-tear"></div>
+    <div id="wipe-brush"></div>
     <div id="wipe-bars">
       <div class="wipe-bar"></div><div class="wipe-bar"></div><div class="wipe-bar"></div>
       <div class="wipe-bar"></div><div class="wipe-bar"></div><div class="wipe-bar"></div>
     </div>
-    <div id="wipe-curtain"></div>
-    <div id="wipe-neon"></div>
-    <div id="flash"><div class="flash-glow"></div></div>
+    <div id="wipe-fold"></div>
+    <div id="wipe-clay"></div>
+    <div id="dust"><div class="dust-glow"></div></div>
     <div id="blackout"></div>
   </div>
 </div>
@@ -317,76 +334,78 @@ const procLineLen = procLine.getTotalLength();
 procLine.style.strokeDasharray = procLineLen;
 procLine.style.strokeDashoffset = procLineLen;
 
-/* ---------- master timeline — loops, distinct transition per cut ---------- */
+/* ---------- master timeline — loops, distinct organic transition per cut ---------- */
 const tl = gsap.timeline({{ repeat: -1, repeatDelay: 0.6 }});
 
-function irisWipe(time) {{
-  tl.to('#wipe-circle', {{ scale: 1, duration: 0.32, ease: 'power2.in' }}, time - 0.32);
-  tl.to('#wipe-circle', {{ scale: 0, duration: 0.32, ease: 'power2.out' }}, time);
+function inkWipe(time) {{
+  tl.to('#wipe-ink', {{ scale: 1, duration: 0.34, ease: 'power2.in' }}, time - 0.34);
+  tl.to('#wipe-ink', {{ scale: 0, duration: 0.34, ease: 'power2.out' }}, time);
 }}
-function slideWipe(time) {{
-  tl.set('#wipe-slide', {{ transform: 'translateX(-100%)' }}, time - 0.3);
-  tl.to('#wipe-slide', {{ transform: 'translateX(0%)', duration: 0.26, ease: 'power2.in' }}, time - 0.26);
-  tl.to('#wipe-slide', {{ transform: 'translateX(100%)', duration: 0.26, ease: 'power2.out' }}, time);
+function tearWipe(time) {{
+  tl.set('#wipe-tear', {{ transform: 'translateX(-100%)' }}, time - 0.3);
+  tl.to('#wipe-tear', {{ transform: 'translateX(0%)', duration: 0.26, ease: 'power2.in' }}, time - 0.26);
+  tl.to('#wipe-tear', {{ transform: 'translateX(100%)', duration: 0.26, ease: 'power2.out' }}, time);
 }}
-function diagWipe(time) {{
-  tl.set('#wipe-diag', {{ transform: 'rotate(-14deg) translateX(-100%)' }}, time - 0.3);
-  tl.to('#wipe-diag', {{ transform: 'rotate(-14deg) translateX(0%)', duration: 0.26, ease: 'power2.in' }}, time - 0.26);
-  tl.to('#wipe-diag', {{ transform: 'rotate(-14deg) translateX(100%)', duration: 0.26, ease: 'power2.out' }}, time);
+function brushWipe(time) {{
+  tl.set('#wipe-brush', {{ transform: 'rotate(-9deg) translateX(-100%)' }}, time - 0.3);
+  tl.to('#wipe-brush', {{ transform: 'rotate(-9deg) translateX(0%)', duration: 0.26, ease: 'power2.in' }}, time - 0.26);
+  tl.to('#wipe-brush', {{ transform: 'rotate(-9deg) translateX(100%)', duration: 0.26, ease: 'power2.out' }}, time);
 }}
 function barsWipe(time) {{
   const bars = '.wipe-bar';
   tl.to(bars, {{ scaleY: 1, duration: 0.22, stagger: 0.03, ease: 'power2.in' }}, time - 0.34);
   tl.to(bars, {{ scaleY: 0, duration: 0.22, stagger: 0.03, ease: 'power2.out' }}, time);
 }}
-function curtainWipe(time) {{
-  tl.set('#wipe-curtain', {{ transform: 'translateY(-100%)' }}, time - 0.3);
-  tl.to('#wipe-curtain', {{ transform: 'translateY(0%)', duration: 0.26, ease: 'power2.in' }}, time - 0.26);
-  tl.to('#wipe-curtain', {{ transform: 'translateY(100%)', duration: 0.26, ease: 'power2.out' }}, time);
+function foldWipe(time) {{
+  tl.set('#wipe-fold', {{ transform: 'translateY(-100%)' }}, time - 0.3);
+  tl.to('#wipe-fold', {{ transform: 'translateY(0%)', duration: 0.26, ease: 'power2.in' }}, time - 0.26);
+  tl.to('#wipe-fold', {{ transform: 'translateY(100%)', duration: 0.26, ease: 'power2.out' }}, time);
 }}
-function neonWipe(time) {{
-  tl.to('#stage-content', {{ scale: 1.07, filter: 'blur(8px)', duration: 0.26, ease: 'power2.in' }}, time - 0.36);
-  tl.to('#wipe-neon', {{ scale: 1, duration: 0.36, ease: 'power3.in' }}, time - 0.36);
-  flash(time - 0.1, 0.55, 0.3);
+function clayWipe(time) {{
+  tl.to('#stage-content', {{ scale: 1.06, filter: 'blur(7px)', duration: 0.26, ease: 'power2.in' }}, time - 0.36);
+  tl.to('#wipe-clay', {{ scale: 1, duration: 0.36, ease: 'power3.in' }}, time - 0.36);
+  dust(time - 0.1, 0.5, 0.3);
   tl.to('#stage-content', {{ scale: 1, filter: 'blur(0px)', duration: 0.3, ease: 'power2.out' }}, time);
-  tl.to('#wipe-neon', {{ scale: 0, duration: 0.4, ease: 'power3.out' }}, time + 0.02);
+  tl.to('#wipe-clay', {{ scale: 0, duration: 0.4, ease: 'power3.out' }}, time + 0.02);
 }}
-function flash(time, opacity = 0.4, dur = 0.4) {{
-  tl.fromTo('#flash', {{ opacity: 0, scale: 0.6 }},
+function dust(time, opacity = 0.4, dur = 0.4) {{
+  tl.fromTo('#dust', {{ opacity: 0, scale: 0.6 }},
     {{ opacity, scale: 1, duration: dur * 0.4, ease: 'power2.out' }}, time);
-  tl.to('#flash', {{ opacity: 0, scale: 1.35, duration: dur * 0.6, ease: 'power2.in' }}, time + dur * 0.4);
+  tl.to('#dust', {{ opacity: 0, scale: 1.35, duration: dur * 0.6, ease: 'power2.in' }}, time + dur * 0.4);
 }}
 
-// 0.0 — fade in from black
+// 0.0 — fade in from ink
 tl.set('#blackout', {{ opacity: 1 }});
 tl.to('#blackout', {{ opacity: 0, duration: 0.5, ease: 'power1.in' }}, 0.0);
 tl.set('#scene-intro', {{ opacity: 1 }}, 0.0);
 
 // 0.2 — 3.4 logo + taglines
 tl.fromTo('#logo-wrap-intro', {{ opacity: 0, y: 16, scale: 0.92 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.85, ease: 'power3.out' }}, 0.25);
+tl.to('#intro-hairline', {{ width: '220px', duration: 0.5, ease: 'power2.out' }}, 1.05);
 tl.fromTo('#tagline', {{ opacity: 0, y: 10 }}, {{ opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }}, 1.25);
 tl.fromTo('#sub-tagline', {{ opacity: 0, y: 10 }}, {{ opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }}, 1.65);
 
 tl.to('#scene-intro', {{ opacity: 0, duration: 0.45 }}, 4.1);
 
-// 4.5  IRIS WIPE into headline
-irisWipe(4.5);
+// 4.5  INK WIPE into headline
+inkWipe(4.5);
 tl.set('#scene-headline', {{ opacity: 1 }}, 4.52);
 tl.to('#corner-logo', {{ opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }}, 4.6);
+tl.to('#corner-mark', {{ opacity: 1, duration: 0.4, ease: 'power2.out' }}, 4.6);
 
 tl.fromTo('#headline-text .word', {{ opacity: 0, y: 30, filter: 'blur(8px)' }}, {{ opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.65, stagger: 0.1, ease: 'power3.out' }}, 4.7);
 tl.fromTo('#headline-sub', {{ opacity: 0, y: 10 }}, {{ opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }}, 5.7);
 
 tl.to('#scene-headline', {{ opacity: 0, duration: 0.45 }}, 8.6);
 
-// 9.0  SLIDE WIPE into workshops
-slideWipe(9.0);
+// 9.0  TEAR WIPE into workshops
+tearWipe(9.0);
 tl.set('#scene-workshops', {{ opacity: 1 }}, 9.02);
 
 tl.to('#scene-workshops .heading .word', {{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: 0.55, stagger: 0.07, ease: 'back.out(1.8)' }}, 9.15);
 tl.to('#workshops-divider', {{ width: '420px', duration: 0.5, ease: 'power2.out' }}, 9.35);
 
-flash(9.75, 0.22);
+dust(9.75, 0.2);
 ['ws1', 'ws2', 'ws3'].forEach((id, i) => {{
   tl.fromTo('#' + id, {{ opacity: 0, y: 36, scale: 0.94 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.55, ease: 'power3.out' }}, 9.75 + i * 0.2);
   tl.to('#' + id, {{ y: -8, duration: 1.1, repeat: 2, yoyo: true, ease: 'sine.inOut' }}, 9.75 + i * 0.2 + 0.6);
@@ -394,38 +413,38 @@ flash(9.75, 0.22);
 
 tl.to('#scene-workshops', {{ opacity: 0, duration: 0.45 }}, 16.4);
 
-// 16.8  DIAGONAL WIPE into process
-diagWipe(16.8);
+// 16.8  BRUSH WIPE into process
+brushWipe(16.8);
 tl.set('#scene-process', {{ opacity: 1 }}, 16.82);
 
 tl.to('#scene-process .heading .word', {{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: 0.55, stagger: 0.07, ease: 'back.out(1.8)' }}, 16.95);
 
-flash(17.25, 0.18);
+dust(17.25, 0.16);
 tl.fromTo('#proc1', {{ opacity: 0, y: 26, scale: 0.92 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.5, ease: 'back.out(1.6)' }}, 17.25);
 tl.to('#proc1 .proc-num', {{ y: -6, scale: 1.06, duration: 0.8, repeat: 4, yoyo: true, ease: 'sine.inOut' }}, 17.75);
 
 tl.to(procLine, {{ strokeDashoffset: procLineLen / 2, duration: 0.55, ease: 'power2.inOut' }}, 17.75);
 tl.to('#process-line-dot', {{ attr: {{ cx: 510 }}, duration: 0.55, ease: 'power2.inOut' }}, 17.75);
-flash(18.3, 0.16);
+dust(18.3, 0.14);
 tl.fromTo('#proc2', {{ opacity: 0, y: 26, scale: 0.92 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.5, ease: 'back.out(1.6)' }}, 18.3);
 tl.to('#proc2 .proc-num', {{ y: -6, scale: 1.06, duration: 0.8, repeat: 3, yoyo: true, ease: 'sine.inOut' }}, 18.8);
 
 tl.to(procLine, {{ strokeDashoffset: 0, duration: 0.55, ease: 'power2.inOut' }}, 18.8);
 tl.to('#process-line-dot', {{ attr: {{ cx: 850 }}, duration: 0.55, ease: 'power2.inOut' }}, 18.8);
-flash(19.35, 0.16);
+dust(19.35, 0.14);
 tl.fromTo('#proc3', {{ opacity: 0, y: 26, scale: 0.92 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.5, ease: 'back.out(1.6)' }}, 19.35);
 tl.to('#proc3 .proc-num', {{ y: -6, scale: 1.06, duration: 0.8, repeat: 2, yoyo: true, ease: 'sine.inOut' }}, 19.85);
 
 tl.to('#scene-process', {{ opacity: 0, duration: 0.45 }}, 22.8);
 
-// 23.2  CURTAIN WIPE into benefits
-curtainWipe(23.2);
+// 23.2  FOLD WIPE into benefits
+foldWipe(23.2);
 tl.set('#scene-benefits', {{ opacity: 1 }}, 23.22);
 
 tl.to('#scene-benefits .heading .word', {{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: 0.55, stagger: 0.07, ease: 'back.out(1.8)' }}, 23.35);
 tl.to('#benefits-divider', {{ width: '420px', duration: 0.5, ease: 'power2.out' }}, 23.55);
 
-flash(23.95, 0.22);
+dust(23.95, 0.2);
 ['ben1', 'ben2', 'ben3', 'ben4'].forEach((id, i) => {{
   tl.fromTo('#' + id, {{ opacity: 0, x: -34, filter: 'blur(6px)' }}, {{ opacity: 1, x: 0, filter: 'blur(0px)', duration: 0.5, ease: 'power2.out' }}, 23.95 + i * 0.22);
   tl.to('#' + id + ' .benefit-check', {{ scale: 1.5, duration: 0.9, repeat: 2, yoyo: true, ease: 'sine.inOut' }}, 23.95 + i * 0.22 + 0.5);
@@ -441,9 +460,10 @@ tl.fromTo('#location-card', {{ opacity: 0, y: 20 }}, {{ opacity: 1, y: 0, durati
 
 tl.to('#scene-location', {{ opacity: 0, duration: 0.45 }}, 33.0);
 tl.to('#corner-logo', {{ opacity: 0, duration: 0.3 }}, 33.0);
+tl.to('#corner-mark', {{ opacity: 0, duration: 0.3 }}, 33.0);
 
-// 33.4  NEON WIPE into CTA
-neonWipe(33.4);
+// 33.4  CLAY WIPE into CTA
+clayWipe(33.4);
 tl.set('#scene-cta', {{ opacity: 1 }}, 33.41);
 
 tl.fromTo('#cta-logo-wrap', {{ scale: 0.75, opacity: 0 }}, {{ scale: 1, opacity: 1, duration: 0.6, ease: 'back.out(1.5)' }}, 33.55);
@@ -453,10 +473,9 @@ tl.fromTo('#cta-logo-wrap', {{ scale: 0.75, opacity: 0 }}, {{ scale: 1, opacity:
   tl.to('#' + id, {{ scale: 1.03, duration: 1.1, repeat: 3, yoyo: true, ease: 'sine.inOut' }}, 33.68 + i * 0.07);
 }});
 tl.fromTo('#cta-headline .word', {{ opacity: 0, y: 28, filter: 'blur(8px)' }}, {{ opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.6, stagger: 0.08, ease: 'power3.out' }}, 34.2);
-flash(34.65, 0.28);
+dust(34.65, 0.22);
 gsap.set('#cta-qr-wrap', {{ scale: 0.7, rotation: -6 }});
 tl.to('#cta-qr-wrap', {{ opacity: 1, scale: 1, rotation: 0, duration: 0.5, ease: 'back.out(1.7)' }}, 34.65);
-tl.fromTo('#cta-qr-ring', {{ scale: 1, opacity: 0.9 }}, {{ scale: 1.18, opacity: 0, duration: 1.0, repeat: 2, ease: 'power1.out' }}, 35.1);
 tl.to('#cta-qr-label', {{ opacity: 1, duration: 0.4 }}, 35.2);
 tl.to('#cta-url', {{ opacity: 1, y: -4, duration: 0.45 }}, 35.35);
 
@@ -467,9 +486,11 @@ tl.to('#blackout', {{ opacity: 1, duration: 0.9, ease: 'power2.in' }}, 39.55);
 // reset for next loop
 tl.call(() => {{
   gsap.set('#logo-wrap-intro', {{ opacity: 0, y: 16, scale: 0.92 }});
+  gsap.set('#intro-hairline', {{ width: '0px' }});
   gsap.set('#tagline', {{ opacity: 0 }});
   gsap.set('#sub-tagline', {{ opacity: 0 }});
   gsap.set('#corner-logo', {{ opacity: 0 }});
+  gsap.set('#corner-mark', {{ opacity: 0 }});
   gsap.set('#headline-text .word', {{ opacity: 0, y: 30, filter: 'blur(8px)' }});
   gsap.set('#headline-sub', {{ opacity: 0 }});
   gsap.set('#workshops-divider', {{ width: '0px' }});
