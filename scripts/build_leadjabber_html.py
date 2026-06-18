@@ -110,7 +110,14 @@ HTML = f"""<!DOCTYPE html>
 
   /* cta */
   #scene-cta{{background:linear-gradient(135deg,var(--navy),var(--navy2));}}
-  #cta-logo{{width:420px;opacity:0;}}
+  #cta-logo{{width:420px;opacity:0;display:block;}}
+  #cta-logo-wrap{{position:relative;width:420px;opacity:0;}}
+  #cta-logo-wrap img#cta-logo{{opacity:1;}}
+  #cta-logo-sheen{{position:absolute;top:0;left:-65%;width:55%;height:100%;
+    background:linear-gradient(75deg,rgba(255,255,255,0) 0%,rgba(255,255,255,0) 35%,rgba(255,255,255,.9) 50%,rgba(255,255,255,0) 65%,rgba(255,255,255,0) 100%);
+    -webkit-mask-image:url(data:image/png;base64,{LOGOWHITE_B64});mask-image:url(data:image/png;base64,{LOGOWHITE_B64});
+    -webkit-mask-size:420px auto;mask-size:420px auto;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:0 0;mask-position:0 0;
+    mix-blend-mode:screen;pointer-events:none;}}
   #cta-headline{{font-size:34px;font-weight:700;color:#fff;opacity:0;margin-top:18px;}}
   #cta-qr-wrap{{position:relative;opacity:0;margin-top:28px;background:#fff;border-radius:22px;padding:22px;box-shadow:0 0 50px rgba(25,148,181,.45);}}
   #cta-qr-wrap img{{width:170px;height:170px;display:block;}}
@@ -164,11 +171,22 @@ HTML = f"""<!DOCTYPE html>
               <stop offset="0%" stop-color="var(--tealLight)"/>
               <stop offset="100%" stop-color="var(--navy)"/>
             </linearGradient>
+            <linearGradient id="sheenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#ffffff" stop-opacity="0"/>
+              <stop offset="45%" stop-color="#ffffff" stop-opacity="0"/>
+              <stop offset="50%" stop-color="#ffffff" stop-opacity=".95"/>
+              <stop offset="55%" stop-color="#ffffff" stop-opacity="0"/>
+              <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+            </linearGradient>
+            <clipPath id="logoClip">
+              <use href="#fillPath"/>
+            </clipPath>
           </defs>
           <path id="measurePath" d="M70,40 C40,40 30,60 30,90 L30,140 L70,140 L70,105 C70,85 80,75 100,75 L130,75 C160,75 170,55 170,40 L170,40 C170,75 160,140 110,140 C75,140 70,115 70,105" fill="none" opacity="0"/>
           <g id="assemble-group"></g>
           <path id="strokePath" class="mono-stroke" d="M70,40 C40,40 30,60 30,90 L30,140 L70,140 L70,105 C70,85 80,75 100,75 L130,75 C160,75 170,55 170,40 L170,40 C170,75 160,140 110,140 C75,140 70,115 70,105"/>
           <path id="fillPath" class="mono-fill" d="M70,40 C40,40 30,60 30,90 L30,140 L70,140 L70,105 C70,85 80,75 100,75 L130,75 C160,75 170,55 170,40 L170,40 C170,75 160,140 110,140 C75,140 70,115 70,105"/>
+          <rect id="logoSheen" x="-260" y="0" width="180" height="200" fill="url(#sheenGrad)" clip-path="url(#logoClip)" style="mix-blend-mode:screen;pointer-events:none;"/>
         </svg>
       </div>
       <div id="wordmark"><span class="w1">Lead</span><span class="w2">Jabber</span></div>
@@ -256,7 +274,10 @@ HTML = f"""<!DOCTYPE html>
       <div class="cta-ring" id="ctaring1" style="width:560px;height:560px;"></div>
       <div class="cta-ring" id="ctaring2" style="width:680px;height:680px;"></div>
       <div class="cta-ring" id="ctaring3" style="width:800px;height:800px;"></div>
-      <img id="cta-logo" src="data:image/png;base64,{LOGOWHITE_B64}" alt="LeadJabber">
+      <div id="cta-logo-wrap">
+        <img id="cta-logo" src="data:image/png;base64,{LOGOWHITE_B64}" alt="LeadJabber">
+        <div id="cta-logo-sheen"></div>
+      </div>
       <div id="cta-headline"><span class="word">Klar</span> <span class="word">til</span> <span class="word">å</span> <span class="word">stupe</span> <span class="word">inn?</span></div>
       <div id="cta-qr-wrap"><div id="cta-qr-ring"></div><img src="data:image/png;base64,{QRBOOK_B64}" alt="QR til leadjabber.no"></div>
       <div id="cta-qr-label">Skann for å besøke siden</div>
@@ -297,6 +318,7 @@ const measurePath = document.getElementById('measurePath');
 const strokePath = document.getElementById('strokePath');
 const fillPath = document.getElementById('fillPath');
 const assembleGroup = document.getElementById('assemble-group');
+const logoSheen = document.getElementById('logoSheen');
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
 const len = measurePath.getTotalLength();
@@ -417,6 +439,9 @@ tl.to('#wordmark', {{ clipPath: 'inset(0 0% 0 0)', duration: 0.85, ease: 'power3
 tl.to('#tagline', {{ opacity: 1, y: -4, duration: 0.6, ease: 'power2.out' }}, 3.2, 'taglinePos');
 tl.fromTo('#tagline', {{ y: 8 }}, {{ y: 0, duration: 0.6, ease: 'power2.out' }}, 3.2);
 
+// crystal-shader style light sweep across the logo mark
+tl.fromTo('#logoSheen', {{ attr: {{ x: -260 }} }}, {{ attr: {{ x: 220 }}, duration: 1.1, ease: 'power1.inOut' }}, 3.0);
+
 tl.to('#scene-intro', {{ opacity: 0, duration: 0.4 }}, 4.6);
 
 // 5.0  IRIS WIPE into headline (real homepage hero)
@@ -522,7 +547,8 @@ tl.to('#corner-logo', {{ opacity: 0, duration: 0.3 }}, 31.8);
 navyWipe(32.2);
 tl.set('#scene-cta', {{ opacity: 1 }}, 32.22);
 
-tl.fromTo('#cta-logo', {{ scale: 0.7, opacity: 0 }}, {{ scale: 1, opacity: 1, duration: 0.55, ease: 'back.out(1.5)' }}, 32.35);
+tl.fromTo('#cta-logo-wrap', {{ scale: 0.7, opacity: 0 }}, {{ scale: 1, opacity: 1, duration: 0.55, ease: 'back.out(1.5)' }}, 32.35);
+tl.fromTo('#cta-logo-sheen', {{ left: '-65%' }}, {{ left: '135%', duration: 1.3, repeat: 2, repeatDelay: 1.4, ease: 'power1.inOut' }}, 33.0);
 ['ctaring1', 'ctaring2', 'ctaring3'].forEach((id, i) => {{
   gsap.set('#' + id, {{ opacity: 0 }});
   tl.to('#' + id, {{ opacity: 1, duration: 0.35 }}, 32.35);
@@ -571,7 +597,9 @@ tl.call(() => {{
   gsap.set('#cta-qr-wrap', {{ opacity: 0, scale: 0.7, rotation: -6 }});
   gsap.set('#cta-qr-label', {{ opacity: 0 }});
   gsap.set('#cta-url', {{ opacity: 0 }});
-  gsap.set('#cta-logo', {{ opacity: 0, scale: 0.7 }});
+  gsap.set('#cta-logo-wrap', {{ opacity: 0, scale: 0.7 }});
+  gsap.set('#cta-logo-sheen', {{ left: '-65%' }});
+  gsap.set(logoSheen, {{ attr: {{ x: -260 }} }});
   gsap.set('#cta-headline', {{ opacity: 0 }});
   dots.forEach(d => {{ d.el.setAttribute('cx', d.sx); d.el.setAttribute('cy', d.sy); d.el.style.opacity = 0; }});
 }}, [], 42.3);
