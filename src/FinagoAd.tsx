@@ -1,6 +1,6 @@
-// Motion-design reference: modern SaaS launch-teaser conventions (Raycast/Framer/
-// Linear-style kinetic type colliding with UI, Stripe-style skeleton loading,
-// "lights-out" hero reveals, CTA framed as a premium product feature).
+// Explainer-video rebuild: icon-driven storytelling + a simulated product
+// dashboard (not just text cards), camera pans across UI panels, and a
+// synced caption bar — the structure real SaaS explainer videos use.
 import React from 'react';
 import { AbsoluteFill, Sequence, useCurrentFrame, useVideoConfig } from 'remotion';
 import { easeOutExpo, easeInOutCubic, clamp, prog } from './utils/easing';
@@ -12,11 +12,43 @@ const BLUE = '#2D7FF9';
 const BLUE_LIGHT = '#6FA8FF';
 const WHITE = '#FFFFFF';
 const GRAY = '#8A8F98';
-const SKELETON = 'rgba(255,255,255,0.09)';
+const PANEL = 'rgba(255,255,255,0.05)';
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
-// ── Shared background: clean drifting grid + soft blue glow ──────────────
+// ── Line-icon set (24x24 viewBox) ─────────────────────────────────────────
+const ICON_PATHS: Record<string, string> = {
+  office: 'M5 3h14v18H5z M9 8h6 M9 12h6 M9 16h4',
+  payday: 'M3 7h18v10H3z M3 12h18 M7 16h2',
+  time: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z M12 7v5l3.5 3.5',
+  tasks: 'M4 6h6v6H4z M14 6h6v3h-6z M14 13h6v3h-6z M4 16h6v3H4z',
+};
+
+const Icon: React.FC<{ name: keyof typeof ICON_PATHS; size?: number; color?: string; draw?: number }> = ({
+  name, size = 28, color = WHITE, draw = 1,
+}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" style={{ overflow: 'visible' }}>
+    <path
+      d={ICON_PATHS[name]}
+      stroke={color}
+      strokeWidth={1.8}
+      fill="none"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      pathLength={1}
+      style={{ strokeDasharray: 1, strokeDashoffset: 1 - draw }}
+    />
+  </svg>
+);
+
+const FEATURES: { key: keyof typeof ICON_PATHS; name: string; desc: string }[] = [
+  { key: 'office', name: 'Finago Office', desc: 'Regnskap med automatisk bilagsbehandling' },
+  { key: 'payday', name: 'Finago Payday', desc: 'Lønn med alltid oppdaterte satser' },
+  { key: 'time', name: 'Timeregistrering', desc: 'Integrert rett mot lønn og regnskap' },
+  { key: 'tasks', name: 'Oppdragsstyring', desc: 'Bygget for regnskapsbyråer' },
+];
+
+// ── Shared background ──────────────────────────────────────────────────
 const FinagoBackground: React.FC<{ pulse?: number; camPush?: number }> = ({ pulse = 0, camPush = 1 }) => {
   const frame = useCurrentFrame();
   return (
@@ -42,8 +74,6 @@ const FinagoBackground: React.FC<{ pulse?: number; camPush?: number }> = ({ puls
   );
 };
 
-// ── Lights-out flash: background snaps to black right before a hero reveal,
-// then lifts — dilates attention the way Linear/Framer hero cuts do ────────
 const LightsOut: React.FC<{ atFrame: number; holdFrames?: number }> = ({ atFrame, holdFrames = 6 }) => {
   const frame = useCurrentFrame();
   const into = 1 - clamp((frame - (atFrame - 6)) / 6);
@@ -52,83 +82,175 @@ const LightsOut: React.FC<{ atFrame: number; holdFrames?: number }> = ({ atFrame
   return <div style={{ position: 'absolute', inset: 0, background: '#000', opacity: clamp(alpha), zIndex: 50, pointerEvents: 'none' }} />;
 };
 
-// ── Skeleton-loading card that "resolves" into real labeled content ──────
-const SkeletonCard: React.FC<{
-  x: number; y: number; rotate?: number; opacity: number; scale: number;
-  label: string; resolved: number; // 0 = pure skeleton bars, 1 = fully resolved label
-}> = ({ x, y, rotate = 0, opacity, scale, label, resolved }) => (
+// ── Bottom caption bar, explainer-narration style ─────────────────────────
+const CaptionBar: React.FC<{ text: string; visible: number }> = ({ text, visible }) => (
   <div style={{
-    position: 'absolute', left: x, top: y,
-    transform: `translate(-50%, -50%) rotate(${rotate}deg) scale(${scale})`,
-    opacity,
-    background: 'rgba(255,255,255,0.06)',
-    border: `1px solid rgba(255,255,255,${0.14 + resolved * 0.1})`,
-    borderRadius: 14,
-    padding: '16px 22px',
-    width: 220,
+    position: 'absolute', bottom: 64, left: '50%',
+    transform: `translateX(-50%) translateY(${lerp(16, 0, visible)}px)`,
+    opacity: visible,
+    padding: '14px 28px', borderRadius: 12,
+    background: 'rgba(10,10,12,0.7)', border: '1px solid rgba(255,255,255,0.1)',
+    backdropFilter: 'blur(6px)',
+    fontFamily: '"Helvetica Neue", Arial, sans-serif', fontSize: 28, fontWeight: 600, color: WHITE,
+    whiteSpace: 'nowrap', zIndex: 20,
   }}>
-    <div style={{ position: 'relative', height: 26 }}>
-      <div style={{
-        position: 'absolute', inset: 0, borderRadius: 6, background: SKELETON,
-        opacity: 1 - resolved,
-      }} />
-      <span style={{
-        position: 'absolute', inset: 0,
-        fontFamily: '"Helvetica Neue", Arial, sans-serif',
-        fontSize: 22, fontWeight: 700, color: WHITE, letterSpacing: '-0.4px',
-        opacity: resolved, whiteSpace: 'nowrap',
-      }}>
-        {label}
-      </span>
-    </div>
-    <div style={{ marginTop: 10, height: 8, width: '70%', borderRadius: 4, background: SKELETON, opacity: 1 - resolved * 0.6 }} />
+    {text}
   </div>
 );
 
-// ── Scene 1 (0-90, 3s): abstract kinetic-type hook in a void, collision
-// reveal of the first UI fragment — no software screen until impact ──────
+// ── Simulated product dashboard — a real-looking app window instead of
+// abstract skeleton bars ───────────────────────────────────────────────
+const DashboardMockup: React.FC<{
+  scale?: number; opacity?: number; activeIndex: number; content: number; // content 0-1 reveal of the panel's data
+}> = ({ scale = 1, opacity = 1, activeIndex, content }) => {
+  const W = 900, H = 560;
+  return (
+    <div style={{
+      width: W, height: H, transform: `scale(${scale})`, opacity,
+      borderRadius: 16, overflow: 'hidden',
+      background: '#0E0F13',
+      border: '1px solid rgba(255,255,255,0.12)',
+      boxShadow: '0 30px 90px rgba(0,0,0,0.55), 0 0 60px rgba(45,127,249,0.15)',
+      display: 'flex', flexDirection: 'column',
+    }}>
+      {/* Title bar */}
+      <div style={{ height: 38, display: 'flex', alignItems: 'center', gap: 8, padding: '0 16px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+        {['#FF5F57', '#FEBC2E', '#28C840'].map(c => (
+          <div key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c, opacity: 0.8 }} />
+        ))}
+        <div style={{ flex: 1, textAlign: 'center', fontFamily: 'monospace', fontSize: 13, color: GRAY }}>app.finago.no</div>
+      </div>
+
+      <div style={{ flex: 1, display: 'flex' }}>
+        {/* Sidebar */}
+        <div style={{ width: 84, borderRight: '1px solid rgba(255,255,255,0.08)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 18, paddingTop: 24 }}>
+          {FEATURES.map((f, i) => (
+            <div key={f.key} style={{
+              width: 48, height: 48, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: i === activeIndex ? 'rgba(45,127,249,0.22)' : 'transparent',
+              border: i === activeIndex ? `1px solid ${BLUE}88` : '1px solid transparent',
+              transition: 'none',
+            }}>
+              <Icon name={f.key} size={22} color={i === activeIndex ? BLUE_LIGHT : GRAY} draw={1} />
+            </div>
+          ))}
+        </div>
+
+        {/* Main panel content, switches per active feature */}
+        <div style={{ flex: 1, padding: 28, position: 'relative' }}>
+          {activeIndex === 0 && (
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 14, height: '100%' }}>
+              {[0.4, 0.7, 0.5, 0.85, 0.6, 0.95].map((h, i) => (
+                <div key={i} style={{
+                  width: 48, borderRadius: '6px 6px 0 0',
+                  height: `${h * 100 * clamp((content - i * 0.08) / 0.5)}%`,
+                  background: `linear-gradient(180deg, ${BLUE_LIGHT}, ${BLUE})`,
+                }} />
+              ))}
+            </div>
+          )}
+          {activeIndex === 1 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {[1, 2, 3, 4].map(i => {
+                const rowT = clamp((content - i * 0.18) / 0.4);
+                return (
+                  <div key={i} style={{ display: 'flex', gap: 14, opacity: rowT, transform: `translateX(${lerp(-20, 0, rowT)}px)`, alignItems: 'center' }}>
+                    <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(255,255,255,0.1)' }} />
+                    <div style={{ height: 10, width: 220, borderRadius: 5, background: 'rgba(255,255,255,0.12)' }} />
+                    <div style={{ marginLeft: 'auto', height: 10, width: 70, borderRadius: 5, background: `${BLUE}55` }} />
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          {activeIndex === 2 && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 8, height: '100%' }}>
+              {Array.from({ length: 28 }, (_, i) => {
+                const t = clamp((content - (i % 7) * 0.1) / 0.5);
+                const filled = (i * 13) % 4 !== 0;
+                return (
+                  <div key={i} style={{
+                    borderRadius: 6, opacity: t,
+                    background: filled ? `rgba(45,127,249,${0.15 + ((i * 7) % 5) * 0.1})` : 'rgba(255,255,255,0.04)',
+                  }} />
+                );
+              })}
+            </div>
+          )}
+          {activeIndex === 3 && (
+            <div style={{ display: 'flex', gap: 16, height: '100%' }}>
+              {[['Ny', 2], ['Pågår', 3], ['Levert', 2]].map(([label, count], colI) => (
+                <div key={label as string} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <div style={{ fontSize: 13, color: GRAY, fontFamily: '"Helvetica Neue", Arial, sans-serif', marginBottom: 4 }}>{label as string}</div>
+                  {Array.from({ length: count as number }).map((_, i) => {
+                    const idx = colI * 3 + i;
+                    const t = clamp((content - idx * 0.1) / 0.4);
+                    return (
+                      <div key={i} style={{
+                        opacity: t, transform: `translateY(${lerp(10, 0, t)}px)`,
+                        height: 50, borderRadius: 8, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
+                      }} />
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── Scene 1 (0-90, 3s): hook — three icons orbit chaotically ──────────────
 const HookScene: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const word1 = springValue(frame, fps, { ...springPresets.bouncy, delayFrames: 2 });
   const word2 = springValue(frame, fps, { ...springPresets.bouncy, delayFrames: 14 });
-  // word2's impact "pushes" a UI fragment into frame on collision
-  const impactFrame = 14 + 10;
-  const panelPush = easeOutExpo(clamp((frame - impactFrame) / 16));
-  const shake = frame > impactFrame && frame < impactFrame + 8
-    ? Math.sin((frame - impactFrame) * 3) * (1 - (frame - impactFrame) / 8) * 6
-    : 0;
   const fade = 1 - easeInOutCubic(clamp(prog(frame, 72, 89)));
+  const iconShow = easeOutExpo(clamp(prog(frame, 6, 26)));
+
+  const orbit = [
+    { key: 'office' as const, r: 280, speed: 0.025, offset: 0 },
+    { key: 'payday' as const, r: 320, speed: -0.02, offset: 2.1 },
+    { key: 'time' as const, r: 260, speed: 0.018, offset: 4.2 },
+  ];
 
   return (
     <AbsoluteFill style={{ opacity: fade }}>
       <FinagoBackground pulse={Math.max(word1, word2)} />
       <LightsOut atFrame={0} holdFrames={2} />
 
-      {/* Collision-pushed UI fragment, shoved in from the right on word2 impact */}
-      <SkeletonCard
-        x={lerp(2100, 1480, clamp(panelPush)) + shake}
-        y={560}
-        rotate={lerp(8, -3, clamp(panelPush))}
-        opacity={panelPush}
-        scale={lerp(0.85, 1, clamp(panelPush))}
-        label="Lønn"
-        resolved={0.15}
-      />
+      {orbit.map((o, i) => {
+        const a = frame * o.speed + o.offset;
+        const x = 960 + Math.cos(a) * o.r;
+        const y = 540 + Math.sin(a) * o.r * 0.5 - 60;
+        return (
+          <div key={o.key} style={{
+            position: 'absolute', left: x, top: y, transform: 'translate(-50%,-50%)',
+            opacity: iconShow, width: 64, height: 64, borderRadius: 16,
+            background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.14)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <Icon name={o.key} size={28} color={WHITE} draw={iconShow} />
+          </div>
+        );
+      })}
 
       <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center' }}>
-        <div style={{ textAlign: 'center', transform: `translateX(${shake}px)` }}>
+        <div style={{ textAlign: 'center' }}>
           <div style={{
             opacity: clamp(word1), transform: `scale(${0.7 + Math.min(word1, 1.15) * 0.3})`,
             fontFamily: '"Helvetica Neue", Arial, sans-serif',
-            fontSize: 104, fontWeight: 800, color: WHITE, letterSpacing: '-3px', lineHeight: 1.0,
+            fontSize: 96, fontWeight: 800, color: WHITE, letterSpacing: '-3px', lineHeight: 1.0,
           }}>
             Tre systemer.
           </div>
           <div style={{
             opacity: clamp(word2), transform: `scale(${0.7 + Math.min(word2, 1.15) * 0.3})`,
             fontFamily: '"Helvetica Neue", Arial, sans-serif',
-            fontSize: 104, fontWeight: 800, color: BLUE_LIGHT, letterSpacing: '-3px', lineHeight: 1.0,
+            fontSize: 96, fontWeight: 800, color: BLUE_LIGHT, letterSpacing: '-3px', lineHeight: 1.0,
             textShadow: `0 0 40px ${BLUE}99`,
           }}>
             Ett kaos.
@@ -139,135 +261,107 @@ const HookScene: React.FC = () => {
   );
 };
 
-// ── Scene 2 (0-180 local, 6s): skeleton-loading chaos — disconnected,
-// unresolved systems drifting, none of them fully "loaded" ───────────────
-const ChaosScene: React.FC = () => {
-  const frame = useCurrentFrame();
-  const camPush = lerp(1.08, 1, easeOutExpo(clamp(frame / 20))); // zoom-through settle
-  const intro = easeOutExpo(clamp(prog(frame, 0, 20)));
-  const drift = frame * 0.01;
-  const fade = 1 - easeInOutCubic(clamp(prog(frame, 150, 178)));
+// ── Scene 2 (0-180, 6s): problem beats — one caption + icon per beat ─────
+const PROBLEM_BEATS = [
+  { key: 'office' as const, text: 'Regnskap i ett system.' },
+  { key: 'payday' as const, text: 'Lønn i et annet.' },
+  { key: 'time' as const, text: 'Timer registrert et tredje sted.' },
+];
 
-  const chips = [
-    { label: 'Regnskap', bx: 480, by: 300, amp: 14, blur: 0 },
-    { label: 'Lønn', bx: 1400, by: 260, amp: 18, blur: 3 },
-    { label: 'Timeregistrering', bx: 1450, by: 760, amp: 12, blur: 4 },
-    { label: 'Oppdragsstyring', bx: 470, by: 800, amp: 16, blur: 3 },
-  ];
+const ProblemScene: React.FC = () => {
+  const frame = useCurrentFrame();
+  const camPush = lerp(1.06, 1, easeOutExpo(clamp(frame / 20)));
+  const fade = 1 - easeInOutCubic(clamp(prog(frame, 150, 178)));
+  const perBeat = 50;
 
   return (
     <AbsoluteFill style={{ opacity: fade }}>
       <FinagoBackground camPush={camPush} />
-      {chips.map((c, i) => (
-        <div key={c.label} style={{ filter: `blur(${c.blur}px)` }}>
-          <SkeletonCard
-            x={c.bx + Math.sin(drift + i * 1.7) * c.amp}
-            y={c.by + Math.cos(drift * 1.3 + i * 2.1) * c.amp}
-            rotate={Math.sin(drift + i) * 4}
-            opacity={intro}
-            scale={intro}
-            label={c.label}
-            resolved={0.35}
-          />
-        </div>
-      ))}
-      <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center', paddingTop: 40 }}>
-        <div style={{
-          opacity: easeOutExpo(clamp(prog(frame, 50, 75))),
-          fontFamily: '"Helvetica Neue", Arial, sans-serif', fontSize: 52, fontWeight: 700, color: WHITE, textAlign: 'center',
-        }}>
-          Alt spredt. Ingenting snakker sammen.
-        </div>
-      </AbsoluteFill>
+      {PROBLEM_BEATS.map((b, i) => {
+        const start = i * perBeat;
+        const local = frame - start;
+        if (local < -8 || local > perBeat + 8) return null;
+        const inT = easeOutExpo(clamp(local / 16));
+        const outT = 1 - easeInOutCubic(clamp((local - (perBeat - 14)) / 14));
+        const a = inT * outT;
+        return (
+          <AbsoluteFill key={b.key} style={{ justifyContent: 'center', alignItems: 'center' }}>
+            <div style={{ opacity: a, transform: `scale(${lerp(0.85, 1, inT)})`, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 22 }}>
+              <div style={{
+                width: 110, height: 110, borderRadius: 24,
+                background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.16)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <Icon name={b.key} size={48} color={BLUE_LIGHT} draw={inT} />
+              </div>
+              <div style={{ fontFamily: '"Helvetica Neue", Arial, sans-serif', fontSize: 44, fontWeight: 700, color: WHITE }}>
+                {b.text}
+              </div>
+            </div>
+          </AbsoluteFill>
+        );
+      })}
     </AbsoluteFill>
   );
 };
 
-// ── Scene 3 (0-180 local, 6s): zoom-through merge — panels resolve from
-// skeleton to real content as they collide into one hero card; lights-out
-// flash right before the fully-loaded reveal ──────────────────────────────
+// ── Scene 3 (0-180, 6s): converge — icons fly into the dashboard window,
+// lights-out flash, then the fully-formed product reveals ────────────────
 const MergeScene: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const merge = springValue(frame, fps, { ...springPresets.gentle, delayFrames: 0 });
-  const revealFrame = 78;
-  const cardGlow = easeOutExpo(clamp(prog(frame, revealFrame, revealFrame + 30)));
-  const textIn = easeOutExpo(clamp(prog(frame, revealFrame + 14, revealFrame + 38)));
+  const revealFrame = 70;
+  const converge = springValue(frame, fps, { ...springPresets.gentle, delayFrames: 0 });
+  const camPush = lerp(1, 1.04, easeOutExpo(clamp(prog(frame, 55, 80))));
+  const dashIn = springValue(frame, fps, { ...springPresets.gentle, delayFrames: revealFrame });
+  const captionT = easeOutExpo(clamp(prog(frame, revealFrame + 16, revealFrame + 40)));
   const fade = 1 - easeInOutCubic(clamp(prog(frame, 150, 178)));
-  const camPush = lerp(1, 1.04, easeOutExpo(clamp(prog(frame, 60, 85))));
 
-  const targets = [
-    { label: 'Regnskap', fromX: 480, fromY: 300 },
-    { label: 'Lønn', fromX: 1400, fromY: 260 },
-    { label: 'Timeregistrering', fromX: 1450, fromY: 760 },
-    { label: 'Oppdragsstyring', fromX: 470, fromY: 800 },
+  const starts = [
+    { key: 'office' as const, x: 420, y: 280 },
+    { key: 'payday' as const, x: 1480, y: 260 },
+    { key: 'time' as const, x: 480, y: 800 },
   ];
-  const centerX = 960, centerY = 480;
-  const heroVisible = clamp((frame - revealFrame) / 1) > 0;
+  const centerX = 960, centerY = 540;
+  const heroVisible = frame >= revealFrame;
 
   return (
     <AbsoluteFill style={{ opacity: fade }}>
-      <FinagoBackground pulse={cardGlow} camPush={camPush} />
+      <FinagoBackground pulse={dashIn} camPush={camPush} />
       <LightsOut atFrame={revealFrame} holdFrames={4} />
 
-      {targets.map((t, i) => (
-        <SkeletonCard
-          key={t.label}
-          x={lerp(t.fromX, centerX, clamp(merge))}
-          y={lerp(t.fromY, centerY, clamp(merge))}
-          rotate={lerp(Math.sin(i) * 4, 0, clamp(merge))}
-          opacity={(1 - clamp(merge) * 0.85) * (heroVisible ? 0 : 1)}
-          scale={lerp(1, 0.3, clamp(merge))}
-          label={t.label}
-          resolved={0.3}
-        />
+      {!heroVisible && starts.map((s) => (
+        <div key={s.key} style={{
+          position: 'absolute',
+          left: lerp(s.x, centerX, clamp(converge)), top: lerp(s.y, centerY, clamp(converge)),
+          transform: 'translate(-50%,-50%)',
+          opacity: 1 - clamp(converge) * 0.9,
+          width: 64, height: 64, borderRadius: 16,
+          background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.14)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <Icon name={s.key} size={28} color={WHITE} draw={1} />
+        </div>
       ))}
 
-      {/* Fully-resolved hero card — only appears after the lights-out flash */}
       {heroVisible && (
-        <div style={{
-          position: 'absolute', left: centerX, top: centerY,
-          transform: `translate(-50%, -50%) scale(${0.85 + cardGlow * 0.15})`,
-          opacity: cardGlow,
-          width: 460, padding: '32px 40px', borderRadius: 22,
-          background: `linear-gradient(150deg, rgba(45,127,249,${0.18 + cardGlow * 0.12}), rgba(255,255,255,0.04))`,
-          border: `1.5px solid rgba(111,168,255,${0.3 + cardGlow * 0.4})`,
-          boxShadow: `0 0 ${40 + cardGlow * 60}px rgba(45,127,249,${cardGlow * 0.35})`,
-          textAlign: 'center',
-        }}>
-          <div style={{ fontFamily: 'Georgia, serif', fontSize: 38, fontWeight: 900, color: WHITE, letterSpacing: '-0.5px' }}>
-            Fin<span style={{ color: BLUE_LIGHT }}>ago</span>
+        <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center' }}>
+          <div style={{ transform: `translateY(${lerp(20, 0, clamp(dashIn))}px)` }}>
+            <DashboardMockup scale={0.55 + clamp(dashIn) * 0.15} opacity={clamp(dashIn)} activeIndex={0} content={clamp(dashIn) * 1.4} />
           </div>
-        </div>
+        </AbsoluteFill>
       )}
 
-      <AbsoluteFill style={{ justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 160 }}>
-        <div style={{
-          opacity: textIn,
-          transform: `translateY(${lerp(20, 0, textIn)}px)`,
-          fontFamily: '"Helvetica Neue", Arial, sans-serif',
-          fontSize: 56, fontWeight: 800, color: WHITE, textAlign: 'center', letterSpacing: '-1px',
-        }}>
-          Ett system for alle behov.
-        </div>
-      </AbsoluteFill>
+      <CaptionBar text="Ett system for alle behov." visible={captionT} />
     </AbsoluteFill>
   );
 };
 
-// ── Scene 4 (0-240 local, 8s): feature highlights — each feature's name
-// collides in and physically pushes its own mini UI panel onto screen,
-// zoom-through cut between each one (no menu navigation ever shown) ───────
-const FEATURES = [
-  { name: 'Finago Office', desc: 'Regnskap med automatisk bilagsbehandling' },
-  { name: 'Finago Payday', desc: 'Lønn med alltid oppdaterte satser' },
-  { name: 'Timeregistrering', desc: 'Integrert rett mot lønn og regnskap' },
-  { name: 'Oppdragsstyring', desc: 'Bygget for regnskapsbyråer' },
-];
-
+// ── Scene 4 (0-320, ~10.7s): camera "tour" across the dashboard, switching
+// active panel per feature with a synced caption ─────────────────────────
 const FeatureScene: React.FC = () => {
   const frame = useCurrentFrame();
-  const perFeature = 60;
+  const perFeature = 78;
 
   return (
     <AbsoluteFill>
@@ -276,40 +370,26 @@ const FeatureScene: React.FC = () => {
         const start = i * perFeature;
         const local = frame - start;
         if (local < -10 || local > perFeature + 10) return null;
-        const camPush = lerp(1.05, 1, easeOutExpo(clamp(local / 16))); // zoom-through entrance
-        const inT = easeOutExpo(clamp(local / 18));
+        const inT = easeOutExpo(clamp(local / 16));
         const outT = 1 - easeInOutCubic(clamp((local - (perFeature - 16)) / 16));
         const a = inT * outT;
-        const panelPush = easeOutExpo(clamp((local - 6) / 16));
+        const content = clamp(local / 50);
+        const camPush = lerp(1.05, 1, inT);
         return (
-          <AbsoluteFill key={f.name} style={{ transform: `scale(${camPush})` }}>
-            <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center' }}>
-              {/* Mini UI panel, physically pushed onscreen by the headline below */}
+          <AbsoluteFill key={f.key} style={{ transform: `scale(${camPush})`, opacity: a }}>
+            <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center', paddingTop: 20 }}>
+              <DashboardMockup scale={0.78} opacity={1} activeIndex={i} content={content} />
               <div style={{
-                position: 'absolute', top: 270,
-                opacity: panelPush * a,
-                transform: `translateY(${lerp(40, 0, clamp(panelPush))}px)`,
+                position: 'absolute', top: 90, left: '50%', transform: 'translateX(-50%)',
+                display: 'inline-block', padding: '6px 18px', borderRadius: 999,
+                background: 'rgba(45,127,249,0.16)', border: `1px solid ${BLUE}66`,
+                color: BLUE_LIGHT, fontFamily: '"Helvetica Neue", Arial, sans-serif',
+                fontSize: 16, fontWeight: 700, letterSpacing: 2,
               }}>
-                <SkeletonCard x={0} y={0} opacity={1} scale={1} label={f.name} resolved={0.6} />
-              </div>
-
-              <div style={{ opacity: a, transform: `translateY(${lerp(24, 0, inT) + 90}px) scale(${lerp(0.92, 1, inT)})`, textAlign: 'center' }}>
-                <div style={{
-                  display: 'inline-block', padding: '6px 18px', borderRadius: 999,
-                  background: 'rgba(45,127,249,0.16)', border: `1px solid ${BLUE}66`,
-                  color: BLUE_LIGHT, fontFamily: '"Helvetica Neue", Arial, sans-serif',
-                  fontSize: 18, fontWeight: 700, letterSpacing: 2, marginBottom: 18,
-                }}>
-                  {String(i + 1).padStart(2, '0')} / 04
-                </div>
-                <div style={{ fontFamily: '"Helvetica Neue", Arial, sans-serif', fontSize: 72, fontWeight: 800, color: WHITE, letterSpacing: '-2px' }}>
-                  {f.name}
-                </div>
-                <div style={{ marginTop: 14, fontFamily: '"Helvetica Neue", Arial, sans-serif', fontSize: 30, fontWeight: 400, color: GRAY }}>
-                  {f.desc}
-                </div>
+                {String(i + 1).padStart(2, '0')} / 04 — {f.name.toUpperCase()}
               </div>
             </AbsoluteFill>
+            <CaptionBar text={f.desc} visible={easeOutExpo(clamp((local - 10) / 16))} />
           </AbsoluteFill>
         );
       })}
@@ -317,8 +397,7 @@ const FeatureScene: React.FC = () => {
   );
 };
 
-// ── Scene 5 (0-180 local, 6s): testimonial, secondary background blurred
-// to keep focus on the quote (Linear-style depth-of-field) ───────────────
+// ── Scene 5 (0-180, 6s): testimonial ──────────────────────────────────────
 const TestimonialScene: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -332,7 +411,7 @@ const TestimonialScene: React.FC = () => {
       <FinagoBackground camPush={camPush} />
       <div style={{
         width: 1240, padding: '56px 64px', borderRadius: 24,
-        background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+        background: PANEL, border: '1px solid rgba(255,255,255,0.1)',
         opacity: clamp(cardIn), transform: `translateY(${lerp(30, 0, clamp(cardIn))}px)`,
       }}>
         <div style={{ fontSize: 64, color: BLUE_LIGHT, fontFamily: 'Georgia, serif', lineHeight: 0.5 }}>"</div>
@@ -345,7 +424,13 @@ const TestimonialScene: React.FC = () => {
           noe jeg faktisk kan stole på.
         </div>
         <div style={{ marginTop: 28, opacity: quoteIn, display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div style={{ width: 44, height: 44, borderRadius: '50%', background: `linear-gradient(135deg, ${BLUE}, ${BLUE_LIGHT})` }} />
+          <div style={{
+            width: 48, height: 48, borderRadius: '50%', background: `linear-gradient(135deg, ${BLUE}, ${BLUE_LIGHT})`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontFamily: '"Helvetica Neue", Arial, sans-serif', fontWeight: 800, fontSize: 16, color: '#06121F',
+          }}>
+            MC
+          </div>
           <div>
             <div style={{ fontFamily: '"Helvetica Neue", Arial, sans-serif', fontSize: 20, fontWeight: 700, color: WHITE }}>
               Morten Christensen
@@ -360,8 +445,7 @@ const TestimonialScene: React.FC = () => {
   );
 };
 
-// ── Scene 6 (0-150 local, 5s): value props — pure kinetic type in the void,
-// words push each other into position on entry (collision feel) ──────────
+// ── Scene 6 (0-150, 5s): value props with checkmark beats ─────────────────
 const VALUES = ['Tilpasset deg.', 'Ved din side.', 'Gode priser.'];
 
 const ValuesScene: React.FC = () => {
@@ -372,22 +456,26 @@ const ValuesScene: React.FC = () => {
   return (
     <AbsoluteFill style={{ opacity: fade }}>
       <FinagoBackground />
-      <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'column', gap: 4 }}>
+      <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'column', gap: 18 }}>
         {VALUES.map((v, i) => {
           const start = i * perValue;
           const local = frame - start;
           const t = easeOutExpo(clamp(local / 18));
-          // each new line nudges the previous ones up slightly on its impact, like a stack being pushed
-          const pushFromBelow = i < VALUES.length - 1 ? easeOutExpo(clamp((frame - (start + perValue)) / 14)) * 4 : 0;
           return (
             <div key={v} style={{
               opacity: t,
-              transform: `translateX(${lerp(-40, 0, t)}px) translateY(${-pushFromBelow}px)`,
+              transform: `translateX(${lerp(-40, 0, t)}px)`,
+              display: 'flex', alignItems: 'center', gap: 18,
               fontFamily: '"Helvetica Neue", Arial, sans-serif',
-              fontSize: 68, fontWeight: 800,
+              fontSize: 64, fontWeight: 800,
               color: i === 1 ? BLUE_LIGHT : WHITE,
               letterSpacing: '-1.5px',
             }}>
+              <svg width="36" height="36" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" fill="none" stroke={BLUE_LIGHT} strokeWidth="2" />
+                <path d="M7 12.5l3 3 7-7" fill="none" stroke={BLUE_LIGHT} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                  pathLength={1} style={{ strokeDasharray: 1, strokeDashoffset: 1 - t }} />
+              </svg>
               {v}
             </div>
           );
@@ -397,8 +485,7 @@ const ValuesScene: React.FC = () => {
   );
 };
 
-// ── Scene 7 (0-180 local, 6s): CTA framed as a premium terminal command,
-// not an afterthought button ──────────────────────────────────────────────
+// ── Scene 7 (0-180, 6s): CTA ───────────────────────────────────────────────
 const CTAScene: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -427,8 +514,6 @@ const CTAScene: React.FC = () => {
       }}>
         Ett system for alle behov.
       </div>
-
-      {/* Terminal-style CTA — the URL presented as a product feature, not a button */}
       <div style={{
         opacity: termT, marginTop: 36,
         transform: `translateY(${lerp(16, 0, termT)}px)`,
@@ -454,11 +539,11 @@ export const FinagoAd: React.FC = () => {
   return (
     <AbsoluteFill style={{ backgroundColor: BG }}>
       <Sequence durationInFrames={90}><HookScene /></Sequence>
-      <Sequence from={90} durationInFrames={180}><ChaosScene /></Sequence>
-      <Sequence from={270} durationInFrames={180}><MergeScene /></Sequence>
-      <Sequence from={450} durationInFrames={240}><FeatureScene /></Sequence>
-      <Sequence from={690} durationInFrames={180}><TestimonialScene /></Sequence>
-      <Sequence from={870} durationInFrames={150}><ValuesScene /></Sequence>
+      <Sequence from={90} durationInFrames={150}><ProblemScene /></Sequence>
+      <Sequence from={240} durationInFrames={180}><MergeScene /></Sequence>
+      <Sequence from={420} durationInFrames={312}><FeatureScene /></Sequence>
+      <Sequence from={732} durationInFrames={150}><TestimonialScene /></Sequence>
+      <Sequence from={882} durationInFrames={138}><ValuesScene /></Sequence>
       <Sequence from={1020} durationInFrames={180}><CTAScene /></Sequence>
     </AbsoluteFill>
   );
