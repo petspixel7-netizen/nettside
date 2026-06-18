@@ -26,6 +26,31 @@ for fam, file, weight, style in [
     )
 FONT_FACES_CSS = '\n  '.join(FONT_FACES)
 
+def mono_svg(suffix):
+    """Builds the 'particle assembly -> stroke draw -> fill lock' SVG monogram markup.
+    Plain string (no Python brace-formatting needed) inserted into the outer f-string."""
+    return f'''<svg id="mono-svg-{suffix}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="flowGradient-{suffix}" x1="0%" y1="0%" x2="100%" y2="100%" style="--c1:#B6FF3D;--c2:#00E5FF;--c3:#FF2E93;--c4:#B47CFF;">
+              <stop offset="0%" stop-color="var(--c1)"/>
+              <stop offset="35%" stop-color="var(--c2)"/>
+              <stop offset="65%" stop-color="var(--c3)"/>
+              <stop offset="100%" stop-color="var(--c4)"/>
+            </linearGradient>
+          </defs>
+          <g class="dots-layer"></g>
+          <circle class="mono-core" cx="100" cy="100" r="14" fill="url(#flowGradient-{suffix})"/>
+          <g class="mono-stroke-layer">
+            <path class="mono-stroke" d="M 46 158 L 46 42 L 134 158 L 134 42"/>
+          </g>
+          <g class="mono-fill-layer">
+            <path class="mono-fill" fill="url(#flowGradient-{suffix})" d="M 38 158 L 38 42 L 60 42 L 124 132 L 124 42 L 146 42 L 146 158 L 124 158 L 60 68 L 60 158 Z"/>
+          </g>
+        </svg>'''
+
+MONO_SVG_INTRO = mono_svg('intro')
+MONO_SVG_CTA = mono_svg('cta')
+
 HTML = f"""<!DOCTYPE html>
 <html lang="no">
 <head>
@@ -74,13 +99,13 @@ HTML = f"""<!DOCTYPE html>
   .accent{{color:var(--lime);}}
 
   #logo-wrap{{width:160px;height:160px;position:relative;}}
-  #logo-wrap img{{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 0 24px rgba(182,255,61,.45));}}
-  #logo-ghost-r,#logo-ghost-c{{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:screen;opacity:0;}}
-  #logo-sheen{{position:absolute;top:0;left:-65%;width:55%;height:100%;
-    background:linear-gradient(75deg,rgba(255,255,255,0) 0%,rgba(255,255,255,0) 35%,rgba(255,255,255,.95) 50%,rgba(255,255,255,0) 65%,rgba(255,255,255,0) 100%);
-    -webkit-mask-image:url(data:image/png;base64,{LOGO_B64});mask-image:url(data:image/png;base64,{LOGO_B64});
-    -webkit-mask-size:160px auto;mask-size:160px auto;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;
-    mix-blend-mode:screen;pointer-events:none;}}
+  #logo-wrap svg{{width:100%;height:100%;display:block;filter:drop-shadow(0 0 24px rgba(182,255,61,.45));overflow:visible;}}
+
+  /* monogram assemble-logo (shared rules, namespaced via id on svg) */
+  .mono-fill{{opacity:0;}}
+  .mono-stroke{{fill:none;stroke:var(--lime);stroke-width:6;stroke-linecap:round;stroke-linejoin:round;opacity:0;}}
+  .mono-core{{opacity:0;}}
+  .assemble-dot{{fill:var(--lime);opacity:0;}}
 
   #wordmark{{font-family:var(--display);font-weight:900;font-size:96px;letter-spacing:-1px;color:var(--white);text-transform:uppercase;overflow:hidden;clip-path:inset(0 100% 0 0);white-space:nowrap;}}
   #wordmark .acc{{color:var(--lime);}}
@@ -135,13 +160,8 @@ HTML = f"""<!DOCTYPE html>
 
   /* cta */
   #scene-cta{{background:radial-gradient(circle at 50% 30%, #101010, var(--bg) 70%);}}
-  #cta-logo-wrap{{position:relative;width:220px;height:220px;opacity:0;}}
-  #cta-logo-wrap img{{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 0 30px rgba(182,255,61,.5));}}
-  #cta-logo-sheen{{position:absolute;top:0;left:-65%;width:55%;height:100%;
-    background:linear-gradient(75deg,rgba(255,255,255,0) 0%,rgba(255,255,255,0) 35%,rgba(255,255,255,.95) 50%,rgba(255,255,255,0) 65%,rgba(255,255,255,0) 100%);
-    -webkit-mask-image:url(data:image/png;base64,{LOGO_B64});mask-image:url(data:image/png;base64,{LOGO_B64});
-    -webkit-mask-size:220px auto;mask-size:220px auto;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;
-    mix-blend-mode:screen;pointer-events:none;}}
+  #cta-logo-wrap{{position:relative;width:220px;height:220px;opacity:1;}}
+  #cta-logo-wrap svg{{width:100%;height:100%;display:block;filter:drop-shadow(0 0 30px rgba(182,255,61,.5));overflow:visible;}}
   #cta-headline{{font-family:var(--display);font-size:40px;font-weight:900;color:var(--white);margin-top:14px;text-transform:uppercase;text-align:center;}}
   #cta-headline .acc{{color:var(--lime);}}
   #cta-qr-wrap{{position:relative;opacity:0;margin-top:26px;background:#fff;border-radius:18px;padding:20px;box-shadow:0 0 50px rgba(182,255,61,.4);}}
@@ -195,10 +215,7 @@ HTML = f"""<!DOCTYPE html>
     <div class="scene" id="scene-intro">
       <div style="position:absolute;width:760px;height:760px;border-radius:50%;background:radial-gradient(circle,rgba(182,255,61,.08) 0%, transparent 65%);"></div>
       <div id="logo-wrap">
-        <img id="logo-ghost-r" src="data:image/png;base64,{LOGO_B64}" style="filter:drop-shadow(0 0 0 transparent) brightness(0) saturate(100%) invert(20%) sepia(90%) saturate(7000%) hue-rotate(320deg);">
-        <img id="logo-ghost-c" src="data:image/png;base64,{LOGO_B64}" style="filter:brightness(0) saturate(100%) invert(70%) sepia(80%) saturate(2000%) hue-rotate(150deg);">
-        <img id="logo-main" src="data:image/png;base64,{LOGO_B64}" alt="NorLeads">
-        <div id="logo-sheen"></div>
+        {MONO_SVG_INTRO}
       </div>
       <div id="wordmark">Nor<span class="acc">Leads</span></div>
       <div id="tagline">Animerte reklamefilmer som selger</div>
@@ -286,8 +303,7 @@ HTML = f"""<!DOCTYPE html>
       <div class="cta-ring" id="ctaring2" style="width:680px;height:680px;"></div>
       <div class="cta-ring" id="ctaring3" style="width:800px;height:800px;"></div>
       <div id="cta-logo-wrap">
-        <img src="data:image/png;base64,{LOGO_B64}" alt="NorLeads">
-        <div id="cta-logo-sheen"></div>
+        {MONO_SVG_CTA}
       </div>
       <div id="cta-headline"><span class="word">Be</span> <span class="word">om</span> <span class="word accent">pris</span></div>
       <div id="cta-qr-wrap"><div id="cta-qr-ring"></div><img src="data:image/png;base64,{QR_B64}" alt="QR til norleads.no"></div>
@@ -391,159 +407,244 @@ function flash(time, opacity = 0.4, dur = 0.4) {{
   tl.to('#flash', {{ opacity: 0, scale: 1.35, duration: dur * 0.6, ease: 'power2.in' }}, time + dur * 0.4);
 }}
 
+/* ---------- particle-assembly SVG logo: setup + playback ---------- */
+const __assembleData = {{}};
+
+function setupAssembleLogo(svgSelector) {{
+  const svg = document.querySelector(svgSelector);
+  if (!svg) return;
+  const strokes = Array.from(svg.querySelectorAll('.mono-stroke'));
+  const dotsLayer = svg.querySelector('.dots-layer');
+  const SAMPLES_PER_PATH = 22;
+
+  const pathInfo = strokes.map((path) => {{
+    const len = path.getTotalLength();
+    path.style.strokeDasharray = String(len);
+    path.style.strokeDashoffset = String(len);
+    const pts = [];
+    for (let i = 0; i <= SAMPLES_PER_PATH; i++) {{
+      const p = path.getPointAtLength((len * i) / SAMPLES_PER_PATH);
+      pts.push({{ x: p.x, y: p.y }});
+    }}
+    return {{ path, len, pts }};
+  }});
+
+  const allPts = pathInfo.flatMap((info) => info.pts);
+  const centroid = allPts.reduce((acc, p) => ({{ x: acc.x + p.x, y: acc.y + p.y }}), {{ x: 0, y: 0 }});
+  centroid.x /= allPts.length;
+  centroid.y /= allPts.length;
+
+  const dots = allPts.map((p) => {{
+    const sx = centroid.x + (p.x - centroid.x) * 2.7;
+    const sy = centroid.y + (p.y - centroid.y) * 2.7;
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('class', 'assemble-dot');
+    circle.setAttribute('r', '1.8');
+    circle.setAttribute('cx', String(sx));
+    circle.setAttribute('cy', String(sy));
+    dotsLayer.appendChild(circle);
+    return {{ el: circle, fromX: sx, fromY: sy, toX: p.x, toY: p.y }};
+  }});
+
+  __assembleData[svgSelector] = {{ pathInfo, dots, centroid }};
+}}
+
+function playAssembleLogo(timeline, startTime, svgIdSuffix) {{
+  const svgSelector = '#mono-svg-' + svgIdSuffix;
+  const data = __assembleData[svgSelector];
+  if (!data) return;
+  const {{ pathInfo, dots }} = data;
+  const core = document.querySelector(svgSelector + ' .mono-core');
+  const dotEls = dots.map((d) => d.el);
+
+  // reset state at start of each loop pass
+  timeline.set(dotEls, {{ cx: (i) => dots[i].fromX, cy: (i) => dots[i].fromY, opacity: 0 }}, startTime);
+  timeline.set(core, {{ opacity: 0, scale: 0.4, transformOrigin: '50% 50%' }}, startTime);
+  timeline.set(pathInfo.map((p) => p.path), {{ opacity: 0, stroke: 'var(--lime)' }}, startTime);
+  timeline.set(svgIdSuffix === 'intro' ? '#mono-svg-intro .mono-fill' : '#mono-svg-cta .mono-fill', {{ opacity: 0 }}, startTime);
+
+  // 1. seed pulse
+  timeline.fromTo(core, {{ opacity: 0, scale: 0.4 }}, {{ opacity: 1, scale: 1, duration: 0.12, ease: 'power2.out' }}, startTime + 0.0);
+
+  // 2. dots flash in
+  timeline.to(dotEls, {{ opacity: 0.9, duration: 0.15, stagger: {{ amount: 0.1 }} }}, startTime + 0.05);
+
+  // 3. implode to outline
+  dots.forEach((d, i) => {{
+    timeline.to(d.el, {{ attr: {{ cx: d.toX, cy: d.toY }}, duration: 1.1, ease: 'power3.inOut' }}, startTime + 0.20);
+  }});
+
+  // 4. core flash / burst
+  timeline.to(core, {{ scale: 1.6, opacity: 0.8, duration: 0.12, ease: 'power2.out' }}, startTime + 1.30);
+  timeline.to(core, {{ scale: 1, opacity: 0, duration: 0.13, ease: 'power2.in' }}, startTime + 1.42);
+
+  // dots fade out as strokes take over
+  timeline.to(dotEls, {{ opacity: 0, duration: 0.6, stagger: {{ amount: 0.15 }} }}, startTime + 1.40);
+
+  // 5. proportioned stroke draw (longer paths get proportionally more of the window, all finish by +3.00)
+  const drawStart = startTime + 1.40;
+  const drawEnd = startTime + 3.00;
+  const totalLen = pathInfo.reduce((s, p) => s + p.len, 0) || 1;
+  pathInfo.forEach((p) => {{
+    const dur = Math.max(0.5, (p.len / totalLen) * (drawEnd - drawStart) * pathInfo.length);
+    const start = Math.min(drawStart, drawEnd - dur);
+    timeline.set(p.path, {{ opacity: 1 }}, drawStart);
+    timeline.to(p.path, {{ strokeDashoffset: 0, duration: dur, ease: 'power2.inOut' }}, start);
+  }});
+
+  // 6. fill-in / stroke lock
+  const fillSel = svgIdSuffix === 'intro' ? '#mono-svg-intro .mono-fill' : '#mono-svg-cta .mono-fill';
+  const strokeEls = pathInfo.map((p) => p.path);
+  timeline.to(strokeEls, {{ stroke: '#ffffff', duration: 0.2, ease: 'power1.inOut' }}, startTime + 3.00);
+  timeline.to(strokeEls, {{ opacity: 0, duration: 0.3, ease: 'power1.in' }}, startTime + 3.20);
+  timeline.fromTo(fillSel, {{ opacity: 0 }}, {{ opacity: 1, duration: 0.5, ease: 'power1.inOut' }}, startTime + 3.00);
+}}
+
 // 0.0 — fade in from black
 tl.set('#blackout', {{ opacity: 1 }});
 tl.to('#blackout', {{ opacity: 0, duration: 0.4, ease: 'power1.in' }}, 0.0);
 tl.set('#scene-intro', {{ opacity: 1 }}, 0.0);
 
-// 0.1 — 0.7 glitch / RGB-split logo intro
-gsap.set(['#logo-main', '#logo-ghost-r', '#logo-ghost-c'], {{ opacity: 0 }});
-tl.to('#logo-main', {{ opacity: 1, duration: 0.05 }}, 0.08);
-tl.to(['#logo-ghost-r', '#logo-ghost-c'], {{ opacity: 0.8, duration: 0.05 }}, 0.08);
-tl.to('#logo-ghost-r', {{ x: 8, duration: 0.06, repeat: 5, yoyo: true, ease: 'none' }}, 0.08);
-tl.to('#logo-ghost-c', {{ x: -8, duration: 0.06, repeat: 5, yoyo: true, ease: 'none' }}, 0.08);
-tl.to(['#logo-ghost-r', '#logo-ghost-c'], {{ x: 0, opacity: 0, duration: 0.18, ease: 'power2.out' }}, 0.46);
-flash(0.52, 0.5, 0.25);
+// 0.0 — 3.5  particle-assembly SVG logo intro (replaces old PNG glitch/RGB-split)
+setupAssembleLogo('#mono-svg-intro');
+playAssembleLogo(tl, 0.0, 'intro');
 
-// 0.85 — 1.6 wordmark reveal + tagline
-tl.to('#wordmark', {{ clipPath: 'inset(0 0% 0 0)', duration: 0.7, ease: 'power3.out' }}, 0.72);
-tl.to('#tagline', {{ opacity: 1, y: -4, duration: 0.5, ease: 'power2.out' }}, 1.14);
-tl.fromTo('#tagline', {{ y: 8 }}, {{ y: 0, duration: 0.5, ease: 'power2.out' }}, 1.14);
+// 3.6 — 4.5 wordmark reveal + tagline (shifted +2.88s to follow the 3.5s assemble animation)
+tl.to('#wordmark', {{ clipPath: 'inset(0 0% 0 0)', duration: 0.7, ease: 'power3.out' }}, 3.6);
+tl.to('#tagline', {{ opacity: 1, y: -4, duration: 0.5, ease: 'power2.out' }}, 4.02);
+tl.fromTo('#tagline', {{ y: 8 }}, {{ y: 0, duration: 0.5, ease: 'power2.out' }}, 4.02);
 
-// crystal-shader style light sweep across the logo mark
-tl.fromTo('#logo-sheen', {{ left: '-65%' }}, {{ left: '135%', duration: 1.1, ease: 'power1.inOut' }}, 1.35);
+tl.to('#scene-intro', {{ opacity: 0, duration: 0.4 }}, 6.25);
 
-tl.to('#scene-intro', {{ opacity: 0, duration: 0.4 }}, 3.37);
+// 6.58  IRIS WIPE into headline
+irisWipe(6.58);
+tl.set('#scene-headline', {{ opacity: 1 }}, 6.6);
+tl.to('#corner-logo', {{ opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }}, 6.67);
 
-// 4.4  IRIS WIPE into headline
-irisWipe(3.7);
-tl.set('#scene-headline', {{ opacity: 1 }}, 3.72);
-tl.to('#corner-logo', {{ opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }}, 3.79);
+tl.fromTo('#headline-text .word', {{ opacity: 0, y: 36, scale: 0.55, rotation: -10, filter: 'blur(9px)' }}, {{ opacity: 1, y: 0, scale: 1, rotation: 0, filter: 'blur(0px)', duration: 0.6, stagger: 0.07, ease: 'back.out(2)' }}, 6.75);
+tl.to('#headline-text .word', {{ y: -6, duration: 1.1, repeat: 2, yoyo: true, ease: 'sine.inOut', stagger: 0.08 }}, 7.48);
 
-tl.fromTo('#headline-text .word', {{ opacity: 0, y: 36, scale: 0.55, rotation: -10, filter: 'blur(9px)' }}, {{ opacity: 1, y: 0, scale: 1, rotation: 0, filter: 'blur(0px)', duration: 0.6, stagger: 0.07, ease: 'back.out(2)' }}, 3.87);
-tl.to('#headline-text .word', {{ y: -6, duration: 1.1, repeat: 2, yoyo: true, ease: 'sine.inOut', stagger: 0.08 }}, 4.6);
+tl.to('#scene-headline', {{ opacity: 0, duration: 0.4 }}, 9.11);
 
-tl.to('#scene-headline', {{ opacity: 0, duration: 0.4 }}, 6.23);
+// 9.44  SLIDE WIPE into stats
+slideWipe(9.44);
+tl.set('#scene-stats', {{ opacity: 1 }}, 9.46);
 
-// 7.8  SLIDE WIPE into stats
-slideWipe(6.56);
-tl.set('#scene-stats', {{ opacity: 1 }}, 6.58);
+tl.to('#scene-stats .heading .word', {{ opacity: 1, y: 0, scale: 1, rotation: 0, filter: 'blur(0px)', duration: 0.5, stagger: 0.06, ease: 'back.out(2.2)' }}, 9.57);
+tl.to('#stats-divider', {{ width: '420px', duration: 0.5, ease: 'power2.out' }}, 9.74);
 
-tl.to('#scene-stats .heading .word', {{ opacity: 1, y: 0, scale: 1, rotation: 0, filter: 'blur(0px)', duration: 0.5, stagger: 0.06, ease: 'back.out(2.2)' }}, 6.69);
-tl.to('#stats-divider', {{ width: '420px', duration: 0.5, ease: 'power2.out' }}, 6.86);
-
-flash(7.24, 0.25);
+flash(10.12, 0.25);
 ['stat1', 'stat2', 'stat3'].forEach((id, i) => {{
-  tl.fromTo('#' + id, {{ opacity: 0, y: 28, scale: 0.9, filter: 'blur(6px)' }}, {{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: 0.45, ease: 'back.out(1.6)' }}, 7.24 + i * 0.15);
-  tl.to('#' + id, {{ y: -10, duration: 0.9, repeat: 3, yoyo: true, ease: 'sine.inOut' }}, 7.24 + i * 0.15 + 0.5);
+  tl.fromTo('#' + id, {{ opacity: 0, y: 28, scale: 0.9, filter: 'blur(6px)' }}, {{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: 0.45, ease: 'back.out(1.6)' }}, 10.12 + i * 0.15);
+  tl.to('#' + id, {{ y: -10, duration: 0.9, repeat: 3, yoyo: true, ease: 'sine.inOut' }}, 10.12 + i * 0.15 + 0.5);
 }});
-countUp('stat1-num', 6.30, 7, '', 1.0);
-countUp('stat2-num', 6.43, 48, 't', 1.0);
-countUp('stat3-num', 6.55, 24, 't', 1.0);
+countUp('stat1-num', 9.18, 7, '', 1.0);
+countUp('stat2-num', 9.31, 48, 't', 1.0);
+countUp('stat3-num', 9.43, 24, 't', 1.0);
 
-tl.to('#scene-stats', {{ opacity: 0, duration: 0.4 }}, 10.1);
+tl.to('#scene-stats', {{ opacity: 0, duration: 0.4 }}, 12.98);
 
-// 12.4  DIAGONAL WIPE into process
-diagWipe(10.43);
-tl.set('#scene-process', {{ opacity: 1 }}, 10.45);
+// 13.31  DIAGONAL WIPE into process
+diagWipe(13.31);
+tl.set('#scene-process', {{ opacity: 1 }}, 13.33);
 
-tl.to('#scene-process .heading .word', {{ opacity: 1, y: 0, scale: 1, rotation: 0, filter: 'blur(0px)', duration: 0.5, stagger: 0.06, ease: 'back.out(2.2)' }}, 10.56);
+tl.to('#scene-process .heading .word', {{ opacity: 1, y: 0, scale: 1, rotation: 0, filter: 'blur(0px)', duration: 0.5, stagger: 0.06, ease: 'back.out(2.2)' }}, 13.44);
 
 // step 1 appears first
-flash(10.81, 0.18);
-tl.fromTo('#proc1', {{ opacity: 0, y: 24, scale: 0.92 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.45, ease: 'back.out(1.7)' }}, 10.81);
-tl.to('#proc1 .proc-num', {{ y: -6, scale: 1.06, duration: 0.7, repeat: 5, yoyo: true, ease: 'sine.inOut' }}, 11.23);
+flash(13.69, 0.18);
+tl.fromTo('#proc1', {{ opacity: 0, y: 24, scale: 0.92 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.45, ease: 'back.out(1.7)' }}, 13.69);
+tl.to('#proc1 .proc-num', {{ y: -6, scale: 1.06, duration: 0.7, repeat: 5, yoyo: true, ease: 'sine.inOut' }}, 14.11);
 
 // line draws from step 1 to step 2, then step 2 appears
-tl.to(procLine, {{ strokeDashoffset: procLineLen / 2, duration: 0.5, ease: 'power2.inOut' }}, 11.23);
-tl.to('#process-line-dot', {{ attr: {{ cx: 510 }}, duration: 0.5, ease: 'power2.inOut' }}, 11.23);
-flash(11.61, 0.16);
-tl.fromTo('#proc2', {{ opacity: 0, y: 24, scale: 0.92 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.45, ease: 'back.out(1.7)' }}, 11.61);
-tl.to('#proc2 .proc-num', {{ y: -6, scale: 1.06, duration: 0.7, repeat: 3, yoyo: true, ease: 'sine.inOut' }}, 12.03);
+tl.to(procLine, {{ strokeDashoffset: procLineLen / 2, duration: 0.5, ease: 'power2.inOut' }}, 14.11);
+tl.to('#process-line-dot', {{ attr: {{ cx: 510 }}, duration: 0.5, ease: 'power2.inOut' }}, 14.11);
+flash(14.49, 0.16);
+tl.fromTo('#proc2', {{ opacity: 0, y: 24, scale: 0.92 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.45, ease: 'back.out(1.7)' }}, 14.49);
+tl.to('#proc2 .proc-num', {{ y: -6, scale: 1.06, duration: 0.7, repeat: 3, yoyo: true, ease: 'sine.inOut' }}, 14.91);
 
 // line draws from step 2 to step 3, then step 3 appears
-tl.to(procLine, {{ strokeDashoffset: 0, duration: 0.5, ease: 'power2.inOut' }}, 12.03);
-tl.to('#process-line-dot', {{ attr: {{ cx: 850 }}, duration: 0.5, ease: 'power2.inOut' }}, 12.03);
-flash(12.41, 0.16);
-tl.fromTo('#proc3', {{ opacity: 0, y: 24, scale: 0.92 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.45, ease: 'back.out(1.7)' }}, 12.41);
-tl.to('#proc3 .proc-num', {{ y: -6, scale: 1.06, duration: 0.7, repeat: 2, yoyo: true, ease: 'sine.inOut' }}, 12.83);
+tl.to(procLine, {{ strokeDashoffset: 0, duration: 0.5, ease: 'power2.inOut' }}, 14.91);
+tl.to('#process-line-dot', {{ attr: {{ cx: 850 }}, duration: 0.5, ease: 'power2.inOut' }}, 14.91);
+flash(15.29, 0.16);
+tl.fromTo('#proc3', {{ opacity: 0, y: 24, scale: 0.92 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.45, ease: 'back.out(1.7)' }}, 15.29);
+tl.to('#proc3 .proc-num', {{ y: -6, scale: 1.06, duration: 0.7, repeat: 2, yoyo: true, ease: 'sine.inOut' }}, 15.71);
 
-tl.to('#scene-process', {{ opacity: 0, duration: 0.4 }}, 14.3);
+tl.to('#scene-process', {{ opacity: 0, duration: 0.4 }}, 17.18);
 
-// 17.4  BARS WIPE into solutions
-barsWipe(14.64);
-tl.set('#scene-solutions', {{ opacity: 1 }}, 14.66);
+// 17.52  BARS WIPE into solutions
+barsWipe(17.52);
+tl.set('#scene-solutions', {{ opacity: 1 }}, 17.54);
 
-tl.to('#scene-solutions .heading .word', {{ opacity: 1, y: 0, scale: 1, rotation: 0, filter: 'blur(0px)', duration: 0.5, stagger: 0.06, ease: 'back.out(2.2)' }}, 14.77);
-tl.to('#solutions-divider', {{ width: '420px', duration: 0.5, ease: 'power2.out' }}, 14.93);
+tl.to('#scene-solutions .heading .word', {{ opacity: 1, y: 0, scale: 1, rotation: 0, filter: 'blur(0px)', duration: 0.5, stagger: 0.06, ease: 'back.out(2.2)' }}, 17.65);
+tl.to('#solutions-divider', {{ width: '420px', duration: 0.5, ease: 'power2.out' }}, 17.81);
 
-flash(15.31, 0.25);
+flash(18.19, 0.25);
 ['sol1', 'sol2', 'sol3', 'sol4'].forEach((id, i) => {{
-  tl.fromTo('#' + id, {{ opacity: 0, y: 28, scale: 0.94, rotation: -4, filter: 'blur(6px)' }}, {{ opacity: 1, y: 0, scale: 1, rotation: 0, filter: 'blur(0px)', duration: 0.45, ease: 'back.out(1.6)' }}, 15.31 + i * 0.19);
-  tl.to('#' + id, {{ y: -9, duration: 1.0, repeat: 3, yoyo: true, ease: 'sine.inOut' }}, 15.31 + i * 0.19 + 0.5);
+  tl.fromTo('#' + id, {{ opacity: 0, y: 28, scale: 0.94, rotation: -4, filter: 'blur(6px)' }}, {{ opacity: 1, y: 0, scale: 1, rotation: 0, filter: 'blur(0px)', duration: 0.45, ease: 'back.out(1.6)' }}, 18.19 + i * 0.19);
+  tl.to('#' + id, {{ y: -9, duration: 1.0, repeat: 3, yoyo: true, ease: 'sine.inOut' }}, 18.19 + i * 0.19 + 0.5);
 }});
 
-tl.to('#scene-solutions', {{ opacity: 0, duration: 0.4 }}, 18.85);
+tl.to('#scene-solutions', {{ opacity: 0, duration: 0.4 }}, 21.73);
 
-// 22.8  CURTAIN WIPE into benefits
-curtainWipe(19.18);
-tl.set('#scene-benefits', {{ opacity: 1 }}, 19.2);
+// 22.06  CURTAIN WIPE into benefits
+curtainWipe(22.06);
+tl.set('#scene-benefits', {{ opacity: 1 }}, 22.08);
 
-tl.to('#scene-benefits .heading .word', {{ opacity: 1, y: 0, scale: 1, rotation: 0, filter: 'blur(0px)', duration: 0.5, stagger: 0.06, ease: 'back.out(2.2)' }}, 19.31);
-tl.to('#benefits-divider', {{ width: '420px', duration: 0.5, ease: 'power2.out' }}, 19.48);
+tl.to('#scene-benefits .heading .word', {{ opacity: 1, y: 0, scale: 1, rotation: 0, filter: 'blur(0px)', duration: 0.5, stagger: 0.06, ease: 'back.out(2.2)' }}, 22.19);
+tl.to('#benefits-divider', {{ width: '420px', duration: 0.5, ease: 'power2.out' }}, 22.36);
 
-flash(19.86, 0.25);
+flash(22.74, 0.25);
 ['ben1', 'ben2', 'ben3', 'ben4'].forEach((id, i) => {{
-  tl.fromTo('#' + id, {{ opacity: 0, x: -32, filter: 'blur(6px)' }}, {{ opacity: 1, x: 0, filter: 'blur(0px)', duration: 0.45, ease: 'power2.out' }}, 19.86 + i * 0.19);
-  tl.to('#' + id + ' .benefit-check', {{ scale: 1.15, rotation: 8, duration: 0.8, repeat: 3, yoyo: true, ease: 'sine.inOut' }}, 19.86 + i * 0.19 + 0.5);
+  tl.fromTo('#' + id, {{ opacity: 0, x: -32, filter: 'blur(6px)' }}, {{ opacity: 1, x: 0, filter: 'blur(0px)', duration: 0.45, ease: 'power2.out' }}, 22.74 + i * 0.19);
+  tl.to('#' + id + ' .benefit-check', {{ scale: 1.15, rotation: 8, duration: 0.8, repeat: 3, yoyo: true, ease: 'sine.inOut' }}, 22.74 + i * 0.19 + 0.5);
 }});
 
-tl.to('#scene-benefits', {{ opacity: 0, duration: 0.4 }}, 22.72);
+tl.to('#scene-benefits', {{ opacity: 0, duration: 0.4 }}, 25.6);
 
-// 27.4  ZOOM SPIN into formats
-zoomSpin(23.05);
-tl.set('#scene-platform', {{ opacity: 1 }}, 23.07);
+// 25.93  ZOOM SPIN into formats
+zoomSpin(25.93);
+tl.set('#scene-platform', {{ opacity: 1 }}, 25.95);
 
-tl.to('#scene-platform .heading .word', {{ opacity: 1, y: 0, scale: 1, rotation: 0, filter: 'blur(0px)', duration: 0.5, stagger: 0.06, ease: 'back.out(2.2)' }}, 23.18);
+tl.to('#scene-platform .heading .word', {{ opacity: 1, y: 0, scale: 1, rotation: 0, filter: 'blur(0px)', duration: 0.5, stagger: 0.06, ease: 'back.out(2.2)' }}, 26.06);
 
 ['plat1', 'plat2', 'plat3'].forEach((id, i) => {{
   const fromX = i % 2 === 0 ? -40 : 40;
-  tl.fromTo('#' + id, {{ opacity: 0, x: fromX, filter: 'blur(6px)' }}, {{ opacity: 1, x: 0, filter: 'blur(0px)', duration: 0.45, ease: 'back.out(1.6)' }}, 23.56 + i * 0.17);
-  tl.to('#' + id, {{ y: -8, duration: 0.9, repeat: 2, yoyo: true, ease: 'sine.inOut' }}, 23.56 + i * 0.17 + 0.5);
+  tl.fromTo('#' + id, {{ opacity: 0, x: fromX, filter: 'blur(6px)' }}, {{ opacity: 1, x: 0, filter: 'blur(0px)', duration: 0.45, ease: 'back.out(1.6)' }}, 26.44 + i * 0.17);
+  tl.to('#' + id, {{ y: -8, duration: 0.9, repeat: 2, yoyo: true, ease: 'sine.inOut' }}, 26.44 + i * 0.17 + 0.5);
 }});
 
-tl.to('#scene-platform', {{ opacity: 0, duration: 0.4 }}, 26.25);
-tl.to('#corner-logo', {{ opacity: 0, duration: 0.3 }}, 26.25);
+tl.to('#scene-platform', {{ opacity: 0, duration: 0.4 }}, 29.13);
+tl.to('#corner-logo', {{ opacity: 0, duration: 0.3 }}, 29.13);
 
-// 31.6  NEON WIPE into CTA (bold lime strobe cut)
-neonWipe(26.59);
-tl.set('#scene-cta', {{ opacity: 1 }}, 26.6);
+// 32.42  NEON WIPE into CTA (bold lime strobe cut)
+neonWipe(32.42);
+tl.set('#scene-cta', {{ opacity: 1 }}, 32.43);
 
-tl.fromTo('#cta-logo-wrap', {{ scale: 0.7, opacity: 0 }}, {{ scale: 1, opacity: 1, duration: 0.55, ease: 'back.out(1.5)' }}, 26.71);
-tl.fromTo('#cta-logo-sheen', {{ left: '-65%' }}, {{ left: '135%', duration: 1.3, repeat: 2, repeatDelay: 1.4, ease: 'power1.inOut' }}, 27.26);
+// 32.54 — 36.04  particle-assembly SVG logo CTA entrance (replaces old PNG scale/opacity entrance + sheen sweep)
+setupAssembleLogo('#mono-svg-cta');
+playAssembleLogo(tl, 32.54, 'cta');
+
 ['ctaring1', 'ctaring2', 'ctaring3'].forEach((id, i) => {{
   gsap.set('#' + id, {{ opacity: 0 }});
-  tl.to('#' + id, {{ opacity: 1, duration: 0.35 }}, 26.71);
-  tl.to('#' + id, {{ scale: 1.03, duration: 1.1, repeat: 3, yoyo: true, ease: 'sine.inOut' }}, 26.84 + i * 0.07);
+  tl.to('#' + id, {{ opacity: 1, duration: 0.35 }}, 32.54);
+  tl.to('#' + id, {{ scale: 1.03, duration: 1.1, repeat: 3, yoyo: true, ease: 'sine.inOut' }}, 32.67 + i * 0.07);
 }});
-tl.fromTo('#cta-headline .word', {{ opacity: 0, y: 28, scale: 0.5, rotation: -10, filter: 'blur(8px)' }}, {{ opacity: 1, y: 0, scale: 1, rotation: 0, filter: 'blur(0px)', duration: 0.55, stagger: 0.07, ease: 'back.out(2.4)' }}, 27.34);
-flash(27.76, 0.32);
+tl.fromTo('#cta-headline .word', {{ opacity: 0, y: 28, scale: 0.5, rotation: -10, filter: 'blur(8px)' }}, {{ opacity: 1, y: 0, scale: 1, rotation: 0, filter: 'blur(0px)', duration: 0.55, stagger: 0.07, ease: 'back.out(2.4)' }}, 33.17);
+flash(33.59, 0.32);
 gsap.set('#cta-qr-wrap', {{ scale: 0.7, rotation: -6 }});
-tl.to('#cta-qr-wrap', {{ opacity: 1, scale: 1, rotation: 0, duration: 0.5, ease: 'back.out(1.7)' }}, 27.76);
-tl.fromTo('#cta-qr-ring', {{ scale: 1, opacity: 0.9 }}, {{ scale: 1.18, opacity: 0, duration: 1.0, repeat: 2, ease: 'power1.out' }}, 28.19);
-tl.to('#cta-qr-label', {{ opacity: 1, duration: 0.4 }}, 28.27);
-tl.to('#cta-url', {{ opacity: 1, y: -4, duration: 0.45 }}, 28.4);
+tl.to('#cta-qr-wrap', {{ opacity: 1, scale: 1, rotation: 0, duration: 0.5, ease: 'back.out(1.7)' }}, 33.59);
+tl.fromTo('#cta-qr-ring', {{ scale: 1, opacity: 0.9 }}, {{ scale: 1.18, opacity: 0, duration: 1.0, repeat: 2, ease: 'power1.out' }}, 34.02);
+tl.to('#cta-qr-label', {{ opacity: 1, duration: 0.4 }}, 34.1);
+tl.to('#cta-url', {{ opacity: 1, y: -4, duration: 0.45 }}, 34.23);
 
-// 40.4 — fade out, loop
-tl.to('#scene-cta', {{ opacity: 0, duration: 0.45 }}, 33.99);
-tl.to('#blackout', {{ opacity: 1, duration: 0.9, ease: 'power2.in' }}, 34.16);
+// 39.99 — fade out, loop
+tl.to('#scene-cta', {{ opacity: 0, duration: 0.45 }}, 39.82);
+tl.to('#blackout', {{ opacity: 1, duration: 0.9, ease: 'power2.in' }}, 39.99);
 
 // reset for next loop
 tl.call(() => {{
   gsap.set('#wordmark', {{ clipPath: 'inset(0 100% 0 0)' }});
   gsap.set('#tagline', {{ opacity: 0 }});
-  gsap.set(['#logo-main', '#logo-ghost-r', '#logo-ghost-c'], {{ opacity: 0, x: 0 }});
-  gsap.set('#logo-sheen', {{ left: '-65%' }});
   gsap.set('#corner-logo', {{ opacity: 0 }});
   gsap.set('#stats-divider', {{ width: '0px' }});
   gsap.set('#scene-stats .heading .word', {{ opacity: 0, y: 22, scale: 0.6, rotation: -8, filter: 'blur(6px)' }});
@@ -569,10 +670,8 @@ tl.call(() => {{
   gsap.set('#cta-qr-wrap', {{ opacity: 0, scale: 0.7, rotation: -6 }});
   gsap.set('#cta-qr-label', {{ opacity: 0 }});
   gsap.set('#cta-url', {{ opacity: 0 }});
-  gsap.set('#cta-logo-wrap', {{ opacity: 0, scale: 0.7 }});
-  gsap.set('#cta-logo-sheen', {{ left: '-65%' }});
   gsap.set('#cta-headline .word', {{ opacity: 0 }});
-}}, [], 35.0);
+}}, [], 40.83);
 
 window.__tl = tl;
 (function() {{
