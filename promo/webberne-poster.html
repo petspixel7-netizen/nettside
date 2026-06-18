@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<title>webberne — plakatfilm</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;700;800;900&family=Libre+Baskerville:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap');
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+
+:root{
+  --paper-char:#171A1D;
+  --paper-tan:#E4CAB5;
+  --paper-orange:#F88D2E;
+  --paper-cream:#F4F2EC;
+  --ink:#171A1D;
+  --ink-light:#F4F2EC;
+  --acc:#F88D2E;
+  --acc2:#F54F2D;
+}
+
+html,body{width:1920px;height:1080px;background:#000;overflow:hidden;font-family:'Big Shoulders Display',sans-serif;}
+
+#stage{position:absolute;inset:0;overflow:hidden;background:#050505;
+  display:flex;align-items:center;justify-content:center;}
+
+.poster{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  transform:translateY(110%) rotate(0.001deg);
+  will-change:transform;
+  box-shadow:0 -30px 90px rgba(0,0,0,0.65);
+  overflow:hidden;
+}
+.poster.first{transform:translateY(0%);}
+
+.poster::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 120% 110% at 50% 45%, transparent 55%, rgba(0,0,0,0.16) 100%);
+}
+.p-char{background:var(--paper-char);}
+.p-char::after{background:radial-gradient(ellipse 120% 110% at 50% 45%, transparent 55%, rgba(0,0,0,0.5) 100%);}
+.p-tan{background:var(--paper-tan);}
+.p-orange{background:var(--paper-orange);}
+.p-cream{background:var(--paper-cream);}
+
+.lbl{
+  position:absolute;font-family:'JetBrains Mono',monospace;
+  font-size:18px;letter-spacing:0.14em;line-height:1.7;
+  text-transform:lowercase;z-index:30;
+}
+.lbl-tl{top:40px;left:44px;}
+.lbl-tr{top:40px;right:44px;text-align:right;}
+.lbl-bl{bottom:40px;left:44px;}
+.lbl-br{bottom:40px;right:44px;text-align:right;}
+
+.on-dark .lbl{color:rgba(244,242,236,0.6);}
+.on-light .lbl{color:rgba(23,26,29,0.62);}
+
+.wb-block{
+  display:inline-block;font-family:'Big Shoulders Display',sans-serif;
+  font-weight:900;font-size:22px;letter-spacing:0.02em;
+  padding:5px 9px 4px;line-height:1;
+}
+.on-dark .wb-block{background:var(--ink-light);color:var(--ink);}
+.on-light .wb-block{background:var(--ink);color:var(--paper-orange);}
+.p-tan .wb-block{background:var(--ink);color:var(--paper-tan);}
+
+.serif-line{
+  font-family:'Libre Baskerville',serif;font-style:italic;
+  font-size:22px;letter-spacing:0.01em;line-height:1.55;
+}
+.on-dark .serif-line{color:rgba(244,242,236,0.82);}
+.on-light .serif-line{color:rgba(23,26,29,0.82);}
+
+.head-wrap{position:relative;z-index:10;text-align:center;}
+
+.bighead{
+  font-weight:900;line-height:0.78;letter-spacing:-0.035em;
+  text-transform:lowercase;position:relative;
+}
+.bighead .row{display:block;white-space:nowrap;position:relative;}
+.bighead .ch{display:inline-block;position:relative;will-change:transform,opacity;}
+.bighead .ch.up{text-transform:uppercase;}
+.bighead .ch.z-front{z-index:12;}
+.bighead .ch.z-back{z-index:8;}
+
+.on-dark .bighead{color:var(--ink-light);}
+.on-light .bighead{color:var(--ink);}
+
+.figure{position:absolute;z-index:10;pointer-events:none;will-change:transform,opacity;opacity:0;}
+.figure svg{display:block;overflow:visible;}
+
+/* ---------- POSTER 1 — nettsideSKAM ---------- */
+#p1 .bighead{font-size:240px;}
+#p1 .strap{
+  margin-top:38px;font-family:'JetBrains Mono',monospace;font-size:22px;
+  letter-spacing:0.1em;color:rgba(244,242,236,0.65);text-transform:lowercase;opacity:0;
+}
+
+/* ---------- POSTER 2 — usynlig -> sett. brukt. ---------- */
+#p2 .bighead{font-size:148px;color:var(--ink);}
+#p2 .swap-zone{position:relative;display:block;height:1em;line-height:0.82;}
+#p2 .swap-zone .sw{position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;will-change:transform,opacity,filter;}
+#p2 .sw-2{opacity:0;}
+#p2 .sw-2 .accent-paint{position:relative;display:inline-block;}
+#p2 .sw-2 .paint-bg{position:absolute;left:-0.08em;right:-0.08em;top:0.06em;bottom:0.02em;background:var(--ink);z-index:-1;transform:scaleX(0);transform-origin:left;}
+#p2 .sw-2 .accent-paint .txt{color:var(--paper-tan);}
+#p2 .datoline{margin-top:42px;opacity:0;font-size:28px;}
+
+/* ---------- POSTER 3 — kommunikasjon / designet er budbringeren ---------- */
+#p3 .grid-inv{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(23,26,29,0.08) 1px,transparent 1px),linear-gradient(90deg,rgba(23,26,29,0.08) 1px,transparent 1px);
+  background-size:72px 72px;}
+#p3 .big{font-weight:900;text-transform:uppercase;color:var(--ink);font-size:148px;line-height:0.86;letter-spacing:-0.02em;}
+#p3 .big .line{display:block;overflow:hidden;}
+#p3 .big .line>span{display:inline-block;transform:translateY(112%);will-change:transform;}
+#p3 .big em{font-family:'Libre Baskerville',serif;font-style:italic;font-weight:400;text-transform:none;}
+#p3 .mono-note{margin-top:30px;font-family:'JetBrains Mono',monospace;font-size:20px;letter-spacing:0.22em;text-transform:lowercase;color:rgba(23,26,29,0.6);opacity:0;}
+
+/* ---------- POSTER 4 — tilbudet ---------- */
+#p4 .head-wrap{text-align:left;width:980px;}
+#p4 .bighead{font-size:175px;text-align:left;}
+#p4 .ex-block{margin-top:42px;display:flex;flex-direction:column;gap:8px;border-left:3px solid var(--ink);padding-left:24px;}
+#p4 .ex-row{overflow:hidden;}
+#p4 .ex-row>span{display:inline-block;transform:translateY(110%);will-change:transform;font-size:26px;}
+#p4 .stamp{position:absolute;right:130px;top:50%;font-weight:900;font-size:54px;line-height:0.92;
+  color:var(--paper-cream);background:var(--ink);padding:18px 28px;
+  transform:rotate(-6deg) scale(3);opacity:0;z-index:20;letter-spacing:-0.01em;text-transform:lowercase;text-align:center;will-change:transform,opacity;}
+#p4 .stamp small{display:block;font-family:'JetBrains Mono',monospace;font-weight:400;font-size:16px;letter-spacing:0.18em;margin-top:6px;}
+
+/* ---------- POSTER 5 — webberne finale ---------- */
+#p5 .bighead{font-size:255px;}
+#p5 .url-line{margin-top:46px;opacity:0;display:flex;align-items:center;justify-content:center;gap:18px;
+  font-family:'JetBrains Mono',monospace;font-size:24px;letter-spacing:0.24em;color:rgba(244,242,236,0.9);text-transform:lowercase;}
+#p5 .url-line .dash{width:34px;height:1px;background:var(--acc);}
+#p5 .underline{height:3px;background:var(--acc);width:0%;margin:20px auto 0;max-width:300px;}
+
+#grain{position:absolute;inset:0;pointer-events:none;z-index:95;opacity:0.05;mix-blend-mode:overlay;}
+#pageno{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);
+  font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:0.4em;color:rgba(255,255,255,0.35);z-index:96;mix-blend-mode:difference;}
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- ============ POSTER 1 — nettsideSKAM ============ -->
+  <section class="poster p-char on-dark first" id="p1">
+    <div class="lbl lbl-tl" id="p1-tl">webberne — nettsider<br>som skaper kunder</div>
+    <div class="lbl lbl-tr" id="p1-tr"><span class="wb-block">WB</span></div>
+    <div class="lbl lbl-bl" id="p1-bl">for norske bedrifter<br>som vil vokse</div>
+    <div class="lbl lbl-br serif-line" id="p1-br">en kort visning i fem akter</div>
+
+    <div class="head-wrap">
+      <div class="bighead" id="p1-head"><span class="row" data-word="nettsideSKAM"></span></div>
+      <div class="figure" id="fig-1" style="top:-18%;left:6%;width:38%;">
+        <svg viewBox="0 0 300 300" fill="none"><path d="M20 250 C 60 80, 200 60, 280 160" stroke="#F88D2E" stroke-width="34" stroke-linecap="round"/></svg>
+      </div>
+      <div class="figure" id="fig-2" style="bottom:-22%;right:2%;width:34%;">
+        <svg viewBox="0 0 300 300" fill="none"><circle cx="150" cy="150" r="110" stroke="#F88D2E" stroke-width="30"/></svg>
+      </div>
+      <div class="figure" id="fig-3" style="top:18%;right:-8%;width:24%;">
+        <svg viewBox="0 0 300 300" fill="none"><path d="M40 280 L 150 30 L 260 280" stroke="#E4CAB5" stroke-width="26" stroke-linejoin="round" stroke-linecap="round"/></svg>
+      </div>
+      <div class="strap" id="p1-strap">vi tar knekken på nettsideskam</div>
+    </div>
+  </section>
+
+  <!-- ============ POSTER 2 — usynlig → sett. brukt. ============ -->
+  <section class="poster p-tan on-light" id="p2">
+    <div class="lbl lbl-tl" id="p2-tl">akt 02 — problemet</div>
+    <div class="lbl lbl-tr" id="p2-tr"><span class="wb-block">WB</span></div>
+    <div class="lbl lbl-bl serif-line" id="p2-bl">de fleste bedriftsnettsider, 2026</div>
+    <div class="lbl lbl-br" id="p2-br">laget av amatører<br>eller useriøse aktører</div>
+
+    <div class="head-wrap">
+      <div class="bighead">
+        <span class="row" id="p2-row1" data-word="din nettside er"></span>
+        <span class="swap-zone">
+          <span class="sw sw-1" id="p2-sw1" data-word="usynlig."></span>
+          <span class="sw sw-2" id="p2-sw2">
+            <span class="accent-paint"><span class="paint-bg" id="p2-paint"></span><span class="txt" id="p2-sw2-txt" data-word="sett. brukt."></span></span>
+          </span>
+        </span>
+      </div>
+      <div class="serif-line datoline" id="p2-dato">gjort riktig, blir den en selger 24/7.</div>
+    </div>
+  </section>
+
+  <!-- ============ POSTER 3 — designet er budbringeren ============ -->
+  <section class="poster p-orange on-light" id="p3">
+    <div class="grid-inv"></div>
+    <div class="lbl lbl-tl" id="p3-tl">akt 03 — sannheten</div>
+    <div class="lbl lbl-tr" id="p3-tr"><span class="wb-block">WB</span></div>
+    <div class="lbl lbl-bl serif-line" id="p3-bl">webberne — nettside studio</div>
+    <div class="lbl lbl-br" id="p3-br">norge · 2026</div>
+
+    <div class="head-wrap">
+      <div class="big">
+        <span class="line"><span>Kommunikasjon er</span></span>
+        <span class="line"><span>fokuset, designet er</span></span>
+        <span class="line"><span><em>budbringeren.</em></span></span>
+      </div>
+      <div class="mono-note" id="p3-note">strategi som konverterer — ikke bare dekorerer</div>
+    </div>
+  </section>
+
+  <!-- ============ POSTER 4 — din nettSIDE / tilbudet ============ -->
+  <section class="poster p-cream on-light" id="p4">
+    <div class="lbl lbl-tl" id="p4-tl">akt 04 — tilbudet</div>
+    <div class="lbl lbl-tr" id="p4-tr"><span class="wb-block" style="background:#171A1D;color:#F4F2EC;">WB</span></div>
+    <div class="lbl lbl-br" id="p4-br">ingen maler · ingen AI-tekster<br>skreddersydd, fra strategi til lansering</div>
+
+    <div class="head-wrap">
+      <div class="bighead" id="p4-head"><span class="row" data-word="din nettSIDE"></span></div>
+      <div class="ex-block serif-line">
+        <div class="ex-row"><span id="p4-r1">strategi, SEO og tekstforfatting — alt inkludert</span></div>
+        <div class="ex-row"><span id="p4-r2">vakker, men viktigst: lett å forstå og klikke</span></div>
+        <div class="ex-row"><span id="p4-r3">vedlikehold fra 300 kr i måneden</span></div>
+      </div>
+    </div>
+    <div class="stamp" id="p4-stamp">gratis<br>analyse<small>book i dag</small></div>
+  </section>
+
+  <!-- ============ POSTER 5 — webberne finale ============ -->
+  <section class="poster p-char on-dark" id="p5">
+    <div class="lbl lbl-tl" id="p5-tl">akt 05 — start</div>
+    <div class="lbl lbl-tr" id="p5-tr"><span class="wb-block">WB</span></div>
+    <div class="lbl lbl-bl serif-line" id="p5-bl">book en gratis nettsideanalyse</div>
+    <div class="lbl lbl-br" id="p5-br">nettsider · foto · film</div>
+
+    <div class="head-wrap">
+      <div class="bighead" id="p5-head"><span class="row" data-word="webberne"></span></div>
+      <div class="figure" id="fig-4" style="top:-24%;right:4%;width:30%;">
+        <svg viewBox="0 0 300 300" fill="none"><path d="M30 260 C 90 40, 230 70, 270 220" stroke="#F88D2E" stroke-width="32" stroke-linecap="round"/></svg>
+      </div>
+      <div class="figure" id="fig-5" style="bottom:-20%;left:0%;width:26%;">
+        <svg viewBox="0 0 300 300" fill="none"><circle cx="150" cy="150" r="105" stroke="#E4CAB5" stroke-width="26"/></svg>
+      </div>
+      <div class="url-line" id="p5-url"><span class="dash"></span><span>webberne.no · +47 929 929 90</span><span class="dash"></span></div>
+      <div class="underline" id="p5-under"></div>
+    </div>
+  </section>
+
+  <canvas id="grain" width="240" height="240"></canvas>
+  <div id="pageno">01 / 05</div>
+</div>
+
+<script src="../vendor/anim/gsap.min.js"></script>
+<script>
+/* ---------- grain ---------- */
+(function(){
+  const c=document.getElementById('grain'),x=c.getContext('2d');
+  function n(){const d=x.createImageData(240,240),a=d.data;
+    for(let i=0;i<a.length;i+=4){const v=Math.random()*255;a[i]=a[i+1]=a[i+2]=v;a[i+3]=255;}
+    x.putImageData(d,0,0);}
+  n();setInterval(n,90);
+})();
+
+/* ---------- build per-char spans with case disruption ---------- */
+function buildWord(el){
+  const word = el.dataset.word;
+  el.innerHTML = '';
+  [...word].forEach((ch,i)=>{
+    const s=document.createElement('span');
+    s.className='ch '+(i%2===0?'z-front':'z-back');
+    if(ch===' '){ s.innerHTML='&nbsp;'; }
+    else{
+      s.textContent=ch;
+      if(ch===ch.toUpperCase() && ch!==ch.toLowerCase()) s.classList.add('up');
+    }
+    el.appendChild(s);
+  });
+  return el.querySelectorAll('.ch');
+}
+
+const p1Chars = buildWord(document.querySelector('#p1-head .row'));
+const p2Row1  = buildWord(document.getElementById('p2-row1'));
+const p2Sw1   = buildWord(document.getElementById('p2-sw1'));
+const p2Sw2   = buildWord(document.getElementById('p2-sw2-txt'));
+const p4Chars = buildWord(document.querySelector('#p4-head .row'));
+const p5Chars = buildWord(document.querySelector('#p5-head .row'));
+
+const E='expo.out';
+
+function paste(toSel,page){
+  const tl=gsap.timeline();
+  tl.fromTo(toSel,{y:'112%',rotate:gsap.utils.random(-2.5,2.5)},{y:'0%',rotate:0,duration:0.95,ease:'power4.inOut'});
+  tl.fromTo(toSel,{scale:1.015},{scale:1,duration:0.4,ease:'power2.out'},'-=0.15');
+  tl.call(()=>{document.getElementById('pageno').textContent=page+' / 05';},null,0.5);
+  return tl;
+}
+
+function lettersIn(chars,opts={}){
+  const tl=gsap.timeline();
+  tl.fromTo(chars,
+    {y:'118%',rotate:(i,t)=>t.classList.contains('up')?gsap.utils.random(-14,14):gsap.utils.random(-4,4),opacity:0},
+    {y:'0%',rotate:0,opacity:1,duration:opts.dur||0.85,stagger:{each:opts.each||0.045,from:opts.from||'start'},ease:E});
+  return tl;
+}
+
+function upperKnock(chars){
+  const tl=gsap.timeline();
+  chars.forEach((c,i)=>{
+    if(c.classList.contains('up')){
+      tl.to(c,{rotate:gsap.utils.random(-8,8),scale:1.06,duration:0.18,ease:'power2.in'},i*0.02);
+      tl.to(c,{rotate:0,scale:1,duration:0.45,ease:'elastic.out(1,0.45)'},'>');
+      const prev=chars[i-1],next=chars[i+1];
+      if(prev) tl.fromTo(prev,{x:0},{x:-4,duration:0.12,yoyo:true,repeat:1,ease:'power2.inOut'},'<');
+      if(next) tl.fromTo(next,{x:0},{x:4,duration:0.12,yoyo:true,repeat:1,ease:'power2.inOut'},'<');
+    }
+  });
+  return tl;
+}
+
+function labelsIn(scope){
+  return gsap.fromTo(scope+' .lbl',{opacity:0,y:10},{opacity:1,y:0,duration:0.6,stagger:0.08,ease:'power3.out'});
+}
+function labelsSet(scope){ gsap.set(scope+' .lbl',{opacity:0}); }
+
+['#p1','#p2','#p3','#p4','#p5'].forEach(labelsSet);
+
+const m=gsap.timeline({delay:0.45});
+
+/* === POSTER 1 === */
+m.add(labelsIn('#p1'));
+m.add(lettersIn(p1Chars,{each:0.05}),'-=0.4');
+m.add(upperKnock(p1Chars),'-=0.25');
+m.fromTo('#fig-1',{opacity:0,x:-90,y:60,rotate:-22},{opacity:1,x:0,y:0,rotate:0,duration:1.0,ease:E},'-=0.7');
+m.fromTo('#fig-2',{opacity:0,scale:0.4,rotate:40},{opacity:1,scale:1,rotate:0,duration:1.0,ease:E},'-=0.8');
+m.fromTo('#fig-3',{opacity:0,y:80},{opacity:0.9,y:0,duration:0.9,ease:E},'-=0.8');
+m.to('#p1-strap',{opacity:1,duration:0.7},'-=0.3');
+m.to('#fig-1',{y:-10,rotate:3,duration:1.8,yoyo:true,repeat:1,ease:'sine.inOut'},'-=0.2');
+m.to('#fig-2',{rotate:14,duration:2.4,ease:'sine.inOut'},'<');
+m.to({},{duration:0.8});
+
+/* === PASTE → POSTER 2 === */
+m.add(paste('#p2','02'));
+m.add(labelsIn('#p2'),'-=0.35');
+m.add(lettersIn(p2Row1,{each:0.035,dur:0.7}),'-=0.5');
+m.add(lettersIn(p2Sw1,{each:0.04,dur:0.7}),'-=0.45');
+m.to({},{duration:1.0});
+m.to(p2Sw1,{y:'-130%',opacity:0,duration:0.45,stagger:0.015,ease:'power3.in'});
+m.to('#p2-sw1',{filter:'blur(6px)',duration:0.4,ease:'power2.in'},'<');
+m.set('#p2-sw2',{opacity:1});
+m.to('#p2-paint',{scaleX:1,duration:0.55,ease:'power4.inOut'},'-=0.1');
+m.add(lettersIn(p2Sw2,{each:0.04,dur:0.65}),'-=0.3');
+m.to('#p2-dato',{opacity:1,duration:0.7},'-=0.2');
+m.fromTo('#p2-dato',{y:12},{y:0,duration:0.7,ease:E},'<');
+m.to({},{duration:1.5});
+
+/* === PASTE → POSTER 3 === */
+m.add(paste('#p3','03'));
+m.add(labelsIn('#p3'),'-=0.35');
+m.to('#p3 .big .line > span',{y:'0%',duration:0.95,stagger:0.12,ease:E},'-=0.45');
+m.to('#p3-note',{opacity:1,duration:0.6},'-=0.3');
+m.fromTo('#p3-note',{y:10},{y:0,duration:0.6,ease:E},'<');
+m.to({},{duration:2.1});
+
+/* === PASTE → POSTER 4 === */
+m.add(paste('#p4','04'));
+m.add(labelsIn('#p4'),'-=0.35');
+m.add(lettersIn(p4Chars,{each:0.05}),'-=0.45');
+m.add(upperKnock(p4Chars),'-=0.25');
+m.to(['#p4-r1','#p4-r2','#p4-r3'],{y:'0%',duration:0.8,stagger:0.14,ease:E},'-=0.5');
+m.to('#p4-stamp',{opacity:1,scale:1,rotate:-6,duration:0.32,ease:'power4.in'},'+=0.35');
+m.fromTo('#p4-stamp',{},{scale:0.97,duration:0.1,yoyo:true,repeat:1,ease:'power2.inOut'});
+m.fromTo('#p4',{x:0},{x:3,duration:0.05,yoyo:true,repeat:3,ease:'none'},'-=0.15');
+m.to({},{duration:2.2});
+
+/* === PASTE → POSTER 5 === */
+m.add(paste('#p5','05'));
+m.add(labelsIn('#p5'),'-=0.35');
+m.add(lettersIn(p5Chars,{each:0.055}),'-=0.45');
+m.add(upperKnock(p5Chars),'-=0.25');
+m.fromTo('#fig-4',{opacity:0,x:70,rotate:25},{opacity:1,x:0,rotate:0,duration:1.0,ease:E},'-=0.7');
+m.fromTo('#fig-5',{opacity:0,scale:0.4},{opacity:0.9,scale:1,duration:1.0,ease:E},'-=0.85');
+m.to('#p5-url',{opacity:1,duration:0.7},'-=0.3');
+m.fromTo('#p5-url',{y:12},{y:0,duration:0.7,ease:E},'<');
+m.to('#p5-under',{width:'100%',duration:0.9,ease:E},'-=0.25');
+m.to('#fig-4',{y:-12,rotate:-4,duration:2.0,yoyo:true,repeat:1,ease:'sine.inOut'});
+m.to({},{duration:1.6});
+
+/* === LOOP === */
+m.call(()=>{
+  gsap.set('.poster',{y:'112%',rotate:0});
+  gsap.set('#p1',{y:'0%'});
+  gsap.set([...p1Chars,...p2Row1,...p2Sw1,...p2Sw2,...p4Chars,...p5Chars],{y:'118%',opacity:0,rotate:0,x:0,scale:1});
+  gsap.set('#p2-sw1',{filter:'blur(0px)',opacity:1});
+  gsap.set('#p2-sw2',{opacity:0});
+  gsap.set('#p2-paint',{scaleX:0});
+  gsap.set('.figure',{opacity:0});
+  gsap.set('#p3 .big .line > span',{y:'112%'});
+  gsap.set(['#p4-r1','#p4-r2','#p4-r3'],{y:'110%'});
+  gsap.set('#p4-stamp',{opacity:0,scale:3,rotate:-6});
+  gsap.set(['#p1-strap','#p2-dato','#p3-note','#p5-url'],{opacity:0});
+  gsap.set('#p5-under',{width:0});
+  ['#p1','#p2','#p3','#p4','#p5'].forEach(labelsSet);
+  document.getElementById('pageno').textContent='01 / 05';
+  m.restart();
+});
+</script>
+</body>
+</html>
