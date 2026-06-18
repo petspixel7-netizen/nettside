@@ -11,6 +11,10 @@ with open('public/wabisabi/sandstop.jpg', 'rb') as f:
     SANDSTOP_B64 = base64.b64encode(f.read()).decode()
 with open('public/wabisabi/qr.png', 'rb') as f:
     QR_B64 = base64.b64encode(f.read()).decode()
+with open('public/wabisabi/craft.jpg', 'rb') as f:
+    CRAFT_B64 = base64.b64encode(f.read()).decode()
+with open('public/wabisabi/finished.jpg', 'rb') as f:
+    FINISHED_B64 = base64.b64encode(f.read()).decode()
 with open('public/wabisabi/logo.svg', 'r', encoding='utf-8') as f:
     LOGO_SVG_RAW = f.read()
 with open('scripts/gsap.min.js', 'r', encoding='utf-8') as f:
@@ -145,6 +149,15 @@ HTML = f"""<!DOCTYPE html>
   #location-name{{font-family:var(--display);font-style:italic;font-size:44px;color:var(--clay);}}
   #location-addr{{font-size:19px;font-weight:300;color:var(--ink);margin-top:12px;letter-spacing:.3px;}}
   #location-phone{{font-size:16px;font-weight:300;color:var(--ink-dim);margin-top:6px;letter-spacing:.3px;}}
+  #location-name .word{{display:inline-block;opacity:0;}}
+
+  /* full-bleed animation-only photo scenes */
+  .photo-full{{position:absolute;inset:0;overflow:hidden;}}
+  .photo-full img{{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1);animation:kenBurns 9s ease-out forwards;filter:saturate(.94) contrast(1.05);}}
+  .photo-full-veil{{position:absolute;inset:0;background:linear-gradient(180deg, rgba(44,37,32,.05) 0%, rgba(44,37,32,.6) 100%);}}
+  .full-caption{{position:absolute;bottom:90px;left:0;right:0;text-align:center;z-index:5;}}
+  .full-caption .line{{font-family:var(--display);font-style:italic;font-size:42px;color:var(--paper);}}
+  .full-caption .line .word{{display:inline-block;opacity:0;}}
 
   /* cta */
   #scene-cta{{background:var(--paper2);}}
@@ -281,9 +294,27 @@ HTML = f"""<!DOCTYPE html>
     <div class="scene" id="scene-location">
       <div class="photo-organic" id="location-photo"><img src="data:image/jpeg;base64,{SANDSTOP_B64}" alt=""></div>
       <div id="location-card">
-        <div id="location-name">Velkommen til Tromsø</div>
+        <div id="location-name"><span class="word">Velkommen</span> <span class="word">til</span> <span class="word">Tromsø</span></div>
         <div id="location-addr">Skippergata 15, 9008 Tromsø</div>
         <div id="location-phone">46 67 88 72 · post@wabisabi.no</div>
+      </div>
+    </div>
+
+    <!-- SCENE 4b: craft (animation-only photo) -->
+    <div class="scene" id="scene-craft">
+      <div class="photo-full"><img src="data:image/jpeg;base64,{CRAFT_B64}" alt=""></div>
+      <div class="photo-full-veil"></div>
+      <div class="full-caption">
+        <div class="line" id="craft-caption"><span class="word">Verktøy</span> <span class="word">formet</span> <span class="word">av</span> <span class="word">år</span> <span class="word">med</span> <span class="word">håndverk</span></div>
+      </div>
+    </div>
+
+    <!-- SCENE 5b: finished pieces (animation-only photo) -->
+    <div class="scene" id="scene-finished">
+      <div class="photo-full"><img src="data:image/jpeg;base64,{FINISHED_B64}" alt=""></div>
+      <div class="photo-full-veil"></div>
+      <div class="full-caption">
+        <div class="line" id="finished-caption"><span class="word">Hvert</span> <span class="word">smykke,</span> <span class="word">en</span> <span class="word">historie</span></div>
       </div>
     </div>
 
@@ -320,7 +351,7 @@ HTML = f"""<!DOCTYPE html>
 <script>
 function fitCanvas() {{
   const vw = window.innerWidth, vh = window.innerHeight;
-  const scale = Math.min(vw / 1920, vh / 1080);
+  const scale = Math.max(vw / 1920, vh / 1080);
   document.getElementById('canvas').style.transform = `scale(${{scale}})`;
 }}
 fitCanvas();
@@ -413,75 +444,92 @@ dust(9.75, 0.2);
 
 tl.to('#scene-workshops', {{ opacity: 0, duration: 0.45 }}, 16.4);
 
-// 16.8  BRUSH WIPE into process
+// 16.8  BRUSH WIPE into craft (animation-only photo)
 brushWipe(16.8);
-tl.set('#scene-process', {{ opacity: 1 }}, 16.82);
+tl.set('#scene-craft', {{ opacity: 1 }}, 16.82);
+tl.fromTo('#craft-caption .word', {{ opacity: 0, y: 20, filter: 'blur(6px)' }}, {{ opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.5, stagger: 0.07, ease: 'power3.out' }}, 17.1);
 
-tl.to('#scene-process .heading .word', {{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: 0.55, stagger: 0.07, ease: 'back.out(1.8)' }}, 16.95);
+tl.to('#scene-craft', {{ opacity: 0, duration: 0.45 }}, 20.8);
 
-dust(17.25, 0.16);
-tl.fromTo('#proc1', {{ opacity: 0, y: 26, scale: 0.92 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.5, ease: 'back.out(1.6)' }}, 17.25);
-tl.to('#proc1 .proc-num', {{ y: -6, scale: 1.06, duration: 0.8, repeat: 4, yoyo: true, ease: 'sine.inOut' }}, 17.75);
+// 21.2  FOLD WIPE into process
+foldWipe(21.2);
+tl.set('#scene-process', {{ opacity: 1 }}, 21.22);
 
-tl.to(procLine, {{ strokeDashoffset: procLineLen / 2, duration: 0.55, ease: 'power2.inOut' }}, 17.75);
-tl.to('#process-line-dot', {{ attr: {{ cx: 510 }}, duration: 0.55, ease: 'power2.inOut' }}, 17.75);
-dust(18.3, 0.14);
-tl.fromTo('#proc2', {{ opacity: 0, y: 26, scale: 0.92 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.5, ease: 'back.out(1.6)' }}, 18.3);
-tl.to('#proc2 .proc-num', {{ y: -6, scale: 1.06, duration: 0.8, repeat: 3, yoyo: true, ease: 'sine.inOut' }}, 18.8);
+tl.to('#scene-process .heading .word', {{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: 0.55, stagger: 0.07, ease: 'back.out(1.8)' }}, 21.35);
 
-tl.to(procLine, {{ strokeDashoffset: 0, duration: 0.55, ease: 'power2.inOut' }}, 18.8);
-tl.to('#process-line-dot', {{ attr: {{ cx: 850 }}, duration: 0.55, ease: 'power2.inOut' }}, 18.8);
-dust(19.35, 0.14);
-tl.fromTo('#proc3', {{ opacity: 0, y: 26, scale: 0.92 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.5, ease: 'back.out(1.6)' }}, 19.35);
-tl.to('#proc3 .proc-num', {{ y: -6, scale: 1.06, duration: 0.8, repeat: 2, yoyo: true, ease: 'sine.inOut' }}, 19.85);
+dust(21.65, 0.16);
+tl.fromTo('#proc1', {{ opacity: 0, y: 26, scale: 0.92 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.5, ease: 'back.out(1.6)' }}, 21.65);
+tl.to('#proc1 .proc-num', {{ y: -6, scale: 1.06, duration: 0.8, repeat: 4, yoyo: true, ease: 'sine.inOut' }}, 22.15);
 
-tl.to('#scene-process', {{ opacity: 0, duration: 0.45 }}, 22.8);
+tl.to(procLine, {{ strokeDashoffset: procLineLen / 2, duration: 0.55, ease: 'power2.inOut' }}, 22.15);
+tl.to('#process-line-dot', {{ attr: {{ cx: 510 }}, duration: 0.55, ease: 'power2.inOut' }}, 22.15);
+dust(22.7, 0.14);
+tl.fromTo('#proc2', {{ opacity: 0, y: 26, scale: 0.92 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.5, ease: 'back.out(1.6)' }}, 22.7);
+tl.to('#proc2 .proc-num', {{ y: -6, scale: 1.06, duration: 0.8, repeat: 3, yoyo: true, ease: 'sine.inOut' }}, 23.2);
 
-// 23.2  FOLD WIPE into benefits
-foldWipe(23.2);
-tl.set('#scene-benefits', {{ opacity: 1 }}, 23.22);
+tl.to(procLine, {{ strokeDashoffset: 0, duration: 0.55, ease: 'power2.inOut' }}, 23.2);
+tl.to('#process-line-dot', {{ attr: {{ cx: 850 }}, duration: 0.55, ease: 'power2.inOut' }}, 23.2);
+dust(23.75, 0.14);
+tl.fromTo('#proc3', {{ opacity: 0, y: 26, scale: 0.92 }}, {{ opacity: 1, y: 0, scale: 1, duration: 0.5, ease: 'back.out(1.6)' }}, 23.75);
+tl.to('#proc3 .proc-num', {{ y: -6, scale: 1.06, duration: 0.8, repeat: 2, yoyo: true, ease: 'sine.inOut' }}, 24.25);
 
-tl.to('#scene-benefits .heading .word', {{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: 0.55, stagger: 0.07, ease: 'back.out(1.8)' }}, 23.35);
-tl.to('#benefits-divider', {{ width: '420px', duration: 0.5, ease: 'power2.out' }}, 23.55);
+tl.to('#scene-process', {{ opacity: 0, duration: 0.45 }}, 27.2);
 
-dust(23.95, 0.2);
+// 27.6  TEAR WIPE into benefits
+tearWipe(27.6);
+tl.set('#scene-benefits', {{ opacity: 1 }}, 27.62);
+
+tl.to('#scene-benefits .heading .word', {{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: 0.55, stagger: 0.07, ease: 'back.out(1.8)' }}, 27.75);
+tl.to('#benefits-divider', {{ width: '420px', duration: 0.5, ease: 'power2.out' }}, 27.95);
+
+dust(28.35, 0.2);
 ['ben1', 'ben2', 'ben3', 'ben4'].forEach((id, i) => {{
-  tl.fromTo('#' + id, {{ opacity: 0, x: -34, filter: 'blur(6px)' }}, {{ opacity: 1, x: 0, filter: 'blur(0px)', duration: 0.5, ease: 'power2.out' }}, 23.95 + i * 0.22);
-  tl.to('#' + id + ' .benefit-check', {{ scale: 1.5, duration: 0.9, repeat: 2, yoyo: true, ease: 'sine.inOut' }}, 23.95 + i * 0.22 + 0.5);
+  tl.fromTo('#' + id, {{ opacity: 0, x: -34, filter: 'blur(6px)' }}, {{ opacity: 1, x: 0, filter: 'blur(0px)', duration: 0.5, ease: 'power2.out' }}, 28.35 + i * 0.22);
+  tl.to('#' + id + ' .benefit-check', {{ scale: 1.5, duration: 0.9, repeat: 2, yoyo: true, ease: 'sine.inOut' }}, 28.35 + i * 0.22 + 0.5);
 }});
 
-tl.to('#scene-benefits', {{ opacity: 0, duration: 0.45 }}, 29.4);
+tl.to('#scene-benefits', {{ opacity: 0, duration: 0.45 }}, 33.8);
 
-// 29.8  BARS WIPE into location
-barsWipe(29.8);
-tl.set('#scene-location', {{ opacity: 1 }}, 29.82);
+// 34.2  INK WIPE into finished pieces (animation-only photo)
+inkWipe(34.2);
+tl.set('#scene-finished', {{ opacity: 1 }}, 34.22);
+tl.fromTo('#finished-caption .word', {{ opacity: 0, y: 20, filter: 'blur(6px)' }}, {{ opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.5, stagger: 0.07, ease: 'power3.out' }}, 34.5);
 
-tl.fromTo('#location-card', {{ opacity: 0, y: 20 }}, {{ opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' }}, 29.95);
+tl.to('#scene-finished', {{ opacity: 0, duration: 0.45 }}, 38.2);
 
-tl.to('#scene-location', {{ opacity: 0, duration: 0.45 }}, 33.0);
-tl.to('#corner-logo', {{ opacity: 0, duration: 0.3 }}, 33.0);
-tl.to('#corner-mark', {{ opacity: 0, duration: 0.3 }}, 33.0);
+// 38.6  BARS WIPE into location
+barsWipe(38.6);
+tl.set('#scene-location', {{ opacity: 1 }}, 38.62);
 
-// 33.4  CLAY WIPE into CTA
-clayWipe(33.4);
-tl.set('#scene-cta', {{ opacity: 1 }}, 33.41);
+tl.to('#corner-logo', {{ opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }}, 38.62);
+tl.to('#corner-mark', {{ opacity: 1, duration: 0.4, ease: 'power2.out' }}, 38.62);
+tl.to('#location-card', {{ opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' }}, 38.75);
+tl.fromTo('#location-name .word', {{ opacity: 0, y: 20, filter: 'blur(6px)' }}, {{ opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.5, stagger: 0.06, ease: 'power3.out' }}, 38.85);
 
-tl.fromTo('#cta-logo-wrap', {{ scale: 0.75, opacity: 0 }}, {{ scale: 1, opacity: 1, duration: 0.6, ease: 'back.out(1.5)' }}, 33.55);
+tl.to('#scene-location', {{ opacity: 0, duration: 0.45 }}, 41.8);
+tl.to('#corner-logo', {{ opacity: 0, duration: 0.3 }}, 41.8);
+tl.to('#corner-mark', {{ opacity: 0, duration: 0.3 }}, 41.8);
+
+// 42.2  CLAY WIPE into CTA
+clayWipe(42.2);
+tl.set('#scene-cta', {{ opacity: 1 }}, 42.21);
+
+tl.fromTo('#cta-logo-wrap', {{ scale: 0.75, opacity: 0 }}, {{ scale: 1, opacity: 1, duration: 0.6, ease: 'back.out(1.5)' }}, 42.35);
 ['ctaring1', 'ctaring2', 'ctaring3'].forEach((id, i) => {{
   gsap.set('#' + id, {{ opacity: 0 }});
-  tl.to('#' + id, {{ opacity: 1, duration: 0.35 }}, 33.55);
-  tl.to('#' + id, {{ scale: 1.03, duration: 1.1, repeat: 3, yoyo: true, ease: 'sine.inOut' }}, 33.68 + i * 0.07);
+  tl.to('#' + id, {{ opacity: 1, duration: 0.35 }}, 42.35);
+  tl.to('#' + id, {{ scale: 1.03, duration: 1.1, repeat: 3, yoyo: true, ease: 'sine.inOut' }}, 42.48 + i * 0.07);
 }});
-tl.fromTo('#cta-headline .word', {{ opacity: 0, y: 28, filter: 'blur(8px)' }}, {{ opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.6, stagger: 0.08, ease: 'power3.out' }}, 34.2);
-dust(34.65, 0.22);
+tl.fromTo('#cta-headline .word', {{ opacity: 0, y: 28, filter: 'blur(8px)' }}, {{ opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.6, stagger: 0.08, ease: 'power3.out' }}, 43.0);
+dust(43.45, 0.22);
 gsap.set('#cta-qr-wrap', {{ scale: 0.7, rotation: -6 }});
-tl.to('#cta-qr-wrap', {{ opacity: 1, scale: 1, rotation: 0, duration: 0.5, ease: 'back.out(1.7)' }}, 34.65);
-tl.to('#cta-qr-label', {{ opacity: 1, duration: 0.4 }}, 35.2);
-tl.to('#cta-url', {{ opacity: 1, y: -4, duration: 0.45 }}, 35.35);
+tl.to('#cta-qr-wrap', {{ opacity: 1, scale: 1, rotation: 0, duration: 0.5, ease: 'back.out(1.7)' }}, 43.45);
+tl.to('#cta-qr-label', {{ opacity: 1, duration: 0.4 }}, 44.0);
+tl.to('#cta-url', {{ opacity: 1, y: -4, duration: 0.45 }}, 44.15);
 
-// 39.6 — fade out, loop
-tl.to('#scene-cta', {{ opacity: 0, duration: 0.45 }}, 39.4);
-tl.to('#blackout', {{ opacity: 1, duration: 0.9, ease: 'power2.in' }}, 39.55);
+// 48.2 — fade out, loop
+tl.to('#scene-cta', {{ opacity: 0, duration: 0.45 }}, 48.2);
+tl.to('#blackout', {{ opacity: 1, duration: 0.9, ease: 'power2.in' }}, 48.35);
 
 // reset for next loop
 tl.call(() => {{
@@ -503,6 +551,9 @@ tl.call(() => {{
   gsap.set('#benefits-divider', {{ width: '0px' }});
   gsap.set('#scene-benefits .heading .word', {{ opacity: 0, y: 24, scale: 0.7, filter: 'blur(6px)' }});
   gsap.set(['#ben1', '#ben2', '#ben3', '#ben4'], {{ opacity: 0, x: -34 }});
+  gsap.set('#craft-caption .word', {{ opacity: 0, y: 20, filter: 'blur(6px)' }});
+  gsap.set('#finished-caption .word', {{ opacity: 0, y: 20, filter: 'blur(6px)' }});
+  gsap.set('#location-name .word', {{ opacity: 0, y: 20, filter: 'blur(6px)' }});
   gsap.set('#location-card', {{ opacity: 0, y: 20 }});
   gsap.set(['#ctaring1', '#ctaring2', '#ctaring3'], {{ opacity: 0 }});
   gsap.set('#cta-logo-wrap', {{ opacity: 0, scale: 0.75 }});
@@ -510,7 +561,7 @@ tl.call(() => {{
   gsap.set('#cta-qr-wrap', {{ opacity: 0, scale: 0.7, rotation: -6 }});
   gsap.set('#cta-qr-label', {{ opacity: 0 }});
   gsap.set('#cta-url', {{ opacity: 0 }});
-}}, [], 40.4);
+}}, [], 49.2);
 
 window.__tl = tl;
 (function() {{
