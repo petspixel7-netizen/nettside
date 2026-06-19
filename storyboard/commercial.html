@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="nb-NO">
+<head>
+<meta charset="UTF-8" />
+<title>Skapnett — 30 sek TV-reklame</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Roboto+Slab:wght@300;400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --white: #FFFFFF;
+    --dark-grey: #292320;
+    --grey: #372F2B;
+    --brown: #772F10;
+    --beige: #FBF6ED;
+    --orange: #FF6B2C;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background:#000; overflow:hidden; font-family:'Sora',sans-serif; color:var(--beige); }
+  .stage {
+    position: relative;
+    width: 1920px;
+    height: 1080px;
+    background: #000;
+    overflow: hidden;
+  }
+  .scene {
+    position: absolute; inset: 0;
+    opacity: 0;
+    will-change: opacity, transform;
+  }
+  .bg {
+    position: absolute; inset: 0;
+    background-size: cover;
+    background-position: center;
+    transform-origin: center center;
+    will-change: transform;
+  }
+  .vignette {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg,
+      rgba(0,0,0,0.45) 0%,
+      rgba(0,0,0,0.05) 30%,
+      rgba(0,0,0,0.05) 60%,
+      rgba(0,0,0,0.9) 100%);
+    pointer-events: none;
+  }
+
+  /* Persistent watermark */
+  .watermark {
+    position: absolute;
+    top: 36px; right: 56px;
+    height: 38px;
+    filter: brightness(0) invert(1);
+    opacity: 0;
+    z-index: 100;
+    will-change: opacity;
+  }
+
+  /* Lower-third subtitle bar */
+  .lower-third {
+    position: absolute;
+    left: 0; right: 0;
+    bottom: 60px;
+    padding: 0 90px;
+    z-index: 80;
+    opacity: 0;
+    transform: translateY(20px);
+    will-change: opacity, transform;
+  }
+  .lower-third .label {
+    font-family: 'Sora', sans-serif;
+    font-size: 14px;
+    color: var(--orange);
+    font-weight: 700;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .lower-third .line {
+    font-family: 'Roboto Slab', serif;
+    font-size: 40px;
+    line-height: 1.25;
+    color: var(--beige);
+    font-weight: 400;
+    font-style: italic;
+    text-shadow: 0 2px 14px rgba(0,0,0,0.7);
+    max-width: 1500px;
+  }
+
+  /* === SCENE 1: Opening === */
+  .s1 .headline {
+    position: absolute;
+    bottom: 240px; left: 90px;
+    font-family: 'Sora', sans-serif;
+    font-weight: 800;
+    font-size: 96px;
+    line-height: 1;
+    letter-spacing: -2px;
+    text-shadow: 0 4px 24px rgba(0,0,0,0.7);
+    color: var(--beige);
+  }
+  .s1 .headline em { font-style:normal; color: var(--orange); }
+  .s1 .h-line {
+    display: block;
+    opacity: 0;
+    transform: translateY(40px);
+    will-change: opacity, transform;
+  }
+
+  /* === SCENE 2: Måltilpasset === */
+  .s2 .headline {
+    position: absolute;
+    bottom: 240px; left: 90px;
+    font-family: 'Sora', sans-serif;
+    font-weight: 800;
+    font-size: 110px;
+    line-height: 0.95;
+    letter-spacing: -3px;
+    text-shadow: 0 4px 24px rgba(0,0,0,0.7);
+  }
+  .s2 .headline em { font-style:normal; color: var(--orange); }
+  .s2 .h-line {
+    display: block;
+    opacity: 0;
+    transform: translateX(-60px);
+    will-change: opacity, transform;
+  }
+
+  /* === SCENE 3: Gratis befaring === */
+  .s3 .stamp {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(-6deg) scale(0.3);
+    background: var(--orange);
+    color: #fff;
+    padding: 40px 80px;
+    border-radius: 18px;
+    font-family: 'Sora', sans-serif;
+    font-weight: 800;
+    font-size: 110px;
+    letter-spacing: -2px;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+    line-height: 0.95;
+    opacity: 0;
+    will-change: opacity, transform;
+  }
+  .s3 .stamp .small {
+    display: block;
+    font-size: 28px;
+    letter-spacing: 6px;
+    margin-bottom: 16px;
+    font-weight: 700;
+    opacity: 0.95;
+  }
+  .s3 .regions {
+    position: absolute;
+    top: 110px; left: 50%;
+    transform: translate(-50%, -30px);
+    opacity: 0;
+    background: rgba(41,35,32,0.85);
+    backdrop-filter: blur(6px);
+    color: var(--beige);
+    padding: 16px 40px;
+    border-radius: 100px;
+    font-size: 20px;
+    letter-spacing: 1px;
+    border: 1px solid rgba(251,246,237,0.2);
+    will-change: opacity, transform;
+  }
+
+  /* === SCENE 4: Tegnetime panel === */
+  .s4 .panel {
+    position: absolute;
+    top: 50%; right: 90px;
+    transform: translate(120px, -50%);
+    opacity: 0;
+    background: rgba(41,35,32,0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    padding: 60px;
+    width: 660px;
+    border: 1px solid rgba(251,246,237,0.18);
+    will-change: opacity, transform;
+  }
+  .s4 .panel .ic-wrap {
+    width: 80px; height: 80px;
+    background: var(--orange);
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 40px;
+    margin-bottom: 28px;
+  }
+  .s4 .panel .kicker {
+    font-size: 14px; color: var(--orange);
+    letter-spacing: 4px; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 12px;
+  }
+  .s4 .panel .h {
+    font-size: 56px; font-weight: 800;
+    line-height: 1; margin-bottom: 22px;
+    letter-spacing: -1px;
+  }
+  .s4 .panel .d {
+    font-family: 'Roboto Slab', serif;
+    font-size: 22px; opacity: 0.85; line-height: 1.5;
+  }
+
+  /* === SCENE 5: Profiler === */
+  .s5 .bg-solid {
+    position: absolute; inset: 0;
+    background: var(--dark-grey);
+  }
+  .s5 .super {
+    position: absolute;
+    top: 120px; left: 50%;
+    transform: translate(-50%, -20px);
+    opacity: 0;
+    text-align: center;
+    will-change: opacity, transform;
+  }
+  .s5 .super .kicker {
+    font-size: 16px;
+    color: var(--orange);
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .s5 .super .title {
+    font-size: 64px;
+    font-weight: 800;
+    letter-spacing: -1px;
+  }
+  .s5 .grid {
+    position: absolute;
+    top: 270px; left: 50%;
+    transform: translateX(-50%);
+    display: grid;
+    grid-template-columns: repeat(5, 280px);
+    gap: 28px;
+  }
+  .s5 .card {
+    background: rgba(251,246,237,0.05);
+    border: 1px solid rgba(251,246,237,0.18);
+    border-radius: 14px;
+    padding: 20px;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(60px);
+    will-change: opacity, transform;
+  }
+  .s5 .card img {
+    width: 100%; height: 270px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 16px;
+  }
+  .s5 .card .name { font-size: 21px; font-weight: 700; margin-bottom: 4px; }
+  .s5 .card .colors { font-family: 'Roboto Slab', serif; font-size: 13px; color: var(--orange); opacity:0.9; }
+
+  /* === SCENE 6: KAMPANJE 40% === */
+  .s6 .bg-burst {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, var(--brown) 0%, #8a3a18 60%, var(--orange) 130%);
+  }
+  .s6 .ring {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 70%);
+    transform: translate(-50%,-50%) scale(0);
+    will-change: transform, opacity;
+  }
+  .s6 .offer {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    text-align: center;
+    width: 100%;
+  }
+  .s6 .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--beige);
+    color: var(--brown);
+    font-size: 26px;
+    font-weight: 800;
+    padding: 14px 36px;
+    border-radius: 100px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    margin-bottom: 36px;
+    opacity: 0;
+    transform: translateY(-30px);
+    will-change: opacity, transform;
+  }
+  .s6 .badge::before { content: '🧡'; font-size: 28px; }
+  .s6 .big {
+    font-size: 360px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -16px;
+    text-shadow: 0 14px 40px rgba(0,0,0,0.5);
+    color: var(--beige);
+    opacity: 0;
+    transform: scale(0.6);
+    will-change: opacity, transform;
+  }
+  .s6 .big .pct { font-size: 0.55em; }
+  .s6 .sub {
+    font-size: 50px;
+    font-weight: 600;
+    letter-spacing: -1px;
+    color: var(--beige);
+    margin-top: 4px;
+    opacity: 0;
+    transform: translateY(20px);
+    will-change: opacity, transform;
+  }
+  .s6 .small-note {
+    font-family: 'Roboto Slab', serif;
+    font-size: 24px;
+    color: var(--beige);
+    opacity: 0;
+    margin-top: 16px;
+    font-style: italic;
+  }
+  .s6 .pills {
+    margin-top: 50px;
+    display: flex;
+    justify-content: center;
+    gap: 22px;
+  }
+  .s6 .pill {
+    background: rgba(251,246,237,0.15);
+    border: 2px solid rgba(251,246,237,0.55);
+    color: var(--beige);
+    padding: 16px 32px;
+    border-radius: 100px;
+    font-size: 20px;
+    font-weight: 600;
+    opacity: 0;
+    transform: translateY(30px);
+    will-change: opacity, transform;
+  }
+
+  /* === SCENE 7: Trustpilot === */
+  .s7 .quote-block {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -45%);
+    text-align: center;
+    width: 1500px;
+    padding: 60px;
+    background: rgba(41,35,32,0.85);
+    backdrop-filter: blur(8px);
+    border-radius: 24px;
+    border: 1px solid rgba(251,246,237,0.18);
+    opacity: 0;
+    will-change: opacity, transform;
+  }
+  .s7 .stars {
+    color: #ffb800;
+    font-size: 84px;
+    letter-spacing: 8px;
+    line-height: 1;
+  }
+  .s7 .star {
+    display: inline-block;
+    opacity: 0;
+    transform: scale(0.4);
+    will-change: opacity, transform;
+  }
+  .s7 .quote {
+    font-family: 'Roboto Slab', serif;
+    font-size: 60px;
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1.2;
+    margin: 28px 0 24px;
+    opacity: 0;
+    transform: translateY(20px);
+    will-change: opacity, transform;
+  }
+  .s7 .author {
+    font-size: 24px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0;
+    will-change: opacity;
+  }
+  .s7 .trust {
+    font-size: 16px;
+    color: var(--beige);
+    opacity: 0;
+    margin-top: 8px;
+    letter-spacing: 2px;
+    will-change: opacity;
+  }
+
+  /* === SCENE 8: CTA === */
+  .s8 .bg-solid {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, var(--dark-grey) 0%, var(--grey) 100%);
+  }
+  .s8 .center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    text-align: center;
+    width: 100%;
+  }
+  .s8 .logo {
+    height: 120px;
+    filter: brightness(0) invert(1);
+    margin-bottom: 32px;
+    opacity: 0;
+    transform: scale(0.7);
+    will-change: opacity, transform;
+  }
+  .s8 .tag {
+    font-family: 'Roboto Slab', serif;
+    font-size: 38px;
+    opacity: 0.9;
+    font-style: italic;
+    margin-bottom: 60px;
+    opacity: 0;
+    will-change: opacity;
+  }
+  .s8 .row {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    margin-bottom: 50px;
+  }
+  .s8 .cta {
+    padding: 26px 56px;
+    border-radius: 100px;
+    font-size: 28px;
+    font-weight: 700;
+    opacity: 0;
+    transform: translateY(30px);
+    will-change: opacity, transform;
+  }
+  .s8 .cta.primary { background: var(--orange); color:#fff; box-shadow: 0 14px 30px rgba(255,107,44,0.45); }
+  .s8 .cta.secondary { background: var(--beige); color: var(--brown); }
+  .s8 .contact {
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    font-size: 24px;
+    font-weight: 600;
+    opacity: 0;
+    will-change: opacity;
+  }
+  .s8 .contact .ic {
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    width: 44px; height: 44px;
+    background: var(--orange);
+    border-radius: 50%;
+    margin-right: 12px; font-size: 20px;
+    vertical-align: middle;
+  }
+
+  /* Wipe transition layer */
+  .wipe {
+    position: absolute; inset: 0;
+    background: #000;
+    z-index: 200;
+    opacity: 0;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="stage" id="stage">
+  <!-- SCENE 1: Opening with showroom -->
+  <div class="scene s1" id="sc1">
+    <div class="bg" id="sc1-bg" style="background-image:url('assets/og-garderobe.png');"></div>
+    <div class="vignette"></div>
+    <h1 class="headline">
+      <span class="h-line" id="s1-l1">Drømmer du om en</span>
+      <span class="h-line" id="s1-l2">garderobe som passer</span>
+      <span class="h-line" id="s1-l3"><em>akkurat ditt rom?</em></span>
+    </h1>
+  </div>
+
+  <!-- SCENE 2: Bedroom -->
+  <div class="scene s2" id="sc2">
+    <div class="bg" id="sc2-bg" style="background-image:url('assets/photo.png');"></div>
+    <div class="vignette"></div>
+    <h1 class="headline">
+      <span class="h-line" id="s2-l1">Skapt etter <em>ditt</em></span>
+      <span class="h-line" id="s2-l2">hjem — millimeter</span>
+      <span class="h-line" id="s2-l3">for millimeter.</span>
+    </h1>
+  </div>
+
+  <!-- SCENE 3: Gratis befaring stamp over walk-in -->
+  <div class="scene s3" id="sc3">
+    <div class="bg" id="sc3-bg" style="background-image:url('assets/photo-3.png');"></div>
+    <div class="vignette"></div>
+    <div class="regions" id="s3-regions">📍 Oslo · Akershus · Buskerud · Oppland · Hedmark · Østfold</div>
+    <div class="stamp" id="s3-stamp"><span class="small">VI KOMMER TIL DEG</span>GRATIS<br>BEFARING</div>
+  </div>
+
+  <!-- SCENE 4: Tegnetime panel -->
+  <div class="scene s4" id="sc4">
+    <div class="bg" id="sc4-bg" style="background-image:url('assets/photo-2.png');"></div>
+    <div class="vignette"></div>
+    <div class="panel" id="s4-panel">
+      <div class="ic-wrap">💻</div>
+      <div class="kicker">100% DIGITALT</div>
+      <div class="h">Book en<br>gratis<br>Tegnetime</div>
+      <div class="d">30 minutter med en garderobe&shy;konsulent — vi hjelper deg å designe drømme&shy;skapet hjemmefra.</div>
+    </div>
+  </div>
+
+  <!-- SCENE 5: Profiler grid -->
+  <div class="scene s5" id="sc5">
+    <div class="bg-solid"></div>
+    <div class="super" id="s5-super">
+      <div class="kicker">5 EKSKLUSIVE PROFILER · 20 ÅRS GARANTI</div>
+      <div class="title">Velg din stil</div>
+    </div>
+    <div class="grid" id="s5-grid">
+      <div class="card" id="s5-c1">
+        <img src="assets/pacific.webp" alt="Pacific">
+        <div class="name">BoMann® Pacific</div>
+        <div class="colors">Sort · Sølv · Hvit</div>
+      </div>
+      <div class="card" id="s5-c2">
+        <img src="assets/deco.webp" alt="Deco">
+        <div class="name">BoMann® Deco</div>
+        <div class="colors">Sort · Sølv · Hvit</div>
+      </div>
+      <div class="card" id="s5-c3">
+        <img src="assets/bold.webp" alt="Bold">
+        <div class="name">BoMann® Bold</div>
+        <div class="colors">Sort · Sølv · Hvit</div>
+      </div>
+      <div class="card" id="s5-c4">
+        <img src="assets/atlantic.webp" alt="Atlantic">
+        <div class="name">Bolex® Atlantic</div>
+        <div class="colors">Sølv · Sort · Hvit · Bronse</div>
+      </div>
+      <div class="card" id="s5-c5">
+        <img src="assets/newyork.webp" alt="New York">
+        <div class="name">BoMann® New York</div>
+        <div class="colors">Sort</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 6: KAMPANJE 40% -->
+  <div class="scene s6" id="sc6">
+    <div class="bg-burst"></div>
+    <div class="ring" id="s6-ring"></div>
+    <div class="offer">
+      <div class="badge" id="s6-badge">Kampanje nå</div>
+      <div class="big" id="s6-big"><span id="s6-num">0</span><span class="pct">%</span></div>
+      <div class="sub" id="s6-sub">på alle 26 dørfyllinger i prisgruppe 1–3</div>
+      <div class="small-note" id="s6-note">*Tilbud gjelder med Pacific-profil</div>
+      <div class="pills">
+        <div class="pill" id="s6-p1">✓ Rentefri i 12 mnd</div>
+        <div class="pill" id="s6-p2">✓ Gratis befaring</div>
+        <div class="pill" id="s6-p3">✓ Levering i hele Norge</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 7: Trustpilot -->
+  <div class="scene s7" id="sc7">
+    <div class="bg" id="sc7-bg" style="background-image:url('assets/photo-1.png');"></div>
+    <div class="vignette" style="background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.92) 100%);"></div>
+    <div class="quote-block" id="s7-block">
+      <div class="stars">
+        <span class="star" id="s7-st1">★</span><span class="star" id="s7-st2">★</span><span class="star" id="s7-st3">★</span><span class="star" id="s7-st4">★</span><span class="star" id="s7-st5">★</span>
+      </div>
+      <div class="quote" id="s7-quote">«Godt kvalitetsprodukt som etter<br>flere år ser ut som nytt.»</div>
+      <div class="author" id="s7-author">— Nima Tahvili</div>
+      <div class="trust" id="s7-trust">VERIFISERT ANMELDELSE · TRUSTPILOT</div>
+    </div>
+  </div>
+
+  <!-- SCENE 8: CTA Logo -->
+  <div class="scene s8" id="sc8">
+    <div class="bg-solid"></div>
+    <div class="center">
+      <img class="logo" id="s8-logo" src="assets/logo.png" alt="Skapnett">
+      <div class="tag" id="s8-tag">Ekspert på måltilpassede garderober</div>
+      <div class="row">
+        <div class="cta primary" id="s8-c1">Bestill gratis befaring</div>
+        <div class="cta secondary" id="s8-c2">Tegn garderoben din →</div>
+      </div>
+      <div class="contact" id="s8-contact">
+        <span><span class="ic">📞</span>+47 45 11 11 11</span>
+        <span><span class="ic">✉</span>kontakt@skapnett.no</span>
+        <span><span class="ic">🌐</span>skapnett.no</span>
+      </div>
+    </div>
+  </div>
+
+  <img class="watermark" id="wm" src="assets/logo.png" alt="">
+  <div class="lower-third" id="lt">
+    <div class="label">Voice-over</div>
+    <div class="line" id="lt-line">"Hjemmet ditt fortjener bedre…"</div>
+  </div>
+  <div class="wipe" id="wipe"></div>
+</div>
+
+<script>
+  // ============ DETERMINISTIC TIMELINE ============
+  // Total duration 30 seconds
+  const SCENES = [
+    { id: 'sc1', start: 0.0,  end: 4.5 },
+    { id: 'sc2', start: 4.5,  end: 8.5 },
+    { id: 'sc3', start: 8.5,  end: 12.5 },
+    { id: 'sc4', start: 12.5, end: 16.5 },
+    { id: 'sc5', start: 16.5, end: 20.5 },
+    { id: 'sc6', start: 20.5, end: 25.0 },
+    { id: 'sc7', start: 25.0, end: 28.0 },
+    { id: 'sc8', start: 28.0, end: 30.0 },
+  ];
+  const FADE = 0.4; // scene cross-fade duration
+
+  // Voice-over lines per scene
+  const VO = [
+    `"Hjemmet ditt fortjener bedre…"`,
+    `"Skapnett lager måltilpassede skyvedørs­garderober — designet for ditt rom, ditt liv."`,
+    `"Vi kommer hjem til deg — gratis og uforpliktende — og måler opp."`,
+    `"Eller book en gratis online Tegnetime."`,
+    `"Fem eksklusive profiler i kvalitets­aluminium — med 20 års garanti."`,
+    `"Akkurat nå — 40 prosent rabatt og rentefri nedbetaling i 12 måneder."`,
+    `"Tusenvis av fornøyde kunder over hele landet."`,
+    `"Skapnett.no — bestill gratis befaring i dag."`,
+  ];
+
+  // Easing
+  const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+  const easeInOut = (t) => t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2)/2;
+  const easeBack = (t) => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); };
+  const clamp01 = (v) => Math.max(0, Math.min(1, v));
+  const lerp = (a,b,t) => a + (b-a)*t;
+
+  // Tween helper: starts at 'delay' from scene-start and lasts 'dur'
+  const localTween = (sceneT, delay, dur, ease = easeOut) => {
+    const t = clamp01((sceneT - delay) / dur);
+    return ease(t);
+  };
+
+  function setTime(T) {
+    // pick active scene
+    let activeIdx = SCENES.length - 1;
+    for (let i = 0; i < SCENES.length; i++) {
+      if (T < SCENES[i].end) { activeIdx = i; break; }
+    }
+    const scene = SCENES[activeIdx];
+    const sceneT = T - scene.start;
+    const sceneDur = scene.end - scene.start;
+
+    // Hide all, show only relevant scene + maybe the previous (for crossfade)
+    SCENES.forEach((s, i) => {
+      const el = document.getElementById(s.id);
+      let opacity = 0;
+      if (i === activeIdx) {
+        // Fade-in at start, fade-out at end of scene
+        const inT = clamp01(sceneT / FADE);
+        const outT = clamp01((scene.end - T) / FADE);
+        opacity = Math.min(inT, outT);
+      } else if (i === activeIdx - 1 && (T - scene.start) < FADE) {
+        // previous scene fading out
+        opacity = 1 - clamp01(sceneT / FADE);
+      }
+      el.style.opacity = opacity.toFixed(3);
+      el.style.zIndex = (i === activeIdx) ? 5 : 4;
+    });
+
+    // Watermark fade-in after 1.5s, stays
+    const wm = document.getElementById('wm');
+    wm.style.opacity = clamp01((T - 1.0) / 0.8) * 0.7;
+
+    // Lower-third: visible only during specific window of each scene
+    const lt = document.getElementById('lt');
+    const ltLine = document.getElementById('lt-line');
+    // Show VO line: appear at scene+0.5, fade-out at scene+last-0.4
+    const ltIn = clamp01((sceneT - 0.4) / 0.4);
+    const ltOut = clamp01((sceneDur - 0.4 - sceneT) / 0.4);
+    const ltOp = Math.min(ltIn, ltOut);
+    lt.style.opacity = ltOp.toFixed(3);
+    lt.style.transform = `translateY(${(1-ltOp) * 20}px)`;
+    ltLine.textContent = VO[activeIdx];
+
+    // ===== Per-scene animations =====
+    // SCENE 1: Opening — Ken Burns slow zoom-in + staggered text lines
+    {
+      const bg = document.getElementById('sc1-bg');
+      const p = sceneT / sceneDur;
+      const scale = 1.05 + 0.10 * p;
+      bg.style.transform = `scale(${scale})`;
+      const lines = ['s1-l1','s1-l2','s1-l3'];
+      lines.forEach((id, i) => {
+        const k = localTween(sceneT, 0.6 + i*0.35, 0.6);
+        const el = document.getElementById(id);
+        el.style.opacity = k.toFixed(3);
+        el.style.transform = `translateY(${(1-k) * 40}px)`;
+      });
+    }
+
+    // SCENE 2: Bedroom — pan from right to left (slight) + slide-in headlines from left
+    {
+      const bg = document.getElementById('sc2-bg');
+      const p = sceneT / sceneDur;
+      const scale = 1.08 + 0.05 * p;
+      const tx = lerp(40, -40, p);
+      bg.style.transform = `translateX(${tx}px) scale(${scale})`;
+      ['s2-l1','s2-l2','s2-l3'].forEach((id, i) => {
+        const k = localTween(sceneT, 0.4 + i*0.25, 0.6);
+        const el = document.getElementById(id);
+        el.style.opacity = k.toFixed(3);
+        el.style.transform = `translateX(${(1-k) * -60}px)`;
+      });
+    }
+
+    // SCENE 3: Walk-in — slow zoom-in + regions slide down + stamp punch-in
+    {
+      const bg = document.getElementById('sc3-bg');
+      const p = sceneT / sceneDur;
+      bg.style.transform = `scale(${1.05 + 0.08 * p})`;
+      const reg = document.getElementById('s3-regions');
+      const kReg = localTween(sceneT, 0.3, 0.5);
+      reg.style.opacity = kReg.toFixed(3);
+      reg.style.transform = `translate(-50%, ${(1-kReg)*-30}px)`;
+
+      const stamp = document.getElementById('s3-stamp');
+      const kSt = localTween(sceneT, 0.7, 0.6, easeBack);
+      const kStOp = localTween(sceneT, 0.7, 0.3);
+      const wobble = Math.sin((sceneT - 1.3) * 6) * Math.max(0, 1 - Math.abs(sceneT - 1.6) * 2) * 1.5;
+      stamp.style.opacity = kStOp.toFixed(3);
+      stamp.style.transform = `translate(-50%,-50%) rotate(${-6 + wobble}deg) scale(${lerp(0.3, 1.0, kSt)})`;
+    }
+
+    // SCENE 4: Tegnetime — bg subtle pan-right + panel slides in from right
+    {
+      const bg = document.getElementById('sc4-bg');
+      const p = sceneT / sceneDur;
+      const tx = lerp(-30, 30, p);
+      bg.style.transform = `translateX(${tx}px) scale(${1.05 + 0.05 * p})`;
+      const panel = document.getElementById('s4-panel');
+      const k = localTween(sceneT, 0.4, 0.7, easeBack);
+      const kOp = localTween(sceneT, 0.4, 0.4);
+      panel.style.opacity = kOp.toFixed(3);
+      panel.style.transform = `translate(${lerp(120, 0, k)}px, -50%)`;
+    }
+
+    // SCENE 5: Profiler — super slides down + cards stagger from below
+    {
+      const sup = document.getElementById('s5-super');
+      const kS = localTween(sceneT, 0.2, 0.5);
+      sup.style.opacity = kS.toFixed(3);
+      sup.style.transform = `translate(-50%, ${(1-kS)*-20}px)`;
+      ['s5-c1','s5-c2','s5-c3','s5-c4','s5-c5'].forEach((id, i) => {
+        const k = localTween(sceneT, 0.6 + i*0.12, 0.55, easeBack);
+        const kOp = localTween(sceneT, 0.6 + i*0.12, 0.35);
+        const el = document.getElementById(id);
+        el.style.opacity = kOp.toFixed(3);
+        el.style.transform = `translateY(${(1-k)*60}px)`;
+      });
+    }
+
+    // SCENE 6: KAMPANJE 40% — burst ring, counter 0→40, badge drops, sub, pills
+    {
+      const ring = document.getElementById('s6-ring');
+      const kRing = localTween(sceneT, 0.0, 1.4, easeOut);
+      ring.style.transform = `translate(-50%,-50%) scale(${kRing * 18})`;
+      ring.style.opacity = (1 - kRing).toFixed(3);
+
+      const badge = document.getElementById('s6-badge');
+      const kB = localTween(sceneT, 0.25, 0.5, easeBack);
+      badge.style.opacity = kB.toFixed(3);
+      badge.style.transform = `translateY(${(1-kB)*-30}px)`;
+
+      const big = document.getElementById('s6-big');
+      const num = document.getElementById('s6-num');
+      const kBig = localTween(sceneT, 0.55, 0.7, easeBack);
+      const kBigOp = localTween(sceneT, 0.55, 0.35);
+      big.style.opacity = kBigOp.toFixed(3);
+      big.style.transform = `scale(${lerp(0.6, 1.0, kBig)})`;
+      // Counter 0→40 between sceneT 0.55 and 1.7
+      const cT = clamp01((sceneT - 0.55) / 1.15);
+      num.textContent = Math.round(easeOut(cT) * 40);
+
+      const sub = document.getElementById('s6-sub');
+      const kSub = localTween(sceneT, 1.7, 0.5);
+      sub.style.opacity = kSub.toFixed(3);
+      sub.style.transform = `translateY(${(1-kSub)*20}px)`;
+
+      const note = document.getElementById('s6-note');
+      note.style.opacity = localTween(sceneT, 2.0, 0.5).toFixed(3);
+
+      ['s6-p1','s6-p2','s6-p3'].forEach((id, i) => {
+        const k = localTween(sceneT, 2.3 + i*0.15, 0.5, easeBack);
+        const kOp = localTween(sceneT, 2.3 + i*0.15, 0.35);
+        const el = document.getElementById(id);
+        el.style.opacity = kOp.toFixed(3);
+        el.style.transform = `translateY(${(1-k)*30}px)`;
+      });
+    }
+
+    // SCENE 7: Trustpilot — block fades up, stars pop one-by-one, then quote
+    {
+      const blk = document.getElementById('s7-block');
+      const kBlk = localTween(sceneT, 0.0, 0.5);
+      blk.style.opacity = kBlk.toFixed(3);
+      blk.style.transform = `translate(-50%, ${lerp(-40, -45, kBlk)}%)`;
+      // bg slow zoom
+      const bg = document.getElementById('sc7-bg');
+      bg.style.transform = `scale(${1.05 + 0.05 * (sceneT/sceneDur)})`;
+
+      ['s7-st1','s7-st2','s7-st3','s7-st4','s7-st5'].forEach((id, i) => {
+        const k = localTween(sceneT, 0.5 + i*0.1, 0.3, easeBack);
+        const kOp = localTween(sceneT, 0.5 + i*0.1, 0.2);
+        const el = document.getElementById(id);
+        el.style.opacity = kOp.toFixed(3);
+        el.style.transform = `scale(${lerp(0.4, 1.0, k)})`;
+      });
+
+      const q = document.getElementById('s7-quote');
+      const kQ = localTween(sceneT, 1.2, 0.55);
+      q.style.opacity = kQ.toFixed(3);
+      q.style.transform = `translateY(${(1-kQ)*20}px)`;
+
+      document.getElementById('s7-author').style.opacity = localTween(sceneT, 1.7, 0.4).toFixed(3);
+      document.getElementById('s7-trust').style.opacity = localTween(sceneT, 1.9, 0.4).toFixed(3);
+    }
+
+    // SCENE 8: CTA — logo punches in, tag fades, buttons rise, contact fades
+    {
+      const logo = document.getElementById('s8-logo');
+      const kL = localTween(sceneT, 0.0, 0.6, easeBack);
+      const kLOp = localTween(sceneT, 0.0, 0.35);
+      logo.style.opacity = kLOp.toFixed(3);
+      logo.style.transform = `scale(${lerp(0.7, 1.0, kL)})`;
+
+      document.getElementById('s8-tag').style.opacity = localTween(sceneT, 0.5, 0.4).toFixed(3);
+
+      ['s8-c1','s8-c2'].forEach((id, i) => {
+        const k = localTween(sceneT, 0.9 + i*0.15, 0.5, easeBack);
+        const kOp = localTween(sceneT, 0.9 + i*0.15, 0.35);
+        const el = document.getElementById(id);
+        el.style.opacity = kOp.toFixed(3);
+        el.style.transform = `translateY(${(1-k)*30}px)`;
+      });
+
+      document.getElementById('s8-contact').style.opacity = localTween(sceneT, 1.3, 0.5).toFixed(3);
+    }
+  }
+
+  // Expose for puppeteer
+  window.SETTIME = setTime;
+
+  // Live preview if ?play=1
+  const params = new URLSearchParams(location.search);
+  if (params.get('play') === '1') {
+    const start = performance.now();
+    const loop = () => {
+      const t = ((performance.now() - start) / 1000) % 30;
+      setTime(t);
+      requestAnimationFrame(loop);
+    };
+    loop();
+  } else if (params.has('t')) {
+    setTime(parseFloat(params.get('t')));
+  } else {
+    setTime(0);
+  }
+</script>
+</body>
+</html>
