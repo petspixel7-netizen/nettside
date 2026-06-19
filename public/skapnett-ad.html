@@ -38,18 +38,20 @@
     background:
       radial-gradient(ellipse 60% 50% at 30% 30%, rgba(232,91,40,.07), transparent 60%),
       radial-gradient(ellipse 50% 40% at 75% 70%, rgba(90,47,30,.06), transparent 60%);
-    animation:bgDrift 30s ease-in-out infinite alternate;
+    will-change:transform;
+    transform:translateZ(0);
+    animation:bgDrift 30s ease-in-out 1s infinite alternate;
   }
   @keyframes bgDrift{
-    0%  {transform:translate(0,0) scale(1)}
-    100%{transform:translate(-3%,2%) scale(1.06)}
+    0%  {transform:translate3d(0,0,0) scale(1)}
+    100%{transform:translate3d(-3%,2%,0) scale(1.06)}
   }
 
   /* Persistent progress bar across bottom edge */
-  .progress{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(90,47,30,.08);z-index:8}
-  .progress .bar{height:100%;width:0;background:linear-gradient(90deg,var(--orange),#F58E5F);box-shadow:0 0 12px rgba(232,91,40,.5);will-change:width}
+  .progress{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(90,47,30,.08);z-index:8;transform-origin:left center}
+  .progress .bar{height:100%;width:100%;background:linear-gradient(90deg,var(--orange),#F58E5F);box-shadow:0 0 12px rgba(232,91,40,.5);will-change:transform;transform:scaleX(0);transform-origin:left center}
   .progress.running .bar{animation:progress 30s linear forwards}
-  @keyframes progress{from{width:0}to{width:100%}}
+  @keyframes progress{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 
   .slide{
     position:absolute;inset:0;
@@ -67,6 +69,19 @@
   .logo img{display:block;height:36px;width:auto}
   .logo.lg img{height:96px}
   .logo.xl img{height:128px}
+
+  /* ---------- PERSISTENT TOP BAR (Skapnett left + Norleads right) ---------- */
+  .topframe{position:absolute;top:60px;left:60px;right:60px;display:flex;justify-content:space-between;align-items:center;z-index:10;pointer-events:none}
+  .topframe .left{opacity:0;transform:translate3d(0,-12px,0);transition:opacity .9s var(--ease-soft) .2s, transform .9s var(--ease-soft) .2s}
+  .topframe .right{opacity:0;transform:translate3d(0,-12px,0);transition:opacity .9s var(--ease-soft) .4s, transform .9s var(--ease-soft) .4s;display:flex;align-items:center;gap:14px}
+  .topframe.show .left, .topframe.show .right{opacity:1;transform:none}
+  .topframe .by{font-size:11px;color:var(--ink-soft);letter-spacing:.32em;text-transform:uppercase;font-weight:600;line-height:1}
+  .topframe .nl{
+    width:52px;height:52px;display:grid;place-items:center;
+    background:var(--brown);border-radius:14px;
+    box-shadow:0 6px 18px rgba(90,47,30,.22);
+  }
+  .topframe .nl img{display:block;height:34px;width:auto;filter:brightness(1.05) saturate(1.1)}
 
   /* ---------- LAYOUT ---------- */
   .center{position:absolute;inset:0;display:grid;place-items:center;z-index:5}
@@ -150,7 +165,8 @@
   /* ============ SLIDE 1: INTRO ============ */
   .s1 .underline{height:3px;width:120px;background:var(--orange);margin:40px auto 0;border-radius:2px}
   .s1 .eyebrow{margin-top:14px}
-  .s1.active .logo.xl{animation:floatLogo 4s ease-in-out 1.4s infinite}
+  .s1 .logo.xl{will-change:transform}
+  .s1.active .logo.xl{animation:floatLogo 5s ease-in-out 2.2s infinite}
 
   /* ============ SLIDE 2: HEADLINE ============ */
   .s2 .h1{font-size:128px;line-height:1.18;padding-bottom:.12em}
@@ -219,29 +235,25 @@
 
 <div class="stage" id="stage">
 
+  <div class="topframe" id="topframe">
+    <div class="left"><a class="logo"><img src="skapnett-logo.svg" alt="skapnett"></a></div>
+    <div class="right">
+      <span class="by">Levert av</span>
+      <span class="nl"><img src="norleads-logo.png" alt="Norleads"></span>
+    </div>
+  </div>
+
   <!-- SLIDE 1 -->
   <div class="slide s1" id="s1">
-    <div class="topbar">
-      <div class="logo anim fade d0"><img src="skapnett-logo.svg" alt="skapnett"></div>
-      <div class="meta anim fade d1">No · 2026</div>
-    </div>
     <div class="center"><div class="wrap">
       <div class="logo xl anim pop d1"><img src="skapnett-logo.svg" alt="skapnett"></div>
       <div class="underline anim drawX d3"></div>
       <div class="eyebrow anim up d4">Måltilpasset · til deg</div>
     </div></div>
-    <div class="bottombar">
-      <div class="pageno anim fade d5">01 / 08</div>
-      <div class="dots anim fade d5"><span class="on"></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-    </div>
   </div>
 
   <!-- SLIDE 2 -->
   <div class="slide s2" id="s2">
-    <div class="topbar">
-      <div class="logo anim fade d0"><img src="skapnett-logo.svg" alt="skapnett"></div>
-      <div class="meta anim fade d0">Skreddersydd</div>
-    </div>
     <div class="center"><div class="wrap">
       <div class="eyebrow anim up d1">Drømmeskapet</div>
       <div class="h1" style="margin-top:36px">
@@ -249,18 +261,10 @@
         <span class="line"><span class="reveal rd2"><em>dine mål.</em></span></span>
       </div>
     </div></div>
-    <div class="bottombar">
-      <div class="pageno anim fade d5">02 / 08</div>
-      <div class="dots anim fade d5"><span></span><span class="on"></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-    </div>
   </div>
 
   <!-- SLIDE 3 -->
   <div class="slide s3" id="s3">
-    <div class="topbar">
-      <div class="logo anim fade d0"><img src="skapnett-logo.svg" alt="skapnett"></div>
-      <div class="meta anim fade d0">Eksempel</div>
-    </div>
     <div class="caption">
       <div class="eyebrow anim up d1">Levert hjem til deg</div>
       <h2 class="anim up d2">På <em>døren.</em></h2>
@@ -268,18 +272,10 @@
     <div class="photo-wrap anim zoom d3"><div class="kb"></div></div>
     <div class="corner tl"></div>
     <div class="corner br"></div>
-    <div class="bottombar">
-      <div class="pageno anim fade d5">03 / 08</div>
-      <div class="dots anim fade d5"><span></span><span></span><span class="on"></span><span></span><span></span><span></span><span></span><span></span></div>
-    </div>
   </div>
 
   <!-- SLIDE 4 -->
   <div class="slide s4" id="s4">
-    <div class="topbar">
-      <div class="logo anim fade d0"><img src="skapnett-logo.svg" alt="skapnett"></div>
-      <div class="meta anim fade d0">Tre veier inn</div>
-    </div>
     <div class="top">
       <h2 class="anim pop d1">Slik <em>starter du</em></h2>
     </div>
@@ -300,54 +296,30 @@
         <div class="title">Se ferdige<br/>løsninger</div>
       </div>
     </div>
-    <div class="bottombar">
-      <div class="pageno anim fade d6">04 / 08</div>
-      <div class="dots anim fade d6"><span></span><span></span><span></span><span class="on"></span><span></span><span></span><span></span><span></span></div>
-    </div>
   </div>
 
   <!-- SLIDE 5 -->
   <div class="slide feat s5" id="s5">
-    <div class="topbar">
-      <div class="logo anim fade d0"><img src="skapnett-logo.svg" alt="skapnett"></div>
-      <div class="meta anim fade d0">Levering</div>
-    </div>
     <div class="photo-wrap anim zoom d1"><div class="kb"></div></div>
     <div class="panel">
       <div class="num anim pop d3">01.</div>
       <div><h2 class="anim right d4">Rask levering</h2></div>
       <span class="tag anim up d5">1–2 uker · hele landet</span>
     </div>
-    <div class="bottombar">
-      <div class="pageno anim fade d6">05 / 08</div>
-      <div class="dots anim fade d6"><span></span><span></span><span></span><span></span><span class="on"></span><span></span><span></span><span></span></div>
-    </div>
   </div>
 
   <!-- SLIDE 6 -->
   <div class="slide feat s6" id="s6">
-    <div class="topbar">
-      <div class="logo anim fade d0"><img src="skapnett-logo.svg" alt="skapnett"></div>
-      <div class="meta anim fade d0">Finansiering</div>
-    </div>
     <div class="photo-wrap anim zoom d1"><div class="kb"></div></div>
     <div class="panel">
       <div class="num anim pop d3">02.</div>
       <div><h2 class="anim right d4">Rentefritt</h2></div>
       <span class="tag anim up d5">12 mnd · 0 % rente</span>
     </div>
-    <div class="bottombar">
-      <div class="pageno anim fade d6">06 / 08</div>
-      <div class="dots anim fade d6"><span></span><span></span><span></span><span></span><span></span><span class="on"></span><span></span><span></span></div>
-    </div>
   </div>
 
   <!-- SLIDE 7 -->
   <div class="slide s7" id="s7">
-    <div class="topbar">
-      <div class="logo anim fade d0"><img src="skapnett-logo.svg" alt="skapnett"></div>
-      <div class="meta anim fade d0">Kampanje</div>
-    </div>
     <div class="center"><div class="wrap">
       <div class="heart anim pop d0">🧡</div>
       <div class="kampanje-tag anim up d1">Nå</div>
@@ -356,18 +328,10 @@
       <div class="small anim up d7">*Pacific profil · prisgruppe 1–3</div>
       <div class="cta anim pop d8"><span class="pill brown">Se kampanje</span></div>
     </div></div>
-    <div class="bottombar">
-      <div class="pageno anim fade d8">07 / 08</div>
-      <div class="dots anim fade d8"><span></span><span></span><span></span><span></span><span></span><span></span><span class="on"></span><span></span></div>
-    </div>
   </div>
 
   <!-- SLIDE 8 -->
   <div class="slide s8" id="s8">
-    <div class="topbar">
-      <div class="logo anim fade d0"><img src="skapnett-logo.svg" alt="skapnett"></div>
-      <div class="meta anim fade d0">Kom i gang</div>
-    </div>
     <div class="center"><div class="wrap">
       <div class="logo lg anim pop d1"><img src="skapnett-logo.svg" alt="skapnett"></div>
       <div><span class="url anim up d3">skapnett.no</span></div>
@@ -376,10 +340,6 @@
         <span class="pill brown anim left d6">Gratis befaring</span>
       </div>
     </div></div>
-    <div class="bottombar">
-      <div class="pageno anim fade d7">08 / 08</div>
-      <div class="dots anim fade d7"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span class="on"></span></div>
-    </div>
   </div>
 
   <div class="progress" id="progress"><div class="bar"></div></div>
@@ -387,7 +347,6 @@
 </div>
 
 <script>
-  // 30 second timeline
   const slides = ['s1','s2','s3','s4','s5','s6','s7','s8'];
   const durations = [3500, 4000, 3700, 4000, 3500, 3500, 4300, 3500]; // = 30000
 
@@ -400,7 +359,7 @@
   function runOnce(){
     const prog = document.getElementById('progress');
     prog.classList.remove('running');
-    void prog.offsetWidth; // restart animation
+    void prog.offsetWidth;
     prog.classList.add('running');
     let t = 0;
     slides.forEach((_, i) => {
@@ -414,8 +373,20 @@
     setTimeout(start, 30000);
   }
 
-  window.addEventListener('load', () => {
-    document.fonts.ready.then(() => setTimeout(start, 250));
+  function preload(){
+    // force-decode images so first paint isn't blocked
+    const urls = ['skapnett-logo.svg','skapnett-hero.jpg','skapnett-feat1.jpg','skapnett-feat2.jpg','norleads-logo.png'];
+    return Promise.all(urls.map(u => new Promise(res => { const i=new Image(); i.onload=i.onerror=res; i.src=u; })));
+  }
+
+  window.addEventListener('load', async () => {
+    await document.fonts.ready;
+    await preload();
+    // ensure browser has painted at least once before kicking off animations
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      document.getElementById('topframe').classList.add('show');
+      setTimeout(start, 350);
+    }));
   });
 </script>
 </body></html>
