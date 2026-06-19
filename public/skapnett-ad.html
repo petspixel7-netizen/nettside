@@ -1,427 +1,379 @@
 <!doctype html>
-<html lang="no">
-<head>
+<html lang="no"><head>
 <meta charset="utf-8" />
-<title>Skapnett — Klar for drømmeskapet?</title>
-<meta name="viewport" content="width=1080" />
+<title>Skapnett · 30s ad</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg-0:#0a0807;
-    --bg-1:#15110e;
-    --ink:#f5efe6;
-    --ink-soft:#bdb3a4;
-    --accent:#e07a4f;     /* warm coral/orange */
-    --accent-2:#f5b27a;   /* lighter glow */
-    --gold:#d9a26b;
+    --cream:#F6E7D2;
+    --cream-2:#FAEFDD;
+    --cream-3:#FFF6E8;
+    --orange:#E85B28;
+    --orange-soft:#F2B58F;
+    --brown:#5A2F1E;
+    --brown-2:#3A1D10;
+    --ink:#3A1D10;
+    --ink-soft:#7A5443;
+    --ease:cubic-bezier(.2,.75,.25,1);
+    --ease-back:cubic-bezier(.34,1.56,.64,1);
   }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html,body{background:#000;overflow:hidden;font-family:'Inter',sans-serif;color:var(--ink)}
-  body{display:grid;place-items:center;min-height:100vh}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+  html,body{background:#1a1410;font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:var(--ink);overflow:hidden;height:100vh}
+  body{display:grid;place-items:center}
 
   .stage{
-    position:relative;
-    width:1080px;height:1080px;
-    background:
-      radial-gradient(ellipse at 50% 65%, rgba(224,122,79,0.18), transparent 55%),
-      radial-gradient(ellipse at 50% 30%, rgba(217,162,107,0.10), transparent 60%),
-      linear-gradient(180deg, var(--bg-0) 0%, var(--bg-1) 60%, #0c0907 100%);
-    overflow:hidden;
+    position:relative;width:1080px;height:1080px;overflow:hidden;
+    background:var(--cream);
+    box-shadow:0 40px 100px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.03);
+    border-radius:6px;
     isolation:isolate;
-    box-shadow:0 60px 160px rgba(0,0,0,0.6) inset;
   }
 
-  /* film grain */
-  .stage::after{
-    content:"";position:absolute;inset:0;pointer-events:none;
-    background-image:
-      radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
-      radial-gradient(rgba(0,0,0,0.4) 1px, transparent 1px);
-    background-size: 3px 3px, 4px 4px;
-    background-position: 0 0, 1px 2px;
-    mix-blend-mode:overlay;opacity:.22;
-    animation:grain 1.2s steps(6) infinite;
-    z-index:30;
-  }
-  @keyframes grain{
-    0%{transform:translate(0,0)}
-    20%{transform:translate(-2%,1%)}
-    40%{transform:translate(1%,-2%)}
-    60%{transform:translate(-1%,2%)}
-    80%{transform:translate(2%,-1%)}
-    100%{transform:translate(0,0)}
-  }
-
-  /* light leak vignette */
-  .vignette{
-    position:absolute;inset:0;pointer-events:none;z-index:25;
-    background:
-      radial-gradient(ellipse at 50% 50%, transparent 45%, rgba(0,0,0,0.55) 95%);
-  }
-
-  /* horizontal beam */
-  .beam{
-    position:absolute;left:0;right:0;top:50%;height:280px;transform:translateY(-50%);
-    background:linear-gradient(180deg, transparent, rgba(224,122,79,0.10) 50%, transparent);
-    filter:blur(20px);z-index:1;pointer-events:none;
-    animation:beamPulse 14s ease-in-out infinite;
-  }
-  @keyframes beamPulse{
-    0%,100%{opacity:.5}
-    40%{opacity:.9}
-    70%{opacity:.6}
-  }
-
-  canvas#particles{
-    position:absolute;inset:0;z-index:2;
-  }
-
-  /* center wordmark */
-  .center{
-    position:absolute;inset:0;display:grid;place-items:center;z-index:10;
-  }
-  .wrap{
-    text-align:center;width:100%;padding:0 80px;
-  }
-
-  /* tiny eyebrow */
-  .eyebrow{
-    font-family:'Inter',sans-serif;
-    font-weight:300;letter-spacing:0.6em;
-    font-size:18px;color:var(--gold);
-    text-transform:uppercase;
+  .slide{
+    position:absolute;inset:0;
     opacity:0;
-    animation: eyebrowIn 1.2s cubic-bezier(.2,.7,.2,1) 0.6s forwards,
-               eyebrowOut 0.8s ease-in 13.2s forwards;
+    pointer-events:none;
+    background:var(--cream);
+    transition:opacity .55s var(--ease);
   }
-  @keyframes eyebrowIn{
-    from{opacity:0;letter-spacing:1em;filter:blur(8px)}
-    to{opacity:.9;letter-spacing:0.6em;filter:blur(0)}
-  }
-  @keyframes eyebrowOut{ to{opacity:0;transform:translateY(-6px)} }
+  .slide.active{opacity:1;pointer-events:auto}
 
-  /* main wordmark */
-  .wordmark{
-    margin-top:32px;
-    font-family:'Cormorant Garamond', serif;
-    font-weight:400;
-    font-size:188px;
-    line-height:1;
-    letter-spacing:0.04em;
-    color:var(--ink);
-    display:inline-flex;
-    gap:0;
-  }
-  .wordmark span{
-    display:inline-block;
-    opacity:0;
-    transform:translateY(40px) scale(.96);
-    filter:blur(14px);
-    text-shadow:0 0 40px rgba(224,122,79,0.0);
-    animation: letterIn 1.1s cubic-bezier(.2,.7,.2,1) forwards,
-               letterGlow 6s ease-in-out 3.5s infinite,
-               letterOut 0.9s ease-in 13.0s forwards;
-  }
-  .wordmark span:nth-child(1){animation-delay:1.6s, 3.5s, 13.0s}
-  .wordmark span:nth-child(2){animation-delay:1.75s,3.6s, 13.05s}
-  .wordmark span:nth-child(3){animation-delay:1.9s, 3.7s, 13.10s}
-  .wordmark span:nth-child(4){animation-delay:2.05s,3.8s, 13.15s}
-  .wordmark span:nth-child(5){animation-delay:2.2s, 3.9s, 13.20s}
-  .wordmark span:nth-child(6){animation-delay:2.35s,4.0s, 13.25s}
-  .wordmark span:nth-child(7){animation-delay:2.5s, 4.1s, 13.30s}
-  .wordmark span:nth-child(8){animation-delay:2.65s,4.2s, 13.35s}
+  /* ---------- LOGO ---------- */
+  .logo{display:inline-block;line-height:0}
+  .logo img{display:block;height:36px;width:auto}
+  .logo.lg img{height:96px}
+  .logo.xl img{height:128px}
 
-  @keyframes letterIn{
-    0%{opacity:0;transform:translateY(40px) scale(.96);filter:blur(14px)}
-    60%{opacity:1;filter:blur(0)}
-    100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
-  }
-  @keyframes letterGlow{
-    0%,100%{text-shadow:0 0 0 rgba(224,122,79,0)}
-    50%{text-shadow:0 0 60px rgba(224,122,79,.35), 0 0 120px rgba(245,178,122,.2)}
-  }
-  @keyframes letterOut{
-    to{opacity:0;transform:translateY(-10px);filter:blur(8px)}
-  }
+  /* ---------- LAYOUT ---------- */
+  .center{position:absolute;inset:0;display:grid;place-items:center;z-index:5}
+  .wrap{padding:0 90px;text-align:center;width:100%}
+  .eyebrow{font-weight:600;letter-spacing:.42em;font-size:18px;color:var(--orange);text-transform:uppercase}
+  .h1{font-weight:800;font-size:170px;line-height:.95;color:var(--brown);letter-spacing:-.03em}
+  .h1 em{font-style:normal;color:var(--orange)}
+  .pill{display:inline-flex;align-items:center;gap:14px;padding:24px 44px;border-radius:999px;font-weight:700;font-size:24px;letter-spacing:.02em}
+  .pill.orange{background:var(--orange);color:#fff;box-shadow:0 8px 24px rgba(232,91,40,.25)}
+  .pill.brown{background:var(--brown);color:var(--cream-3)}
 
-  /* underline */
-  .rule{
-    margin: 36px auto 28px;
-    height:1px;width:0;
-    background:linear-gradient(90deg, transparent, var(--accent) 50%, transparent);
-    opacity:0;
-    animation: ruleIn 1.6s cubic-bezier(.2,.7,.2,1) 3.4s forwards,
-               ruleOut 0.7s ease-in 13.1s forwards;
-  }
-  @keyframes ruleIn{
-    0%{width:0;opacity:0}
-    40%{opacity:1}
-    100%{width:520px;opacity:1}
-  }
-  @keyframes ruleOut{ to{opacity:0;width:0} }
+  .topbar{position:absolute;top:60px;left:60px;right:60px;display:flex;justify-content:space-between;align-items:center;z-index:6}
+  .topbar .meta{font-size:16px;color:var(--ink-soft);letter-spacing:.3em;text-transform:uppercase;font-weight:500}
 
-  /* tagline */
-  .tagline{
-    font-family:'Inter',sans-serif;
-    font-weight:300;
-    font-size:30px;
-    color:var(--ink-soft);
-    letter-spacing:0.14em;
-    text-transform:uppercase;
-    opacity:0;
-    animation: fadeUp 1.4s cubic-bezier(.2,.7,.2,1) 4.0s forwards,
-               fadeOutSoft 0.7s ease-in 13.1s forwards;
-  }
-  @keyframes fadeUp{
-    from{opacity:0;transform:translateY(14px);filter:blur(8px)}
-    to{opacity:.95;transform:translateY(0);filter:blur(0)}
-  }
-  @keyframes fadeOutSoft{ to{opacity:0;transform:translateY(-8px)} }
+  .bottombar{position:absolute;bottom:60px;left:60px;right:60px;display:flex;justify-content:space-between;align-items:center;z-index:6}
+  .pageno{font-weight:600;color:var(--brown);letter-spacing:.3em;font-size:14px;text-transform:uppercase}
+  .dots{display:flex;gap:8px}
+  .dots span{width:8px;height:8px;border-radius:50%;background:var(--brown);opacity:.18;transition:all .4s var(--ease)}
+  .dots span.on{background:var(--orange);opacity:1;width:24px;border-radius:6px}
 
-  /* scene 2 — CTA panel */
-  .cta{
-    position:absolute;inset:0;display:grid;place-items:center;z-index:11;
-    opacity:0;pointer-events:none;
-    animation: ctaIn 1.2s cubic-bezier(.2,.7,.2,1) 8.6s forwards;
+  /* ---------- ANIMATION HELPERS ---------- */
+  /* set initial state; .active triggers transition to default */
+  .anim{transition:opacity .9s var(--ease), transform .9s var(--ease), filter .9s var(--ease), clip-path 1.1s var(--ease), width 1.1s var(--ease), letter-spacing 1.1s var(--ease)}
+  .anim.up{transform:translateY(56px);opacity:0;filter:blur(6px)}
+  .anim.down{transform:translateY(-56px);opacity:0;filter:blur(6px)}
+  .anim.left{transform:translateX(60px);opacity:0;filter:blur(6px)}
+  .anim.right{transform:translateX(-60px);opacity:0;filter:blur(6px)}
+  .anim.pop{transform:scale(.82);opacity:0;filter:blur(8px)}
+  .anim.spread{opacity:0;letter-spacing:1.2em;filter:blur(8px)}
+  .anim.draw{transform:scaleX(0);transform-origin:left;opacity:0}
+  .anim.wipeR{clip-path:inset(0 100% 0 0)}
+  .anim.wipeL{clip-path:inset(0 0 0 100%)}
+
+  .slide.active .anim{transform:none;opacity:1;filter:none;letter-spacing:inherit;clip-path:inset(0 0 0 0)}
+  .slide.active .anim.spread{letter-spacing:.42em} /* eyebrow default */
+
+  /* delays */
+  .d0{transition-delay:0s}
+  .d1{transition-delay:.10s}
+  .d2{transition-delay:.22s}
+  .d3{transition-delay:.36s}
+  .d4{transition-delay:.50s}
+  .d5{transition-delay:.66s}
+  .d6{transition-delay:.82s}
+  .d7{transition-delay:1.0s}
+  .d8{transition-delay:1.2s}
+
+  /* infinite emphasis animations once active */
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+  @keyframes glow{0%,100%{box-shadow:0 8px 24px rgba(232,91,40,.25)}50%{box-shadow:0 12px 44px rgba(232,91,40,.55)}}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  @keyframes heartbeat{0%,30%,60%,100%{transform:scale(1)}15%{transform:scale(1.18)}45%{transform:scale(1.1)}}
+  @keyframes countUp{from{transform:scale(.6) rotate(-6deg);opacity:0;filter:blur(12px)}80%{transform:scale(1.06) rotate(0)}100%{transform:scale(1);opacity:1;filter:none}}
+  @keyframes drawLine{from{width:0}to{width:88px}}
+  @keyframes shineAcross{from{background-position:-150% 0}to{background-position:250% 0}}
+
+  /* ============ SLIDE 1: INTRO ============ */
+  .s1 .underline{height:3px;width:88px;background:var(--orange);margin:38px auto 0;border-radius:2px;transform-origin:left}
+  .s1 .eyebrow{margin-top:8px}
+  .s1.active .underline{animation:drawLine 1s var(--ease) .4s both}
+
+  /* ============ SLIDE 2: HEADLINE ============ */
+  .s2 .h1{font-size:160px}
+  .s2 .word{display:block}
+  .s2 .h1 em{position:relative;display:inline-block}
+
+  /* ============ SLIDE 3: HERO PHOTO ============ */
+  .s3 .photo{
+    position:absolute;left:60px;right:60px;top:240px;bottom:240px;
+    background-image:url('skapnett-hero.jpg');
+    background-size:cover;background-position:center;
+    border-radius:20px;
+    box-shadow:0 30px 60px rgba(90,47,30,.18), 0 0 0 1px rgba(90,47,30,.06);
   }
-  @keyframes ctaIn{
-    from{opacity:0;transform:scale(.98);filter:blur(12px)}
-    to{opacity:1;transform:scale(1);filter:blur(0)}
+  .s3 .caption{position:absolute;left:60px;right:60px;top:140px;text-align:center}
+  .s3 .caption h2{font-weight:800;font-size:96px;color:var(--brown);letter-spacing:-.025em;line-height:1}
+  .s3 .caption h2 em{font-style:normal;color:var(--orange)}
+  .s3 .corner{position:absolute;width:96px;height:96px;border:3px solid var(--orange);z-index:6;opacity:0;transition:opacity .6s var(--ease) .7s, transform .6s var(--ease) .7s;transform:scale(.7)}
+  .s3 .corner.tl{left:84px;top:264px;border-right:none;border-bottom:none}
+  .s3 .corner.br{right:84px;bottom:264px;border-left:none;border-top:none}
+  .s3.active .corner{opacity:1;transform:scale(1)}
+
+  /* ============ SLIDE 4: THREE CARDS ============ */
+  .s4 .top{position:absolute;top:170px;left:0;right:0;text-align:center;z-index:5}
+  .s4 .top h2{font-weight:800;font-size:104px;color:var(--brown);letter-spacing:-.025em;line-height:1}
+  .s4 .top h2 em{font-style:normal;color:var(--orange)}
+  .s4 .cards{position:absolute;top:450px;left:60px;right:60px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px}
+  .s4 .card{background:var(--brown);border-radius:24px;padding:44px 22px;text-align:center;color:#fff;display:flex;flex-direction:column;align-items:center;gap:24px;min-height:360px;justify-content:center}
+  .s4 .card .icn{width:96px;height:96px;display:grid;place-items:center;color:var(--orange-soft)}
+  .s4 .card .icn svg{width:100%;height:100%;stroke:currentColor;fill:none;stroke-width:2.2}
+  .s4 .card .title{font-weight:700;font-size:34px;line-height:1.1;color:#fff;letter-spacing:-.01em}
+  .s4 .card .step{font-size:14px;letter-spacing:.4em;text-transform:uppercase;color:var(--orange-soft);font-weight:600}
+
+  /* ============ SLIDE 5/6: FEATURE ============ */
+  .feat .photo{
+    position:absolute;left:60px;top:60px;right:60px;height:560px;
+    background-size:cover;background-position:center;border-radius:20px;
+    box-shadow:0 24px 50px rgba(90,47,30,.15);
   }
-  .cta-inner{text-align:center;padding:0 80px}
-  .cta-head{
-    font-family:'Cormorant Garamond',serif;
-    font-style:italic;
-    font-weight:500;
-    font-size:96px;
-    line-height:1.05;
-    color:var(--ink);
-    letter-spacing:0.01em;
-  }
-  .cta-head em{
-    font-style:italic;
-    color:var(--accent-2);
-    background:linear-gradient(180deg,var(--accent-2),var(--accent));
+  .feat .panel{position:absolute;left:90px;right:90px;bottom:130px;text-align:left}
+  .feat .panel .num{font-weight:800;font-size:130px;color:var(--orange);line-height:1;letter-spacing:-.03em;opacity:.95}
+  .feat .panel h2{font-weight:800;font-size:88px;color:var(--brown);letter-spacing:-.025em;line-height:1;margin-top:-8px}
+  .feat .panel .tag{display:inline-block;margin-top:28px;background:var(--brown);color:#fff;padding:16px 30px;border-radius:999px;font-weight:600;font-size:22px;letter-spacing:.04em}
+  .s5 .photo{background-image:url('skapnett-feat1.jpg')}
+  .s6 .photo{background-image:url('skapnett-feat2.jpg')}
+
+  /* ============ SLIDE 7: KAMPANJE ============ */
+  .s7 .heart{font-size:80px;display:inline-block;transform-origin:center}
+  .s7.active .heart{animation:heartbeat 1.4s ease-in-out .2s 2}
+  .s7 .kampanje-tag{font-weight:700;letter-spacing:.4em;color:var(--orange);font-size:22px;text-transform:uppercase;margin-top:8px}
+  .s7 .big{font-weight:800;font-size:340px;color:var(--orange);line-height:.85;letter-spacing:-.05em;margin-top:8px;display:inline-block}
+  .s7 .big sup{font-size:140px;vertical-align:top;line-height:1;color:var(--brown)}
+  .s7.active .big{animation:countUp 1s var(--ease) .35s both}
+  .s7 .desc{font-weight:700;font-size:42px;color:var(--brown);margin-top:16px;line-height:1.1;letter-spacing:-.01em}
+  .s7 .small{font-weight:500;font-size:18px;color:var(--ink-soft);margin-top:18px;letter-spacing:.02em}
+  .s7 .cta{margin-top:44px}
+  .s7.active .cta .pill{animation:pulse 1.6s var(--ease) 1.2s infinite}
+
+  /* ============ SLIDE 8: CLOSE ============ */
+  .s8 .url{margin-top:36px;font-weight:700;font-size:46px;color:var(--orange);letter-spacing:-.005em}
+  .s8 .cta-row{margin-top:52px;display:inline-flex;gap:24px}
+  .s8.active .cta-row .pill.orange{animation:glow 2s ease-in-out 1.0s infinite}
+  .s8.active .url{
+    background:linear-gradient(90deg, var(--orange), #F58E5F, var(--orange));
+    background-size:200% 100%;
     -webkit-background-clip:text;background-clip:text;color:transparent;
-  }
-  .cta-sub{
-    margin-top:40px;
-    font-family:'Inter',sans-serif;
-    font-weight:300;
-    font-size:24px;
-    color:var(--ink-soft);
-    letter-spacing:0.32em;
-    text-transform:uppercase;
-  }
-  .cta-url{
-    margin-top:64px;
-    display:inline-flex;align-items:center;gap:18px;
-    padding:22px 44px;
-    border:1px solid rgba(224,122,79,0.55);
-    border-radius:999px;
-    font-family:'Inter',sans-serif;
-    font-weight:400;
-    font-size:26px;
-    letter-spacing:0.32em;
-    text-transform:uppercase;
-    color:var(--ink);
-    background:linear-gradient(180deg, rgba(224,122,79,0.10), rgba(224,122,79,0.02));
-    box-shadow:0 0 60px rgba(224,122,79,0.18), inset 0 0 30px rgba(224,122,79,0.08);
-    animation:urlPulse 3s ease-in-out 9.4s infinite;
-  }
-  .cta-url::before{
-    content:"";width:8px;height:8px;border-radius:50%;
-    background:var(--accent);
-    box-shadow:0 0 18px var(--accent);
-  }
-  @keyframes urlPulse{
-    0%,100%{box-shadow:0 0 50px rgba(224,122,79,0.18), inset 0 0 30px rgba(224,122,79,0.08)}
-    50%{box-shadow:0 0 90px rgba(224,122,79,0.35), inset 0 0 40px rgba(224,122,79,0.14)}
+    animation:shineAcross 3s linear 1.2s infinite;
   }
 
-  /* corner ornaments */
-  .ornament{
-    position:absolute;z-index:12;width:140px;height:140px;opacity:0;
-    border:1px solid rgba(217,162,107,0.45);
-    animation:ornIn 1.2s ease-out 2.4s forwards, ornOut 0.7s ease-in 13.1s forwards;
-  }
-  .ornament.tl{top:60px;left:60px;border-right:none;border-bottom:none}
-  .ornament.tr{top:60px;right:60px;border-left:none;border-bottom:none}
-  .ornament.bl{bottom:60px;left:60px;border-right:none;border-top:none}
-  .ornament.br{bottom:60px;right:60px;border-left:none;border-top:none}
-  @keyframes ornIn{ from{opacity:0;transform:scale(.7)} to{opacity:.7;transform:scale(1)} }
-  @keyframes ornOut{ to{opacity:0;transform:scale(1.08)} }
-
-  /* brand mark at bottom of scene 1 */
-  .brandline{
-    position:absolute;bottom:90px;left:0;right:0;text-align:center;z-index:11;
-    font-family:'Inter',sans-serif;font-weight:300;letter-spacing:0.5em;
-    text-transform:uppercase;color:var(--ink-soft);font-size:14px;opacity:0;
-    animation:fadeUp 1.4s ease 5.4s forwards, fadeOutSoft 0.7s ease-in 13.1s forwards;
-  }
-  .brandline b{color:var(--accent-2);font-weight:400;letter-spacing:0.5em}
-</style>
-</head>
+  /* progress dots persistent in bottombar — animate width when slide changes */
+</style></head>
 <body>
 
 <div class="stage" id="stage">
-  <div class="beam"></div>
-  <canvas id="particles" width="1080" height="1080"></canvas>
 
-  <div class="ornament tl"></div>
-  <div class="ornament tr"></div>
-  <div class="ornament bl"></div>
-  <div class="ornament br"></div>
+  <!-- SLIDE 1 -->
+  <div class="slide s1" id="s1">
+    <div class="topbar">
+      <div class="logo anim down d0"><img src="skapnett-logo.svg" alt="skapnett"></div>
+      <div class="meta anim right d1">No · 2026</div>
+    </div>
+    <div class="center"><div class="wrap">
+      <div class="logo xl anim pop d1"><img src="skapnett-logo.svg" alt="skapnett"></div>
+      <div class="underline"></div>
+      <div class="eyebrow anim spread d4">Måltilpasset · til deg</div>
+    </div></div>
+    <div class="bottombar">
+      <div class="pageno anim up d2">01 / 08</div>
+      <div class="dots anim up d2"><span class="on"></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    </div>
+  </div>
 
-  <div class="center">
-    <div class="wrap">
-      <div class="eyebrow">Måltilpasset håndverk</div>
-      <div class="wordmark" aria-label="SKAPNETT">
-        <span>S</span><span>K</span><span>A</span><span>P</span><span>N</span><span>E</span><span>T</span><span>T</span>
+  <!-- SLIDE 2 -->
+  <div class="slide s2" id="s2">
+    <div class="topbar">
+      <div class="logo anim down d0"><img src="skapnett-logo.svg" alt="skapnett"></div>
+      <div class="meta anim right d0">Skreddersydd</div>
+    </div>
+    <div class="center"><div class="wrap">
+      <div class="eyebrow anim spread d0">Drømmeskapet</div>
+      <div class="h1" style="margin-top:32px">
+        <span class="word anim up d1">Tegnet</span>
+        <span class="word anim up d2">etter</span>
+        <span class="word anim up d3"><em>dine mål.</em></span>
       </div>
-      <div class="rule"></div>
-      <div class="tagline">Ekspert på måltilpassede garderober</div>
+    </div></div>
+    <div class="bottombar">
+      <div class="pageno anim up d4">02 / 08</div>
+      <div class="dots anim up d4"><span></span><span class="on"></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
     </div>
   </div>
 
-  <div class="brandline">Designet · Tegnet · Levert <b>· over hele landet</b></div>
-
-  <div class="cta">
-    <div class="cta-inner">
-      <div class="cta-head">Klar for <em>drømmeskapet?</em></div>
-      <div class="cta-sub">La oss skape noe vakkert</div>
-      <div class="cta-url">skapnett.no</div>
+  <!-- SLIDE 3 -->
+  <div class="slide s3" id="s3">
+    <div class="topbar">
+      <div class="logo anim down d0"><img src="skapnett-logo.svg" alt="skapnett"></div>
+      <div class="meta anim right d0">Eksempel</div>
+    </div>
+    <div class="caption">
+      <h2 class="anim up d1">Levert <em>på døren.</em></h2>
+    </div>
+    <div class="photo anim wipeR d2"></div>
+    <div class="corner tl"></div>
+    <div class="corner br"></div>
+    <div class="bottombar">
+      <div class="pageno anim up d5">03 / 08</div>
+      <div class="dots anim up d5"><span></span><span></span><span class="on"></span><span></span><span></span><span></span><span></span><span></span></div>
     </div>
   </div>
 
-  <div class="vignette"></div>
+  <!-- SLIDE 4 -->
+  <div class="slide s4" id="s4">
+    <div class="topbar">
+      <div class="logo anim down d0"><img src="skapnett-logo.svg" alt="skapnett"></div>
+      <div class="meta anim right d0">Tre veier inn</div>
+    </div>
+    <div class="top">
+      <h2 class="anim up d1">Slik <em>starter du</em></h2>
+    </div>
+    <div class="cards">
+      <div class="card anim up d3">
+        <div class="step">01</div>
+        <div class="icn"><svg viewBox="0 0 64 64"><rect x="10" y="14" width="44" height="36" rx="3"/><path d="M10 24h44M22 14v36M42 14v36"/></svg></div>
+        <div class="title">Tegn selv</div>
+      </div>
+      <div class="card anim up d4">
+        <div class="step">02</div>
+        <div class="icn"><svg viewBox="0 0 64 64"><rect x="10" y="14" width="44" height="32" rx="3"/><path d="M22 52h20M32 46v6"/></svg></div>
+        <div class="title">Book<br/>tegnetime</div>
+      </div>
+      <div class="card anim up d5">
+        <div class="step">03</div>
+        <div class="icn"><svg viewBox="0 0 64 64"><rect x="14" y="10" width="36" height="44" rx="3"/><path d="M14 32h36M32 10v44"/></svg></div>
+        <div class="title">Se ferdige<br/>løsninger</div>
+      </div>
+    </div>
+    <div class="bottombar">
+      <div class="pageno anim up d6">04 / 08</div>
+      <div class="dots anim up d6"><span></span><span></span><span></span><span class="on"></span><span></span><span></span><span></span><span></span></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5 -->
+  <div class="slide feat s5" id="s5">
+    <div class="topbar">
+      <div class="logo anim down d0"><img src="skapnett-logo.svg" alt="skapnett"></div>
+      <div class="meta anim right d0">Levering</div>
+    </div>
+    <div class="photo anim down d1"></div>
+    <div class="panel">
+      <div class="num anim pop d3">01.</div>
+      <h2 class="anim right d4">Rask levering</h2>
+      <span class="tag anim up d5">1–2 uker · hele landet</span>
+    </div>
+    <div class="bottombar">
+      <div class="pageno anim up d6">05 / 08</div>
+      <div class="dots anim up d6"><span></span><span></span><span></span><span></span><span class="on"></span><span></span><span></span><span></span></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6 -->
+  <div class="slide feat s6" id="s6">
+    <div class="topbar">
+      <div class="logo anim down d0"><img src="skapnett-logo.svg" alt="skapnett"></div>
+      <div class="meta anim right d0">Finansiering</div>
+    </div>
+    <div class="photo anim down d1"></div>
+    <div class="panel">
+      <div class="num anim pop d3">02.</div>
+      <h2 class="anim right d4">Rentefritt</h2>
+      <span class="tag anim up d5">12 mnd · 0 % rente</span>
+    </div>
+    <div class="bottombar">
+      <div class="pageno anim up d6">06 / 08</div>
+      <div class="dots anim up d6"><span></span><span></span><span></span><span></span><span></span><span class="on"></span><span></span><span></span></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7 -->
+  <div class="slide s7" id="s7">
+    <div class="topbar">
+      <div class="logo anim down d0"><img src="skapnett-logo.svg" alt="skapnett"></div>
+      <div class="meta anim right d0">Kampanje</div>
+    </div>
+    <div class="center"><div class="wrap">
+      <div class="heart anim pop d0">🧡</div>
+      <div class="kampanje-tag anim spread d1">Nå</div>
+      <div class="big">40<sup>%</sup></div>
+      <div class="desc anim up d6">på alle dørfyllinger</div>
+      <div class="small anim up d7">*Pacific profil · prisgruppe 1–3</div>
+      <div class="cta anim up d8"><span class="pill brown">Se kampanje</span></div>
+    </div></div>
+    <div class="bottombar">
+      <div class="pageno anim up d8">07 / 08</div>
+      <div class="dots anim up d8"><span></span><span></span><span></span><span></span><span></span><span></span><span class="on"></span><span></span></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8 -->
+  <div class="slide s8" id="s8">
+    <div class="topbar">
+      <div class="logo anim down d0"><img src="skapnett-logo.svg" alt="skapnett"></div>
+      <div class="meta anim right d0">Kom i gang</div>
+    </div>
+    <div class="center"><div class="wrap">
+      <div class="logo lg anim pop d1"><img src="skapnett-logo.svg" alt="skapnett"></div>
+      <div class="url anim up d3">skapnett.no</div>
+      <div class="cta-row">
+        <span class="pill orange anim right d5">Tegn garderobe</span>
+        <span class="pill brown anim left d6">Gratis befaring</span>
+      </div>
+    </div></div>
+    <div class="bottombar">
+      <div class="pageno anim up d7">08 / 08</div>
+      <div class="dots anim up d7"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span class="on"></span></div>
+    </div>
+  </div>
+
 </div>
 
 <script>
-/* Particle system: dust drifts in scene 1, converges toward wordmark area,
-   then disperses outward for scene 2 reveal. Loops at ~14s. */
-(function(){
-  const cvs = document.getElementById('particles');
-  const ctx = cvs.getContext('2d');
-  const W = 1080, H = 1080;
-  const CX = W/2, CY = H*0.52; // letters baseline-ish
+  // 30 second timeline: durations in ms per slide
+  const slides = ['s1','s2','s3','s4','s5','s6','s7','s8'];
+  const durations = [3500, 3700, 3700, 4000, 3700, 3700, 4200, 3500]; // = 30000
+  // total = 30000ms
 
-  const PARTICLES = 220;
-  const particles = [];
-
-  function rand(a,b){return a+Math.random()*(b-a)}
-
-  for(let i=0;i<PARTICLES;i++){
-    const angle = Math.random()*Math.PI*2;
-    const radius = rand(420, 700);
-    particles.push({
-      // start: distributed across canvas
-      sx: rand(0,W), sy: rand(0,H),
-      // converge target: ring near wordmark
-      tx: CX + Math.cos(angle)*rand(80,460),
-      ty: CY + Math.sin(angle)*rand(40,180),
-      // disperse direction
-      dx: Math.cos(angle), dy: Math.sin(angle),
-      r: rand(0.6, 2.4),
-      hueShift: Math.random(),
-      twinkleSpeed: rand(0.6, 1.8),
-      phase: Math.random()*Math.PI*2,
-      depth: rand(0.4, 1.0)
+  function activate(i){
+    slides.forEach((id, idx) => {
+      const el = document.getElementById(id);
+      el.classList.toggle('active', idx === i);
     });
   }
 
-  // timeline (seconds)
-  const T = {
-    driftIn: 1.6,    // 0 -> 1.6 drift in
-    converge: 3.4,   // 1.6 -> 3.4 converge to wordmark
-    hold: 8.4,       // 3.4 -> 8.4 hold/twinkle
-    disperse: 9.6,   // 8.4 -> 9.6 disperse for CTA
-    cta: 13.0,       // 9.6 -> 13.0 calm drift behind CTA
-    fadeOut: 14.0    // fade
-  };
-  const LOOP = 14.0;
-
-  function easeInOut(t){return t<0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2}
-  function easeOut(t){return 1-Math.pow(1-t,3)}
-
-  let start = performance.now();
-
-  function frame(now){
-    let t = ((now - start)/1000) % LOOP;
-    ctx.clearRect(0,0,W,H);
-    ctx.globalCompositeOperation = 'lighter';
-
-    for(let i=0;i<particles.length;i++){
-      const p = particles[i];
-      let x,y,alpha,size;
-
-      if(t < T.driftIn){
-        const k = t/T.driftIn;
-        x = p.sx + Math.sin((t + p.phase)*0.6)*8*p.depth;
-        y = p.sy + Math.cos((t + p.phase)*0.5)*8*p.depth - k*10;
-        alpha = 0.15 + 0.35*easeOut(k)*p.depth;
-        size = p.r * (0.7 + 0.3*k);
-      } else if(t < T.converge){
-        const k = easeInOut((t - T.driftIn)/(T.converge - T.driftIn));
-        x = p.sx + (p.tx - p.sx)*k;
-        y = p.sy + (p.ty - p.sy)*k;
-        alpha = 0.5 + 0.45*p.depth;
-        size = p.r * (1 + 0.6*k);
-      } else if(t < T.hold){
-        const tt = (t - T.converge);
-        x = p.tx + Math.sin(tt*p.twinkleSpeed + p.phase)*6;
-        y = p.ty + Math.cos(tt*p.twinkleSpeed*0.8 + p.phase)*4;
-        const tw = 0.5 + 0.5*Math.sin(tt*2.2 + p.phase);
-        alpha = 0.35 + 0.55*tw*p.depth;
-        size = p.r * (1.1 + 0.3*tw);
-      } else if(t < T.disperse){
-        const k = easeOut((t - T.hold)/(T.disperse - T.hold));
-        const dist = 380*k;
-        x = p.tx + p.dx*dist;
-        y = p.ty + p.dy*dist;
-        alpha = (1-k)*0.7;
-        size = p.r * (1.2 + 0.4*k);
-      } else if(t < T.cta){
-        // calm slow drift, dim
-        const tt = t - T.disperse;
-        x = p.tx + p.dx*380 + Math.sin(tt*0.3 + p.phase)*10;
-        y = p.ty + p.dy*380 + Math.cos(tt*0.3 + p.phase)*10 - tt*4;
-        alpha = 0.12 + 0.08*Math.sin(tt + p.phase);
-        size = p.r * 0.9;
-      } else {
-        const k = (t - T.cta)/(LOOP - T.cta);
-        alpha = (1-k)*0.1;
-        size = p.r*0.8;
-        x = p.tx + p.dx*380; y = p.ty + p.dy*380;
-      }
-
-      if(alpha <= 0) continue;
-      // warm gold-coral color, varied
-      const r = 245, g = 178 - 30*p.hueShift, b = 122 - 40*p.hueShift;
-      const grd = ctx.createRadialGradient(x,y,0,x,y,size*6);
-      grd.addColorStop(0, `rgba(${r|0},${g|0},${b|0},${alpha})`);
-      grd.addColorStop(0.4, `rgba(${r|0},${g|0},${b|0},${alpha*0.35})`);
-      grd.addColorStop(1, `rgba(${r|0},${g|0},${b|0},0)`);
-      ctx.fillStyle = grd;
-      ctx.beginPath();
-      ctx.arc(x,y,size*6,0,Math.PI*2);
-      ctx.fill();
-
-      // bright core
-      ctx.fillStyle = `rgba(255,236,210,${Math.min(1,alpha*1.1)})`;
-      ctx.beginPath();
-      ctx.arc(x,y,size,0,Math.PI*2);
-      ctx.fill();
-    }
-
-    ctx.globalCompositeOperation = 'source-over';
-    requestAnimationFrame(frame);
+  function runOnce(){
+    let t = 0;
+    slides.forEach((_, i) => {
+      setTimeout(() => activate(i), t);
+      t += durations[i];
+    });
   }
 
-  requestAnimationFrame(frame);
-})();
+  function start(){
+    runOnce();
+    setTimeout(start, 30000); // loop
+  }
+
+  window.addEventListener('load', () => {
+    // tiny pre-roll so fonts render
+    setTimeout(start, 200);
+  });
 </script>
-</body>
-</html>
+</body></html>
