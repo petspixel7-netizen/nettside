@@ -94,6 +94,7 @@ HTML = f"""<!DOCTYPE html>
 
   #logo-wrap-intro{{width:460px;opacity:0;}}
   #logo-wrap-intro svg{{width:100%;display:block;color:var(--ink);}}
+  .a_2{{transform:scaleY(-1);transform-box:fill-box;transform-origin:center;}}
   #tagline{{font-family:var(--display);font-style:italic;font-size:30px;color:var(--clay);text-align:center;letter-spacing:.5px;opacity:0;}}
   #sub-tagline{{font-size:16px;font-weight:300;color:var(--ink-dim);text-align:center;letter-spacing:3px;text-transform:uppercase;opacity:0;}}
   .hairline{{height:1px;width:0;background:var(--line);}}
