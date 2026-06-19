@@ -52,7 +52,25 @@
     .s5 .decision-ring:after{background:rgba(87,82,197,.18)}.s5 .orange-word{color:var(--white);text-shadow:0 0 24px rgba(87,82,197,.65)}
     .controls{position:fixed;right:12px;bottom:12px;z-index:100;display:flex;gap:6px;opacity:.28;transition:opacity .2s ease}.controls:hover,.controls:focus-within{opacity:1}.controls button{min-width:48px;min-height:44px;background:#111;color:#eee;border:1px solid #666;padding:7px 10px;cursor:pointer}.controls button:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
     @media(max-width:700px){.brand{font-size:2.4vw}.meta{font-size:1vw}.controls{right:6px;bottom:6px}.controls button{min-height:36px;padding:4px 8px}.support{font-size:1.5vw}.eyebrow{font-size:1vw}.agent-card p{display:none}.agent-card b{font-size:2.8vw}.agent-card span{font-size:1vw}}
-    @media(prefers-reduced-motion:reduce){.scene,.fx{will-change:auto}.controls{opacity:1}}
+    @keyframes shimmer{0%{transform:translateX(-160%) skewX(-14deg)}100%{transform:translateX(260%) skewX(-14deg)}}
+    @keyframes proof-glow{0%,100%{text-shadow:0 0 22px rgba(255,255,255,.18)}50%{text-shadow:0 0 44px rgba(255,255,255,.42),0 0 100px rgba(87,82,197,.55)}}
+    @keyframes cta-breath{0%,100%{box-shadow:0 10px 32px rgba(0,0,0,.36),0 0 0 rgba(255,255,255,0),inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(255,255,255,.06)}50%{box-shadow:0 16px 48px rgba(0,0,0,.42),0 0 36px rgba(255,255,255,.24),inset 0 1px 0 rgba(255,255,255,.46),inset 0 -1px 0 rgba(255,255,255,.06)}}
+    @keyframes vignette-pulse{0%,100%{opacity:1}50%{opacity:.78}}
+    @keyframes float-card{0%,100%{box-shadow:0 8px 28px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.24),inset 0 -1px 0 rgba(255,255,255,.04)}50%{box-shadow:0 14px 38px rgba(0,0,0,.42),0 0 28px rgba(87,82,197,.34),inset 0 1px 0 rgba(255,255,255,.36),inset 0 -1px 0 rgba(255,255,255,.04)}}
+    @keyframes orbit-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+    @keyframes word-pulse{0%,100%{filter:drop-shadow(0 0 12px rgba(87,82,197,.55))}50%{filter:drop-shadow(0 0 28px rgba(255,255,255,.45)) drop-shadow(0 0 48px rgba(87,82,197,.6))}}
+    @keyframes brand-breath{0%,100%{opacity:1;letter-spacing:-.025em}50%{opacity:.78;letter-spacing:-.018em}}
+    .agent-card,.flow-item,.launch-pill,.cta-link,.proof-context span,.agency{position:relative;overflow:hidden;isolation:isolate}
+    .agent-card::before,.flow-item::before,.launch-pill::before,.cta-link::before,.proof-context span::before,.agency::before{content:"";position:absolute;top:0;left:0;width:38%;height:100%;background:linear-gradient(96deg,transparent 0%,rgba(255,255,255,.22) 50%,transparent 100%);animation:shimmer 5.5s linear infinite;pointer-events:none;z-index:0}
+    .agent-card>*,.flow-item>*,.launch-pill,.cta-link,.proof-context span,.agency{z-index:1}
+    .cta-link{animation:cta-breath 2.8s ease-in-out infinite}
+    .proof-number{animation:proof-glow 3.5s ease-in-out infinite}
+    .agent-card{animation:float-card 4s ease-in-out infinite}
+    #film:after{animation:vignette-pulse 6s ease-in-out infinite}
+    .orange-word{animation:word-pulse 2.6s ease-in-out infinite}
+    .decision-ring:before{animation:orbit-spin 14s linear infinite}
+    .brand{animation:brand-breath 4.5s ease-in-out infinite}
+    @media(prefers-reduced-motion:reduce){.scene,.fx{will-change:auto}.controls{opacity:1}*,*::before,*::after{animation:none!important}}
   </style>
 </head>
 <body>
@@ -72,7 +90,7 @@
   <section class="scene orange s11"><div class="center"><img class="cta-mark" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgNDAwIiBmaWxsPSIjRjJFRkU3IiBhcmlhLWxhYmVsPSJFQ0kiPjxyZWN0IHg9IjcwIiB5PSI3MCIgd2lkdGg9IjI2MCIgaGVpZ2h0PSI1OCIvPjxyZWN0IHg9IjcwIiB5PSIxNzEiIHdpZHRoPSIyMDAiIGhlaWdodD0iNTgiLz48cmVjdCB4PSI3MCIgeT0iMjcyIiB3aWR0aD0iMjYwIiBoZWlnaHQ9IjU4Ii8+PHJlY3QgeD0iNzAiIHk9IjcwIiB3aWR0aD0iNTgiIGhlaWdodD0iMjYwIi8+PC9zdmc+" alt=""><h2>Snakk med en<br>bransjeekspert.</h2><p class="support">Uforpliktende samtale.</p><a class="cta-link" href="https://www.ecisolutions.com/no/">ecisolutions.com</a></div></section>
 
   <div class="fx fx-split"><i></i><i></i></div><div class="fx fx-slash"></div><div class="fx fx-circle"></div>
-  <div class="fx fx-bars"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="fx fx-flash"></div><div class="fx fx-counter">242</div><div class="fx fx-stamp"></div><div class="fx fx-line"></div><div class="fx fx-cross"><i></i><i></i></div>
+  <div class="fx fx-bars"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="fx fx-flash"></div><div class="fx fx-counter"></div><div class="fx fx-stamp"></div><div class="fx fx-line"></div><div class="fx fx-cross"><i></i><i></i></div>
   <div class="progress"><i></i></div>
 </main>
 <div class="controls"><button id="replay">Replay</button><button id="pause">Pause</button></div>
@@ -118,7 +136,7 @@
   circle(".s3",".s4",10.1); tl.set(".s4 .quick-word,.s4 .quick-hint,.s4 .ticker",{autoAlpha:0},10.42).set(".s4 .agaas-burst,.s4 .agaas-burst-panel",{autoAlpha:0},10.42).set(".s4 .agaas-burst",{autoAlpha:1},10.95).set(".s4 .burst-read",{autoAlpha:1},10.95).from(".s4 .burst-read span",{scale:.88,autoAlpha:0,duration:.16,ease:"power3.out"},10.97).to(".s4 .burst-read span",{scale:1.03,duration:.42,ease:"none"},10.97).set(".s4 .burst-read",{autoAlpha:0},11.48).set(".s4 .burst-do",{autoAlpha:1},11.48).from(".s4 .burst-do span",{xPercent:9,autoAlpha:0,duration:.16,ease:"power4.out"},11.5).to(".s4 .burst-do span",{xPercent:-2,duration:.42,ease:"none"},11.5).set(".s4 .burst-do",{autoAlpha:0},12.02).set(".s4 .burst-log",{autoAlpha:1},12.02).from(".s4 .burst-log span",{yPercent:85,duration:.18,ease:"power4.out"},12.04).to(".s4 .burst-log span",{scale:1.03,duration:.48,ease:"none"},12.08).to(".s4 .burst-log",{autoAlpha:0,duration:.14},12.72).set(".s4 .agaas-burst",{autoAlpha:0},12.86);
   slash(".s4",".s5",12.75); reveal(".s5",13.05); tl.fromTo(".s5 .decision-ring",{scale:.45,rotation:-20,autoAlpha:0},{scale:1,rotation:0,autoAlpha:1,duration:.72},13);
   flash(".s5",".s6",15.65); reveal(".s6",15.9); tl.fromTo(".s6 .flag-bar",{scaleY:0},{scaleY:1,duration:.34,stagger:.055},15.9);
-  count(".s6",".s7",18); tl.fromTo(".s7 .proof-number",{scale:1.85,rotation:-5,autoAlpha:0},{scale:1,rotation:0,autoAlpha:1,duration:.46,ease:"power4.out"},18.68).fromTo(".s7 .proof-label",{y:22,autoAlpha:0},{y:0,autoAlpha:1,duration:.28},18.98).fromTo(".s7 .proof-context span",{y:16,autoAlpha:0},{y:0,autoAlpha:1,duration:.24,stagger:.06},19.16).fromTo(".s7 .proof-note",{y:14,autoAlpha:0},{y:0,autoAlpha:1,duration:.28},19.42).to(".s7 .proof-number",{scale:1.04,duration:.5,yoyo:true,repeat:1,ease:"sine.inOut"},19.18);
+  stamp(".s6",".s7",18); tl.fromTo(".s7 .proof-number",{scale:1.85,rotation:-5,autoAlpha:0},{scale:1,rotation:0,autoAlpha:1,duration:.46,ease:"power4.out"},18.68).fromTo(".s7 .proof-label",{y:22,autoAlpha:0},{y:0,autoAlpha:1,duration:.28},18.98).fromTo(".s7 .proof-context span",{y:16,autoAlpha:0},{y:0,autoAlpha:1,duration:.24,stagger:.06},19.16).fromTo(".s7 .proof-note",{y:14,autoAlpha:0},{y:0,autoAlpha:1,duration:.28},19.42).to(".s7 .proof-number",{scale:1.04,duration:.5,yoyo:true,repeat:1,ease:"sine.inOut"},19.18);
   cross(".s7",".s8",20.25); reveal(".s8",20.6); tl.fromTo(".s8 .agent-card",{y:26,autoAlpha:0},{y:0,autoAlpha:1,duration:.36,stagger:.1},21);
   slash(".s8",".s9",24.05); tl.fromTo(".s9 .flow-item,.s9 .flow-arrow",{x:-20,autoAlpha:0},{x:0,autoAlpha:1,duration:.18,stagger:.055},24.4).fromTo(".s9 h2",{y:26,autoAlpha:0},{y:0,autoAlpha:1,duration:.32},24.85);
   cross(".s9",".s10",25.45); reveal(".s10",25.62); tl.fromTo(".s10 .launch-shell",{scaleX:.72,autoAlpha:0},{scaleX:1,autoAlpha:.62,duration:.42},25.55).fromTo(".s10 .launch-orbit",{scale:.55,rotation:-18,autoAlpha:0},{scale:1,rotation:0,autoAlpha:.75,duration:.5},25.65).fromTo(".s10 .launch-dot",{scale:0},{scale:1,duration:.22},25.86).fromTo(".s10 .launch-pill",{y:18,autoAlpha:0},{y:0,autoAlpha:1,duration:.3,stagger:.08},25.94).to(".s10 .launch-orbit",{rotation:10,scale:1.025,duration:1.2,ease:"sine.inOut"},26.15);
