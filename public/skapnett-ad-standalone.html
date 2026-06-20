@@ -275,7 +275,7 @@
   .s4 .top h2 .w.em{color:var(--orange)}
   .s4 .top h2 .char{display:inline-block;transform-origin:50% 100%;will-change:transform, opacity}
 
-  /* connect-line removed per user request */
+  /* connecting line between cards */
   .s4 .connect-line{display:none}
 
   .s4 .cards{position:absolute;top:480px;left:60px;right:60px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px;perspective:1200px}
@@ -364,23 +364,14 @@
     <div class="glow"></div>
     <div class="center"><div class="stack">
       <div class="draw-row logo-row">
-        <svg class="icon-build" viewBox="0 0 56 30" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <!-- Outer wardrobe frame: always visible, defines icon shape -->
-          <rect class="frame" x="1.5" y="1.5" width="53" height="27" rx="2"
-                fill="none" stroke="currentColor" stroke-width="2.5"
-                style="color: var(--brown)"/>
-          <!-- Vertical divider between S half and N half -->
-          <rect class="frame-divider" x="27" y="2" width="2" height="26" rx=".8"
-                fill="currentColor" style="color: var(--brown)"/>
-          <!-- Inner bars that morph between SN letterforms and wardrobe pattern -->
-          <rect class="bar shelf shelf-1" x="3"  y="22" width="22" height="3.5" rx="1"/>
-          <rect class="bar shelf shelf-2" x="3"  y="16" width="22" height="3.5" rx="1"/>
-          <rect class="bar shelf shelf-3" x="3"  y="10" width="22" height="3.5" rx="1"/>
-          <rect class="bar shelf shelf-4" x="3"  y="4"  width="22" height="3.5" rx="1"/>
-          <rect class="bar door door-1" x="31" y="3" width="5" height="24" rx="1"/>
-          <rect class="bar door door-2" x="40" y="3" width="5" height="24" rx="1"/>
-          <rect class="bar door door-3" x="48" y="3" width="5" height="24" rx="1"/>
-          <rect class="bar ghost-diag" x="40" y="3" width="4" height="24" rx="1"/>
+        <svg class="icon-build" viewBox="0 0 54 28" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect class="bar shelf shelf-1" x="0" y="24" width="26" height="4" rx="1.4"/>
+          <rect class="bar shelf shelf-2" x="0" y="16" width="26" height="4" rx="1.4"/>
+          <rect class="bar shelf shelf-3" x="0" y="8"  width="26" height="4" rx="1.4"/>
+          <rect class="bar shelf shelf-4" x="0" y="0"  width="26" height="4" rx="1.4"/>
+          <rect class="bar door door-1" x="32" y="0" width="6" height="28" rx="1.4"/>
+          <rect class="bar door door-2" x="40" y="0" width="6" height="28" rx="1.4"/>
+          <rect class="bar door door-3" x="48" y="0" width="6" height="28" rx="1.4"/>
         </svg>
         <div class="wordmark-wrap">
           <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxODMiIGhlaWdodD0iMjgiPgoKPHBhdGggZD0iTTAsMjYgQzAsMjYgLTAuMDAyMjQ2MDMsMC45OTY3OTcgLTAuMDAyMjQ2MDMsMC45OTY3OTcgQy0wLjAwMjI0NjAzLDAuOTk2Nzk3IDQ4LjM5MzYsMS4wMDIgNDguMzkzNiwxLjAwMiBDNDguMDY2Myw5LjI2MjI1IDQ3Ljc0NSwxNi42NTU0IDQ4LjM5NTIsMjUuMzg0NSBDNDguMzk1MiwyNS4zODQ1IDQyLjkzMjgsMjUuODIyNiA0Mi45MzI4LDI1LjgyMjYgQzQyLjkzMjgsMjUuODIyNiAwLDI2IDAsMjYgWiBNMzAuOTkxLDIzLjcyNTYgQzMwLjk5MSwyMy43MjU2IDMxLjAyNzgsMi41NTU4MiAzMS4wMjc4LDIuNTU1ODIgQzMxLjAyNzgsMi41NTU4MiAyNS4zNTk5LDIuNDg1OTkgMjUuMzU5OSwyLjQ4NTk5IEMyNS4zNTk5LDIuNDg1OTkgMjUuMjMxNSwyMy43MTExIDI1LjIzMTUsMjMuNzExMSBDMjUuMjMxNSwyMy43MTExIDMwLjk5MSwyMy43MjU2IDMwLjk5MSwyMy43MjU2IFogTTIzLjA3NjQsOC4wMDI3IEMyMy4yODY3LDYuMTg0MjkgMjMuNDMzLDQuODQ1NDcgMjIuOTEyNywyLjM1MjEzIEMxNi4zNjA1LDMuMTE3NzMgOS41NjUyMSwzLjE5MTUxIDIuODU3MTUsMi4zMzQwMSBDMS42NTY5MywzLjQ2MTIxIDEuNzA0MjcsNi4xNDczNyAyLjIxNDMxLDcuOTYwMjMgQzIuMjE0MzEsNy45NjAyMyAyMy4wNzY0LDguMDAyNyAyMy4wNzY0LDguMDAyNyBaIE0zOC45OTU3LDIzLjcyNiBDMzguOTk1NywyMy43MjYgMzkuMDA2NywyLjY4ODU2IDM5LjAwNjcsMi42ODg1NiBDMzYuODczNSwyLjM5MjU1IDM1LjEyNjcsMi4zOTI5MSAzMi45OTM1LDIuNjk0MjUgQzMyLjk5MzUsMi42OTQyNSAzMy4wMDQyLDIzLjcyNTkgMzMuMDA0MiwyMy43MjU5IEMzMy4wMDQyLDIzLjcyNTkgMzguOTk1NywyMy43MjYgMzguOTk1NywyMy43MjYgWiBNNDYuODgzMSwyMi45MDI5IEM0NS40MTEzLDE1LjMxODkgNDYuMTY0OSw5LjYzMzE5IDQ2LjQzOTMsMi44NTYgQzQ0LjI1NTMsMi4zNzUwNiA0Mi43NTQyLDIuNDM2MDYgNDAuOTksMi43NTkxNCBDNDAuOTksMi43NTkxNCA0MS4wMjE0LDIzLjY1NTggNDEuMDIxNCwyMy42NTU4IEM0My4xODEyLDIzLjkwMDMgNDQuOTMxMywyNC4yMzgyIDQ2Ljg4MzEsMjIuOTAyOSBaIE0yMy4wNTU5LDE2Ljk5MzYgQzIzLjA1NTksMTYuOTkzNiAyMy4xMTM1LDkuOTk2NjggMjMuMTEzNSw5Ljk5NjY4IEMyMy4xMTM1LDkuOTk2NjggMi4wNjcyMSwxMC4wMDI5IDIuMDY3MjEsMTAuMDAyOSBDMi4wNjcyMSwxMC4wMDI5IDIuMDcwOTMsMTYuOTk5IDIuMDcwOTMsMTYuOTk5IEMyLjA3MDkzLDE2Ljk5OSAyMy4wNTU5LDE2Ljk5MzYgMjMuMDU1OSwxNi45OTM2IFogTTIyLjk5OTIsMjMuNjUxNSBDMjMuNDE1LDIxLjUwNjQgMjMuMzE4NSwyMC40NTQ5IDIzLjA1ODksMTguOTk3MiBDMjMuMDU4OSwxOC45OTcyIDIuMDk1NTIsMTkuMDAxOSAyLjA5NTUyLDE5LjAwMTkgQzIuMDk1NTIsMTkuMDAxOSAyLjA3NTQyLDIzLjY3MjYgMi4wNzU0MiwyMy42NzI2IEM5LjI5ODgzLDI0LjEwMTEgMTUuNzMxNywyNC4xMzI3IDIyLjk5OTIsMjMuNjUxNSBaICIgZmlsbD0icmdiKDEyNCw1NSwyNikiLz4KPHBhdGggZD0iTTEwNi4wMSwyNy45NTAzIEMxMDYuMDEsMjcuOTUwMyAxMDMsMjggMTAzLDI4IEMxMDMsMjggMTAzLjAwMSw2LjkwNTEzIDEwMy4wMDEsNi45MDUxMyBDMTA0LjU0NCw2LjU3NDk5IDEwNS4zOCw3LjI4NDg3IDEwNS40MzYsOS4yMTM4NSBDMTA3Ljc1OSw2LjU4NTUgMTEwLjgzMSw1LjQxNjQgMTE0LjM0LDcuMDgxNTYgQzExNi44ODEsOC4yODc1NiAxMTguNjc4LDExLjM1NjYgMTE4LjU2MSwxNC43NjM4IEMxMTguNDU0LDE3Ljg3NTEgMTE2LjY3NiwyMC43MzU1IDExNC4zMDcsMjEuODA0NiBDMTExLjQxMiwyMy4xMTExIDEwOC42MjksMjIuNjE4NSAxMDYuMTI5LDIwLjU1MTcgQzEwNS40MDYsMjMuODA3NiAxMDUuNzY4LDI1Ljc5MjcgMTA2LjAxLDI3Ljk1MDMgWiBNMTA5LjU3MywxOS45NzAyIEMxMTQuMTksMjAuODIwNSAxMTYuMTIzLDE2Ljg1NzUgMTE1LjczOCwxMy40OTM2IEMxMTUuNDAxLDEwLjU0NDkgMTEyLjYxNCw3Ljg5MTA2IDEwOS4wNzMsOS4wMTc5OSBDMTA2LjM0Miw5Ljg4NzQyIDEwNS41NTYsMTIuMzE0NSAxMDUuNTY5LDE0LjUwNzIgQzEwNS41OCwxNi40NTEzIDEwNi4zNzUsMTkuMzgxMSAxMDkuNTczLDE5Ljk3MDIgWiAiIGZpbGw9InJnYigxMjEsNTAsMjApIi8+CjxwYXRoIGQ9Ik0xNDUuNjEsMTkuOTIyNCBDMTUwLjMzNywyMS4yMzE1IDE1Mi42ODQsMTUuMzY4NyAxNTMuNTg1LDE3LjkzOTkgQzE1NC4zNzQsMjAuMTkyMyAxNDguNzI5LDI0LjE4ODUgMTQzLjYzNSwyMS43ODA5IEMxNDAuNjM5LDIwLjM2NDkgMTM5LjI0NywxNi45NzkxIDEzOS41MywxMy4zNjA0IEMxMzkuODg4LDguODAxODcgMTQzLjUzNiw2LjAxMDg4IDE0Ny41NSw2LjMzOTkgQzE1MS44MDIsNi42ODg0NiAxNTQuODQzLDEwLjMyMTQgMTU0LjAwOCwxNC45Njk0IEMxNTQuMDA4LDE0Ljk2OTQgMTQyLjIxOSwxNS4wMzc0IDE0Mi4yMTksMTUuMDM3NCBDMTQyLjI4NiwxNy44MTAzIDE0My44NzYsMTkuNDQyMiAxNDUuNjEsMTkuOTIyNCBaIE0xNTEuMzIzLDEyLjY4NTQgQzE1MC44NTUsOC45ODMyOCAxNDguMzcyLDguOTM2NTMgMTQ2LjQ5NSw4LjcxNzM4IEMxNDQuNDIzLDguNDc1NTQgMTQyLjAwOSwxMS4wMzg3IDE0Mi45MTMsMTIuNDI0OSBDMTQ1LjQ2OSwxMy4zNzg1IDE0OC40MjYsMTIuODg5IDE1MS4zMjMsMTIuNjg1NCBaICIgZmlsbD0icmdiKDEyMSw1MCwxOSkiLz4KPHBhdGggZD0iTTk0LjUzMDEsMjEuMTYzMiBDOTIuMzM1MiwyMi44MzEyIDg5LjYxNzUsMjIuNzc5NiA4Ny4zMzg4LDIxLjQ0NTcgQzg1Ljg5MDMsMjAuNTk3OCA4NC45MjksMTguMTM4NCA4NS41ODI1LDE1Ljk2NjUgQzg3LjAzNDIsMTEuMTQxNCA5NC4xNzU1LDEzLjI0MzMgOTUuMDg4LDEyLjQyMDEgQzk1Ljc0MTYsMTEuODMwNSA5NS4xNDI0LDkuNTUxNjIgOTMuNDY3Niw5LjIzNjI3IEM5MS41OTI2LDguODgzMjIgODguNDE4NiwxMC4xNzUyIDg2LjU1NzEsNy43NjA4OCBDODkuMTg3LDYuMjY1MTUgOTUuNDQyMSw1Ljc3NDM4IDk3LjAzNDYsOC44NTkzNyBDOTkuMDYyNSwxMi43ODc4IDk3Ljk0OSwxOC4yMjg1IDk3LjUyOTEsMjIuMjU0NCBDOTUuOTk0NiwyMC45MDc4IDk1LjYxNzksMTkuNjI1OCA5NC41MzAxLDIxLjE2MzIgWiBNOTQuNzk2MiwxNS4zMDkyIEM5Mi44NTE3LDEzLjk0ODMgOTAuNjU0LDE0LjcxNTUgODkuNzA0OCwxNC45OTIzIEM4OC44Nzg5LDE1LjIzMzIgODcuNzU4NCwxNi4zODI0IDg4LjEzNzcsMTcuOTczOSBDODguNzU4NCwyMC41Nzg4IDkxLjU2NTcsMjAuNjA2NyA5My40MzI4LDE5Ljg1NzkgQzk0Ljg4MTYsMTkuMjc2OCA5Ni40MDY3LDE2LjQzNjQgOTQuNzk2MiwxNS4zMDkyIFogIiBmaWxsPSJyZ2IoMTIyLDUyLDIyKSIvPgo8cGF0aCBkPSJNNjIuNjA5NSwyMi4yMjU0IEM1OS44MjQ5LDIyLjgyNTggNTguMjA4MSwyMi40NDQxIDU2LjYyMzgsMjEuNzUwOCBDNTUuMDMwOCwyMS4wNTM3IDUzLjY3NiwxOS41NjMgNTQuNjYxMywxNy4yMzM2IEM1Ny4yMiwxOC4zOTQ0IDU4LjAyMSwxOS44NDIgNTkuNTA4NCwyMC4xMjgzIEM2MS4wNTE1LDIwLjQyNTIgNjMuNjU3OSwyMC4wMjQzIDY0LjAwMDUsMTcuOTYwNiBDNjQuNjIwMiwxNC4yMjg0IDU2LjQwMDEsMTYuNzEgNTQuODg1MSwxMi40ODkxIEM1NC4xNDMzLDEwLjQyMjYgNTQuODg2OCw4LjE3Nzk4IDU3LjAzNTIsNy4xODQ0MyBDNjAuOTE3Myw1LjM4OTEgNjUuODI3LDYuNTQ2NDEgNjYuMjI0MSwxMC43NzU3IEM2My4zNzM0LDExLjM5NjEgNjIuMDk5NCw3LjAxNTgyIDU4LjAyMTQsOS40NDY0NCBDNTcuMzE4Niw5Ljg2NTMyIDU2LjgxNjQsMTEuMTY0MiA1Ny41MDYsMTIuMDQ4MSBDNTguODkxOSwxMy44MjQ0IDY1LjU4ODgsMTIuMzg2MSA2Ni41NzQ1LDE2LjY5NzUgQzY3LjA4NDQsMTguOTI3OSA2NS43MTcsMjEuNTU1NSA2Mi42MDk1LDIyLjIyNTQgWiAiIGZpbGw9InJnYigxMjMsNTMsMjMpIi8+CjxwYXRoIGQ9Ik0xMzIuODgzLDEyLjAyNTkgQzEzMi44NiwxMC4wMTgyIDEzMC45LDkuMDMyNzYgMTI5LjQ5Niw4LjkwMzQzIEMxMjcuODE2LDguNzQ4NyAxMjUuNTU1LDkuOTQ3OTggMTI1LjQwNywxMi4wOTgyIEMxMjUuNDA3LDEyLjA5ODIgMTI0LjcyMywyMi4wMTE3IDEyNC43MjMsMjIuMDExNyBDMTI0LjcyMywyMi4wMTE3IDEyMy4yNzUsMjIuMDE4OSAxMjMuMjc1LDIyLjAxODkgQzEyMy4yNzUsMjIuMDE4OSAxMjIuNTAzLDguOTU5NjUgMTIyLjUwMyw4Ljk1OTY1IEMxMjIuNDQzLDcuOTMxNjcgMTIyLjgxOCw3LjA3MDc1IDEyMy40MTQsNi44OTc3MSBDMTIzLjg4LDYuNzYyNjEgMTI0Ljg2MSw2Ljc3MTI3IDEyNS40NDEsOC4zOTIzMiBDMTI2Ljk4NCw2LjU1MTEzIDEyOS40NzMsNS45NjIwMyAxMzEuOTE2LDYuNTg3MTcgQzEzNC4zODIsNy4yMTgzIDEzNS43MDUsOS45MTU3NyAxMzUuNzIsMTIuOTkyMSBDMTM1LjcyLDEyLjk5MjEgMTM1Ljc2NCwyMS44ODMgMTM1Ljc2NCwyMS44ODMgQzEzNC45MDIsMjIuMDYxMSAxMzQuMTQ4LDIyLjExNDggMTMyLjk5NSwyMS44NjYzIEMxMzIuOTk1LDIxLjg2NjMgMTMyLjg4MywxMi4wMjU5IDEzMi44ODMsMTIuMDI1OSBaICIgZmlsbD0icmdiKDEyMiw1MiwyMSkiLz4KPHBhdGggZD0iTTgzLjk2NDgsMjEuODM3MyBDNzguNDA2MSwyMy4wMjU5IDc3Ljc2MSwxMy45Njc5IDczLjA5ODksMTUuMTUzNyBDNzMuNTM5MywxNy43NzQ4IDc0LjQ1MDIsMjAuNjkxMSA3MS4zNTksMjIuNzM3MiBDNzAuMTI0MiwxNC45ODI3IDcwLjI5ODksOC4wNzE5NSA3MS42NzU0LDAuMDk0ODMwNiBDNzQuNTEwNiw0Ljk1NzM0IDcyLjgxMDQsOS4wODIwMyA3My41NDcsMTMuNTY5NSBDNzMuNTQ3LDEzLjU2OTUgODAuMzQ3MSw2Ljc2Mjg1IDgwLjM0NzEsNi43NjI4NSBDODAuMzQ3MSw2Ljc2Mjg1IDgxLjgwMTUsNy4xMDY0NSA4MS44MDE1LDcuMTA2NDUgQzgwLjk3NzUsOS43NzMwOSA3OC41NjA3LDExLjI3NjggNzcuMDg2NiwxMy40OTM2IEM3Ny4wODY2LDEzLjQ5MzYgODMuOTY0OCwyMS44MzczIDgzLjk2NDgsMjEuODM3MyBaICIgZmlsbD0icmdiKDEyMiw1MSwyMSkiLz4KPHBhdGggZD0iTTE2MS4wODQsMTguNzQwNSBDMTYxLjA4NCwxOC43NDA1IDE2Ni44MTYsMjAuOTA5NyAxNjYuODE2LDIwLjkwOTcgQzE2My45NTYsMjMuNjYwMyAxNTguNzQ2LDIxLjg5OTkgMTU4LjYwOSwxOC43NDUxIEMxNTguNjA5LDE4Ljc0NTEgMTU4LjE4Nyw5LjAwNTAyIDE1OC4xODcsOS4wMDUwMiBDMTU1LjIzLDkuODE0NDMgMTU1LjE0NSw2LjI1MTIxIDE1Ny44NDEsNi44MjQ3OSBDMTU4LjcwNyw1LjQ3MDI3IDE1OC4zMjYsMy43MTkxMyAxNTguNTA4LDIuNTA1MzggQzE1OC43NjEsMS45MTk5NyAxNjAuOTIzLDEuOTcxMTIgMTYwLjk3NiwyLjU5ODE5IEMxNjEuMDQ3LDMuNDE1OTcgMTYxLjExNSw0Ljg4MDc2IDE2MC44MjIsNi40ODgzMSBDMTYwLjgyMiw2LjQ4ODMxIDE2Ni4yMjgsNy4zNjE1MiAxNjYuMjI4LDcuMzYxNTIgQzE2Ni41NjMsOC42MDYzMiAxNjMuNzYyLDkuOTExNDcgMTYxLjQ5NCw4LjQ4MDM4IEMxNjAuNTgxLDExLjgwMDMgMTYxLjAzNiwxNC40NzA3IDE2MS4wODQsMTguNzQwNSBaICIgZmlsbD0icmdiKDEyMiw1MSwyMSkiLz4KPHBhdGggZD0iTTE3My4yNjUsMTcuNDYxOCBDMTczLjI5NiwxOS42ODI5IDE3Ni4xNDUsMjAuMjc0NyAxNzguMzg3LDE5Ljc2MjYgQzE3OC4yNDcsMjMuMDUwNyAxNzUuODAxLDIyLjQ4NCAxNzMuNzEyLDIxLjg2OTUgQzE3Mi4yMTUsMjEuNDI5MyAxNzAuNTYzLDIwLjE4ODYgMTcwLjQ5OCwxNy42NTI3IEMxNzAuNDk4LDE3LjY1MjcgMTcwLjI3NSw4Ljk0Njc4IDE3MC4yNzUsOC45NDY3OCBDMTY3LjI1Myw5Ljk0NjAyIDE2Ny4wMjUsNi4xMzkwMiAxNjkuOTc4LDYuODM2NjcgQzE2OS45NzgsNi44MzY2NyAxNzAuOTM1LDIuMzc3MTEgMTcwLjkzNSwyLjM3NzExIEMxNzEuODg5LDEuODI5MDkgMTczLjAxNiwyLjE4NjM2IDE3My4wNTcsMi41OTcwNyBDMTczLjE2NSwzLjY4ODI5IDE3My4yNDgsNC43MjQwMyAxNzIuOTAzLDYuNDk1MjkgQzE3Mi45MDMsNi40OTUyOSAxNzguMjU4LDcuMzI0NTggMTc4LjI1OCw3LjMyNDU4IEMxNzguMjU4LDcuMzI0NTggMTc4LjEyMSw4LjYyODUgMTc4LjEyMSw4LjYyODUgQzE3OC4xMjEsOC42Mjg1IDE3My4xNDYsOS4wMjY1NSAxNzMuMTQ2LDkuMDI2NTUgQzE3My4xNDYsOS4wMjY1NSAxNzMuMjY1LDE3LjQ2MTggMTczLjI2NSwxNy40NjE4IFogIiBmaWxsPSJyZ2IoMTIyLDUxLDIxKSIvPgoKCgoKCgoKCgo8L3N2Zz4=" alt="skapnett">
@@ -500,7 +491,7 @@
 <script>
   // Order: intro, headline, "Slik starter du" cards FIRST, then all photo slides, kampanje, close
   const slides = ['s1','s2','s4','s3','s5','s6','s7','s8'];
-  const durations = [6000, 3400, 3500, 3400, 3200, 3200, 4000, 3300]; // = 30000
+  const durations = [5500, 3500, 3600, 3500, 3200, 3200, 4000, 3500]; // = 30000
 
   // ============ Helper: split words into chars ============
   function splitWordsToChars(root){
@@ -524,21 +515,9 @@
   function buildS1Timeline(){
     const tl = gsap.timeline({ paused: true, defaults: { force3D: true } });
 
-    // === STATE A: "SN" letterforms — full 5-stroke S + full 3-stroke N inside frame ===
-    // S uses 4 shelves + door-1 (borrowed) for proper 5-stroke block S
-    tl.set('.s1 .icon-build .shelf-4', { attr: { x: 3,  y: 4,  width: 22, height: 3.5 } })  // S top horizontal
-      .set('.s1 .icon-build .door-1',  { attr: { x: 20, y: 7,  width: 3,  height: 8 } })    // S upper-right vertical (borrowed)
-      .set('.s1 .icon-build .shelf-3', { attr: { x: 3,  y: 13, width: 22, height: 3.5 } })  // S middle horizontal
-      .set('.s1 .icon-build .shelf-2', { attr: { x: 3,  y: 16, width: 3,  height: 8 } })    // S lower-left vertical
-      .set('.s1 .icon-build .shelf-1', { attr: { x: 3,  y: 22, width: 22, height: 3.5 } }); // S bottom horizontal
-
-    // N: 2 verticals + 1 ghost diagonal that fades out during morph
-    tl.set('.s1 .icon-build .door-2', { attr: { x: 31, y: 3, width: 4, height: 24 } })   // N left vertical
-      .set('.s1 .icon-build .door-3', { attr: { x: 51, y: 3, width: 4, height: 24 } })   // N right vertical
-      .set('.s1 .icon-build .ghost-diag', { attr: { x: 42, y: 3, width: 4, height: 24 }, rotation: -28, transformOrigin: '50% 50%', opacity: 1 });
-
-    // Reset other animation state
-    tl.set('.s1 .icon-build .bar', { opacity: 1, scale: 1 })
+    // Start: hide everything
+    tl.set('.s1 .icon-build .shelf', { scaleX: 0, opacity: 0, transformOrigin: 'left center' })
+      .set('.s1 .icon-build .door',  { scaleY: 0, opacity: 0, transformOrigin: 'center top' })
       .set('.s1 .word-reveal',       { x: 0 })
       .set('.s1 .pen',               { opacity: 0, x: 0 })
       .set('.s1 .tagline-text span', { y: 30, opacity: 0 })
@@ -548,54 +527,50 @@
     // Glow fades in
     tl.to('.s1 .glow', { opacity: 1, scale: 1, duration: 1.6, ease: 'power2.out' }, 0);
 
-    // Phase 1: SN letterforms appear with pop stagger
-    tl.from('.s1 .icon-build .bar', {
-      opacity: 0, scale: 0,
-      duration: .5,
-      ease: 'back.out(2.2)',
-      stagger: 0.04,
-      transformOrigin: '50% 50%'
-    }, 0.2);
+    // 4 shelves: pop in from left with overshoot, fast cascade
+    tl.to('.s1 .icon-build .shelf', {
+      scaleX: 1, opacity: 1,
+      duration: .55, ease: 'back.out(2.4)',
+      stagger: { each: .085, from: 'start' }
+    }, .25);
 
-    // Phase 2: HOLD "SN" so viewers see the brand letters, then MORPH to wardrobe layout
-    const morphAt = 1.9;
-    const morphDur = 1.3;
-    const morphEase = 'power3.inOut';
+    // 3 doors: drop with bouncy snap
+    tl.to('.s1 .icon-build .door', {
+      scaleY: 1, opacity: 1,
+      duration: .7, ease: 'back.out(2.8)',
+      stagger: { each: .10 }
+    }, .85);
 
-    // SHELVES → 4 horizontal wardrobe shelves (final layout)
-    tl.to('.s1 .icon-build .shelf-1', { attr: { x: 3, y: 22, width: 22, height: 3.5 }, duration: morphDur, ease: morphEase }, morphAt)
-      .to('.s1 .icon-build .shelf-2', { attr: { x: 3, y: 16, width: 22, height: 3.5 }, duration: morphDur, ease: morphEase }, morphAt)
-      .to('.s1 .icon-build .shelf-3', { attr: { x: 3, y: 10, width: 22, height: 3.5 }, duration: morphDur, ease: morphEase }, morphAt)
-      .to('.s1 .icon-build .shelf-4', { attr: { x: 3, y: 4,  width: 22, height: 3.5 }, duration: morphDur, ease: morphEase }, morphAt);
-
-    // DOORS → 3 vertical wardrobe doors (final layout)
-    tl.to('.s1 .icon-build .door-1', { attr: { x: 31, y: 3, width: 5, height: 24 }, duration: morphDur, ease: morphEase }, morphAt)
-      .to('.s1 .icon-build .door-2', { attr: { x: 40, y: 3, width: 5, height: 24 }, duration: morphDur, ease: morphEase }, morphAt)
-      .to('.s1 .icon-build .door-3', { attr: { x: 48, y: 3, width: 5, height: 24 }, duration: morphDur, ease: morphEase }, morphAt)
-      .to('.s1 .icon-build .ghost-diag', { opacity: 0, rotation: 0, attr: { x: 42, y: 3, width: 0, height: 24 }, duration: morphDur * 0.7, ease: 'power2.in' }, morphAt);
-
-    // Phase 3: Wordmark draws in with glowing orange pen
-    const drawAt = morphAt + morphDur + 0.15;
+    // Wordmark: orange pen sweeps left -> right, revealing "skapnett"
+    // Implemented by moving a cream cover (.word-reveal) to the right
     tl.fromTo('.s1 .pen',
       { opacity: 0, x: 0 },
-      { opacity: 1, duration: .1 }, drawAt)
-     .to('.s1 .word-reveal', { x: '100%', duration: 1.25, ease: 'power2.inOut' }, drawAt)
-     .to('.s1 .pen',         { x: 603,    duration: 1.25, ease: 'power2.inOut' }, drawAt)
-     .to('.s1 .pen',         { opacity: 0, duration: .25, ease: 'power1.out' }, drawAt + 1.10);
+      { opacity: 1, duration: .1 }, 1.55)
+     .to('.s1 .word-reveal', {
+        x: '100%',
+        duration: 1.3,
+        ease: 'power2.inOut'
+      }, 1.55)
+     .to('.s1 .pen', {
+        x: 603,
+        duration: 1.3,
+        ease: 'power2.inOut'
+      }, 1.55)
+     .to('.s1 .pen', { opacity: 0, duration: .25, ease: 'power1.out' }, 2.75);
 
-    // Phase 4: Tagline character-by-character fade up
+    // Tagline: characters fade up with tight stagger
     tl.to('.s1 .tagline-text span', {
       y: 0, opacity: 1,
       duration: .5, ease: 'power3.out',
       stagger: .025
-    }, drawAt + 1.35);
+    }, 3.0);
 
-    // Phase 5: Final orange underline
+    // Final underline
     tl.to('.s1 .draw-underline', {
       width: 220,
       duration: .55,
       ease: 'power2.out'
-    }, drawAt + 2.0);
+    }, 3.85);
 
     return tl;
   }
