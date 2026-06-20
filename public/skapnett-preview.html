@@ -44,39 +44,30 @@
 
   .center{position:absolute;inset:0;display:grid;place-items:center;z-index:5}
 
-  /* SN BIG LETTERS — start state */
-  .sn-big{
-    font-family:'Plus Jakarta Sans',sans-serif;
-    font-weight:800;
-    font-size:340px;
+  /* ==== START: SN formed by bars inside frame ==== */
+  .sn-icon{
+    width:480px;height:280px;
     color:var(--brown);
-    letter-spacing:-.03em;
-    line-height:1;
-    display:flex;
-    align-items:center;
-    gap:24px;
   }
-  .sn-big span{display:inline-block}
-  .sn-big .s{color:var(--brown)}
-  .sn-big .n{color:var(--orange)}
+  .sn-icon svg{display:block;width:100%;height:100%}
+
+  /* ==== END: full logo + wordmark + tagline ==== */
+  .end-stack{display:flex;flex-direction:column;align-items:center;gap:54px}
+  .end-logo-row{display:flex;align-items:center;height:160px}
+  .end-logo-row img{display:block;height:160px;width:auto}
+  .tagline-end{
+    font-weight:700;letter-spacing:.42em;font-size:24px;color:var(--orange);text-transform:uppercase;line-height:1.4;padding:.05em 0 .2em
+  }
+  .underline-end{height:3px;width:220px;background:var(--orange);box-shadow:0 0 18px rgba(232,91,40,.5);border-radius:2px;margin-top:6px}
 
   .label{
     position:absolute;bottom:80px;left:0;right:0;text-align:center;
     font-weight:600;color:var(--ink-soft);font-size:18px;letter-spacing:.4em;text-transform:uppercase
   }
-
-  /* END STATE — logo + wordmark + tagline */
-  .end-stack{display:flex;flex-direction:column;align-items:center;gap:54px}
-  .end-logo-row{display:flex;align-items:center;gap:18px;height:128px}
-  .end-logo-row img{display:block;height:128px;width:auto}
-  .tagline-end{
-    font-weight:700;letter-spacing:.42em;font-size:22px;color:var(--orange);text-transform:uppercase;line-height:1.4;padding:.05em 0 .2em
-  }
-  .underline-end{height:3px;width:220px;background:var(--orange);box-shadow:0 0 18px rgba(232,91,40,.5);border-radius:2px;margin-top:6px}
 </style></head>
 <body>
 
-<!-- START STATE: just SN big letters -->
+<!-- START STATE: SN formed by bars inside frame -->
 <div class="stage" id="start">
   <div class="topframe">
     <img class="logo-small" src="skapnett-logo.svg" alt="skapnett">
@@ -86,12 +77,39 @@
     </div>
   </div>
   <div class="center">
-    <div class="sn-big"><span class="s">S</span><span class="n">N</span></div>
+    <div class="sn-icon">
+      <svg viewBox="0 0 60 30" xmlns="http://www.w3.org/2000/svg">
+        <!-- Outer frame -->
+        <rect x="1.5" y="1.5" width="57" height="27" rx="1.5"
+              fill="none" stroke="currentColor" stroke-width="2.6"/>
+
+        <!-- ==== S (left half x: 4 to 26) ==== -->
+        <!-- Top horizontal -->
+        <rect x="4" y="4" width="22" height="3.5" rx="1" fill="currentColor"/>
+        <!-- Upper-right vertical (connects top to middle) -->
+        <rect x="22.5" y="7" width="3.5" height="7" rx="1" fill="currentColor"/>
+        <!-- Middle horizontal -->
+        <rect x="4" y="13" width="22" height="3.5" rx="1" fill="currentColor"/>
+        <!-- Lower-left vertical (connects middle to bottom) -->
+        <rect x="4" y="16.5" width="3.5" height="7" rx="1" fill="currentColor"/>
+        <!-- Bottom horizontal -->
+        <rect x="4" y="22.5" width="22" height="3.5" rx="1" fill="currentColor"/>
+
+        <!-- ==== N (right half x: 32 to 56) ==== -->
+        <!-- Left vertical -->
+        <rect x="32" y="4" width="3.5" height="22" rx="1" fill="currentColor"/>
+        <!-- Diagonal stroke (top-left to bottom-right of N area) -->
+        <line x1="35.5" y1="4" x2="52.5" y2="26"
+              stroke="currentColor" stroke-width="3.8" stroke-linecap="round"/>
+        <!-- Right vertical -->
+        <rect x="52.5" y="4" width="3.5" height="22" rx="1" fill="currentColor"/>
+      </svg>
+    </div>
   </div>
-  <div class="label">START — kun bokstavene</div>
+  <div class="label">START — SN i ramme</div>
 </div>
 
-<!-- END STATE: full logo + wordmark + tagline -->
+<!-- END STATE: full logo with wordmark + tagline -->
 <div class="stage" id="end">
   <div class="topframe">
     <img class="logo-small" src="skapnett-logo.svg" alt="skapnett">
