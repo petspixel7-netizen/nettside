@@ -162,7 +162,34 @@
   @keyframes shineAcross{0%{background-position:-150% 0}100%{background-position:250% 0}}
   @keyframes floatLogo{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 
-  /* ============ SLIDE 1: INTRO ============ */
+  /* ---------- PRE-ROLL WASH (hides first-paint lag) ---------- */
+  .wash{position:absolute;inset:0;background:var(--cream);z-index:50;pointer-events:none;transition:opacity 1.4s var(--ease-soft)}
+  .wash.gone{opacity:0}
+
+  /* ---------- DECORATIVE FLOATING ACCENT DOTS ---------- */
+  .accents{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+  .accents span{
+    position:absolute;border-radius:50%;
+    background:radial-gradient(circle, rgba(232,91,40,.7) 0%, rgba(232,91,40,.25) 40%, transparent 70%);
+    filter:blur(.4px);
+    will-change:transform, opacity;
+    animation:floatDot 16s ease-in-out infinite;
+  }
+  .accents span:nth-child(1){width:14px;height:14px;left:14%;top:78%;animation-delay:-1s;animation-duration:18s}
+  .accents span:nth-child(2){width:8px; height:8px; left:84%;top:22%;animation-delay:-4s;animation-duration:22s}
+  .accents span:nth-child(3){width:18px;height:18px;left:72%;top:84%;animation-delay:-7s;animation-duration:20s}
+  .accents span:nth-child(4){width:6px; height:6px; left:8%; top:34%;animation-delay:-10s;animation-duration:16s}
+  .accents span:nth-child(5){width:10px;height:10px;left:50%;top:90%;animation-delay:-2s;animation-duration:24s}
+  .accents span:nth-child(6){width:12px;height:12px;left:30%;top:18%;animation-delay:-6s;animation-duration:19s}
+  @keyframes floatDot{
+    0%,100%{transform:translate3d(0,0,0) scale(1);opacity:.5}
+    33%   {transform:translate3d(40px,-30px,0) scale(1.3);opacity:.9}
+    66%   {transform:translate3d(-20px,30px,0) scale(.8);opacity:.4}
+  }
+
+  /* ---------- DIRECTIONAL SLIDE TRANSITIONS (parallax push feel) ---------- */
+  .slide.exit-up{transform:scale(.985) translate3d(0,-30px,0);opacity:0;transition:opacity .8s var(--ease-soft), transform 1.2s var(--ease-soft)}
+  .slide.exit-down{transform:scale(.985) translate3d(0,30px,0);opacity:0;transition:opacity .8s var(--ease-soft), transform 1.2s var(--ease-soft)}
   .s1 .underline{height:3px;width:120px;background:var(--orange);margin:40px auto 0;border-radius:2px}
   .s1 .eyebrow{margin-top:14px}
   .s1 .logo.xl{will-change:transform}
@@ -211,9 +238,23 @@
   .s7 .heart{font-size:80px;display:inline-block;transform-origin:center;line-height:1.2;padding:.05em 0}
   .s7.active .heart{animation:heartbeat 1.6s ease-in-out .5s 2}
   .s7 .kampanje-tag{font-weight:700;letter-spacing:.4em;color:var(--orange);font-size:22px;text-transform:uppercase;margin-top:8px;line-height:1.4;padding:.1em 0 .2em}
-  .s7 .big{font-weight:800;font-size:340px;color:var(--orange);line-height:1.0;letter-spacing:-.05em;margin-top:8px;display:inline-block;transform-origin:center;padding-bottom:.04em}
-  .s7 .big sup{font-size:140px;vertical-align:top;line-height:1;color:var(--brown)}
-  .s7.active .big{animation:countUpBig 1.1s var(--ease-pop) .7s both}
+  .s7 .big{font-weight:800;font-size:340px;color:var(--orange);line-height:1.0;letter-spacing:-.05em;margin-top:8px;display:inline-flex;align-items:flex-start;justify-content:center;gap:0;transform-origin:center;padding-bottom:.04em;position:relative}
+  .s7 .big .num{display:inline-block;min-width:1.5em;text-align:right;font-variant-numeric:tabular-nums}
+  .s7 .big sup{font-size:140px;line-height:1;color:var(--brown);margin-top:.2em}
+  /* Radial sweep behind big number */
+  .s7 .glow-burst{
+    position:absolute;left:50%;top:48%;transform:translate(-50%,-50%) scale(0);
+    width:780px;height:780px;border-radius:50%;
+    background:radial-gradient(circle, rgba(232,91,40,.35) 0%, rgba(232,91,40,.12) 30%, transparent 65%);
+    z-index:-1;opacity:0;pointer-events:none;
+  }
+  .s7.active .glow-burst{animation:glowBurst 1.4s var(--ease-soft) .5s forwards}
+  @keyframes glowBurst{
+    0%  {transform:translate(-50%,-50%) scale(0);opacity:0}
+    50% {opacity:1}
+    100%{transform:translate(-50%,-50%) scale(1);opacity:0}
+  }
+  .s7.active .big{animation:countUpBig 1.0s var(--ease-pop) .55s both}
   .s7 .desc{font-weight:700;font-size:42px;color:var(--brown);margin-top:16px;line-height:1.3;letter-spacing:-.01em;padding-bottom:.06em}
   .s7 .small{font-weight:500;font-size:18px;color:var(--ink-soft);margin-top:18px;letter-spacing:.02em;line-height:1.5;padding-bottom:.1em}
   .s7 .cta{margin-top:40px}
@@ -234,6 +275,8 @@
 <body>
 
 <div class="stage" id="stage">
+
+  <div class="accents"><span></span><span></span><span></span><span></span><span></span><span></span></div>
 
   <div class="topframe" id="topframe">
     <div class="left"><a class="logo"><img src="skapnett-logo.svg" alt="skapnett"></a></div>
@@ -323,7 +366,7 @@
     <div class="center"><div class="wrap">
       <div class="heart anim pop d0">🧡</div>
       <div class="kampanje-tag anim up d1">Nå</div>
-      <div class="big">40<sup>%</sup></div>
+      <div class="big"><span class="glow-burst"></span><span class="num" id="counter">0</span><sup>%</sup></div>
       <div class="desc anim up d6">på alle dørfyllinger</div>
       <div class="small anim up d7">*Pacific profil · prisgruppe 1–3</div>
       <div class="cta anim pop d8"><span class="pill brown">Se kampanje</span></div>
@@ -344,6 +387,8 @@
 
   <div class="progress" id="progress"><div class="bar"></div></div>
 
+  <div class="wash" id="wash"></div>
+
 </div>
 
 <script>
@@ -352,8 +397,25 @@
 
   function activate(i){
     slides.forEach((id, idx) => {
-      document.getElementById(id).classList.toggle('active', idx === i);
+      const el = document.getElementById(id);
+      el.classList.toggle('active', idx === i);
     });
+    if (slides[i] === 's7') runCounter();
+  }
+
+  function runCounter(){
+    const el = document.getElementById('counter');
+    if (!el) return;
+    el.textContent = '0';
+    const target = 40, dur = 950, start = performance.now() + 550;
+    function tick(now){
+      const t = Math.max(0, Math.min(1, (now - start) / dur));
+      // ease-out cubic
+      const eased = 1 - Math.pow(1 - t, 3);
+      el.textContent = Math.round(target * eased);
+      if (t < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
   }
 
   function runOnce(){
@@ -374,7 +436,6 @@
   }
 
   function preload(){
-    // force-decode images so first paint isn't blocked
     const urls = ['skapnett-logo.svg','skapnett-hero.jpg','skapnett-feat1.jpg','skapnett-feat2.jpg','norleads-logo.png'];
     return Promise.all(urls.map(u => new Promise(res => { const i=new Image(); i.onload=i.onerror=res; i.src=u; })));
   }
@@ -382,10 +443,17 @@
   window.addEventListener('load', async () => {
     await document.fonts.ready;
     await preload();
-    // ensure browser has painted at least once before kicking off animations
+    // Warm-up render: activate S1 hidden under wash so first paint is done invisibly.
+    document.getElementById('s1').classList.add('active');
+    // Double rAF so browser paints, then start the real timeline + reveal wash
     requestAnimationFrame(() => requestAnimationFrame(() => {
-      document.getElementById('topframe').classList.add('show');
-      setTimeout(start, 350);
+      // hold one more frame, then begin
+      setTimeout(() => {
+        document.getElementById('s1').classList.remove('active');
+        document.getElementById('topframe').classList.add('show');
+        document.getElementById('wash').classList.add('gone');
+        setTimeout(start, 200);
+      }, 60);
     }));
   });
 </script>
