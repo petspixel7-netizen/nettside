@@ -456,8 +456,9 @@
 </div>
 
 <script>
-  const slides = ['s1','s2','s3','s4','s5','s6','s7','s8'];
-  const durations = [4000, 3800, 3700, 3900, 3400, 3400, 4300, 3500]; // = 30000
+  // Order: intro, headline, "Slik starter du" cards FIRST, then all photo slides, kampanje, close
+  const slides = ['s1','s2','s4','s3','s5','s6','s7','s8'];
+  const durations = [4000, 3800, 3900, 3700, 3400, 3400, 4300, 3500]; // = 30000
 
   function activate(i){
     slides.forEach((id, idx) => {
