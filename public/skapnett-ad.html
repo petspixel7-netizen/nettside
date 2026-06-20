@@ -190,10 +190,68 @@
   /* ---------- DIRECTIONAL SLIDE TRANSITIONS (parallax push feel) ---------- */
   .slide.exit-up{transform:scale(.985) translate3d(0,-30px,0);opacity:0;transition:opacity .8s var(--ease-soft), transform 1.2s var(--ease-soft)}
   .slide.exit-down{transform:scale(.985) translate3d(0,30px,0);opacity:0;transition:opacity .8s var(--ease-soft), transform 1.2s var(--ease-soft)}
-  .s1 .underline{height:3px;width:120px;background:var(--orange);margin:40px auto 0;border-radius:2px}
-  .s1 .eyebrow{margin-top:14px}
-  .s1 .logo.xl{will-change:transform}
-  .s1.active .logo.xl{animation:floatLogo 5s ease-in-out 2.2s infinite}
+  /* ============ SLIDE 1: DRAMATIC DRAW-IN INTRO ============ */
+  .s1{background:#1a1410}
+  .s1::before{
+    content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 50%, rgba(232,91,40,.18), transparent 65%),
+      radial-gradient(ellipse 40% 30% at 22% 30%, rgba(245,178,122,.07), transparent 70%);
+  }
+  .s1 .stack{display:flex;flex-direction:column;align-items:center;gap:50px;position:relative;z-index:2}
+  .s1 .draw-row{position:relative;display:inline-block}
+  .s1 .draw-row.logo-row{height:128px}
+  .s1 .draw-row.logo-row img{
+    display:block;height:128px;width:auto;
+    filter:brightness(0) invert(1) sepia(.08) saturate(1.6) hue-rotate(345deg);
+    -webkit-mask-image:linear-gradient(90deg, #000 50%, transparent 50%);
+            mask-image:linear-gradient(90deg, #000 50%, transparent 50%);
+    -webkit-mask-size:200% 100%;mask-size:200% 100%;
+    -webkit-mask-position:100% 0; mask-position:100% 0;
+  }
+  .s1 .draw-row.text-row{height:36px;display:flex;align-items:center}
+  .s1 .draw-row.text-row .draw-text{
+    font-weight:600;letter-spacing:.5em;font-size:24px;color:#F6E7D2;text-transform:uppercase;line-height:1;
+    -webkit-mask-image:linear-gradient(90deg, #000 50%, transparent 50%);
+            mask-image:linear-gradient(90deg, #000 50%, transparent 50%);
+    -webkit-mask-size:200% 100%;mask-size:200% 100%;
+    -webkit-mask-position:100% 0; mask-position:100% 0;
+    padding-bottom:.1em
+  }
+  .s1 .pen{
+    position:absolute;top:-8px;bottom:-8px;width:5px;border-radius:4px;
+    background:linear-gradient(180deg, var(--orange), #F58E5F);
+    box-shadow:0 0 22px var(--orange), 0 0 44px rgba(232,91,40,.6);
+    transform:translateX(-50%);left:0;opacity:0;
+    will-change:transform, left;
+  }
+  .s1 .draw-underline{height:2px;width:0;background:var(--orange);box-shadow:0 0 18px var(--orange);border-radius:2px;margin-top:6px;align-self:center}
+
+  .s1.active .draw-row.logo-row img{animation:drawReveal 1.5s var(--ease-soft) .25s forwards}
+  .s1.active .draw-row.logo-row .pen{animation:penGlide 1.5s var(--ease-soft) .25s forwards}
+  .s1.active .draw-row.text-row .draw-text{animation:drawReveal 1.1s var(--ease-soft) 1.55s forwards}
+  .s1.active .draw-row.text-row .pen{animation:penGlide 1.1s var(--ease-soft) 1.55s forwards}
+  .s1.active .draw-underline{animation:drawUnderline .6s var(--ease-soft) 2.55s forwards}
+
+  @keyframes drawReveal{
+    0%  {-webkit-mask-position:100% 0;mask-position:100% 0}
+    100%{-webkit-mask-position:0% 0; mask-position:0% 0}
+  }
+  @keyframes penGlide{
+    0%  {opacity:0;left:0}
+    8%  {opacity:1}
+    92% {opacity:1}
+    100%{opacity:0;left:100%}
+  }
+  @keyframes drawUnderline{
+    0%  {width:0}
+    100%{width:160px}
+  }
+
+  /* Hide global topframe + Norleads badge while S1 dark intro is active */
+  .topframe.dark .left img{filter:brightness(0) invert(1) sepia(.08) saturate(1.6) hue-rotate(345deg)}
+  .topframe.dark .by{color:rgba(246,231,210,.6)}
+  .topframe.dark .nl{background:rgba(255,255,255,.08);box-shadow:none}
 
   /* ============ SLIDE 2: HEADLINE ============ */
   .s2 .h1{font-size:128px;line-height:1.18;padding-bottom:.12em}
@@ -288,10 +346,16 @@
 
   <!-- SLIDE 1 -->
   <div class="slide s1" id="s1">
-    <div class="center"><div class="wrap">
-      <div class="logo xl anim pop d1"><img src="skapnett-logo.svg" alt="skapnett"></div>
-      <div class="underline anim drawX d3"></div>
-      <div class="eyebrow anim up d4">Måltilpasset · til deg</div>
+    <div class="center"><div class="stack">
+      <div class="draw-row logo-row">
+        <img src="skapnett-logo.svg" alt="skapnett">
+        <span class="pen"></span>
+      </div>
+      <div class="draw-row text-row">
+        <span class="draw-text">Måltilpasset · til deg</span>
+        <span class="pen"></span>
+      </div>
+      <div class="draw-underline"></div>
     </div></div>
   </div>
 
@@ -393,13 +457,15 @@
 
 <script>
   const slides = ['s1','s2','s3','s4','s5','s6','s7','s8'];
-  const durations = [3500, 4000, 3700, 4000, 3500, 3500, 4300, 3500]; // = 30000
+  const durations = [4000, 3800, 3700, 3900, 3400, 3400, 4300, 3500]; // = 30000
 
   function activate(i){
     slides.forEach((id, idx) => {
       const el = document.getElementById(id);
       el.classList.toggle('active', idx === i);
     });
+    // Dark topframe theme during S1 dramatic intro, light otherwise
+    document.getElementById('topframe').classList.toggle('dark', i === 0);
     if (slides[i] === 's7') runCounter();
   }
 
