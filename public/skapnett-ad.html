@@ -268,16 +268,35 @@
   .s3 .corner.br{right:84px;bottom:224px;border-left:none;border-top:none}
   .s3.active .corner{opacity:1;transform:scale(1)}
 
-  /* ============ SLIDE 4: THREE CARDS ============ */
+  /* ============ SLIDE 4: THREE CARDS (GSAP fancy) ============ */
   .s4 .top{position:absolute;top:170px;left:0;right:0;text-align:center;z-index:5}
-  .s4 .top h2{font-weight:800;font-size:104px;color:var(--brown);letter-spacing:-.025em;line-height:1.18;padding-bottom:.1em}
-  .s4 .top h2 em{font-style:normal;color:var(--orange)}
-  .s4 .cards{position:absolute;top:480px;left:60px;right:60px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px}
-  .s4 .card{background:var(--brown);border-radius:24px;padding:44px 22px;text-align:center;color:#fff;display:flex;flex-direction:column;align-items:center;gap:24px;min-height:360px;justify-content:center;box-shadow:0 12px 30px rgba(90,47,30,.18)}
-  .s4 .card .icn{width:96px;height:96px;display:grid;place-items:center;color:var(--orange-soft)}
+  .s4 .top h2{font-weight:800;font-size:104px;color:var(--brown);letter-spacing:-.025em;line-height:1.18;padding-bottom:.1em;perspective:1000px}
+  .s4 .top h2 .w{display:inline-block;will-change:transform, opacity}
+  .s4 .top h2 .w.em{color:var(--orange)}
+  .s4 .top h2 .char{display:inline-block;transform-origin:50% 100%;will-change:transform, opacity}
+
+  /* connecting line between cards */
+  .s4 .connect-line{position:absolute;top:638px;left:120px;right:120px;height:2px;z-index:3;pointer-events:none}
+  .s4 .connect-line span{display:block;height:100%;width:0;background:linear-gradient(90deg, transparent, var(--orange) 20%, var(--orange) 80%, transparent);box-shadow:0 0 12px rgba(232,91,40,.4);will-change:width}
+
+  .s4 .cards{position:absolute;top:480px;left:60px;right:60px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px;perspective:1200px}
+  .s4 .card{
+    position:relative;
+    background:var(--brown);border-radius:24px;padding:44px 22px;text-align:center;color:#fff;
+    display:flex;flex-direction:column;align-items:center;gap:24px;min-height:360px;justify-content:center;
+    box-shadow:0 12px 30px rgba(90,47,30,.18);
+    transform-style:preserve-3d;will-change:transform, opacity
+  }
+  .s4 .card .card-glow{
+    position:absolute;inset:-4px;border-radius:28px;z-index:-1;opacity:0;
+    background:radial-gradient(circle at 50% 50%, rgba(232,91,40,.45), transparent 70%);
+    filter:blur(20px);will-change:opacity
+  }
+  .s4 .card .icn{width:96px;height:96px;display:grid;place-items:center;color:var(--orange-soft);will-change:transform, opacity}
   .s4 .card .icn svg{width:100%;height:100%;stroke:currentColor;fill:none;stroke-width:2.2}
-  .s4 .card .title{font-weight:700;font-size:34px;line-height:1.3;color:#fff;letter-spacing:-.01em;padding:.05em 0 .12em}
-  .s4 .card .step{font-size:14px;letter-spacing:.4em;text-transform:uppercase;color:var(--orange-soft);font-weight:600;line-height:1.4}
+  .s4 .card .icn svg rect, .s4 .card .icn svg path{stroke-dasharray:300;stroke-dashoffset:300;will-change:stroke-dashoffset}
+  .s4 .card .title{font-weight:700;font-size:34px;line-height:1.3;color:#fff;letter-spacing:-.01em;padding:.05em 0 .12em;will-change:transform, opacity}
+  .s4 .card .step{font-size:14px;letter-spacing:.4em;text-transform:uppercase;color:var(--orange-soft);font-weight:600;line-height:1.4;will-change:transform, opacity}
 
   /* ============ SLIDE 5/6: FEATURE — fixed spacing ============ */
   .feat .photo-wrap{position:absolute;left:60px;top:60px;right:60px;height:460px;border-radius:20px;overflow:hidden;box-shadow:0 24px 50px rgba(90,47,30,.15)}
@@ -395,20 +414,24 @@
   <!-- SLIDE 4 -->
   <div class="slide s4" id="s4">
     <div class="top">
-      <h2 class="anim pop d1">Slik <em>starter du</em></h2>
+      <h2 class="split-title"><span class="w">Slik</span> <span class="w em">starter</span> <span class="w em">du</span></h2>
     </div>
+    <div class="connect-line"><span></span></div>
     <div class="cards">
-      <div class="card anim right d3">
+      <div class="card" data-i="0">
+        <div class="card-glow"></div>
         <div class="step">01</div>
         <div class="icn"><svg viewBox="0 0 64 64"><rect x="10" y="14" width="44" height="36" rx="3"/><path d="M10 24h44M22 14v36M42 14v36"/></svg></div>
         <div class="title">Tegn selv</div>
       </div>
-      <div class="card anim up d4">
+      <div class="card" data-i="1">
+        <div class="card-glow"></div>
         <div class="step">02</div>
         <div class="icn"><svg viewBox="0 0 64 64"><rect x="10" y="14" width="44" height="32" rx="3"/><path d="M22 52h20M32 46v6"/></svg></div>
         <div class="title">Book<br/>tegnetime</div>
       </div>
-      <div class="card anim left d5">
+      <div class="card" data-i="2">
+        <div class="card-glow"></div>
         <div class="step">03</div>
         <div class="icn"><svg viewBox="0 0 64 64"><rect x="14" y="10" width="36" height="44" rx="3"/><path d="M14 32h36M32 10v44"/></svg></div>
         <div class="title">Se ferdige<br/>løsninger</div>
@@ -471,8 +494,25 @@
   const slides = ['s1','s2','s4','s3','s5','s6','s7','s8'];
   const durations = [5500, 3500, 3600, 3500, 3200, 3200, 4000, 3500]; // = 30000
 
-  // ============ GSAP TIMELINE FOR S1 ============
+  // ============ Helper: split words into chars ============
+  function splitWordsToChars(root){
+    root.querySelectorAll('.w').forEach(word => {
+      if (word.dataset.split) return;
+      word.dataset.split = '1';
+      const text = word.textContent;
+      word.textContent = '';
+      [...text].forEach(ch => {
+        const s = document.createElement('span');
+        s.className = 'char';
+        s.textContent = ch === ' ' ? ' ' : ch;
+        word.appendChild(s);
+      });
+    });
+  }
+
+  // ============ GSAP TIMELINES ============
   let s1Timeline = null;
+  let s4Timeline = null;
   function buildS1Timeline(){
     const tl = gsap.timeline({ paused: true, defaults: { force3D: true } });
 
@@ -536,6 +576,84 @@
     return tl;
   }
 
+  function buildS4Timeline(){
+    splitWordsToChars(document.querySelector('.s4 .top h2'));
+    const tl = gsap.timeline({ paused: true, defaults: { force3D: true } });
+
+    // Initial state
+    tl.set('.s4 .top h2 .char', { y: 90, rotateX: -90, opacity: 0, transformOrigin: '50% 100%' })
+      .set('.s4 .connect-line span', { width: 0 })
+      .set('.s4 .card', { rotateY: -75, y: 60, opacity: 0, transformOrigin: '50% 50% -120px' })
+      .set('.s4 .card .card-glow', { opacity: 0 })
+      .set('.s4 .card .step', { y: -10, opacity: 0 })
+      .set('.s4 .card .icn', { scale: 0, opacity: 0, rotate: -30 })
+      .set('.s4 .card .icn svg rect, .s4 .card .icn svg path', { strokeDashoffset: 300 })
+      .set('.s4 .card .title', { y: 24, opacity: 0 });
+
+    // Title chars cascade in (book-page flip from below)
+    tl.to('.s4 .top h2 .char', {
+      y: 0, rotateX: 0, opacity: 1,
+      duration: .7,
+      ease: 'back.out(1.7)',
+      stagger: 0.035
+    }, 0.05);
+
+    // Connecting orange line scribbles across (subtle)
+    tl.to('.s4 .connect-line span', {
+      width: '100%',
+      duration: 1.2,
+      ease: 'power2.inOut'
+    }, 0.5);
+
+    // Cards: rotateY 3D flip in stagger
+    tl.to('.s4 .card', {
+      rotateY: 0, y: 0, opacity: 1,
+      duration: .95,
+      ease: 'power3.out',
+      stagger: 0.12
+    }, 0.7);
+
+    // Subtle glow under each card
+    tl.to('.s4 .card .card-glow', {
+      opacity: 1,
+      duration: 1.0,
+      ease: 'power2.inOut',
+      stagger: 0.12
+    }, 1.0);
+
+    // Step numbers pop down
+    tl.to('.s4 .card .step', {
+      y: 0, opacity: 1,
+      duration: .45,
+      ease: 'back.out(2.2)',
+      stagger: 0.1
+    }, 1.45);
+
+    // Icons rotate in + stroke draws
+    tl.to('.s4 .card .icn', {
+      scale: 1, rotate: 0, opacity: 1,
+      duration: .55,
+      ease: 'back.out(2)',
+      stagger: 0.1
+    }, 1.6);
+    tl.to('.s4 .card .icn svg rect, .s4 .card .icn svg path', {
+      strokeDashoffset: 0,
+      duration: .8,
+      ease: 'power2.inOut',
+      stagger: { each: 0.04, from: 'start' }
+    }, 1.7);
+
+    // Titles fade up
+    tl.to('.s4 .card .title', {
+      y: 0, opacity: 1,
+      duration: .55,
+      ease: 'power3.out',
+      stagger: 0.1
+    }, 2.0);
+
+    return tl;
+  }
+
   function activate(i){
     slides.forEach((id, idx) => {
       const el = document.getElementById(id);
@@ -543,9 +661,8 @@
     });
     document.getElementById('topframe').classList.toggle('dark', false); // always light now
     if (slides[i] === 's7') runCounter();
-    if (slides[i] === 's1' && s1Timeline){
-      s1Timeline.restart();
-    }
+    if (slides[i] === 's1' && s1Timeline) s1Timeline.restart();
+    if (slides[i] === 's4' && s4Timeline) s4Timeline.restart();
   }
 
   function runCounter(){
@@ -590,6 +707,7 @@
     await preload();
     // Build GSAP timeline AFTER fonts/assets ready
     s1Timeline = buildS1Timeline();
+    s4Timeline = buildS4Timeline();
     // Warm-up: paint S1 once under wash, then reveal and run timeline
     document.getElementById('s1').classList.add('active');
     requestAnimationFrame(() => requestAnimationFrame(() => {
