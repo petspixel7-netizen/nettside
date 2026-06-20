@@ -3,6 +3,7 @@ import { NorLeadsAd } from './NorLeadsAd';
 import { IgnoredAds } from './IgnoredAds';
 import { ThumbStopper } from './ThumbStopper';
 import { HotelRiviera } from './HotelRiviera';
+import { SkapnettLogo } from './SkapnettLogo';
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -38,6 +39,14 @@ export const RemotionRoot: React.FC = () => {
         fps={30}
         width={1920}
         height={1080}
+      />
+      <Composition
+        id="SkapnettLogo"
+        component={SkapnettLogo}
+        durationInFrames={120}
+        fps={30}
+        width={1280}
+        height={720}
       />
     </>
   );
