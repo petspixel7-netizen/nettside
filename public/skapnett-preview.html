@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="no"><head>
+<meta charset="utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F6E7D2;
+    --orange:#E85B28;
+    --brown:#5A2F1E;
+    --ink:#3A1D10;
+    --ink-soft:#7A5443;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+  html,body{background:#1a1410;font-family:'Plus Jakarta Sans',system-ui,sans-serif}
+  body{display:flex;gap:40px;padding:40px;align-items:center;justify-content:center;flex-wrap:wrap}
+
+  .stage{
+    position:relative;width:1080px;height:1080px;overflow:hidden;
+    background:var(--cream);
+    border-radius:6px;
+    box-shadow:0 20px 60px rgba(0,0,0,.4);
+    isolation:isolate;
+  }
+
+  .stage::before{
+    content:"";position:absolute;inset:-5%;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(ellipse 60% 50% at 30% 30%, rgba(232,91,40,.07), transparent 60%),
+      radial-gradient(ellipse 50% 40% at 75% 70%, rgba(90,47,30,.06), transparent 60%);
+  }
+
+  .topframe{position:absolute;top:60px;left:60px;right:60px;display:flex;justify-content:space-between;align-items:center;z-index:10}
+  .topframe img.logo-small{height:36px;width:auto}
+  .topframe .right{display:flex;align-items:center;gap:14px}
+  .topframe .by{font-size:11px;color:var(--ink-soft);letter-spacing:.32em;text-transform:uppercase;font-weight:600;line-height:1}
+  .topframe .nl{
+    width:52px;height:52px;display:grid;place-items:center;
+    background:var(--brown);border-radius:14px;
+    box-shadow:0 6px 18px rgba(90,47,30,.22);
+  }
+  .topframe .nl img{display:block;height:34px;width:auto;filter:brightness(1.05) saturate(1.1)}
+
+  .center{position:absolute;inset:0;display:grid;place-items:center;z-index:5}
+
+  /* SN BIG LETTERS — start state */
+  .sn-big{
+    font-family:'Plus Jakarta Sans',sans-serif;
+    font-weight:800;
+    font-size:340px;
+    color:var(--brown);
+    letter-spacing:-.03em;
+    line-height:1;
+    display:flex;
+    align-items:center;
+    gap:24px;
+  }
+  .sn-big span{display:inline-block}
+  .sn-big .s{color:var(--brown)}
+  .sn-big .n{color:var(--orange)}
+
+  .label{
+    position:absolute;bottom:80px;left:0;right:0;text-align:center;
+    font-weight:600;color:var(--ink-soft);font-size:18px;letter-spacing:.4em;text-transform:uppercase
+  }
+
+  /* END STATE — logo + wordmark + tagline */
+  .end-stack{display:flex;flex-direction:column;align-items:center;gap:54px}
+  .end-logo-row{display:flex;align-items:center;gap:18px;height:128px}
+  .end-logo-row img{display:block;height:128px;width:auto}
+  .tagline-end{
+    font-weight:700;letter-spacing:.42em;font-size:22px;color:var(--orange);text-transform:uppercase;line-height:1.4;padding:.05em 0 .2em
+  }
+  .underline-end{height:3px;width:220px;background:var(--orange);box-shadow:0 0 18px rgba(232,91,40,.5);border-radius:2px;margin-top:6px}
+</style></head>
+<body>
+
+<!-- START STATE: just SN big letters -->
+<div class="stage" id="start">
+  <div class="topframe">
+    <img class="logo-small" src="skapnett-logo.svg" alt="skapnett">
+    <div class="right">
+      <span class="by">Levert av</span>
+      <span class="nl"><img src="norleads-logo.png" alt="Norleads"></span>
+    </div>
+  </div>
+  <div class="center">
+    <div class="sn-big"><span class="s">S</span><span class="n">N</span></div>
+  </div>
+  <div class="label">START — kun bokstavene</div>
+</div>
+
+<!-- END STATE: full logo + wordmark + tagline -->
+<div class="stage" id="end">
+  <div class="topframe">
+    <img class="logo-small" src="skapnett-logo.svg" alt="skapnett">
+    <div class="right">
+      <span class="by">Levert av</span>
+      <span class="nl"><img src="norleads-logo.png" alt="Norleads"></span>
+    </div>
+  </div>
+  <div class="center">
+    <div class="end-stack">
+      <div class="end-logo-row">
+        <img src="skapnett-logo.svg" alt="skapnett">
+      </div>
+      <div class="tagline-end">Måltilpasset · til deg</div>
+      <div class="underline-end"></div>
+    </div>
+  </div>
+  <div class="label">SLUTT — full logo + tagline</div>
+</div>
+
+</body></html>
