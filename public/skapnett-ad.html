@@ -275,9 +275,8 @@
   .s4 .top h2 .w.em{color:var(--orange)}
   .s4 .top h2 .char{display:inline-block;transform-origin:50% 100%;will-change:transform, opacity}
 
-  /* connecting line between cards */
-  .s4 .connect-line{position:absolute;top:638px;left:120px;right:120px;height:2px;z-index:3;pointer-events:none}
-  .s4 .connect-line span{display:block;height:100%;width:0;background:linear-gradient(90deg, transparent, var(--orange) 20%, var(--orange) 80%, transparent);box-shadow:0 0 12px rgba(232,91,40,.4);will-change:width}
+  /* connect-line removed per user request */
+  .s4 .connect-line{display:none}
 
   .s4 .cards{position:absolute;top:480px;left:60px;right:60px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px;perspective:1200px}
   .s4 .card{
@@ -492,7 +491,7 @@
 <script>
   // Order: intro, headline, "Slik starter du" cards FIRST, then all photo slides, kampanje, close
   const slides = ['s1','s2','s4','s3','s5','s6','s7','s8'];
-  const durations = [5500, 3500, 3600, 3500, 3200, 3200, 4000, 3500]; // = 30000
+  const durations = [6000, 3400, 3500, 3400, 3200, 3200, 4000, 3300]; // = 30000
 
   // ============ Helper: split words into chars ============
   function splitWordsToChars(root){
@@ -516,9 +515,21 @@
   function buildS1Timeline(){
     const tl = gsap.timeline({ paused: true, defaults: { force3D: true } });
 
-    // Start: hide everything
-    tl.set('.s1 .icon-build .shelf', { scaleX: 0, opacity: 0, transformOrigin: 'left center' })
-      .set('.s1 .icon-build .door',  { scaleY: 0, opacity: 0, transformOrigin: 'center top' })
+    // === STATE A: "SN" letterforms (start positions, mirroring the hover state on skapnett.no) ===
+    // 4 shelf rects form the "S" on the left half — proper S with upper-right and lower-left curves
+    tl.set('.s1 .icon-build .shelf-4', { attr: { x: 0,  y: 0,  width: 26, height: 4 } })  // S top horizontal
+      .set('.s1 .icon-build .shelf-3', { attr: { x: 22, y: 4,  width: 4,  height: 8 } })  // S upper-right vertical
+      .set('.s1 .icon-build .shelf-2', { attr: { x: 0,  y: 12, width: 26, height: 4 } })  // S middle horizontal
+      .set('.s1 .icon-build .shelf-1', { attr: { x: 0,  y: 16, width: 4,  height: 8 } }); // S lower-left vertical
+
+    // 3 door rects form the "N" on the right half
+    tl.set('.s1 .icon-build .door-1', { attr: { x: 32, y: 0, width: 4, height: 28 } })    // N left vertical
+      .set('.s1 .icon-build .door-2', { attr: { x: 42, y: 0, width: 4, height: 28 } })    // N diagonal stroke (rotated)
+      .set('.s1 .icon-build .door-3', { attr: { x: 50, y: 0, width: 4, height: 28 } })    // N right vertical
+      .set('.s1 .icon-build .door-2', { rotation: -28, transformOrigin: '50% 50%' });
+
+    // Reset other animation state
+    tl.set('.s1 .icon-build .bar', { opacity: 1, scale: 1 })
       .set('.s1 .word-reveal',       { x: 0 })
       .set('.s1 .pen',               { opacity: 0, x: 0 })
       .set('.s1 .tagline-text span', { y: 30, opacity: 0 })
@@ -528,50 +539,53 @@
     // Glow fades in
     tl.to('.s1 .glow', { opacity: 1, scale: 1, duration: 1.6, ease: 'power2.out' }, 0);
 
-    // 4 shelves: pop in from left with overshoot, fast cascade
-    tl.to('.s1 .icon-build .shelf', {
-      scaleX: 1, opacity: 1,
-      duration: .55, ease: 'back.out(2.4)',
-      stagger: { each: .085, from: 'start' }
-    }, .25);
+    // Phase 1: SN letterforms appear with pop stagger
+    tl.from('.s1 .icon-build .bar', {
+      opacity: 0, scale: 0,
+      duration: .5,
+      ease: 'back.out(2.2)',
+      stagger: 0.04,
+      transformOrigin: '50% 50%'
+    }, 0.2);
 
-    // 3 doors: drop with bouncy snap
-    tl.to('.s1 .icon-build .door', {
-      scaleY: 1, opacity: 1,
-      duration: .7, ease: 'back.out(2.8)',
-      stagger: { each: .10 }
-    }, .85);
+    // Phase 2: HOLD "SN" so viewers see the brand letters, then MORPH to wardrobe layout
+    const morphAt = 1.9;
+    const morphDur = 1.3;
+    const morphEase = 'power3.inOut';
 
-    // Wordmark: orange pen sweeps left -> right, revealing "skapnett"
-    // Implemented by moving a cream cover (.word-reveal) to the right
+    // S → 4 horizontal shelves
+    tl.to('.s1 .icon-build .shelf-1', { attr: { x: 0, y: 24, width: 26, height: 4 }, duration: morphDur, ease: morphEase }, morphAt)
+      .to('.s1 .icon-build .shelf-2', { attr: { x: 0, y: 16, width: 26, height: 4 }, duration: morphDur, ease: morphEase }, morphAt)
+      .to('.s1 .icon-build .shelf-3', { attr: { x: 0, y: 8,  width: 26, height: 4 }, duration: morphDur, ease: morphEase }, morphAt)
+      .to('.s1 .icon-build .shelf-4', { attr: { x: 0, y: 0,  width: 26, height: 4 }, duration: morphDur, ease: morphEase }, morphAt);
+
+    // N → 3 vertical doors (diagonal un-rotates)
+    tl.to('.s1 .icon-build .door-1', { attr: { x: 32, y: 0, width: 6, height: 28 }, duration: morphDur, ease: morphEase }, morphAt)
+      .to('.s1 .icon-build .door-2', { attr: { x: 40, y: 0, width: 6, height: 28 }, rotation: 0, duration: morphDur, ease: morphEase }, morphAt)
+      .to('.s1 .icon-build .door-3', { attr: { x: 48, y: 0, width: 6, height: 28 }, duration: morphDur, ease: morphEase }, morphAt);
+
+    // Phase 3: Wordmark draws in with glowing orange pen
+    const drawAt = morphAt + morphDur + 0.15;
     tl.fromTo('.s1 .pen',
       { opacity: 0, x: 0 },
-      { opacity: 1, duration: .1 }, 1.55)
-     .to('.s1 .word-reveal', {
-        x: '100%',
-        duration: 1.3,
-        ease: 'power2.inOut'
-      }, 1.55)
-     .to('.s1 .pen', {
-        x: 603,
-        duration: 1.3,
-        ease: 'power2.inOut'
-      }, 1.55)
-     .to('.s1 .pen', { opacity: 0, duration: .25, ease: 'power1.out' }, 2.75);
+      { opacity: 1, duration: .1 }, drawAt)
+     .to('.s1 .word-reveal', { x: '100%', duration: 1.25, ease: 'power2.inOut' }, drawAt)
+     .to('.s1 .pen',         { x: 603,    duration: 1.25, ease: 'power2.inOut' }, drawAt)
+     .to('.s1 .pen',         { opacity: 0, duration: .25, ease: 'power1.out' }, drawAt + 1.10);
 
-    // Tagline: characters fade up with tight stagger
+    // Phase 4: Tagline character-by-character fade up
     tl.to('.s1 .tagline-text span', {
       y: 0, opacity: 1,
       duration: .5, ease: 'power3.out',
       stagger: .025
-    }, 3.0);
+    }, drawAt + 1.35);
 
-    // Final underline
+    // Phase 5: Final orange underline
     tl.to('.s1 .draw-underline', {
       width: 220,
       duration: .55,
       ease: 'power2.out'
-    }, 3.85);
+    }, drawAt + 2.0);
 
     return tl;
   }
