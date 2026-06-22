@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8" />
+<title>HANDA — Physical AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+  :root{
+    --bg:#0A0A0F;
+    --bg2:#101019;
+    --ink:#FAFAFA;
+    --ink-dim:#8A8A95;
+    --line:#1C1C26;
+    --line-bright:#2A2A38;
+    --signal:#FF4A1C;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+  html,body{background:#000;font-family:'Inter Tight',system-ui,sans-serif;color:var(--ink)}
+  body{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+
+  #stage{
+    position:relative;width:1080px;height:1080px;overflow:hidden;
+    background:var(--bg);
+    box-shadow:0 30px 90px rgba(0,0,0,.6);
+    isolation:isolate;
+  }
+
+  /* deep vignette for premium feel */
+  #stage::after{
+    content:"";position:absolute;inset:0;pointer-events:none;z-index:60;
+    background:
+      radial-gradient(120% 80% at 50% 50%, transparent 50%, rgba(0,0,0,.55) 100%);
+  }
+
+  /* fine noise overlay */
+  #stage::before{
+    content:"";position:absolute;inset:0;pointer-events:none;z-index:55;opacity:.05;
+    mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='1'/></svg>");
+  }
+
+  /* grid backdrop */
+  .grid{
+    position:absolute;inset:0;z-index:1;opacity:0;
+    background-image:
+      linear-gradient(to right, var(--line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+    background-size:60px 60px;
+    mask-image: radial-gradient(60% 60% at 50% 50%, #000 30%, transparent 100%);
+    -webkit-mask-image: radial-gradient(60% 60% at 50% 50%, #000 30%, transparent 100%);
+  }
+
+  /* top frame */
+  .top{
+    position:absolute;top:48px;left:60px;right:60px;display:flex;justify-content:space-between;align-items:center;z-index:50;
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--ink-dim);
+  }
+  .top .l{display:flex;gap:24px;align-items:center;opacity:0}
+  .top .r{display:flex;gap:14px;align-items:center;opacity:0}
+  .top .dot{width:6px;height:6px;border-radius:50%;background:var(--signal);box-shadow:0 0 8px var(--signal);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .top .nl-badge{
+    width:36px;height:36px;display:grid;place-items:center;background:#1a1a24;border:1px solid var(--line-bright);border-radius:8px;margin-left:6px
+  }
+  .top .nl-badge img{display:block;height:22px;width:auto;filter:brightness(0) invert(1);opacity:.85}
+
+  /* bottom frame */
+  .bot{
+    position:absolute;bottom:48px;left:60px;right:60px;display:flex;justify-content:space-between;align-items:center;z-index:50;
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--ink-dim);
+  }
+  .bot .l, .bot .r{opacity:0}
+  .bot .r{color:var(--signal)}
+
+  /* corner brackets */
+  .corner{position:absolute;width:28px;height:28px;border:1px solid var(--ink-dim);z-index:48;opacity:0}
+  .corner.tl{top:38px;left:38px;border-right:none;border-bottom:none}
+  .corner.tr{top:38px;right:38px;border-left:none;border-bottom:none}
+  .corner.bl{bottom:38px;left:38px;border-right:none;border-top:none}
+  .corner.br{bottom:38px;right:38px;border-left:none;border-top:none}
+
+  /* stage scenes */
+  .scene{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:10}
+  .scene .inner{text-align:center;padding:0 80px;width:100%}
+
+  /* ------- SCENE 1: Opening pulse + tagline ------- */
+  .s1-eye{
+    position:relative;width:14px;height:14px;border-radius:50%;background:var(--signal);
+    box-shadow:0 0 24px var(--signal),0 0 60px rgba(255,74,28,.5);
+    opacity:0;transform:scale(0);
+    margin:0 auto 40px
+  }
+  .s1-ring{
+    position:absolute;left:50%;top:50%;width:14px;height:14px;border-radius:50%;
+    border:1px solid var(--signal);transform:translate(-50%,-50%) scale(1);opacity:0
+  }
+  .s1-label{
+    font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.5em;text-transform:uppercase;color:var(--ink-dim);
+    opacity:0;margin-bottom:20px
+  }
+  .s1-title{
+    font-family:'Inter Tight',sans-serif;font-weight:300;font-size:88px;letter-spacing:-.02em;line-height:1.05;color:var(--ink);
+  }
+  .s1-title span{display:inline-block;opacity:0;transform:translateY(40px)}
+
+  /* ------- SCENE 2: Robot arm illustration ------- */
+  #s2{opacity:0}
+  .arm-wrap{position:relative;width:100%;display:flex;flex-direction:column;align-items:center;gap:60px}
+  .arm-svg{width:540px;height:540px;display:block}
+  .arm-svg .seg{stroke:var(--ink);stroke-width:2.5;fill:none;stroke-linecap:round}
+  .arm-svg .joint{fill:var(--bg);stroke:var(--ink);stroke-width:2.5}
+  .arm-svg .end{fill:var(--signal)}
+  .arm-svg .base{stroke:var(--ink-dim);stroke-width:1.5;fill:none}
+  .arm-svg .target{stroke:var(--signal);stroke-width:1;fill:none;opacity:.6}
+
+  .arm-caption{
+    font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.4em;text-transform:uppercase;color:var(--ink-dim);
+    display:flex;gap:32px;align-items:center
+  }
+  .arm-caption .v{color:var(--ink);font-weight:500}
+
+  /* ------- SCENE 3: Big phrase ------- */
+  #s3{opacity:0}
+  .s3-eyebrow{
+    font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.5em;text-transform:uppercase;color:var(--signal);
+    margin-bottom:32px
+  }
+  .s3-headline{
+    font-family:'Inter Tight',sans-serif;font-weight:300;font-size:120px;letter-spacing:-.035em;line-height:.95;color:var(--ink);
+  }
+  .s3-headline em{font-style:normal;font-weight:500;color:var(--ink)}
+  .s3-headline .word{display:inline-block;overflow:hidden}
+  .s3-headline .word span{display:inline-block;transform:translateY(100%)}
+  .s3-sub{
+    font-family:'Inter Tight',sans-serif;font-weight:300;font-size:24px;color:var(--ink-dim);
+    margin-top:36px;letter-spacing:.02em;opacity:0
+  }
+
+  /* ------- SCENE 4: HANDA wordmark ------- */
+  #s4{opacity:0}
+  .h-wrap{display:flex;flex-direction:column;align-items:center;gap:36px}
+  .h-mono{
+    width:120px;height:120px;display:grid;place-items:center;
+    border:1.5px solid var(--ink);border-radius:14px;position:relative;
+    transform:scale(.6);opacity:0
+  }
+  .h-mono::before,.h-mono::after{
+    content:"";position:absolute;background:var(--ink);
+  }
+  .h-mono::before{left:30px;top:24px;bottom:24px;width:7px}
+  .h-mono::after{right:30px;top:24px;bottom:24px;width:7px}
+  .h-mono .bar{position:absolute;left:30px;right:30px;height:7px;background:var(--ink);top:50%;transform:translateY(-50%)}
+  .h-wordmark{
+    font-family:'Inter Tight',sans-serif;font-weight:700;font-size:184px;letter-spacing:-.025em;color:var(--ink);line-height:1
+  }
+  .h-wordmark .ch{display:inline-block;opacity:0;transform:translateY(60px)}
+  .h-wordmark .ch.dot{color:var(--signal)}
+  .h-tag{
+    font-family:'JetBrains Mono',monospace;font-size:15px;letter-spacing:.55em;text-transform:uppercase;color:var(--ink-dim);
+    margin-top:12px;opacity:0
+  }
+  .h-underline{height:2px;width:240px;background:var(--signal);margin-top:18px;transform:scaleX(0);transform-origin:left center;
+    box-shadow:0 0 18px rgba(255,74,28,.5);}
+
+  /* ------- SCENE 5: Outro ------- */
+  #s5{opacity:0}
+  .out-wrap{display:flex;flex-direction:column;align-items:center;gap:24px}
+  .out-line{
+    font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.5em;text-transform:uppercase;color:var(--ink-dim);
+  }
+  .out-title{
+    font-family:'Inter Tight',sans-serif;font-weight:500;font-size:48px;color:var(--ink);letter-spacing:-.01em
+  }
+  .out-cta{
+    margin-top:20px;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.4em;text-transform:uppercase;
+    color:var(--signal);padding:14px 24px;border:1px solid var(--signal);border-radius:2px;
+  }
+
+  /* scanline */
+  .scan{
+    position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--signal),transparent);
+    opacity:0;z-index:45;top:0;pointer-events:none;mix-blend-mode:screen
+  }
+
+  /* particles backdrop */
+  .particles{position:absolute;inset:0;z-index:2;opacity:0;pointer-events:none}
+  .particles span{
+    position:absolute;width:2px;height:2px;background:var(--ink);border-radius:50%;opacity:.4
+  }
+
+  /* data lines (decorative tech feel) */
+  .data{position:absolute;font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.18em;color:var(--ink-dim);opacity:0;z-index:46}
+  .data.tl{top:96px;left:60px}
+  .data.tr{top:96px;right:60px;text-align:right}
+  .data.bl{bottom:96px;left:60px}
+  .data.br{bottom:96px;right:60px;text-align:right}
+  .data .row{display:block;line-height:1.7;opacity:.5}
+  .data .row.hi{opacity:1;color:var(--signal)}
+</style></head>
+<body>
+
+<div id="stage">
+
+  <div class="grid" id="grid"></div>
+  <div class="particles" id="particles"></div>
+
+  <!-- corners + framing -->
+  <div class="corner tl" id="ctl"></div>
+  <div class="corner tr" id="ctr"></div>
+  <div class="corner bl" id="cbl"></div>
+  <div class="corner br" id="cbr"></div>
+
+  <!-- chrome -->
+  <div class="top">
+    <div class="l" id="topL">
+      <span class="dot"></span>
+      <span>HANDA · System 01</span>
+    </div>
+    <div class="r" id="topR">
+      <span>Levert av</span>
+      <span class="nl-badge"><img src="norleads-logo.png" alt="Norleads"></span>
+    </div>
+  </div>
+
+  <div class="bot">
+    <div class="l" id="botL">MOSS · NO · 936 992 528</div>
+    <div class="r" id="botR">RECORDING · 2026</div>
+  </div>
+
+  <!-- decorative data -->
+  <div class="data tl" id="dataTL">
+    <span class="row">SYS / ONLINE</span>
+    <span class="row">TORQUE 24.0 NM</span>
+    <span class="row hi">VISION OK</span>
+  </div>
+  <div class="data tr" id="dataTR">
+    <span class="row">LAT 59.4°N</span>
+    <span class="row">LON 10.6°E</span>
+    <span class="row">MOSS · NORWAY</span>
+  </div>
+  <div class="data bl" id="dataBL">
+    <span class="row">FRAME 0421</span>
+    <span class="row">Δ 0.02 MM</span>
+  </div>
+  <div class="data br" id="dataBR">
+    <span class="row">MODEL HANDA-01</span>
+    <span class="row hi">CYCLE 99.8%</span>
+  </div>
+
+  <!-- ============ SCENE 1: opening ============ -->
+  <div class="scene" id="s1">
+    <div class="inner">
+      <div class="s1-eye" id="s1eye">
+        <div class="s1-ring" id="s1ring"></div>
+        <div class="s1-ring" id="s1ring2"></div>
+      </div>
+      <div class="s1-label" id="s1label">// INITIALIZING</div>
+      <div class="s1-title">
+        <span>Industry</span><span>&nbsp;is</span><span>&nbsp;quiet.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SCENE 2: robot arm ============ -->
+  <div class="scene" id="s2">
+    <div class="inner">
+      <div class="arm-wrap">
+        <svg class="arm-svg" viewBox="0 0 540 540" xmlns="http://www.w3.org/2000/svg">
+          <!-- base platform -->
+          <line class="base" x1="120" y1="440" x2="420" y2="440"/>
+          <line class="base" x1="180" y1="455" x2="360" y2="455"/>
+          <rect class="base" x="240" y="400" width="60" height="40" rx="4"/>
+
+          <!-- target arc -->
+          <circle class="target" cx="400" cy="220" r="28"/>
+          <circle class="target" cx="400" cy="220" r="42"/>
+
+          <!-- arm segments (drawn via stroke-dashoffset for animation) -->
+          <line class="seg" id="seg1" x1="270" y1="400" x2="270" y2="280"/>
+          <line class="seg" id="seg2" x1="270" y1="280" x2="370" y2="200"/>
+          <line class="seg" id="seg3" x1="370" y1="200" x2="400" y2="220"/>
+
+          <!-- joints -->
+          <circle class="joint" id="j1" cx="270" cy="400" r="9"/>
+          <circle class="joint" id="j2" cx="270" cy="280" r="8"/>
+          <circle class="joint" id="j3" cx="370" cy="200" r="7"/>
+          <circle class="end" id="j4" cx="400" cy="220" r="5"/>
+        </svg>
+        <div class="arm-caption" id="armcap">
+          <span>6-AXIS</span>
+          <span class="v">PHYSICAL AI</span>
+          <span>±0.05 MM</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SCENE 3: headline ============ -->
+  <div class="scene" id="s3">
+    <div class="inner">
+      <div class="s3-eyebrow" id="s3eye">// MOSS · NORWAY</div>
+      <div class="s3-headline">
+        <span class="word"><span>Robots</span></span>
+        <span class="word"><span>&nbsp;that</span></span><br>
+        <span class="word"><span><em>understand</em></span></span>
+      </div>
+      <div class="s3-sub" id="s3sub">Built by engineers who shipped humanoids.</div>
+    </div>
+  </div>
+
+  <!-- ============ SCENE 4: HANDA wordmark ============ -->
+  <div class="scene" id="s4">
+    <div class="inner">
+      <div class="h-wrap">
+        <div class="h-mono" id="hmono"><div class="bar"></div></div>
+        <div class="h-wordmark" id="hword">
+          <span class="ch">H</span><span class="ch">A</span><span class="ch">N</span><span class="ch">D</span><span class="ch">A</span><span class="ch dot">.</span>
+        </div>
+        <div class="h-underline" id="hunder"></div>
+        <div class="h-tag" id="htag">Physical AI · for industry</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SCENE 5: outro ============ -->
+  <div class="scene" id="s5">
+    <div class="inner">
+      <div class="out-wrap">
+        <div class="out-line">// EST. 2026 · MOSS</div>
+        <div class="out-title">handa.ai</div>
+        <div class="out-cta">Launching soon</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- scanline accent -->
+  <div class="scan" id="scan"></div>
+
+</div>
+
+<script>
+window.addEventListener('load', () => {
+
+  // build particles
+  const pBox = document.getElementById('particles');
+  for(let i=0;i<60;i++){
+    const s = document.createElement('span');
+    s.style.left = Math.random()*100+'%';
+    s.style.top = Math.random()*100+'%';
+    s.style.opacity = (.15 + Math.random()*.35).toFixed(2);
+    s.style.width = s.style.height = (1 + Math.random()*1.8).toFixed(1)+'px';
+    pBox.appendChild(s);
+  }
+
+  const tl = gsap.timeline({ defaults:{ ease:'power2.out' } });
+
+  // ===== global chrome fade in (stays the whole time) =====
+  tl.to(['#topL','#topR','#botL','#botR'], { opacity:1, duration:.8, stagger:.08 }, 0.2)
+    .to(['#ctl','#ctr','#cbl','#cbr'], { opacity:.7, duration:.6, stagger:.06 }, 0.4)
+    .to(['#dataTL','#dataTR','#dataBL','#dataBR'], { opacity:1, duration:.6, stagger:.08 }, 0.6)
+    .to('#grid', { opacity:.7, duration:1.6 }, 0.3)
+    .to('#particles', { opacity:1, duration:1.5 }, 0.5);
+
+  // ===== SCENE 1 (0.0 – 4.5s) =====
+  tl.to('#s1eye', { opacity:1, scale:1, duration:.6, ease:'power3.out' }, 1.0)
+    // rings pulse
+    .fromTo('#s1ring', { opacity:.9, scale:1 }, { opacity:0, scale:8, duration:1.4, ease:'power2.out' }, 1.2)
+    .fromTo('#s1ring2', { opacity:.6, scale:1 }, { opacity:0, scale:6, duration:1.4, ease:'power2.out' }, 1.5)
+    .to('#s1label', { opacity:1, duration:.5 }, 1.6)
+    .to('.s1-title span', { opacity:1, y:0, duration:.7, stagger:.12, ease:'power3.out' }, 2.0)
+    // hold then fade
+    .to('#s1', { opacity:0, duration:.6 }, 5.2);
+
+  // ===== SCENE 2: robot arm (5.0 – 10.0) =====
+  tl.set('#s2', { opacity:1 }, 5.4);
+
+  // pre-set seg dashes
+  ['#seg1','#seg2','#seg3'].forEach(id => {
+    const el = document.querySelector(id);
+    const len = el.getTotalLength();
+    el.style.strokeDasharray = len;
+    el.style.strokeDashoffset = len;
+  });
+  // joints invisible initially
+  gsap.set(['#j1','#j2','#j3','#j4'], { scale:0, transformOrigin:'center', opacity:0 });
+  gsap.set('.arm-svg .base, .arm-svg .target', { opacity:0 });
+
+  tl.to('.arm-svg .base', { opacity:1, duration:.6 }, 5.6)
+    .to('#j1', { scale:1, opacity:1, duration:.3, ease:'back.out(2)' }, 5.9)
+    .to('#seg1', { strokeDashoffset:0, duration:.5, ease:'power2.inOut' }, 6.0)
+    .to('#j2', { scale:1, opacity:1, duration:.3, ease:'back.out(2)' }, 6.4)
+    .to('#seg2', { strokeDashoffset:0, duration:.55, ease:'power2.inOut' }, 6.5)
+    .to('#j3', { scale:1, opacity:1, duration:.3, ease:'back.out(2)' }, 7.0)
+    .to('#seg3', { strokeDashoffset:0, duration:.4, ease:'power2.inOut' }, 7.1)
+    .to('#j4', { scale:1, opacity:1, duration:.35, ease:'back.out(2.5)' }, 7.4)
+    .to('.arm-svg .target', { opacity:.6, duration:.6 }, 7.5)
+    .fromTo('.arm-svg .target', { scale:.7, transformOrigin:'400px 220px' }, { scale:1, duration:.8, ease:'power2.out' }, 7.5)
+    .to('#armcap', { opacity:1, duration:.6 }, 7.8)
+    .to('#s2', { opacity:0, duration:.6 }, 10.4);
+
+  // ===== SCENE 3: headline (10.6 – 15.4) =====
+  tl.set('#s3', { opacity:1 }, 10.8)
+    .to('#s3eye', { opacity:0, y:0, duration:.5 }, 10.9)
+    .fromTo('#s3eye', { y:8, opacity:0 }, { y:0, opacity:1, duration:.5 }, 10.9)
+    .to('.s3-headline .word span', { y:0, duration:.8, stagger:.14, ease:'power3.out' }, 11.2)
+    .to('#s3sub', { opacity:1, duration:.6 }, 12.6)
+    .to('#s3', { opacity:0, duration:.6 }, 15.6);
+
+  // ===== SCENE 4: HANDA logo (15.8 – 20.8) =====
+  tl.set('#s4', { opacity:1 }, 16.0)
+    .to('#hmono', { opacity:1, scale:1, duration:.7, ease:'back.out(1.6)' }, 16.1)
+    .to('.h-wordmark .ch', { opacity:1, y:0, duration:.6, stagger:.07, ease:'power3.out' }, 16.5)
+    .to('#hunder', { scaleX:1, duration:.7, ease:'power3.out' }, 17.3)
+    .to('#htag', { opacity:1, duration:.6 }, 17.5)
+    // scanline accent
+    .fromTo('#scan', { top:'-2px', opacity:1 }, { top:'100%', duration:1.6, ease:'power2.in' }, 17.6)
+    .to('#scan', { opacity:0, duration:.2 }, 19.0)
+    .to('#s4', { opacity:0, duration:.6 }, 21.0);
+
+  // ===== SCENE 5: outro (21.2 – end) =====
+  tl.set('#s5', { opacity:1 }, 21.4)
+    .from('#s5 .out-line', { opacity:0, y:10, duration:.5 }, 21.4)
+    .from('#s5 .out-title', { opacity:0, y:14, duration:.6 }, 21.7)
+    .from('#s5 .out-cta', { opacity:0, y:10, duration:.5 }, 22.1);
+
+});
+</script>
+</body></html>
