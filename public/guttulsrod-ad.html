@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="no"><head>
+<meta charset="utf-8" />
+<title>Guttulsrød — Hva er hjemmet ditt verdt?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FAF4EA;
+    --cream-2:#F1E8D7;
+    --cream-3:#E6D9BE;
+    --ink:#1F1A14;
+    --ink-dim:#6B5E4A;
+    --line:rgba(31,26,20,.14);
+    --green:#95C11F;
+    --green-deep:#5E7A14;
+    --green-soft:#E0EBC5;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+  html,body{background:#0a0805;font-family:'Inter Tight',system-ui,sans-serif;color:var(--ink)}
+  body{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+
+  #stage{
+    position:relative;width:1080px;height:1080px;overflow:hidden;
+    background:
+      radial-gradient(120% 90% at 50% 35%, var(--cream) 0%, var(--cream-2) 70%, var(--cream-3) 100%);
+    box-shadow:0 30px 90px rgba(0,0,0,.55);
+    isolation:isolate;
+  }
+
+  /* paper grain */
+  #stage::after{
+    content:"";position:absolute;inset:0;pointer-events:none;z-index:80;opacity:.08;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+  /* subtle vignette */
+  #stage::before{
+    content:"";position:absolute;inset:0;pointer-events:none;z-index:70;
+    background:radial-gradient(100% 100% at 50% 50%, transparent 60%, rgba(31,26,20,.10) 100%);
+  }
+
+  /* ---------- top + bottom chrome ---------- */
+  .chrome{position:absolute;left:60px;right:60px;display:flex;justify-content:space-between;align-items:center;z-index:60;
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--ink-dim)}
+  .chrome.top{top:54px}
+  .chrome.bot{bottom:54px}
+  .chrome .pill{display:inline-flex;align-items:center;gap:10px;padding:7px 14px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.4);backdrop-filter:blur(8px)}
+  .chrome .dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  .chrome .right{display:flex;gap:12px;align-items:center}
+  .chrome .nl-badge{
+    width:38px;height:38px;display:grid;place-items:center;background:var(--ink);border-radius:10px;
+    box-shadow:0 4px 14px rgba(31,26,20,.18)
+  }
+  .chrome .nl-badge img{display:block;height:22px;width:auto;filter:brightness(0) invert(1);opacity:.95}
+
+  /* corner brackets */
+  .corner{position:absolute;width:22px;height:22px;border:1px solid var(--ink-dim);z-index:65;opacity:0}
+  .corner.tl{top:40px;left:40px;border-right:none;border-bottom:none}
+  .corner.tr{top:40px;right:40px;border-left:none;border-bottom:none}
+  .corner.bl{bottom:40px;left:40px;border-right:none;border-top:none}
+  .corner.br{bottom:40px;right:40px;border-left:none;border-top:none}
+
+  /* scene wrappers */
+  .scene{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:10}
+  .scene .inner{width:100%;text-align:center;padding:0 110px}
+
+  /* ---------- S1 opening question ---------- */
+  #s1 .label{
+    font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.5em;text-transform:uppercase;color:var(--ink-dim);
+    margin-bottom:40px;opacity:0
+  }
+  #s1 h1{
+    font-family:'Fraunces',serif;font-weight:300;font-size:92px;letter-spacing:-.025em;line-height:1.05;color:var(--ink);
+  }
+  #s1 h1 em{font-style:italic;font-weight:400;color:var(--green-deep)}
+  #s1 .line{display:block;overflow:hidden;padding:.04em 0}
+  #s1 .line span{display:inline-block;transform:translateY(110%)}
+  #s1 .cursor{display:inline-block;width:.55em;height:1em;background:var(--green);margin-left:.1em;vertical-align:baseline;opacity:0;animation:blink 1.05s steps(2,end) infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  /* ---------- S2 price reveal ---------- */
+  #s2{opacity:0}
+  .price-card{
+    position:relative;background:#fff;border-radius:18px;padding:54px 68px 46px;
+    box-shadow:0 30px 60px -10px rgba(31,26,20,.18), 0 2px 0 rgba(31,26,20,.04);
+    border:1px solid rgba(31,26,20,.06);
+    text-align:left;width:680px
+  }
+  .price-card .tag{
+    display:inline-flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.45em;text-transform:uppercase;color:var(--green-deep);
+    background:var(--green-soft);padding:7px 14px;border-radius:999px;margin-bottom:30px
+  }
+  .price-card .label{
+    font-family:'Inter Tight',sans-serif;font-size:18px;color:var(--ink-dim);margin-bottom:14px;letter-spacing:.02em
+  }
+  .price-card .value{
+    font-family:'Fraunces',serif;font-weight:400;font-size:118px;letter-spacing:-.04em;line-height:1;color:var(--ink);
+    display:flex;align-items:baseline;gap:8px
+  }
+  .price-card .value .num{display:inline-block;min-width:.5em}
+  .price-card .value .unit{font-size:36px;letter-spacing:.04em;color:var(--ink-dim);font-style:italic;font-weight:400;margin-left:6px}
+  .price-card .delta{
+    display:flex;align-items:center;gap:8px;margin-top:18px;
+    font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--green-deep);letter-spacing:.06em;font-weight:500
+  }
+  .price-card .delta::before{
+    content:"";width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:9px solid var(--green-deep);
+  }
+  .price-sub{
+    margin-top:34px;font-family:'Fraunces',serif;font-style:italic;font-weight:300;font-size:30px;color:var(--ink-dim);
+    line-height:1.35;text-align:center;max-width:740px;margin-left:auto;margin-right:auto;opacity:0
+  }
+  .price-sub em{font-style:italic;font-weight:500;color:var(--green-deep);background:linear-gradient(180deg, transparent 60%, rgba(149,193,31,.25) 60%, rgba(149,193,31,.25) 92%, transparent 92%)}
+
+  /* sparkline */
+  .spark{position:absolute;right:60px;bottom:54px;width:200px;height:60px}
+
+  /* ---------- S3 Moss + 1991 ---------- */
+  #s3{opacity:0}
+  #s3 .inner{display:flex;flex-direction:column;align-items:center;gap:40px}
+  .map-card{
+    position:relative;width:520px;height:340px;background:#fff;border-radius:18px;
+    box-shadow:0 30px 60px -10px rgba(31,26,20,.16);overflow:hidden;border:1px solid rgba(31,26,20,.06)
+  }
+  .map-svg{width:100%;height:100%;display:block}
+  .map-pin{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-100%);width:36px;height:48px;z-index:5;opacity:0
+  }
+  .map-pin svg{width:100%;height:100%;filter:drop-shadow(0 6px 14px rgba(94,122,20,.55))}
+  .map-pulse{
+    position:absolute;left:50%;top:50%;width:28px;height:28px;border-radius:50%;border:2px solid var(--green);
+    transform:translate(-50%,-50%);opacity:0
+  }
+  .map-meta{
+    position:absolute;top:18px;left:20px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--ink-dim);opacity:.8
+  }
+  .since{
+    font-family:'Fraunces',serif;font-weight:300;font-size:78px;letter-spacing:-.02em;line-height:1.05;color:var(--ink);opacity:0
+  }
+  .since em{font-style:italic;font-weight:500;color:var(--green-deep)}
+  .since .yrs{
+    display:inline-block;font-family:'Fraunces',serif;font-weight:500;font-style:italic;color:var(--green-deep);
+    background:var(--green-soft);padding:0 .18em;border-radius:6px
+  }
+
+  /* ---------- S4 fixed price ---------- */
+  #s4{opacity:0}
+  #s4 .inner{display:flex;flex-direction:column;align-items:center;gap:30px}
+  .fp-label{
+    font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.5em;text-transform:uppercase;color:var(--green-deep);opacity:0
+  }
+  .fp-price{
+    font-family:'Fraunces',serif;font-weight:400;font-size:220px;letter-spacing:-.045em;line-height:.9;color:var(--ink);
+    position:relative;display:inline-flex;align-items:baseline
+  }
+  .fp-price .currency{font-size:80px;color:var(--ink-dim);margin-right:14px;font-style:italic;font-weight:300}
+  .fp-price .ch{display:inline-block;opacity:0;transform:translateY(50px)}
+  .fp-sub{
+    font-family:'Inter Tight',sans-serif;font-weight:400;font-size:24px;color:var(--ink);letter-spacing:.02em;margin-top:-8px;opacity:0
+  }
+  .fp-sub em{font-style:italic;color:var(--green-deep);font-weight:500}
+  .fp-list{
+    display:flex;gap:36px;margin-top:24px;opacity:0
+  }
+  .fp-list .it{
+    display:flex;align-items:center;gap:10px;font-family:'Inter Tight',sans-serif;font-size:17px;color:var(--ink);font-weight:500
+  }
+  .fp-list .check{
+    width:22px;height:22px;border-radius:50%;background:var(--green);display:grid;place-items:center;
+    box-shadow:0 0 0 4px var(--green-soft)
+  }
+  .fp-list .check svg{width:11px;height:11px;stroke:#fff;stroke-width:3;fill:none}
+
+  /* ---------- S5 trust statement ---------- */
+  #s5{opacity:0}
+  #s5 h2{
+    font-family:'Fraunces',serif;font-weight:300;font-size:84px;letter-spacing:-.025em;line-height:1.06;color:var(--ink);
+  }
+  #s5 h2 em{font-style:italic;font-weight:500;color:var(--green-deep)}
+  #s5 .line{display:block;overflow:hidden;padding:.04em 0}
+  #s5 .line span{display:inline-block;transform:translateY(110%)}
+  #s5 .meta{
+    font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.5em;text-transform:uppercase;color:var(--ink-dim);
+    margin-top:42px;opacity:0;
+    display:flex;justify-content:center;gap:32px
+  }
+  #s5 .meta span{position:relative}
+  #s5 .meta span:not(:last-child)::after{
+    content:"";position:absolute;right:-18px;top:50%;width:3px;height:3px;border-radius:50%;background:var(--ink-dim);transform:translateY(-50%)
+  }
+
+  /* ---------- S6 outro / CTA ---------- */
+  #s6{opacity:0}
+  #s6 .inner{display:flex;flex-direction:column;align-items:center;gap:36px}
+  .cta-eye{
+    font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.5em;text-transform:uppercase;color:var(--ink-dim);opacity:0
+  }
+  .cta-title{
+    font-family:'Fraunces',serif;font-weight:400;font-size:84px;color:var(--ink);letter-spacing:-.02em;line-height:1.04;opacity:0;text-align:center
+  }
+  .cta-title em{font-style:italic;color:var(--green-deep);font-weight:500}
+  .cta-btn{
+    display:inline-flex;align-items:center;gap:16px;padding:22px 42px;background:var(--green);color:var(--ink);
+    border-radius:999px;font-family:'Inter Tight',sans-serif;font-weight:600;font-size:22px;letter-spacing:.01em;
+    box-shadow:0 12px 30px rgba(94,122,20,.35), inset 0 -3px 0 rgba(31,26,20,.08);opacity:0;transform:translateY(20px)
+  }
+  .cta-btn .arrow{width:28px;height:28px;background:var(--ink);border-radius:50%;display:grid;place-items:center}
+  .cta-btn .arrow svg{width:14px;height:14px;stroke:var(--green);stroke-width:2.5;fill:none}
+  .cta-logo{
+    margin-top:20px;display:flex;flex-direction:column;align-items:center;gap:14px;opacity:0
+  }
+  .cta-logo img{height:48px;width:auto;display:block}
+  .cta-logo .url{
+    font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.4em;text-transform:uppercase;color:var(--ink-dim)
+  }
+
+  /* scanline accent */
+  .scan{
+    position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--green),transparent);
+    opacity:0;z-index:55;top:0;pointer-events:none;mix-blend-mode:multiply
+  }
+
+  /* particles */
+  .particles{position:absolute;inset:0;z-index:3;opacity:0;pointer-events:none}
+  .particles span{position:absolute;width:2px;height:2px;background:var(--ink);border-radius:50%;opacity:.18}
+</style></head>
+<body>
+
+<div id="stage">
+
+  <div class="particles" id="particles"></div>
+
+  <div class="corner tl" id="ctl"></div>
+  <div class="corner tr" id="ctr"></div>
+  <div class="corner bl" id="cbl"></div>
+  <div class="corner br" id="cbr"></div>
+
+  <!-- top chrome -->
+  <div class="chrome top">
+    <div class="pill" id="topL" style="opacity:0">
+      <span class="dot"></span>
+      <span>MOSS · siden 1991</span>
+    </div>
+    <div class="right" id="topR" style="opacity:0">
+      <span>Levert av</span>
+      <span class="nl-badge"><img src="norleads-logo.png" alt="Norleads"></span>
+    </div>
+  </div>
+
+  <div class="chrome bot">
+    <span id="botL" style="opacity:0">Moss · Oslo · 69 10 99 00</span>
+    <span id="botR" style="opacity:0;color:var(--green-deep)">guttulsrod.no</span>
+  </div>
+
+  <!-- ============ S1 opening (0 – 4.5s) ============ -->
+  <div class="scene" id="s1">
+    <div class="inner">
+      <div class="label" id="s1label">// 00 · ET SPØRSMÅL</div>
+      <h1>
+        <span class="line"><span>Hva er <em>hjemmet</em></span></span>
+        <span class="line"><span>ditt verdt i dag?<span class="cursor" id="s1cur"></span></span></span>
+      </h1>
+    </div>
+  </div>
+
+  <!-- ============ S2 price reveal (4.5 – 10s) ============ -->
+  <div class="scene" id="s2">
+    <div class="inner">
+      <div class="price-card">
+        <div class="tag" id="s2tag"><span class="dot" style="width:6px;height:6px;border-radius:50%;background:var(--green-deep)"></span>VERDIVURDERING</div>
+        <div class="label">Estimert markedspris</div>
+        <div class="value">
+          <span id="s2num">0</span><span class="unit">kr</span>
+        </div>
+        <div class="delta" id="s2delta">+ 8,4 % siste 12 mnd · Moss</div>
+        <svg class="spark" viewBox="0 0 200 60" id="s2spark">
+          <polyline id="sparkLine" points="0,48 25,42 50,40 75,35 100,30 125,26 150,20 175,15 200,8"
+            fill="none" stroke="#5E7A14" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle id="sparkDot" cx="200" cy="8" r="4" fill="#95C11F" stroke="#fff" stroke-width="2"/>
+        </svg>
+      </div>
+      <div class="price-sub" id="s2sub">Det starter med en <em>gratis verdivurdering.</em></div>
+    </div>
+  </div>
+
+  <!-- ============ S3 Moss map (10 – 15s) ============ -->
+  <div class="scene" id="s3">
+    <div class="inner">
+      <div class="map-card">
+        <svg class="map-svg" viewBox="0 0 520 340" xmlns="http://www.w3.org/2000/svg">
+          <!-- water -->
+          <rect width="520" height="340" fill="#F5EEDF"/>
+          <path d="M0,210 Q90,180 200,200 T420,195 L520,205 L520,340 L0,340 Z" fill="#D9E8C8" opacity=".55"/>
+          <path d="M0,250 Q120,225 250,245 T520,250 L520,340 L0,340 Z" fill="#BFD89A" opacity=".5"/>
+          <!-- roads -->
+          <g stroke="#1F1A14" stroke-width=".8" opacity=".18" fill="none">
+            <path d="M40,80 L480,120"/>
+            <path d="M30,180 L500,200"/>
+            <path d="M260,30 L268,310"/>
+            <path d="M120,40 L160,300"/>
+            <path d="M380,30 L350,310"/>
+            <path d="M60,260 L490,280"/>
+          </g>
+          <!-- subtle grid -->
+          <g stroke="#1F1A14" stroke-width=".5" opacity=".08">
+            <path d="M0,60 L520,60"/><path d="M0,120 L520,120"/><path d="M0,180 L520,180"/><path d="M0,240 L520,240"/><path d="M0,300 L520,300"/>
+            <path d="M65,0 L65,340"/><path d="M195,0 L195,340"/><path d="M325,0 L325,340"/><path d="M455,0 L455,340"/>
+          </g>
+        </svg>
+        <div class="map-meta">MOSS · 59°26'N 10°39'E</div>
+        <div class="map-pulse" id="mapPulse"></div>
+        <div class="map-pin" id="mapPin">
+          <svg viewBox="0 0 36 48" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 0 C8 0 0 7.5 0 17 C0 30 18 48 18 48 C18 48 36 30 36 17 C36 7.5 28 0 18 0 Z" fill="#95C11F" stroke="#5E7A14" stroke-width="1.5"/>
+            <circle cx="18" cy="17" r="6" fill="#fff"/>
+          </svg>
+        </div>
+      </div>
+      <div class="since" id="since"><em>Lokal</em> i Moss<br>siden <span class="yrs" id="yrsNum">1991</span>.</div>
+    </div>
+  </div>
+
+  <!-- ============ S4 fixed price (15 – 20.5s) ============ -->
+  <div class="scene" id="s4">
+    <div class="inner">
+      <div class="fp-label" id="fpLabel">// FAST PRIS · ALT INKLUDERT</div>
+      <div class="fp-price">
+        <span class="currency">kr</span>
+        <span class="ch">4</span><span class="ch">5</span><span class="ch">.</span><span class="ch">0</span><span class="ch">0</span><span class="ch">0</span>
+        <span class="ch" style="color:var(--ink-dim);font-size:80px;margin-left:8px;font-style:italic;font-weight:300">,-</span>
+      </div>
+      <div class="fp-sub" id="fpSub">for et komplett <em>boligsalg</em></div>
+      <div class="fp-list" id="fpList">
+        <div class="it"><span class="check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>Annonsering FB &amp; IG</div>
+        <div class="it"><span class="check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>Profesjonelle bilder</div>
+        <div class="it"><span class="check"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span>Visning &amp; budrunde</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ S5 trust (20.5 – 24.5s) ============ -->
+  <div class="scene" id="s5">
+    <div class="inner">
+      <h2>
+        <span class="line"><span>Far og datter.</span></span>
+        <span class="line"><span>Samme firma. <em>Trygt.</em></span></span>
+      </h2>
+      <div class="meta"><span>Lars · siden 1991</span><span>Ida · MNEF</span><span>Familiedrevet</span></div>
+    </div>
+  </div>
+
+  <!-- ============ S6 CTA outro (24.5 – 30s) ============ -->
+  <div class="scene" id="s6">
+    <div class="inner">
+      <div class="cta-eye" id="ctaEye">// NESTE STEG</div>
+      <div class="cta-title" id="ctaTitle">Book <em>gratis</em><br>oppstartsmøte.</div>
+      <a class="cta-btn" id="ctaBtn">
+        Bestill verdivurdering
+        <span class="arrow"><svg viewBox="0 0 14 14"><polyline points="3,3 9,7 3,11"/></svg></span>
+      </a>
+      <div class="cta-logo" id="ctaLogo">
+        <img src="gut-logo.png" alt="Guttulsrød Eiendomsmegling">
+        <div class="url">guttulsrod.no · 69 10 99 00</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scan" id="scan"></div>
+
+</div>
+
+<script>__GSAP__</script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  // particles
+  const pBox = document.getElementById('particles');
+  for(let i=0;i<40;i++){
+    const s = document.createElement('span');
+    s.style.left = Math.random()*100+'%';
+    s.style.top = Math.random()*100+'%';
+    s.style.opacity = (.10 + Math.random()*.18).toFixed(2);
+    s.style.width = s.style.height = (1.4 + Math.random()*1.2).toFixed(1)+'px';
+    pBox.appendChild(s);
+  }
+
+  // sparkline dash setup
+  const sparkLine = document.getElementById('sparkLine');
+  if(sparkLine){
+    const len = sparkLine.getTotalLength();
+    sparkLine.style.strokeDasharray = len;
+    sparkLine.style.strokeDashoffset = len;
+  }
+  gsap.set('#sparkDot', { opacity:0, scale:0, transformOrigin:'center' });
+
+  const tl = gsap.timeline({ defaults:{ ease:'power2.out' } });
+
+  // ===== chrome persistent =====
+  tl.to('#topL', { opacity:1, duration:.6 }, 0.25)
+    .to('#topR', { opacity:1, duration:.6 }, 0.40)
+    .to('#botL', { opacity:1, duration:.6 }, 0.55)
+    .to('#botR', { opacity:1, duration:.6 }, 0.70)
+    .to(['#ctl','#ctr','#cbl','#cbr'], { opacity:.55, duration:.5, stagger:.06 }, 0.5)
+    .to('#particles', { opacity:1, duration:1.5 }, 0.6);
+
+  // ===== S1 (0 - 4.5) =====
+  tl.to('#s1label', { opacity:1, duration:.5 }, 0.9)
+    .to('#s1 .line span', { y:0, duration:.85, stagger:.18, ease:'power3.out' }, 1.3)
+    .to('#s1cur', { opacity:1, duration:.2 }, 2.4)
+    .to('#s1', { opacity:0, duration:.6 }, 4.6);
+
+  // ===== S2 price reveal (4.7 - 9.8) =====
+  tl.set('#s2', { opacity:1 }, 4.7)
+    .from('#s2tag', { opacity:0, y:14, duration:.5 }, 4.9)
+    .from('.price-card .label', { opacity:0, y:14, duration:.5 }, 5.1)
+    .from('.price-card .value', { opacity:0, y:20, duration:.6 }, 5.3);
+
+  // number tick up
+  const numEl = document.getElementById('s2num');
+  const obj = { v: 0 };
+  tl.to(obj, {
+    v: 3450000, duration:1.8, ease:'power3.out',
+    onUpdate: () => {
+      numEl.textContent = Math.round(obj.v).toLocaleString('nb-NO');
+    }
+  }, 5.4);
+
+  tl.from('#s2delta', { opacity:0, y:12, duration:.5 }, 7.0)
+    .to('#sparkLine', { strokeDashoffset:0, duration:1.2, ease:'power2.inOut' }, 6.6)
+    .to('#sparkDot', { opacity:1, scale:1, duration:.4, ease:'back.out(2)' }, 7.6)
+    .fromTo('#s2sub', { opacity:0, y:14 }, { opacity:1, y:0, duration:.6 }, 7.8)
+    .to('#s2', { opacity:0, duration:.55 }, 9.9);
+
+  // ===== S3 Moss + 1991 (10 - 15) =====
+  tl.set('#s3', { opacity:1 }, 10.0)
+    .from('.map-card', { opacity:0, y:24, scale:.96, duration:.7, ease:'power3.out' }, 10.1)
+    .to('#mapPin', { opacity:1, duration:.4 }, 10.7)
+    .from('#mapPin', { y:-30, duration:.6, ease:'bounce.out' }, 10.7)
+    .fromTo('#mapPulse', { opacity:.7, scale:1 }, { opacity:0, scale:5, duration:1.5, ease:'power2.out', repeat:1 }, 10.9)
+    .fromTo('#since', { opacity:0, y:18 }, { opacity:1, y:0, duration:.7 }, 11.4)
+    .to('#s3', { opacity:0, duration:.55 }, 14.9);
+
+  // ===== S4 fixed price (15 - 20.5) =====
+  tl.set('#s4', { opacity:1 }, 15.0)
+    .fromTo('#fpLabel', { opacity:0, y:14 }, { opacity:1, y:0, duration:.5 }, 15.1)
+    .to('.fp-price .ch', { opacity:1, y:0, duration:.5, stagger:.07, ease:'power3.out' }, 15.4)
+    .fromTo('#fpSub', { opacity:0, y:12 }, { opacity:1, y:0, duration:.5 }, 16.6)
+    .to('#fpList', { opacity:1, duration:.5 }, 17.2)
+    .from('#fpList .it', { y:16, opacity:0, duration:.5, stagger:.12, ease:'power3.out' }, 17.2)
+    .to('#s4', { opacity:0, duration:.55 }, 20.4);
+
+  // ===== S5 trust (20.5 - 24.5) =====
+  tl.set('#s5', { opacity:1 }, 20.5)
+    .to('#s5 .line span', { y:0, duration:.8, stagger:.16, ease:'power3.out' }, 20.7)
+    .fromTo('#s5 .meta', { opacity:0, y:14 }, { opacity:1, y:0, duration:.6 }, 21.8)
+    .to('#s5', { opacity:0, duration:.55 }, 24.4);
+
+  // ===== S6 CTA (24.5 - 30) =====
+  tl.set('#s6', { opacity:1 }, 24.5)
+    .fromTo('#ctaEye', { opacity:0, y:12 }, { opacity:1, y:0, duration:.5 }, 24.6)
+    .fromTo('#ctaTitle', { opacity:0, y:20 }, { opacity:1, y:0, duration:.8 }, 24.9)
+    .to('#ctaBtn', { opacity:1, y:0, duration:.6, ease:'back.out(1.4)' }, 25.8)
+    .fromTo('#ctaLogo', { opacity:0, y:14 }, { opacity:1, y:0, duration:.6 }, 26.4)
+    // pulsing CTA hint
+    .to('#ctaBtn', { scale:1.04, duration:.5, ease:'sine.inOut', yoyo:true, repeat:3 }, 27.2)
+    .fromTo('#scan', { top:'-2px', opacity:.7 }, { top:'100%', duration:1.6, ease:'power2.in' }, 27.5)
+    .to('#scan', { opacity:0, duration:.2 }, 29.1);
+
+});
+</script>
+</body></html>
