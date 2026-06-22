@@ -1,176 +1,194 @@
 <!doctype html>
-<html lang="no">
+<html lang="nb">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Kréatif — Integrasjoner som jobber for deg</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://images.squarespace-cdn.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   :root{
     --black:#0A0A0A;
-    --ink:#111;
-    --white:#FAFAF7;
-    --accent:#E2542B;
-    --accent-soft:#FBE5DA;
-    --dim:rgba(250,250,247,.55);
-    --rule:rgba(250,250,247,.16);
+    --ink:#141414;
+    --paper:#F6F2EC;
+    --white:#FFFFFF;
+    --accent:#D9472A;
+    --accent-soft:#F5D6CB;
+    --rule:rgba(20,20,20,.10);
+    --dim:rgba(20,20,20,.55);
+    --dim-on-dark:rgba(255,255,255,.6);
   }
   *{box-sizing:border-box}
   html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#000}
-  body{display:grid;place-items:center;color:var(--white);font-family:'Inter',Arial,sans-serif;font-kerning:normal;-webkit-font-smoothing:antialiased;font-feature-settings:"ss01","cv11"}
-  #film{position:relative;width:min(100vw,177.777vh);aspect-ratio:16/9;overflow:hidden;background:var(--black);isolation:isolate}
-  #film:after{content:"";position:absolute;inset:0;z-index:80;pointer-events:none;background:radial-gradient(circle at 50% 50%,transparent 38%,rgba(0,0,0,.5) 130%)}
+  body{display:grid;place-items:center;color:var(--ink);font-family:'Inter',Arial,sans-serif;font-kerning:normal;-webkit-font-smoothing:antialiased;font-feature-settings:"ss01","cv11"}
+  #film{position:relative;width:min(100vw,177.777vh);aspect-ratio:16/9;overflow:hidden;background:var(--paper);isolation:isolate}
+  #film:after{content:"";position:absolute;inset:0;z-index:80;pointer-events:none;background:radial-gradient(circle at 50% 50%,transparent 55%,rgba(0,0,0,.28) 130%)}
 
   /* Persistent chrome */
-  .brand{position:absolute;z-index:90;left:3.5%;top:4%;font-weight:700;font-size:1.05vw;letter-spacing:-.025em}
-  .brand em{font-style:italic;font-weight:500;color:var(--accent)}
-  .meta{position:absolute;z-index:90;right:3.5%;top:4.3%;font-weight:600;font-size:.58vw;letter-spacing:.24em;text-transform:uppercase;color:var(--dim)}
-  .progress{position:absolute;z-index:90;left:3.5%;right:3.5%;bottom:3.8%;height:2px;background:rgba(250,250,247,.14)}
+  .brand{position:absolute;z-index:90;left:3.5%;top:4%;display:flex;align-items:center;gap:.65vw}
+  .brand img{height:1.5vw;width:auto;display:block}
+  .meta{position:absolute;z-index:90;right:3.5%;top:4.5%;font-weight:600;font-size:.6vw;letter-spacing:.26em;text-transform:uppercase;color:var(--dim)}
+  .scene.dark ~ .meta, .scene.dark ~ .brand img{filter:invert(1)}
+
+  .progress{position:absolute;z-index:90;left:3.5%;right:3.5%;bottom:3.5%;height:2px;background:rgba(20,20,20,.12)}
   .progress i{display:block;width:100%;height:100%;background:var(--accent);transform:scaleX(0);transform-origin:left}
 
   /* Scene base */
   .scene{position:absolute;inset:0;visibility:hidden;display:grid;place-items:center;text-align:center;will-change:transform,opacity}
-  .scene.light{background:var(--white);color:var(--ink)}
-  .scene.light .dim{color:rgba(17,17,17,.55)}
+  .scene.dark{background:var(--black);color:var(--white)}
+  .scene.dark .dim{color:var(--dim-on-dark)}
   .scene.accent{background:var(--accent);color:var(--white)}
-  .scene.accent .dim{color:rgba(255,255,255,.7)}
+  .scene.paper{background:var(--paper);color:var(--ink)}
 
-  .center{position:relative;z-index:4;width:min(82%,1400px);display:grid;justify-items:center}
-  .eyebrow{margin-bottom:1.2vw;font-weight:700;font-size:.66vw;letter-spacing:.24em;text-transform:uppercase;color:var(--accent)}
-  .scene.accent .eyebrow{color:#0A0A0A}
-  .scene.light .eyebrow{color:var(--accent)}
+  .center{position:relative;z-index:4;width:min(86%,1500px);display:grid;justify-items:center;gap:1.2vw}
+  .eyebrow{font-weight:700;font-size:.7vw;letter-spacing:.28em;text-transform:uppercase;color:var(--accent);overflow:hidden}
+  .eyebrow span{display:inline-block}
 
-  h1,h2{margin:0;font-family:'Inter',sans-serif;font-weight:800;line-height:1.02;letter-spacing:-.038em;text-wrap:balance}
-  h1{font-size:7vw}
-  h2{font-size:5.4vw}
-  .accent-word{color:var(--accent);font-weight:800;font-style:italic}
-  .scene.accent .accent-word{color:#0A0A0A;font-style:italic;font-weight:800}
-  .scene.light .accent-word{color:var(--accent)}
+  h1,h2,h3{margin:0;font-family:'Inter',sans-serif;font-weight:700;line-height:1.04;letter-spacing:-.035em;text-wrap:balance}
+  h1{font-size:5.6vw;font-weight:600}
+  h2{font-size:4.4vw;font-weight:600}
+  h3{font-size:2.8vw;font-weight:600}
+  .accent-word{color:var(--accent);font-weight:700;font-style:italic}
+  .scene.accent .accent-word{color:#0A0A0A;font-weight:700;font-style:italic}
+  .scene.dark .accent-word{color:var(--accent)}
 
-  .support{max-width:46vw;margin:1.4vw 0 0;font-weight:400;font-size:1.1vw;line-height:1.45;color:var(--dim);text-wrap:balance}
-  .scene.light .support{color:rgba(17,17,17,.6)}
+  .support{max-width:50vw;font-weight:400;font-size:1.25vw;line-height:1.5;color:var(--dim);text-wrap:balance}
+  .scene.dark .support{color:var(--dim-on-dark)}
+  .scene.accent .support{color:rgba(255,255,255,.85)}
 
-  /* Scene 1 — words flicker in */
-  .word{display:inline-block;will-change:transform,opacity}
+  /* Word-by-word reveal helper */
+  .reveal{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.06em;line-height:1.05}
+  .reveal > span{display:inline-block;transform:translateY(110%)}
 
-  /* Scene 2 — chaos of systems */
+  /* Scene 1 — brand intro */
+  .hero-mark{display:grid;justify-items:center;gap:2vw}
+  .hero-mark img{height:7.5vw;width:auto;display:block;filter:none}
+  .hero-mark .tag{font-weight:500;font-size:1.85vw;letter-spacing:-.02em;color:var(--ink)}
+
+  /* Scene 2 — hook with hero illustration */
+  .hook-grid{display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:3vw;width:min(86vw,1450px);text-align:left}
+  .hook-grid .copy{display:grid;gap:1.2vw}
+  .hook-grid h2{font-size:4.6vw;line-height:1.02}
+  .hook-grid .illu{justify-self:end;width:34vw;max-width:540px;aspect-ratio:1/1;display:grid;place-items:center}
+  .hook-grid .illu img{width:100%;height:100%;object-fit:contain;display:block}
+
+  /* Scene 3 — chip cloud */
   .chaos{position:absolute;inset:0;pointer-events:none}
-  .chip{position:absolute;padding:.65vw 1.1vw;border:1px solid rgba(250,250,247,.28);background:rgba(15,15,15,.65);backdrop-filter:blur(4px);font-weight:600;font-size:.78vw;letter-spacing:.04em;border-radius:999px;white-space:nowrap}
-  .chip.dot::before{content:"";display:inline-block;width:.4vw;height:.4vw;border-radius:50%;background:var(--accent);margin-right:.5vw;vertical-align:middle}
+  .chip{position:absolute;padding:.7vw 1.2vw;border:1px solid var(--rule);background:rgba(255,255,255,.85);backdrop-filter:blur(6px);font-weight:600;font-size:.85vw;letter-spacing:.02em;border-radius:999px;white-space:nowrap;color:var(--ink);box-shadow:0 4px 14px rgba(0,0,0,.06)}
+  .chip.dot::before{content:"";display:inline-block;width:.42vw;height:.42vw;border-radius:50%;background:var(--accent);margin-right:.55vw;vertical-align:middle}
 
-  /* Scene 3 — slash text */
-  .vs{display:flex;align-items:baseline;gap:2vw;font-weight:900;font-size:8vw;letter-spacing:-.05em;line-height:.95}
-  .vs .a{color:var(--dim);text-decoration:line-through;text-decoration-thickness:.35vw;text-decoration-color:var(--accent)}
-  .vs .b{color:var(--white)}
-
-  /* Scene 4 — pipe / connection */
-  .pipe-stage{position:relative;width:min(78%,1200px);height:14vw;display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center;justify-items:center;margin-bottom:2vw}
-  .node{position:relative;z-index:2;padding:1vw 1.4vw;border:1px solid var(--white);background:var(--black);font-weight:700;font-size:.95vw;letter-spacing:.04em;border-radius:10px}
-  .node em{display:block;font-style:normal;font-weight:500;font-size:.6vw;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);margin-bottom:.45vw}
+  /* Scene 4 — connection / pipe */
+  .pipe-stage{position:relative;width:min(80%,1240px);height:13vw;display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center;justify-items:center;margin-bottom:1vw}
+  .node{position:relative;z-index:2;padding:1.1vw 1.5vw;border:1px solid var(--rule);background:var(--white);font-weight:700;font-size:1.05vw;letter-spacing:-.01em;border-radius:14px;color:var(--ink);box-shadow:0 8px 22px rgba(0,0,0,.08);min-width:9vw;text-align:center}
+  .node em{display:block;font-style:normal;font-weight:500;font-size:.62vw;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);margin-bottom:.5vw}
   .pipe{position:absolute;top:50%;height:2px;background:var(--accent);transform-origin:left;z-index:1}
-  .pipe.a{left:16%;width:34%}
-  .pipe.b{left:50%;width:34%}
-  .pulse{position:absolute;top:50%;width:.7vw;height:.7vw;margin-top:-.35vw;border-radius:50%;background:var(--white);box-shadow:0 0 24px rgba(226,84,43,.9);z-index:3;left:0}
+  .pipe.a{left:17%;width:33%}
+  .pipe.b{left:50%;width:33%}
+  .pulse{position:absolute;top:50%;width:.85vw;height:.85vw;margin-top:-.42vw;border-radius:50%;background:var(--accent);box-shadow:0 0 26px rgba(217,71,42,.95),0 0 0 .35vw rgba(217,71,42,.18);z-index:3;left:0}
 
-  /* Scene 5 — brand frame */
-  .brand-frame{display:grid;justify-items:center;gap:1.6vw}
-  .wordmark{font-weight:600;font-size:8vw;letter-spacing:-.05em;line-height:1}
-  .wordmark span{color:var(--accent);font-weight:700}
-  .tag{font-weight:500;font-size:1.6vw;letter-spacing:-.015em;color:var(--white)}
+  /* Scene 5 — stat */
+  .stat-wrap{display:grid;justify-items:center;gap:1.2vw}
+  .stat{font-weight:800;font-size:20vw;line-height:.82;letter-spacing:-.05em;font-variant-numeric:tabular-nums;display:flex;align-items:flex-start;gap:.3vw}
+  .stat sup{font-size:.45em;font-weight:700;line-height:1;margin-top:.5vw}
+  .stat-label{font-weight:600;font-size:1.45vw;letter-spacing:-.01em}
+  .stat-label em{font-style:italic;font-weight:500}
 
-  /* Scene 6 — big stat (accent bg) */
-  .stat{font-weight:800;font-size:18vw;line-height:.82;letter-spacing:-.05em;font-variant-numeric:tabular-nums}
-  .stat-label{margin-top:.8vw;font-weight:700;font-size:1.3vw;letter-spacing:.14em;text-transform:uppercase}
-  .stat-label em{font-style:italic;font-weight:500;text-transform:none;letter-spacing:0}
-  .stat-context{display:flex;gap:.7vw;justify-content:center;margin-top:1.5vw;flex-wrap:wrap}
-  .stat-context span{border:1px solid #0A0A0A;padding:.55vw .9vw;font-weight:700;font-size:.62vw;letter-spacing:.18em;text-transform:uppercase;border-radius:999px}
+  /* Scene 6 — logo grid */
+  .systems-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:1vw;width:min(86vw,1450px)}
+  .sys-card{aspect-ratio:1/1;border:1px solid var(--rule);display:grid;place-items:center;padding:1.4vw;border-radius:18px;background:var(--white);box-shadow:0 6px 18px rgba(0,0,0,.05);overflow:hidden}
+  .sys-card img{width:100%;height:100%;object-fit:contain;display:block;mix-blend-mode:multiply}
 
-  /* Scene 7 — logo grid */
-  .systems-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:1vw;width:min(82vw,1380px);margin-top:1.6vw}
-  .sys-card{aspect-ratio:1.2/1;border:1px solid var(--rule);display:grid;place-items:center;text-align:center;padding:1vw;border-radius:14px;background:rgba(250,250,247,.03)}
-  .sys-card b{display:block;font-weight:700;font-size:1.2vw;letter-spacing:-.02em}
-  .sys-card em{display:block;font-style:normal;font-weight:500;font-size:.55vw;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);margin-top:.4vw}
+  /* Scene 7 — Why Kréatif (split, photo + copy) */
+  .why-grid{display:grid;grid-template-columns:1fr 1fr;align-items:stretch;gap:0;width:100%;height:100%}
+  .why-grid .photo{position:relative;overflow:hidden}
+  .why-grid .photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08)}
+  .why-grid .photo::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,0) 60%,rgba(10,10,10,1) 100%)}
+  .why-grid .copy{background:var(--black);color:var(--white);display:grid;place-items:center;padding:5vw 5vw 5vw 3vw;text-align:left}
+  .why-grid .copy .stack{display:grid;gap:1.4vw;max-width:32vw}
+  .why-grid h2{font-size:3.8vw;line-height:1.02;color:var(--white)}
+  .why-grid .since{font-weight:600;font-size:1vw;letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+  .why-grid .lead{font-weight:400;font-size:1.15vw;line-height:1.5;color:rgba(255,255,255,.72)}
 
-  /* Scene 8 — three pillars */
-  .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4vw;width:min(80vw,1300px);margin-top:2vw}
-  .pillar{border:1px solid var(--accent);padding:1.6vw 1.3vw;border-radius:14px;background:rgba(226,84,43,.06);display:grid;gap:.7vw;align-content:start}
-  .pillar b{font-weight:800;font-size:2.4vw;letter-spacing:-.03em;line-height:1.02}
-  .pillar span{font-weight:700;font-size:.6vw;letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
-  .pillar p{margin:0;font-weight:400;font-size:.85vw;line-height:1.5;color:var(--dim)}
+  /* Scene 8 — CTA */
+  .cta-stack{display:grid;justify-items:center;gap:1.6vw}
+  .cta-stack img{height:8vw;width:auto;display:block}
+  .cta-tag{font-weight:500;font-size:1.7vw;letter-spacing:-.02em;color:var(--ink)}
+  .cta-link{margin-top:1.3vw;display:inline-flex;align-items:center;gap:.8vw;padding:1.05vw 1.8vw;background:#0A0A0A;color:#fff;font-weight:600;font-size:1.1vw;letter-spacing:-.005em;text-decoration:none;border-radius:999px}
+  .cta-link::after{content:"→";display:inline-block;transition:transform .25s ease}
+  .cta-link:hover::after{transform:translateX(.3vw)}
 
-  /* Scene 9 — since 2012 */
-  .since-num{font-weight:800;font-size:14vw;line-height:.85;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
-  .since-label{font-weight:700;font-size:.9vw;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);margin-top:.8vw}
-
-  /* Scene 10 — CTA */
-  .cta-mark{font-weight:600;font-size:7vw;letter-spacing:-.05em;line-height:1}
-  .cta-mark span{color:var(--accent);font-weight:700}
-  .cta-tag{margin-top:1vw;font-weight:500;font-size:1.4vw;letter-spacing:-.015em;color:rgba(10,10,10,.7)}
-  .cta-link{margin-top:2.2vw;display:inline-block;padding:1vw 1.6vw;background:#0A0A0A;color:var(--white);font-weight:700;font-size:1.05vw;letter-spacing:.04em;text-decoration:none;border-radius:999px}
-
-  /* FX layers */
+  /* FX */
   .fx{position:absolute;z-index:70;visibility:hidden;pointer-events:none;will-change:transform,opacity}
+  .fx-wipe{inset:0;background:var(--accent);transform-origin:left center;transform:scaleX(0)}
+  .fx-wipe.dark{background:var(--black)}
+  .fx-wipe.paper{background:var(--paper)}
   .fx-flash{inset:0;background:var(--white);opacity:0}
-  .fx-accent-flash{inset:0;background:var(--accent);opacity:0}
-  .fx-slash{left:-15%;top:46%;width:130%;height:8%;background:var(--accent);transform:rotate(-6deg) scaleX(0);transform-origin:left center}
-  .fx-bars{inset:0;display:flex}
-  .fx-bars i{flex:1;background:var(--black);transform:scaleY(0);transform-origin:bottom}
-  .fx-bars.fromtop i{transform-origin:top}
-  .fx-wipe{inset:0;background:var(--black);transform-origin:left center;transform:scaleX(0)}
-  .fx-ring{left:50%;top:50%;width:6vw;height:6vw;margin:-3vw;border-radius:50%;background:var(--accent);transform:scale(0)}
 
-  /* Reduced motion */
-  @media(prefers-reduced-motion:reduce){
-    .scene,.fx{will-change:auto}
-  }
+  @media(prefers-reduced-motion:reduce){.scene,.fx{will-change:auto}}
 </style>
 </head>
 <body>
 <main id="film">
-  <div class="brand">Kr<em>é</em>atif</div>
+  <div class="brand">
+    <img src="https://images.squarespace-cdn.com/content/v1/671a0fe53441e54993f8f547/da557e67-4fcc-46d9-a90e-68a469657b50/kreatif-logo-sort.png?format=500w" alt="Kréatif">
+  </div>
   <div class="meta">Integrasjoner siden 2012</div>
 
-  <!-- 1: Hook -->
-  <section class="scene s1">
+  <!-- 1: Brand intro (paper) -->
+  <section class="scene paper s1">
     <div class="center">
-      <div class="eyebrow">Hverdagen i en bedrift</div>
-      <h1><span class="word">Regnskap</span> <span class="word">her.</span><br>
-        <span class="word">Nettbutikk</span> <span class="word">der.</span><br>
-        <span class="word">Lager</span> <span class="word">et</span> <span class="word">tredje</span> <span class="word">sted.</span>
-      </h1>
+      <div class="hero-mark">
+        <img src="https://images.squarespace-cdn.com/content/v1/671a0fe53441e54993f8f547/da557e67-4fcc-46d9-a90e-68a469657b50/kreatif-logo-sort.png?format=1500w" alt="Kréatif">
+        <div class="tag">Integrasjoner som jobber for deg.</div>
+      </div>
     </div>
   </section>
 
-  <!-- 2: Chaos -->
-  <section class="scene s2">
+  <!-- 2: Hook with hero illustration -->
+  <section class="scene paper s2">
+    <div class="hook-grid">
+      <div class="copy">
+        <div class="eyebrow"><span>Hverdagen i en bedrift</span></div>
+        <h2>
+          <span class="reveal"><span>Regnskap her.</span></span><br>
+          <span class="reveal"><span>Nettbutikk der.</span></span><br>
+          <span class="reveal"><span>Lager et tredje sted.</span></span>
+        </h2>
+      </div>
+      <div class="illu">
+        <img src="https://images.squarespace-cdn.com/content/v1/671a0fe53441e54993f8f547/9b06e0da-a192-44e2-97de-13ccc66818ca/Kreatif+-+Integrasjoner+-+Illustrasjoner+2026.gif" alt="Integrasjons-illustrasjon">
+      </div>
+    </div>
+  </section>
+
+  <!-- 3: Chaos chips -->
+  <section class="scene paper s3">
     <div class="chaos">
-      <div class="chip dot" style="left:12%;top:22%">Tripletex</div>
-      <div class="chip dot" style="right:14%;top:18%">Shopify</div>
-      <div class="chip dot" style="left:24%;top:60%">Visma</div>
-      <div class="chip dot" style="right:22%;top:62%">HubSpot</div>
-      <div class="chip dot" style="left:8%;top:42%">PostNord</div>
-      <div class="chip dot" style="right:9%;top:46%">Klarna</div>
-      <div class="chip dot" style="left:42%;top:18%">WooCommerce</div>
-      <div class="chip dot" style="left:48%;top:72%">SuperOffice</div>
+      <div class="chip dot" style="left:10%;top:24%">Tripletex</div>
+      <div class="chip dot" style="right:12%;top:20%">Shopify</div>
+      <div class="chip dot" style="left:22%;top:62%">Visma</div>
+      <div class="chip dot" style="right:20%;top:64%">HubSpot</div>
+      <div class="chip dot" style="left:6%;top:44%">PostNord</div>
+      <div class="chip dot" style="right:7%;top:48%">Klarna</div>
+      <div class="chip dot" style="left:40%;top:16%">WooCommerce</div>
+      <div class="chip dot" style="right:38%;top:74%">SuperOffice</div>
+      <div class="chip dot" style="left:14%;top:78%">Rackbeat</div>
+      <div class="chip dot" style="right:14%;top:34%">Stripe</div>
     </div>
     <div class="center">
-      <h2>Systemer som <span class="accent-word">ikke</span><br>snakker sammen.</h2>
-    </div>
-  </section>
-
-  <!-- 3: Før / Nå -->
-  <section class="scene s3">
-    <div class="center">
-      <div class="eyebrow">Det er én løsning</div>
-      <div class="vs"><span class="a">Før.</span><span class="b">Nå.</span></div>
+      <h2>
+        <span class="reveal"><span>Systemer som</span></span><br>
+        <span class="reveal"><span><span class="accent-word">ikke</span> snakker sammen.</span></span>
+      </h2>
     </div>
   </section>
 
-  <!-- 4: Pipe (connecting) -->
-  <section class="scene s4">
+  <!-- 4: Connection (pipe) -->
+  <section class="scene paper s4">
     <div class="center">
+      <div class="eyebrow"><span>Slik løser vi det</span></div>
       <div class="pipe-stage">
         <div class="pipe a"></div>
         <div class="pipe b"></div>
@@ -179,224 +197,172 @@
         <div class="node"><em>Regnskap</em>Tripletex</div>
         <div class="node"><em>Frakt</em>PostNord</div>
       </div>
-      <h2>Vi kobler dem<br><span class="accent-word">sømløst sammen.</span></h2>
+      <h2>
+        <span class="reveal"><span>Vi kobler dem</span></span><br>
+        <span class="reveal"><span><span class="accent-word">sømløst sammen.</span></span></span>
+      </h2>
     </div>
   </section>
 
-  <!-- 5: Brand reveal -->
-  <section class="scene s5">
-    <div class="center brand-frame">
-      <div class="wordmark">Kr<span>é</span>atif</div>
-      <div class="tag">Integrasjoner som jobber for deg.</div>
+  <!-- 5: Stat 1000+ (accent bg) -->
+  <section class="scene accent s5">
+    <div class="center stat-wrap">
+      <div class="eyebrow" style="color:#0A0A0A"><span>Visste du at vi har</span></div>
+      <div class="stat"><span>1000</span><sup>+</sup></div>
+      <div class="stat-label">unike <em>kombinasjoner</em> av integrasjoner</div>
     </div>
   </section>
 
-  <!-- 6: Stat 1000+ (accent bg) -->
-  <section class="scene accent s6 light">
+  <!-- 6: Platform logo grid -->
+  <section class="scene paper s6">
     <div class="center">
-      <div class="eyebrow">Visste du at</div>
-      <div class="stat">1000<span style="font-size:.6em">+</span></div>
-      <div class="stat-label">unike <em>kombinasjoner</em></div>
-      <div class="stat-context"><span>Regnskap</span><span>E-handel</span><span>Logistikk</span><span>CRM</span><span>Betaling</span></div>
-    </div>
-  </section>
-
-  <!-- 7: System grid -->
-  <section class="scene s7">
-    <div class="center">
-      <div class="eyebrow">Plattformer vi integrerer</div>
-      <h2 style="font-size:3.4vw">Alt du allerede bruker.</h2>
+      <div class="eyebrow"><span>Plattformer vi integrerer</span></div>
+      <h3>Alt du allerede bruker.</h3>
       <div class="systems-grid">
-        <div class="sys-card"><b>Tripletex</b><em>Regnskap</em></div>
-        <div class="sys-card"><b>Shopify</b><em>Nettbutikk</em></div>
-        <div class="sys-card"><b>Visma</b><em>ERP</em></div>
-        <div class="sys-card"><b>HubSpot</b><em>CRM</em></div>
-        <div class="sys-card"><b>PostNord</b><em>Frakt</em></div>
-        <div class="sys-card"><b>Klarna</b><em>Betaling</em></div>
+        <div class="sys-card"><img src="https://images.squarespace-cdn.com/content/v1/671a0fe53441e54993f8f547/b956f7fc-33f4-42d1-8082-af05a66511b5/tripletex.jpg?format=500w" alt="Tripletex"></div>
+        <div class="sys-card"><img src="https://images.squarespace-cdn.com/content/v1/671a0fe53441e54993f8f547/176daa0c-6698-417d-8cd2-29c15277ea93/shopify.jpg?format=500w" alt="Shopify"></div>
+        <div class="sys-card"><img src="https://images.squarespace-cdn.com/content/v1/671a0fe53441e54993f8f547/e6b36ea5-fc97-4100-a02f-ac40cfab4e5e/visma-business.jpg?format=500w" alt="Visma"></div>
+        <div class="sys-card"><img src="https://images.squarespace-cdn.com/content/v1/671a0fe53441e54993f8f547/44f768cb-0846-482d-a12c-1a945a14ab4d/hubspot.jpg?format=500w" alt="HubSpot"></div>
+        <div class="sys-card"><img src="https://images.squarespace-cdn.com/content/v1/671a0fe53441e54993f8f547/086dc93c-a238-40b1-b200-116d9355603a/posten.jpg?format=500w" alt="Posten"></div>
+        <div class="sys-card"><img src="https://images.squarespace-cdn.com/content/v1/671a0fe53441e54993f8f547/bc272e7c-d4dd-47ef-89c9-779e2d4aaa74/klarna.jpg?format=500w" alt="Klarna"></div>
       </div>
     </div>
   </section>
 
-  <!-- 8: Three pillars -->
-  <section class="scene s8">
-    <div class="center">
-      <h2>Én plattform.<br><span class="accent-word">Alt samlet.</span></h2>
-      <div class="pillars">
-        <div class="pillar"><span>Komplett</span><b>Plattform</b><p>Samle nettbutikk, regnskap, lager og logistikk i én løsning.</p></div>
-        <div class="pillar"><span>Folk som bryr seg</span><b>Rådgivere</b><p>Utviklere og rådgivere som forstår både teknologi og forretning.</p></div>
-        <div class="pillar"><span>Norsk</span><b>Kompetanse</b><p>Utviklet og levert fra Norge. Tilpasset det nordiske markedet.</p></div>
+  <!-- 7: Why Kréatif (split: photo + dark copy) -->
+  <section class="scene s7">
+    <div class="why-grid">
+      <div class="photo">
+        <img src="https://images.squarespace-cdn.com/content/v1/671a0fe53441e54993f8f547/0b7af282-0615-47d4-901b-b03f61efc3ec/getty-images-a5AforzBKwc-unsplash-min.jpg?format=1500w" alt="Kréatif-teamet">
+      </div>
+      <div class="copy">
+        <div class="stack">
+          <div class="since">Folk som bryr seg · Siden 2012</div>
+          <h2>Rådgivere som forstår både <span class="accent-word">teknologi</span> og <span class="accent-word">forretning.</span></h2>
+          <p class="lead">Norsk kompetanse, tett dialog og løsninger tilpasset det nordiske markedet.</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- 9: Since 2012 -->
-  <section class="scene s9">
-    <div class="center">
-      <div class="eyebrow">Erfaring</div>
-      <div class="since-num">2012</div>
-      <div class="since-label">Bygger integrasjoner siden</div>
-    </div>
-  </section>
-
-  <!-- 10: CTA (light bg) -->
-  <section class="scene light s10">
-    <div class="center">
-      <div class="cta-mark">Kr<span>é</span>atif</div>
+  <!-- 8: CTA -->
+  <section class="scene paper s8">
+    <div class="center cta-stack">
+      <img src="https://images.squarespace-cdn.com/content/v1/671a0fe53441e54993f8f547/da557e67-4fcc-46d9-a90e-68a469657b50/kreatif-logo-sort.png?format=1500w" alt="Kréatif">
       <div class="cta-tag">Integrasjoner som jobber for deg.</div>
       <a class="cta-link" href="https://www.kreatif.no">kreatif.no</a>
     </div>
   </section>
 
   <!-- FX layers -->
-  <div class="fx fx-flash"></div>
-  <div class="fx fx-accent-flash"></div>
-  <div class="fx fx-slash"></div>
-  <div class="fx fx-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-  <div class="fx fx-bars fromtop"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
   <div class="fx fx-wipe"></div>
-  <div class="fx fx-ring"></div>
+  <div class="fx fx-wipe dark"></div>
+  <div class="fx fx-wipe paper"></div>
+  <div class="fx fx-flash"></div>
 
   <div class="progress"><i></i></div>
 </main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script>
-  const DURATION = 34;
+  const DURATION = 42;
   gsap.defaults({ease:'power3.out'});
 
-  // Helpers: set/show scenes
-  const show = (sel)=>gsap.set(sel,{visibility:'visible',opacity:1});
-  const hide = (sel)=>gsap.set(sel,{visibility:'hidden',opacity:0});
+  // Smooth scene crossfade helper
+  function showScene(sel, at, fadeIn=0.7){
+    tl.set(sel,{visibility:'visible'},at)
+      .fromTo(sel,{opacity:0},{opacity:1,duration:fadeIn,ease:'power2.out'},at);
+  }
+  function hideScene(sel, at, fadeOut=0.6){
+    tl.to(sel,{opacity:0,duration:fadeOut,ease:'power2.in'},at)
+      .set(sel,{visibility:'hidden'},at+fadeOut);
+  }
 
-  // Initial state
   gsap.set('.scene',{opacity:0});
 
-  const tl = gsap.timeline({defaults:{duration:.55}});
+  const tl = gsap.timeline({defaults:{duration:.8}});
 
-  // Progress (drives whole film)
+  // Master progress
   tl.fromTo('.progress i',{scaleX:0},{scaleX:1,duration:DURATION,ease:'none'},0);
 
-  // ── Scene 1 (0–3s): Hook
-  tl.add(()=>show('.s1'),0)
-    .fromTo('.s1',{opacity:0},{opacity:1,duration:.5},0)
-    .from('.s1 .eyebrow',{y:20,opacity:0,duration:.5},0.1)
-    .from('.s1 .word',{y:'1.2em',opacity:0,duration:.5,stagger:.07},0.25)
-    .to('.s1',{opacity:0,duration:.4},2.6)
-    .add(()=>hide('.s1'),3);
+  // ── Scene 1 (0 – 6s): Brand intro
+  showScene('.s1', 0, .8);
+  tl.from('.s1 .hero-mark img',{y:40,opacity:0,duration:1.2,ease:'power4.out'},0.3)
+    .from('.s1 .hero-mark .tag',{y:24,opacity:0,duration:1,ease:'power3.out'},0.9);
+  hideScene('.s1', 5.4, .6);
 
-  // Bars wipe out as transition into chaos
-  tl.add(()=>gsap.set('.fx-bars:not(.fromtop)',{visibility:'visible'}),2.5)
-    .fromTo('.fx-bars:not(.fromtop) i',{scaleY:0},{scaleY:1,duration:.35,stagger:.03,ease:'power2.in'},2.5)
-    .to('.fx-bars:not(.fromtop) i',{scaleY:0,duration:.35,stagger:.03,ease:'power2.out'},3.0)
-    .add(()=>gsap.set('.fx-bars:not(.fromtop)',{visibility:'hidden'}),3.45);
+  // ── Scene 2 (6 – 13s): Hook with illustration
+  showScene('.s2', 5.8, .8);
+  tl.from('.s2 .eyebrow span',{y:'120%',duration:.8,ease:'power3.out'},6.2)
+    .from('.s2 .reveal > span',{y:'110%',duration:1.0,stagger:.55,ease:'power4.out'},6.5)
+    .from('.s2 .illu',{x:60,opacity:0,scale:.92,duration:1.4,ease:'power3.out'},6.4);
+  hideScene('.s2', 12.4, .6);
 
-  // ── Scene 2 (3–6.2s): Chaos
-  tl.add(()=>show('.s2'),3)
-    .fromTo('.s2',{opacity:0},{opacity:1,duration:.4},3)
-    .from('.s2 .chip',{scale:0,opacity:0,duration:.45,stagger:{each:.06,from:'random'},ease:'back.out(2)'},3.1)
-    .from('.s2 h2',{y:40,opacity:0,duration:.6},3.6)
-    .to('.s2',{opacity:0,duration:.35},5.9)
-    .add(()=>hide('.s2'),6.3);
+  // ── Scene 3 (13 – 19s): Chaos chips
+  showScene('.s3', 12.8, .7);
+  tl.from('.s3 .chip',{scale:.4,opacity:0,duration:.8,stagger:{each:.08,from:'random'},ease:'back.out(1.8)'},13.0)
+    .from('.s3 .reveal > span',{y:'110%',duration:.95,stagger:.55,ease:'power4.out'},13.7);
+  hideScene('.s3', 18.5, .6);
 
-  // Accent flash transition
-  tl.add(()=>gsap.set('.fx-accent-flash',{visibility:'visible'}),6)
-    .fromTo('.fx-accent-flash',{opacity:0},{opacity:1,duration:.18,ease:'power2.in'},6)
-    .to('.fx-accent-flash',{opacity:0,duration:.25,ease:'power2.out'},6.2)
-    .add(()=>gsap.set('.fx-accent-flash',{visibility:'hidden'}),6.5);
-
-  // ── Scene 3 (6.3–9s): Før / Nå
-  tl.add(()=>show('.s3'),6.3)
-    .fromTo('.s3',{opacity:0},{opacity:1,duration:.3},6.3)
-    .from('.s3 .eyebrow',{y:20,opacity:0,duration:.4},6.4)
-    .from('.s3 .vs .a',{x:-60,opacity:0,duration:.5},6.6)
-    .from('.s3 .vs .b',{x:60,opacity:0,duration:.5},6.9)
-    .to('.s3',{opacity:0,duration:.35},8.7)
-    .add(()=>hide('.s3'),9);
-
-  // ── Scene 4 (9–13s): Pipe / connecting
-  tl.add(()=>show('.s4'),9)
-    .fromTo('.s4',{opacity:0},{opacity:1,duration:.4},9)
-    .from('.s4 .node',{y:30,opacity:0,duration:.45,stagger:.12},9.1)
-    .fromTo('.s4 .pipe.a',{scaleX:0},{scaleX:1,duration:.5,ease:'power2.inOut'},9.6)
-    .fromTo('.s4 .pipe.b',{scaleX:0},{scaleX:1,duration:.5,ease:'power2.inOut'},10.0)
-    // Pulse travels
-    .fromTo('.s4 .pulse',{left:'16%',opacity:0},{left:'84%',opacity:1,duration:1.3,ease:'power1.inOut'},10.3)
-    .to('.s4 .pulse',{opacity:0,duration:.2},11.6)
-    .from('.s4 h2',{y:30,opacity:0,duration:.55},10.8)
-    .to('.s4',{opacity:0,duration:.4},12.6)
-    .add(()=>hide('.s4'),13);
-
-  // ── Scene 5 (13–16.5s): Brand reveal
-  tl.add(()=>show('.s5'),13)
-    .fromTo('.s5',{opacity:0},{opacity:1,duration:.4},13)
-    .from('.s5 .wordmark',{y:40,opacity:0,duration:.7,ease:'power4.out'},13.1)
-    .from('.s5 .wordmark span',{color:'#FAFAF7',duration:.5},13.6)
-    .from('.s5 .tag',{y:20,opacity:0,duration:.5},13.8)
-    .to('.s5',{opacity:0,duration:.4},16.1)
-    .add(()=>hide('.s5'),16.5);
+  // ── Scene 4 (19 – 25.5s): Pipe / connection
+  showScene('.s4', 18.9, .7);
+  tl.from('.s4 .eyebrow span',{y:'120%',duration:.7},19.2)
+    .from('.s4 .node',{y:30,opacity:0,duration:.7,stagger:.18,ease:'power3.out'},19.4)
+    .fromTo('.s4 .pipe.a',{scaleX:0},{scaleX:1,duration:.7,ease:'power2.inOut'},20.0)
+    .fromTo('.s4 .pipe.b',{scaleX:0},{scaleX:1,duration:.7,ease:'power2.inOut'},20.4)
+    .fromTo('.s4 .pulse',{left:'17%',opacity:0},{left:'83%',opacity:1,duration:1.7,ease:'sine.inOut'},20.7)
+    .to('.s4 .pulse',{opacity:0,duration:.3},22.4)
+    .from('.s4 .reveal > span',{y:'110%',duration:.95,stagger:.5,ease:'power4.out'},21.6);
+  hideScene('.s4', 25.0, .6);
 
   // Wipe to accent
-  tl.add(()=>gsap.set('.fx-wipe',{visibility:'visible',backgroundColor:'#E2542B'}),16.0)
-    .fromTo('.fx-wipe',{scaleX:0},{scaleX:1,duration:.45,ease:'power3.inOut'},16.0)
-    .to('.fx-wipe',{scaleX:0,transformOrigin:'right center',duration:.4,ease:'power3.inOut'},16.45)
-    .add(()=>gsap.set('.fx-wipe',{visibility:'hidden'}),16.9);
+  tl.set('.fx-wipe:not(.dark):not(.paper)',{visibility:'visible'},24.9)
+    .fromTo('.fx-wipe:not(.dark):not(.paper)',{scaleX:0},{scaleX:1,duration:.55,ease:'power3.inOut'},24.9)
+    .set('.fx-wipe:not(.dark):not(.paper)',{transformOrigin:'right center'},25.45)
+    .to('.fx-wipe:not(.dark):not(.paper)',{scaleX:0,duration:.5,ease:'power3.inOut'},25.45)
+    .set('.fx-wipe:not(.dark):not(.paper)',{visibility:'hidden',transformOrigin:'left center'},25.95);
 
-  // ── Scene 6 (16.5–20s): Stat 1000+ (accent)
-  tl.add(()=>show('.s6'),16.5)
-    .fromTo('.s6',{opacity:0},{opacity:1,duration:.35},16.5)
-    .from('.s6 .eyebrow',{y:20,opacity:0,duration:.4},16.7)
-    .from('.s6 .stat',{scale:.5,opacity:0,duration:.7,ease:'back.out(1.6)'},16.85)
-    .from('.s6 .stat-label',{y:20,opacity:0,duration:.45},17.5)
-    .from('.s6 .stat-context span',{y:14,opacity:0,duration:.4,stagger:.06},17.7)
-    .to('.s6',{opacity:0,duration:.4},19.6)
-    .add(()=>hide('.s6'),20);
+  // ── Scene 5 (25.5 – 31s): Stat 1000+
+  showScene('.s5', 25.4, .5);
+  tl.from('.s5 .eyebrow span',{y:'120%',duration:.7},25.7)
+    .from('.s5 .stat span',{scale:.4,opacity:0,duration:1.0,ease:'back.out(1.6)'},25.95)
+    .from('.s5 .stat sup',{opacity:0,scale:.4,duration:.6,ease:'back.out(2)'},26.55)
+    .from('.s5 .stat-label',{y:24,opacity:0,duration:.7},26.6);
+  hideScene('.s5', 30.5, .55);
 
-  // ── Scene 7 (20–24s): Systems grid
-  tl.add(()=>show('.s7'),20)
-    .fromTo('.s7',{opacity:0},{opacity:1,duration:.4},20)
-    .from('.s7 .eyebrow',{y:18,opacity:0,duration:.4},20.1)
-    .from('.s7 h2',{y:24,opacity:0,duration:.5},20.3)
-    .from('.s7 .sys-card',{y:30,opacity:0,scale:.95,duration:.45,stagger:.06,ease:'back.out(1.6)'},20.6)
-    .to('.s7',{opacity:0,duration:.4},23.6)
-    .add(()=>hide('.s7'),24);
+  // Wipe back to paper
+  tl.set('.fx-wipe.paper',{visibility:'visible'},30.45)
+    .fromTo('.fx-wipe.paper',{scaleX:0},{scaleX:1,duration:.5,ease:'power3.inOut'},30.45)
+    .set('.fx-wipe.paper',{transformOrigin:'right center'},30.95)
+    .to('.fx-wipe.paper',{scaleX:0,duration:.45,ease:'power3.inOut'},30.95)
+    .set('.fx-wipe.paper',{visibility:'hidden',transformOrigin:'left center'},31.4);
 
-  // ── Scene 8 (24–27.5s): Three pillars
-  tl.add(()=>show('.s8'),24)
-    .fromTo('.s8',{opacity:0},{opacity:1,duration:.4},24)
-    .from('.s8 h2',{y:24,opacity:0,duration:.5},24.1)
-    .from('.s8 .pillar',{y:36,opacity:0,duration:.5,stagger:.12,ease:'back.out(1.5)'},24.5)
-    .to('.s8',{opacity:0,duration:.4},27.1)
-    .add(()=>hide('.s8'),27.5);
+  // ── Scene 6 (31 – 36.5s): Systems grid with logos
+  showScene('.s6', 31.0, .55);
+  tl.from('.s6 .eyebrow span',{y:'120%',duration:.7},31.2)
+    .from('.s6 h3',{y:24,opacity:0,duration:.7},31.4)
+    .from('.s6 .sys-card',{y:36,opacity:0,scale:.92,duration:.7,stagger:.09,ease:'back.out(1.5)'},31.7);
+  hideScene('.s6', 36.0, .55);
 
-  // ── Scene 9 (27.5–30s): 2012
-  tl.add(()=>show('.s9'),27.5)
-    .fromTo('.s9',{opacity:0},{opacity:1,duration:.35},27.5)
-    .from('.s9 .eyebrow',{y:18,opacity:0,duration:.4},27.6)
-    .from('.s9 .since-num',{y:60,opacity:0,duration:.7,ease:'power4.out'},27.75)
-    .from('.s9 .since-label',{y:18,opacity:0,duration:.4},28.3)
-    .to('.s9',{opacity:0,duration:.4},29.6)
-    .add(()=>hide('.s9'),30);
+  // ── Scene 7 (36.5 – 40.5s): Why Kréatif
+  showScene('.s7', 36.0, .6);
+  tl.from('.s7 .photo img',{scale:1.18,duration:5,ease:'power1.out'},36.0)
+    .from('.s7 .since',{y:18,opacity:0,duration:.6},36.5)
+    .from('.s7 h2',{y:28,opacity:0,duration:.8,ease:'power3.out'},36.8)
+    .from('.s7 .lead',{y:20,opacity:0,duration:.7},37.5);
+  hideScene('.s7', 40.2, .55);
 
-  // Slash transition into CTA
-  tl.add(()=>gsap.set('.fx-slash',{visibility:'visible'}),29.6)
-    .fromTo('.fx-slash',{scaleX:0},{scaleX:1,duration:.3,ease:'power3.in'},29.6)
-    .to('.fx-slash',{scaleX:0,transformOrigin:'right center',duration:.3,ease:'power3.out'},29.9)
-    .add(()=>gsap.set('.fx-slash',{visibility:'hidden'}),30.2);
+  // ── Scene 8 (40.5 – 47s): CTA
+  showScene('.s8', 40.4, .6);
+  tl.from('.s8 .cta-stack img',{y:34,opacity:0,duration:.9,ease:'power4.out'},40.7)
+    .from('.s8 .cta-tag',{y:20,opacity:0,duration:.7},41.2)
+    .from('.s8 .cta-link',{y:24,opacity:0,scale:.92,duration:.7,ease:'back.out(1.6)'},41.6);
 
-  // ── Scene 10 (30–34s): CTA
-  tl.add(()=>show('.s10'),30)
-    .fromTo('.s10',{opacity:0},{opacity:1,duration:.45},30)
-    .from('.s10 .cta-mark',{y:30,opacity:0,duration:.6,ease:'power4.out'},30.15)
-    .from('.s10 .cta-mark span',{scale:0,opacity:0,duration:.45,ease:'back.out(2.2)'},30.55)
-    .from('.s10 .cta-tag',{y:18,opacity:0,duration:.45},30.75)
-    .from('.s10 .cta-link',{y:24,opacity:0,duration:.5,ease:'back.out(1.7)'},31.05)
-    // hold steady till end
-    .to('.s10',{opacity:1,duration:.1},33.9);
-
-  // Hide brand chrome on accent scene for cleaner look
-  tl.to('.brand, .meta',{opacity:0,duration:.3},16.4)
-    .to('.brand, .meta',{opacity:1,duration:.3},20);
-  tl.to('.brand, .meta',{opacity:0,duration:.3},29.7);
+  // Hide chrome on full-bleed scenes (5 accent, 7 split-photo)
+  tl.to('.brand, .meta',{opacity:0,duration:.3},25.4)
+    .to('.brand, .meta',{opacity:1,duration:.3},31.0)
+    .to('.brand, .meta',{opacity:0,duration:.3},36.0)
+    .to('.brand, .meta',{opacity:1,duration:.3},40.6);
 </script>
 </body>
 </html>
