@@ -30,7 +30,6 @@
   .brand{position:absolute;z-index:90;left:3.5%;top:4%;display:flex;align-items:center;gap:.65vw}
   .brand img{height:1.5vw;width:auto;display:block}
   .meta{position:absolute;z-index:90;right:3.5%;top:4.5%;font-weight:600;font-size:.6vw;letter-spacing:.26em;text-transform:uppercase;color:var(--dim)}
-  .scene.dark ~ .meta, .scene.dark ~ .brand img{filter:invert(1)}
 
   .progress{position:absolute;z-index:90;left:3.5%;right:3.5%;bottom:3.5%;height:2px;background:rgba(20,20,20,.12)}
   .progress i{display:block;width:100%;height:100%;background:var(--accent);transform:scaleX(0);transform-origin:left}
@@ -38,7 +37,6 @@
   /* Scene base */
   .scene{position:absolute;inset:0;visibility:hidden;display:grid;place-items:center;text-align:center;will-change:transform,opacity}
   .scene.dark{background:var(--black);color:var(--white)}
-  .scene.dark .dim{color:var(--dim-on-dark)}
   .scene.accent{background:var(--accent);color:var(--white)}
   .scene.paper{background:var(--paper);color:var(--ink)}
 
@@ -52,79 +50,72 @@
   h3{font-size:2.8vw;font-weight:600}
   .accent-word{color:var(--accent);font-weight:700;font-style:italic}
   .scene.accent .accent-word{color:#0A0A0A;font-weight:700;font-style:italic}
-  .scene.dark .accent-word{color:var(--accent)}
 
-  .support{max-width:50vw;font-weight:400;font-size:1.25vw;line-height:1.5;color:var(--dim);text-wrap:balance}
-  .scene.dark .support{color:var(--dim-on-dark)}
-  .scene.accent .support{color:rgba(255,255,255,.85)}
-
-  /* Word-by-word reveal helper */
+  /* Word/line reveal */
   .reveal{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.06em;line-height:1.05}
   .reveal > span{display:inline-block}
 
-  /* Scene 1 — brand intro */
+  /* ── Scene 1 — brand intro ── */
   .hero-mark{display:grid;justify-items:center;gap:2vw}
-  .hero-mark img{height:7.5vw;width:auto;display:block;filter:none}
+  .hero-mark img{height:7.5vw;width:auto;display:block}
   .hero-mark .tag{font-weight:500;font-size:1.85vw;letter-spacing:-.02em;color:var(--ink)}
 
-  /* Scene 2 — hook with hero illustration */
-  .hook-grid{display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:3vw;width:min(86vw,1450px);text-align:left}
-  .hook-grid .copy{display:grid;gap:1.2vw}
-  .hook-grid h2{font-size:4.6vw;line-height:1.02}
-  .hook-grid .illu{justify-self:end;width:34vw;max-width:540px;aspect-ratio:1/1;display:grid;place-items:center}
+  /* ── Scene 2 — hook w/ illustration ── */
+  .hook-grid{display:grid;grid-template-columns:1.05fr .85fr;align-items:center;gap:1.8vw;width:min(88vw,1480px);text-align:left}
+  .hook-grid .copy{display:grid;gap:1vw}
+  .hook-grid h2{font-size:4.6vw;line-height:1.05}
+  .hook-grid h2 .line{display:block}
+  .hook-grid .illu{justify-self:center;width:30vw;max-width:520px;aspect-ratio:1/1;display:grid;place-items:center}
   .hook-grid .illu img{width:100%;height:100%;object-fit:contain;display:block}
 
-  /* Scene 3 — chip cloud */
+  /* ── Scene 3 — chaos ── */
   .chaos{position:absolute;inset:0;pointer-events:none}
-  .chip{position:absolute;padding:.7vw 1.2vw;border:1px solid var(--rule);background:rgba(255,255,255,.85);backdrop-filter:blur(6px);font-weight:600;font-size:.85vw;letter-spacing:.02em;border-radius:999px;white-space:nowrap;color:var(--ink);box-shadow:0 4px 14px rgba(0,0,0,.06)}
+  .chip{position:absolute;padding:.7vw 1.2vw;border:1px solid var(--rule);background:rgba(255,255,255,.92);backdrop-filter:blur(6px);font-weight:600;font-size:.85vw;letter-spacing:.02em;border-radius:999px;white-space:nowrap;color:var(--ink);box-shadow:0 6px 18px rgba(0,0,0,.07);transform-origin:center}
   .chip.dot::before{content:"";display:inline-block;width:.42vw;height:.42vw;border-radius:50%;background:var(--accent);margin-right:.55vw;vertical-align:middle}
+  .s3 .center{position:relative;z-index:5}
+  .s3 h2{background:var(--paper);padding:1.6vw 2.4vw;border-radius:14px;box-shadow:0 14px 60px rgba(0,0,0,.07)}
 
-  /* Scene 4 — connection / pipe */
+  /* ── Scene 4 — connection ── */
   .pipe-stage{position:relative;width:min(80%,1240px);height:13vw;display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center;justify-items:center;margin-bottom:1vw}
-  .node{position:relative;z-index:2;padding:1.1vw 1.5vw;border:1px solid var(--rule);background:var(--white);font-weight:700;font-size:1.05vw;letter-spacing:-.01em;border-radius:14px;color:var(--ink);box-shadow:0 8px 22px rgba(0,0,0,.08);min-width:9vw;text-align:center}
+  .node{position:relative;z-index:3;padding:1.1vw 1.5vw;border:1px solid var(--rule);background:var(--white);font-weight:700;font-size:1.05vw;letter-spacing:-.01em;border-radius:14px;color:var(--ink);box-shadow:0 8px 22px rgba(0,0,0,.08);min-width:9vw;text-align:center;transition:box-shadow .25s ease,transform .25s ease}
   .node em{display:block;font-style:normal;font-weight:500;font-size:.62vw;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);margin-bottom:.5vw}
+  .node.glow{box-shadow:0 0 0 .25vw rgba(217,71,42,.18),0 14px 38px rgba(217,71,42,.35);transform:translateY(-.25vw)}
   .pipe{position:absolute;top:50%;height:2px;background:var(--accent);transform-origin:left;z-index:1}
   .pipe.a{left:17%;width:33%}
   .pipe.b{left:50%;width:33%}
-  .pulse{position:absolute;top:50%;width:.85vw;height:.85vw;margin-top:-.42vw;border-radius:50%;background:var(--accent);box-shadow:0 0 26px rgba(217,71,42,.95),0 0 0 .35vw rgba(217,71,42,.18);z-index:3;left:0}
+  .pulse{position:absolute;top:50%;width:.95vw;height:.95vw;margin-top:-.47vw;border-radius:50%;background:var(--accent);box-shadow:0 0 28px rgba(217,71,42,.95),0 0 0 .35vw rgba(217,71,42,.18);z-index:2;left:0}
 
-  /* Scene 5 — stat */
+  /* ── Scene 5 — stat ── */
   .stat-wrap{display:grid;justify-items:center;gap:1.2vw}
   .stat{font-weight:800;font-size:20vw;line-height:.82;letter-spacing:-.05em;font-variant-numeric:tabular-nums;display:flex;align-items:flex-start;gap:.3vw}
-  .stat sup{font-size:.45em;font-weight:700;line-height:1;margin-top:.5vw}
+  .stat sup{font-size:.45em;font-weight:700;line-height:1;margin-top:.5vw;opacity:0}
   .stat-label{font-weight:600;font-size:1.45vw;letter-spacing:-.01em}
   .stat-label em{font-style:italic;font-weight:500}
 
-  /* Scene 6 — logo grid */
+  /* ── Scene 6 — system grid ── */
   .systems-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:1vw;width:min(86vw,1450px)}
   .sys-card{aspect-ratio:1/1;border:1px solid var(--rule);display:grid;place-items:center;padding:1.4vw;border-radius:18px;background:var(--white);box-shadow:0 6px 18px rgba(0,0,0,.05);overflow:hidden}
   .sys-card img{width:100%;height:100%;object-fit:contain;display:block;mix-blend-mode:multiply}
 
-  /* Scene 7 — Why Kréatif (split, photo + copy) */
-  .why-grid{display:grid;grid-template-columns:1fr 1fr;align-items:stretch;gap:0;width:100%;height:100%}
-  .why-grid .photo{position:relative;overflow:hidden}
-  .why-grid .photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.08)}
-  .why-grid .photo::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,0) 60%,rgba(10,10,10,1) 100%)}
-  .why-grid .copy{background:var(--black);color:var(--white);display:grid;place-items:center;padding:5vw 5vw 5vw 3vw;text-align:left}
-  .why-grid .copy .stack{display:grid;gap:1.4vw;max-width:32vw}
-  .why-grid h2{font-size:3.8vw;line-height:1.02;color:var(--white)}
-  .why-grid .since{font-weight:600;font-size:1vw;letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
-  .why-grid .lead{font-weight:400;font-size:1.15vw;line-height:1.5;color:rgba(255,255,255,.72)}
+  /* ── Scene 7 — another illustration ── */
+  .hook-grid.reverse{grid-template-columns:.85fr 1.05fr}
+  .hook-grid.reverse .illu{order:-1}
 
-  /* Scene 8 — CTA */
-  .cta-stack{display:grid;justify-items:center;gap:1.6vw}
-  .cta-stack img{height:8vw;width:auto;display:block}
-  .cta-tag{font-weight:500;font-size:1.7vw;letter-spacing:-.02em;color:var(--ink)}
-  .cta-link{margin-top:1.3vw;display:inline-flex;align-items:center;gap:.8vw;padding:1.05vw 1.8vw;background:#0A0A0A;color:#fff;font-weight:600;font-size:1.1vw;letter-spacing:-.005em;text-decoration:none;border-radius:999px}
-  .cta-link::after{content:"→";display:inline-block;transition:transform .25s ease}
-  .cta-link:hover::after{transform:translateX(.3vw)}
+  /* ── Scene 8 — CTA with QR ── */
+  .cta-stack{display:grid;justify-items:center;gap:1.2vw;margin-top:-6vw}
+  .cta-stack > img.logo{height:7.5vw;width:auto;display:block}
+  .cta-tag{font-weight:500;font-size:1.55vw;letter-spacing:-.02em;color:var(--ink)}
+  .cta-row{display:flex;align-items:center;gap:2.2vw;margin-top:1.2vw}
+  .cta-link{display:inline-flex;align-items:center;gap:.8vw;padding:1.1vw 1.9vw;background:#0A0A0A;color:#fff;font-weight:600;font-size:1.15vw;letter-spacing:-.005em;text-decoration:none;border-radius:999px}
+  .cta-link::after{content:"→"}
+  .cta-qr{display:grid;justify-items:center;gap:.6vw}
+  .cta-qr img{width:8.5vw;height:8.5vw;display:block;border:1px solid var(--rule);border-radius:14px;background:var(--paper);padding:.4vw}
+  .cta-qr span{font-weight:600;font-size:.62vw;letter-spacing:.22em;text-transform:uppercase;color:var(--dim)}
 
   /* FX */
   .fx{position:absolute;z-index:70;visibility:hidden;pointer-events:none;will-change:transform,opacity}
   .fx-wipe{inset:0;background:var(--accent);transform-origin:left center;transform:scaleX(0)}
-  .fx-wipe.dark{background:var(--black)}
   .fx-wipe.paper{background:var(--paper)}
-  .fx-flash{inset:0;background:var(--white);opacity:0}
 
   @media(prefers-reduced-motion:reduce){.scene,.fx{will-change:auto}}
 </style>
@@ -136,7 +127,7 @@
   </div>
   <div class="meta">Integrasjoner siden 2012</div>
 
-  <!-- 1: Brand intro (paper) -->
+  <!-- 1: Brand intro -->
   <section class="scene paper s1">
     <div class="center">
       <div class="hero-mark">
@@ -146,15 +137,15 @@
     </div>
   </section>
 
-  <!-- 2: Hook with hero illustration -->
+  <!-- 2: Hook with hero illustration (sequential lines) -->
   <section class="scene paper s2">
     <div class="hook-grid">
       <div class="copy">
         <div class="eyebrow"><span>Hverdagen i en bedrift</span></div>
         <h2>
-          <span class="reveal"><span>Regnskap her.</span></span><br>
-          <span class="reveal"><span>Nettbutikk der.</span></span><br>
-          <span class="reveal"><span>Lager et tredje sted.</span></span>
+          <span class="line line-1"><span class="reveal"><span>Regnskap her.</span></span></span>
+          <span class="line line-2"><span class="reveal"><span>Nettbutikk der.</span></span></span>
+          <span class="line line-3"><span class="reveal"><span>Lager et tredje sted.</span></span></span>
         </h2>
       </div>
       <div class="illu">
@@ -163,19 +154,24 @@
     </div>
   </section>
 
-  <!-- 3: Chaos chips -->
+  <!-- 3: Chaos (more chips, dedicated text reveal) -->
   <section class="scene paper s3">
     <div class="chaos">
-      <div class="chip dot" style="left:10%;top:24%">Tripletex</div>
-      <div class="chip dot" style="right:12%;top:20%">Shopify</div>
-      <div class="chip dot" style="left:22%;top:62%">Visma</div>
-      <div class="chip dot" style="right:20%;top:64%">HubSpot</div>
-      <div class="chip dot" style="left:6%;top:44%">PostNord</div>
-      <div class="chip dot" style="right:7%;top:48%">Klarna</div>
-      <div class="chip dot" style="left:40%;top:16%">WooCommerce</div>
-      <div class="chip dot" style="right:38%;top:74%">SuperOffice</div>
-      <div class="chip dot" style="left:14%;top:78%">Rackbeat</div>
-      <div class="chip dot" style="right:14%;top:34%">Stripe</div>
+      <div class="chip dot" style="left:6%;top:14%">Tripletex</div>
+      <div class="chip dot" style="left:24%;top:8%">Shopify</div>
+      <div class="chip dot" style="left:44%;top:13%">WooCommerce</div>
+      <div class="chip dot" style="right:24%;top:7%">HubSpot</div>
+      <div class="chip dot" style="right:5%;top:14%">Klarna</div>
+      <div class="chip dot" style="left:4%;top:34%">PostNord</div>
+      <div class="chip dot" style="right:4%;top:34%">Stripe</div>
+      <div class="chip dot" style="left:3%;top:58%">Visma</div>
+      <div class="chip dot" style="right:3%;top:58%">SuperOffice</div>
+      <div class="chip dot" style="left:8%;top:82%">Rackbeat</div>
+      <div class="chip dot" style="left:30%;top:86%">Visma Net</div>
+      <div class="chip dot" style="left:54%;top:85%">Logistra</div>
+      <div class="chip dot" style="right:6%;top:82%">webCRM</div>
+      <div class="chip dot" style="left:14%;top:46%">Visma Business</div>
+      <div class="chip dot" style="right:14%;top:46%">Posten</div>
     </div>
     <div class="center">
       <h2>
@@ -185,7 +181,7 @@
     </div>
   </section>
 
-  <!-- 4: Connection (pipe) -->
+  <!-- 4: Connection (pulse glows nodes as it passes) -->
   <section class="scene paper s4">
     <div class="center">
       <div class="eyebrow"><span>Slik løser vi det</span></div>
@@ -193,9 +189,9 @@
         <div class="pipe a"></div>
         <div class="pipe b"></div>
         <div class="pulse"></div>
-        <div class="node"><em>Nettbutikk</em>Shopify</div>
-        <div class="node"><em>Regnskap</em>Tripletex</div>
-        <div class="node"><em>Frakt</em>PostNord</div>
+        <div class="node n1"><em>Nettbutikk</em>Shopify</div>
+        <div class="node n2"><em>Regnskap</em>Tripletex</div>
+        <div class="node n3"><em>Frakt</em>PostNord</div>
       </div>
       <h2>
         <span class="reveal"><span>Vi kobler dem</span></span><br>
@@ -204,16 +200,16 @@
     </div>
   </section>
 
-  <!-- 5: Stat 1000+ (accent bg) -->
+  <!-- 5: Stat 1000+ (counter 0 → 1000) -->
   <section class="scene accent s5">
     <div class="center stat-wrap">
       <div class="eyebrow" style="color:#0A0A0A"><span>Visste du at vi har</span></div>
-      <div class="stat"><span>1000</span><sup>+</sup></div>
+      <div class="stat"><span class="counter">0</span><sup>+</sup></div>
       <div class="stat-label">unike <em>kombinasjoner</em> av integrasjoner</div>
     </div>
   </section>
 
-  <!-- 6: Platform logo grid -->
+  <!-- 6: Platform logo grid (one by one, quick) -->
   <section class="scene paper s6">
     <div class="center">
       <div class="eyebrow"><span>Plattformer vi integrerer</span></div>
@@ -229,46 +225,50 @@
     </div>
   </section>
 
-  <!-- 7: Why Kréatif (split: photo + dark copy) -->
-  <section class="scene s7">
-    <div class="why-grid">
-      <div class="photo">
-        <img src="https://images.squarespace-cdn.com/content/v1/671a0fe53441e54993f8f547/0b7af282-0615-47d4-901b-b03f61efc3ec/getty-images-a5AforzBKwc-unsplash-min.jpg?format=1500w" alt="Kréatif-teamet">
+  <!-- 7: NEW — another illustration scene (gears/process) -->
+  <section class="scene paper s7">
+    <div class="hook-grid reverse">
+      <div class="illu">
+        <img src="https://images.squarespace-cdn.com/content/v1/671a0fe53441e54993f8f547/6a3a80b0-c3dc-4d8d-9bd0-98ceae128b0f/Kreatif+-+Integrasjoner+-+Illustrasjoner+2026+%284%29.png" alt="Prosess-illustrasjon">
       </div>
       <div class="copy">
-        <div class="stack">
-          <div class="since">Folk som bryr seg · Siden 2012</div>
-          <h2>Rådgivere som forstår både <span class="accent-word">teknologi</span> og <span class="accent-word">forretning.</span></h2>
-          <p class="lead">Norsk kompetanse, tett dialog og løsninger tilpasset det nordiske markedet.</p>
+        <div class="eyebrow"><span>Komplett plattform</span></div>
+        <h2>
+          <span class="line line-1"><span class="reveal"><span>Én sømløs</span></span></span>
+          <span class="line line-2"><span class="reveal"><span><span class="accent-word">løsning</span> som</span></span></span>
+          <span class="line line-3"><span class="reveal"><span>jobber for deg.</span></span></span>
+        </h2>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8: CTA with QR -->
+  <section class="scene paper s8">
+    <div class="center cta-stack">
+      <img class="logo" src="https://images.squarespace-cdn.com/content/v1/671a0fe53441e54993f8f547/da557e67-4fcc-46d9-a90e-68a469657b50/kreatif-logo-sort.png?format=1500w" alt="Kréatif">
+      <div class="cta-tag">Integrasjoner som jobber for deg.</div>
+      <div class="cta-row">
+        <a class="cta-link" href="https://www.kreatif.no">kreatif.no</a>
+        <div class="cta-qr">
+          <img src="data:image/png;base64,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" alt="QR til kreatif.no">
+          <span>Scan meg</span>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 8: CTA -->
-  <section class="scene paper s8">
-    <div class="center cta-stack">
-      <img src="https://images.squarespace-cdn.com/content/v1/671a0fe53441e54993f8f547/da557e67-4fcc-46d9-a90e-68a469657b50/kreatif-logo-sort.png?format=1500w" alt="Kréatif">
-      <div class="cta-tag">Integrasjoner som jobber for deg.</div>
-      <a class="cta-link" href="https://www.kreatif.no">kreatif.no</a>
-    </div>
-  </section>
-
-  <!-- FX layers -->
+  <!-- FX -->
   <div class="fx fx-wipe"></div>
-  <div class="fx fx-wipe dark"></div>
   <div class="fx fx-wipe paper"></div>
-  <div class="fx fx-flash"></div>
 
   <div class="progress"><i></i></div>
 </main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script>
-  const DURATION = 42;
+  const DURATION = 46;
   gsap.defaults({ease:'power3.out'});
 
-  // Smooth scene crossfade helper
   function showScene(sel, at, fadeIn=0.7){
     tl.set(sel,{visibility:'visible'},at)
       .fromTo(sel,{opacity:0},{opacity:1,duration:fadeIn,ease:'power2.out'},at);
@@ -281,88 +281,110 @@
   gsap.set('.scene',{opacity:0});
 
   const tl = gsap.timeline({defaults:{duration:.8}});
-
-  // Master progress
   tl.fromTo('.progress i',{scaleX:0},{scaleX:1,duration:DURATION,ease:'none'},0);
 
-  // ── Scene 1 (0 – 6s): Brand intro
+  // ── Scene 1 (0 – 6s)
   showScene('.s1', 0, .8);
   tl.from('.s1 .hero-mark img',{y:40,opacity:0,duration:1.2,ease:'power4.out'},0.3)
     .from('.s1 .hero-mark .tag',{y:24,opacity:0,duration:1,ease:'power3.out'},0.9);
   hideScene('.s1', 5.4, .6);
 
-  // ── Scene 2 (6 – 13s): Hook with illustration
+  // ── Scene 2 (6 – 14s): sequential lines, illustration fades in
   showScene('.s2', 5.8, .8);
-  tl.from('.s2 .eyebrow span',{y:'120%',duration:.8,ease:'power3.out'},6.2)
-    .from('.s2 .reveal > span',{y:'110%',duration:1.0,stagger:.55,ease:'power4.out'},6.5)
-    .from('.s2 .illu',{x:60,opacity:0,scale:.92,duration:1.4,ease:'power3.out'},6.4);
-  hideScene('.s2', 12.4, .6);
+  tl.from('.s2 .eyebrow span',{y:'120%',duration:.7,ease:'power3.out'},6.2)
+    .from('.s2 .illu',{x:60,opacity:0,scale:.92,duration:1.4,ease:'power3.out'},6.4)
+    // line 1
+    .from('.s2 .line-1 .reveal > span',{y:'110%',duration:.9,ease:'power4.out'},6.6)
+    // line 2 — appear after pause
+    .from('.s2 .line-2 .reveal > span',{y:'110%',duration:.9,ease:'power4.out'},8.0)
+    // line 3 — appear after pause
+    .from('.s2 .line-3 .reveal > span',{y:'110%',duration:.9,ease:'power4.out'},9.4);
+  hideScene('.s2', 13.4, .6);
 
-  // ── Scene 3 (13 – 19s): Chaos chips
-  showScene('.s3', 12.8, .7);
-  tl.from('.s3 .chip',{scale:.4,opacity:0,duration:.8,stagger:{each:.08,from:'random'},ease:'back.out(1.8)'},13.0)
-    .from('.s3 .reveal > span',{y:'110%',duration:.95,stagger:.55,ease:'power4.out'},13.7);
-  hideScene('.s3', 18.5, .6);
+  // ── Scene 3 (14 – 20s): chaos chips pop in with punch, then headline reveal
+  showScene('.s3', 13.8, .7);
+  tl.from('.s3 .chip', {
+      scale:.3, opacity:0, rotation:(i)=>(i%2?-12:12), y:(i)=>i%2?-20:20,
+      duration:.6, ease:'back.out(2.4)',
+      stagger:{ each:.07, from:'random' }
+    }, 14.0)
+    .from('.s3 .reveal > span',{y:'110%',duration:.95,stagger:.65,ease:'power4.out'},15.4);
+  hideScene('.s3', 19.4, .6);
 
-  // ── Scene 4 (19 – 25.5s): Pipe / connection
-  showScene('.s4', 18.9, .7);
-  tl.from('.s4 .eyebrow span',{y:'120%',duration:.7},19.2)
-    .from('.s4 .node',{y:30,opacity:0,duration:.7,stagger:.18,ease:'power3.out'},19.4)
-    .fromTo('.s4 .pipe.a',{scaleX:0},{scaleX:1,duration:.7,ease:'power2.inOut'},20.0)
-    .fromTo('.s4 .pipe.b',{scaleX:0},{scaleX:1,duration:.7,ease:'power2.inOut'},20.4)
-    .fromTo('.s4 .pulse',{left:'17%',opacity:0},{left:'83%',opacity:1,duration:1.7,ease:'sine.inOut'},20.7)
-    .to('.s4 .pulse',{opacity:0,duration:.3},22.4)
-    .from('.s4 .reveal > span',{y:'110%',duration:.95,stagger:.5,ease:'power4.out'},21.6);
-  hideScene('.s4', 25.0, .6);
+  // ── Scene 4 (20 – 27s): pipe behind nodes, glow on pulse pass
+  showScene('.s4', 19.8, .7);
+  tl.from('.s4 .eyebrow span',{y:'120%',duration:.7},20.1)
+    .from('.s4 .node',{y:30,opacity:0,duration:.7,stagger:.18,ease:'power3.out'},20.3)
+    .fromTo('.s4 .pipe.a',{scaleX:0},{scaleX:1,duration:.7,ease:'power2.inOut'},20.9)
+    .fromTo('.s4 .pipe.b',{scaleX:0},{scaleX:1,duration:.7,ease:'power2.inOut'},21.3)
+    // pulse traversal
+    .fromTo('.s4 .pulse',{left:'17%',opacity:0},{left:'83%',opacity:1,duration:2.2,ease:'sine.inOut'},21.6)
+    .to('.s4 .pulse',{opacity:0,duration:.3},23.8)
+    // node glows triggered as pulse passes — using class toggle
+    .add(()=>document.querySelector('.s4 .n1').classList.add('glow'),21.6)
+    .add(()=>document.querySelector('.s4 .n1').classList.remove('glow'),22.4)
+    .add(()=>document.querySelector('.s4 .n2').classList.add('glow'),22.5)
+    .add(()=>document.querySelector('.s4 .n2').classList.remove('glow'),23.2)
+    .add(()=>document.querySelector('.s4 .n3').classList.add('glow'),23.3)
+    .add(()=>document.querySelector('.s4 .n3').classList.remove('glow'),24.0)
+    .from('.s4 .reveal > span',{y:'110%',duration:.95,stagger:.5,ease:'power4.out'},23.0);
+  hideScene('.s4', 26.4, .6);
 
   // Wipe to accent
-  tl.set('.fx-wipe:not(.dark):not(.paper)',{visibility:'visible'},24.9)
-    .fromTo('.fx-wipe:not(.dark):not(.paper)',{scaleX:0},{scaleX:1,duration:.55,ease:'power3.inOut'},24.9)
-    .set('.fx-wipe:not(.dark):not(.paper)',{transformOrigin:'right center'},25.45)
-    .to('.fx-wipe:not(.dark):not(.paper)',{scaleX:0,duration:.5,ease:'power3.inOut'},25.45)
-    .set('.fx-wipe:not(.dark):not(.paper)',{visibility:'hidden',transformOrigin:'left center'},25.95);
+  tl.set('.fx-wipe:not(.paper)',{visibility:'visible'},26.3)
+    .fromTo('.fx-wipe:not(.paper)',{scaleX:0},{scaleX:1,duration:.55,ease:'power3.inOut'},26.3)
+    .set('.fx-wipe:not(.paper)',{transformOrigin:'right center'},26.85)
+    .to('.fx-wipe:not(.paper)',{scaleX:0,duration:.5,ease:'power3.inOut'},26.85)
+    .set('.fx-wipe:not(.paper)',{visibility:'hidden',transformOrigin:'left center'},27.35);
 
-  // ── Scene 5 (25.5 – 31s): Stat 1000+
-  showScene('.s5', 25.4, .5);
-  tl.from('.s5 .eyebrow span',{y:'120%',duration:.7},25.7)
-    .from('.s5 .stat span',{scale:.4,opacity:0,duration:1.0,ease:'back.out(1.6)'},25.95)
-    .from('.s5 .stat sup',{opacity:0,scale:.4,duration:.6,ease:'back.out(2)'},26.55)
-    .from('.s5 .stat-label',{y:24,opacity:0,duration:.7},26.6);
-  hideScene('.s5', 30.5, .55);
+  // ── Scene 5 (27 – 32s): counter 0 → 1000
+  showScene('.s5', 26.8, .5);
+  const counterObj = {v: 0};
+  tl.from('.s5 .eyebrow span',{y:'120%',duration:.7},27.1)
+    .to(counterObj, {
+      v: 1000, duration: 2.4, ease:'power3.out',
+      onUpdate: function(){
+        const el = document.querySelector('.s5 .counter');
+        if (el) el.textContent = Math.round(counterObj.v);
+      }
+    }, 27.35)
+    .to('.s5 .stat sup',{opacity:1,duration:.45,ease:'back.out(2)'},29.5)
+    .from('.s5 .stat-label',{y:24,opacity:0,duration:.7},29.7);
+  hideScene('.s5', 32.0, .55);
 
   // Wipe back to paper
-  tl.set('.fx-wipe.paper',{visibility:'visible'},30.45)
-    .fromTo('.fx-wipe.paper',{scaleX:0},{scaleX:1,duration:.5,ease:'power3.inOut'},30.45)
-    .set('.fx-wipe.paper',{transformOrigin:'right center'},30.95)
-    .to('.fx-wipe.paper',{scaleX:0,duration:.45,ease:'power3.inOut'},30.95)
-    .set('.fx-wipe.paper',{visibility:'hidden',transformOrigin:'left center'},31.4);
+  tl.set('.fx-wipe.paper',{visibility:'visible'},31.95)
+    .fromTo('.fx-wipe.paper',{scaleX:0},{scaleX:1,duration:.5,ease:'power3.inOut'},31.95)
+    .set('.fx-wipe.paper',{transformOrigin:'right center'},32.45)
+    .to('.fx-wipe.paper',{scaleX:0,duration:.45,ease:'power3.inOut'},32.45)
+    .set('.fx-wipe.paper',{visibility:'hidden',transformOrigin:'left center'},32.9);
 
-  // ── Scene 6 (31 – 36.5s): Systems grid with logos
-  showScene('.s6', 31.0, .55);
-  tl.from('.s6 .eyebrow span',{y:'120%',duration:.7},31.2)
-    .from('.s6 h3',{y:24,opacity:0,duration:.7},31.4)
-    .from('.s6 .sys-card',{y:36,opacity:0,scale:.92,duration:.7,stagger:.09,ease:'back.out(1.5)'},31.7);
-  hideScene('.s6', 36.0, .55);
+  // ── Scene 6 (32.5 – 38s): system grid, cards one-by-one fast
+  showScene('.s6', 32.5, .55);
+  tl.from('.s6 .eyebrow span',{y:'120%',duration:.7},32.7)
+    .from('.s6 h3',{y:24,opacity:0,duration:.7},32.9)
+    .from('.s6 .sys-card',{y:30,opacity:0,scale:.85,duration:.45,stagger:.13,ease:'back.out(1.7)'},33.2);
+  hideScene('.s6', 37.5, .55);
 
-  // ── Scene 7 (36.5 – 40.5s): Why Kréatif
-  showScene('.s7', 36.0, .6);
-  tl.from('.s7 .photo img',{scale:1.18,duration:5,ease:'power1.out'},36.0)
-    .from('.s7 .since',{y:18,opacity:0,duration:.6},36.5)
-    .from('.s7 h2',{y:28,opacity:0,duration:.8,ease:'power3.out'},36.8)
-    .from('.s7 .lead',{y:20,opacity:0,duration:.7},37.5);
-  hideScene('.s7', 40.2, .55);
+  // ── Scene 7 (38 – 43s): another illustration + sequential headline
+  showScene('.s7', 37.9, .7);
+  tl.from('.s7 .eyebrow span',{y:'120%',duration:.7},38.2)
+    .from('.s7 .illu',{x:-60,opacity:0,scale:.92,duration:1.3,ease:'power3.out'},38.3)
+    .from('.s7 .line-1 .reveal > span',{y:'110%',duration:.85,ease:'power4.out'},38.6)
+    .from('.s7 .line-2 .reveal > span',{y:'110%',duration:.85,ease:'power4.out'},39.6)
+    .from('.s7 .line-3 .reveal > span',{y:'110%',duration:.85,ease:'power4.out'},40.6);
+  hideScene('.s7', 43.0, .55);
 
-  // ── Scene 8 (40.5 – 47s): CTA
-  showScene('.s8', 40.4, .6);
-  tl.from('.s8 .cta-stack img',{y:34,opacity:0,duration:.9,ease:'power4.out'},40.7)
-    .from('.s8 .cta-tag',{y:20,opacity:0,duration:.7},41.2)
-    .from('.s8 .cta-link',{y:24,opacity:0,scale:.92,duration:.7,ease:'back.out(1.6)'},41.6);
+  // ── Scene 8 (43 – 47.5s): CTA with QR, content pushed up
+  showScene('.s8', 42.9, .6);
+  tl.from('.s8 .cta-stack > img.logo',{y:34,opacity:0,duration:.8,ease:'power4.out'},43.2)
+    .from('.s8 .cta-tag',{y:20,opacity:0,duration:.6},43.6)
+    .from('.s8 .cta-link',{y:24,opacity:0,scale:.92,duration:.55,ease:'back.out(1.7)'},44.0)
+    .from('.s8 .cta-qr',{y:24,opacity:0,scale:.92,duration:.55,ease:'back.out(1.7)'},44.15);
 
-  // Hide chrome on full-bleed scenes (5 accent, 7 split-photo)
-  tl.to('.brand, .meta',{opacity:0,duration:.3},25.4)
-    .to('.brand, .meta',{opacity:1,duration:.3},31.0)
-    .to('.brand, .meta',{opacity:0,duration:.3},36.0)
-    .to('.brand, .meta',{opacity:1,duration:.3},40.6);
+  // Chrome (brand+meta) hide on full-bleed/accent scenes
+  tl.to('.brand, .meta',{opacity:0,duration:.3},26.8)
+    .to('.brand, .meta',{opacity:1,duration:.3},32.5);
 </script>
 </body>
 </html>
