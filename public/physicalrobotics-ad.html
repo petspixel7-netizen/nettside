@@ -85,8 +85,8 @@
   #s1 .line{display:block;overflow:hidden;padding:.05em 0}
   #s1 .line span{display:inline-block;transform:translateY(110%)}
 
-  /* ---------- S2: robot1 hero ---------- */
-  #s2{opacity:0}
+  /* ---------- S2-S4: hero photo scenes ---------- */
+  #s2,#s3,#s4{opacity:0}
   .photo{
     position:absolute;inset:0;background-size:cover;background-position:center;
     transform:scale(1.1);
@@ -300,7 +300,7 @@
 </div>
 
 <script>
-window.addEventListener('load', () => {
+document.addEventListener('DOMContentLoaded', () => {
 
   // particles
   const pBox = document.getElementById('particles');
