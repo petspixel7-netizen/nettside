@@ -98,33 +98,7 @@
   #s3 .serial{color:var(--ink)}
   #s3 .footer-mark{color:var(--ink-soft)}
   #s3 .footer-right{color:var(--green-deep)}
-  #s3 .dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--green);margin-right:14px;vertical-align:middle;box-shadow:0 0 14px rgba(149,193,31,.7)}
-
-  /* ===================== SLIDE 4 — Editorial map of Moss ===================== */
-  #s4{
-    background:var(--paper);
-    color:var(--ink);
-    display:flex;align-items:center;justify-content:center
-  }
-  #s4 .map-wrap{position:relative;width:880px;height:880px;display:flex;flex-direction:column;align-items:center;justify-content:center}
-  #s4 svg.map{width:660px;height:560px;display:block}
-  #s4 .caption{
-    margin-top:32px;font-family:'Fraunces',serif;font-weight:300;font-size:68px;letter-spacing:-.02em;text-align:center;line-height:1.02
-  }
-  #s4 .caption em{font-style:italic;color:var(--green-deep);font-weight:500}
-  #s4 .sub{
-    margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.5em;text-transform:uppercase;color:var(--ink-soft)
-  }
-  #s4 .compass{
-    position:absolute;top:10px;right:10px;width:70px;height:70px;display:grid;place-items:center;
-    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-soft);letter-spacing:.3em
-  }
-  #s4 .compass svg{position:absolute;inset:0;width:100%;height:100%}
-  #s4 .serial{color:var(--ink-soft)}
-  #s4 .footer-mark{color:var(--ink-soft)}
-  #s4 .footer-right{color:var(--green-deep)}
-
-  /* ===================== SLIDE 5 — Lars & Ida (coat of arms feel) ===================== */
+  #s3 .dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--green);margin-right:14px;vertical-align:middle;box-shadow:0 0 14px rgba(149,193,31,.7)}/* ===================== SLIDE 5 — Lars & Ida (coat of arms feel) ===================== */
   #s5{
     background:radial-gradient(140% 100% at 50% 40%, #38491C 0%, #1F2A0A 100%);
     color:var(--cream);
@@ -227,7 +201,7 @@
      SLIDE 1 — Dark editorial: the question
      ============================================================ -->
 <div class="slide" id="s1">
-  <div class="serial num-mark">01 / 07</div>
+  <div class="serial num-mark">01 / 06</div>
   <div class="footer-mark">GUTTULSRØD · EIENDOMSMEGLING</div>
   <div class="footer-right">MOSS · NORGE</div>
   <div>
@@ -240,7 +214,7 @@
      SLIDE 2 — Cream typographic echoes
      ============================================================ -->
 <div class="slide" id="s2">
-  <div class="serial">02 / 07</div>
+  <div class="serial">02 / 06</div>
   <div class="footer-mark">CAPTION · A POEM</div>
   <div class="footer-right">guttulsrod.no</div>
   <div class="accent-line"></div>
@@ -256,75 +230,18 @@
      ============================================================ -->
 <div class="slide" id="s3">
   <div class="top-tag"><span class="dot"></span>EST. MOSS</div>
-  <div class="serial">03 / 07</div>
+  <div class="serial">03 / 06</div>
   <div class="footer-mark">GUTTULSRØD · EIENDOMSMEGLING</div>
   <div class="footer-right">35 ÅR I MOSS</div>
   <div class="yr">19<span class="it">91</span></div>
   <div class="since">— siden den gang.</div>
 </div>
 
-<!-- ============================================================
-     SLIDE 4 — Editorial map of Moss
-     ============================================================ -->
-<div class="slide" id="s4">
-  <div class="serial">04 / 07</div>
-  <div class="footer-mark">CHART · MOSS &amp; OMEGN</div>
-  <div class="footer-right">59°26'N · 10°39'E</div>
-  <div class="map-wrap">
-    <div class="compass">
-      <svg viewBox="0 0 100 100">
-        <circle cx="50" cy="50" r="48" fill="none" stroke="#5A4B3D" stroke-width=".5" opacity=".4"/>
-        <circle cx="50" cy="50" r="40" fill="none" stroke="#5A4B3D" stroke-width=".5" opacity=".25"/>
-        <path d="M50,8 L54,50 L50,46 L46,50 Z" fill="#1A1410"/>
-        <path d="M50,92 L54,50 L50,54 L46,50 Z" fill="#5A4B3D" opacity=".5"/>
-        <text x="50" y="6" text-anchor="middle" fill="#1A1410" font-family="JetBrains Mono" font-size="8" letter-spacing="2">N</text>
-      </svg>
-    </div>
-    <svg class="map" viewBox="0 0 660 560" xmlns="http://www.w3.org/2000/svg">
-      <!-- inner border -->
-      <rect x="2" y="2" width="656" height="556" fill="none" stroke="#1A1410" stroke-width=".8" opacity=".25"/>
-      <!-- water fjord -->
-      <path d="M0,330 Q90,300 200,318 T420,310 L540,318 L660,308 L660,560 L0,560 Z" fill="#D6E5C0" opacity=".45"/>
-      <path d="M0,400 Q140,372 280,398 T560,408 L660,402 L660,560 L0,560 Z" fill="#B3CE85" opacity=".4"/>
-      <!-- island -->
-      <ellipse cx="430" cy="430" rx="80" ry="22" fill="#1A1410" opacity=".06"/>
-      <text x="430" y="434" text-anchor="middle" fill="#5A4B3D" font-family="Fraunces" font-style="italic" font-size="14">Jeløya</text>
-      <!-- roads / streets -->
-      <g stroke="#1A1410" stroke-width=".8" fill="none" opacity=".22">
-        <path d="M60,90 L580,140"/>
-        <path d="M40,200 L600,220"/>
-        <path d="M330,40 L340,330"/>
-        <path d="M170,50 L210,320"/>
-        <path d="M460,50 L420,330"/>
-        <path d="M80,300 L600,310"/>
-      </g>
-      <!-- grid -->
-      <g stroke="#1A1410" stroke-width=".4" opacity=".06">
-        <path d="M0,70 L660,70"/><path d="M0,140 L660,140"/><path d="M0,210 L660,210"/><path d="M0,280 L660,280"/>
-        <path d="M80,0 L80,560"/><path d="M250,0 L250,560"/><path d="M420,0 L420,560"/><path d="M580,0 L580,560"/>
-      </g>
-      <!-- label MOSS -->
-      <text x="120" y="160" fill="#1A1410" font-family="Fraunces" font-size="36" font-weight="500" letter-spacing="-1">Moss</text>
-      <text x="120" y="180" fill="#5A4B3D" font-family="JetBrains Mono" font-size="9" letter-spacing="3">SENTRUM</text>
-      <!-- pin -->
-      <g transform="translate(330,220)">
-        <circle cx="0" cy="0" r="28" fill="none" stroke="#95C11F" stroke-width="1.5" opacity=".5"/>
-        <circle cx="0" cy="0" r="44" fill="none" stroke="#95C11F" stroke-width="1" opacity=".3"/>
-        <path d="M0,-28 C-10,-28 -18,-20 -18,-10 C-18,5 0,22 0,22 C0,22 18,5 18,-10 C18,-20 10,-28 0,-28 Z" fill="#95C11F" stroke="#5E7A14" stroke-width="1.5"/>
-        <circle cx="0" cy="-10" r="6" fill="#fff"/>
-      </g>
-      <text x="380" y="240" fill="#1A1410" font-family="Fraunces" font-size="20" font-style="italic">Dronningens gt. 30</text>
-    </svg>
-    <div class="caption">Vi <em>kjenner</em> Moss.</div>
-    <div class="sub">DRONNINGENS GATE 30 · 1530 MOSS</div>
-  </div>
-</div>
-
-<!-- ============================================================
+<!-- =====
      SLIDE 5 — Lars & Ida (coat of arms)
      ============================================================ -->
 <div class="slide" id="s5">
-  <div class="serial">05 / 07</div>
+  <div class="serial">04 / 06</div>
   <div class="footer-mark">FAMILIEDREVET · MOSS</div>
   <div class="footer-right">guttulsrod.no</div>
   <div class="crest">
@@ -344,7 +261,7 @@
      SLIDE 6 — Magazine pricing
      ============================================================ -->
 <div class="slide" id="s6">
-  <div class="serial">06 / 07</div>
+  <div class="serial">05 / 06</div>
   <div class="footer-mark">FAST PRIS · ALT INKLUDERT</div>
   <div class="footer-right">guttulsrod.no</div>
   <div class="price-spread">
@@ -366,7 +283,7 @@
      SLIDE 7 — Bold green CTA poster
      ============================================================ -->
 <div class="slide" id="s7">
-  <div class="serial">07 / 07</div>
+  <div class="serial">06 / 06</div>
   <div class="footer-mark">LEVERT AV NORLEADS</div>
   <div class="footer-right">— SLUTT —</div>
   <div class="cta-poster">

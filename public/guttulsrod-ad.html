@@ -1,176 +1,312 @@
 <!doctype html>
 <html lang="no"><head>
 <meta charset="utf-8" />
-<title>Guttulsrød — Et hjem er mer.</title>
+<title>Guttulsrød — Vi vet hva ditt hjem er verdt.</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300;9..144,400;9..144,500;9..144,600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,ital,wght,SOFT@9..144,0,300;9..144,0,400;9..144,0,500;9..144,0,600;9..144,0,700;9..144,1,300;9..144,1,400;9..144,1,500&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root{
     --paper:#F4ECDC;
-    --paper-2:#EDE2CC;
-    --ink:#1A1410;
+    --paper-2:#E8D5A8;
+    --ink:#15100C;
     --ink-soft:#5A4B3D;
-    --green:#7B9F1A;
-    --green-deep:#4D6810;
+    --cream:#F4ECDC;
+    --green:#95C11F;
+    --green-bright:#A3D124;
+    --green-deep:#5E7A14;
+    --green-dark:#1F2A0A;
+    --green-mid:#2F4012;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
-  html,body{background:#0a0805;font-family:'Fraunces',serif;color:var(--ink)}
+  html,body{background:#000;font-family:'Fraunces',serif;color:var(--ink)}
   body{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
 
   #stage{
     position:relative;width:1080px;height:1080px;overflow:hidden;
-    background:
-      radial-gradient(140% 110% at 50% 35%, var(--paper) 0%, var(--paper-2) 100%);
-    box-shadow:0 30px 90px rgba(0,0,0,.55);
+    background:var(--ink);
+    box-shadow:0 30px 90px rgba(0,0,0,.6);
     isolation:isolate;
   }
-  /* paper grain — extremely subtle, like Apple keynote */
-  #stage::after{
-    content:"";position:absolute;inset:0;pointer-events:none;z-index:90;opacity:.06;mix-blend-mode:multiply;
-    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='280' height='280'><filter id='n'><feTurbulence baseFrequency='0.78' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+
+  /* film grain — applied per scene via inheritance */
+  .grain{
+    position:absolute;inset:0;pointer-events:none;z-index:90;opacity:.06;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='280' height='280'><filter id='n'><feTurbulence baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
   }
-  /* soft vignette */
-  #stage::before{
-    content:"";position:absolute;inset:0;pointer-events:none;z-index:80;
-    background:radial-gradient(110% 110% at 50% 50%, transparent 55%, rgba(26,20,16,.10) 100%);
+  .vignette{
+    position:absolute;inset:0;pointer-events:none;z-index:85;
+    background:radial-gradient(120% 120% at 50% 50%, transparent 55%, rgba(0,0,0,.22) 100%);
   }
 
-  /* every act is centered, alone on stage */
-  .act{
-    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;
-    text-align:center;padding:0 140px;z-index:10;
+  /* scene base */
+  .scene{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:10;opacity:0}
+  .scene .inner{width:100%;text-align:center;padding:0 120px;position:relative}
+
+  /* chrome (very minimal — top tiny serial only) */
+  .serial{
+    position:absolute;top:54px;right:60px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.45em;text-transform:uppercase;z-index:60;
+    display:inline-flex;gap:12px;align-items:center
+  }
+  .serial .dot{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.8}
+  .footer-mark{
+    position:absolute;bottom:54px;left:60px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.45em;text-transform:uppercase;z-index:60;
+    display:inline-flex;gap:8px
+  }
+  .footer-right{
+    position:absolute;bottom:54px;right:60px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.45em;text-transform:uppercase;z-index:60
+  }
+  /* per-scene chrome color */
+  #scene1 .serial,#scene1 .footer-mark,#scene1 .footer-right{color:rgba(244,236,220,.5)}
+  #scene2 .serial,#scene2 .footer-mark,#scene2 .footer-right{color:var(--ink-soft)}
+  #scene3 .serial,#scene3 .footer-mark,#scene3 .footer-right{color:rgba(21,16,12,.55)}
+  #scene4 .serial,#scene4 .footer-mark,#scene4 .footer-right{color:rgba(244,236,220,.55)}
+  #scene5 .serial,#scene5 .footer-mark,#scene5 .footer-right{color:rgba(21,16,12,.7)}
+
+  /* shared masked-text utility */
+  .mline{display:block;overflow:hidden;line-height:1.04;padding:.04em 0}
+  .mline > span{display:inline-block;transform:translateY(110%);will-change:transform}
+
+  /* per-character spans (built via JS for masking-by-letter) */
+  .char{display:inline-block;opacity:0;transform:translateY(40px) scale(.96);will-change:transform,opacity}
+
+  /* ======================================
+     SCENE 1 — DARK · the question
+     ====================================== */
+  #scene1{
+    background:radial-gradient(140% 100% at 50% 35%, #2A201A 0%, #15100C 60%, #0A0805 100%);
+    color:var(--cream)
+  }
+  #scene1 .pre{
+    font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.55em;text-transform:uppercase;color:rgba(244,236,220,.55);
+    margin-bottom:54px;display:inline-flex;align-items:center;gap:14px
+  }
+  #scene1 .pre .glow{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 14px var(--green)}
+  #scene1 .q{
+    font-family:'Fraunces',serif;font-weight:300;font-size:144px;letter-spacing:-.035em;line-height:1.0;color:var(--cream)
+  }
+  #scene1 .q em{font-style:italic;font-weight:400;color:var(--green)}
+  #scene1 .sub{
+    margin-top:48px;font-family:'Fraunces',serif;font-style:italic;font-weight:300;font-size:30px;color:rgba(244,236,220,.7);letter-spacing:-.01em;opacity:0
+  }
+  /* small underline accent that wipes in under the question */
+  #scene1 .underline{
+    margin:32px auto 0;height:1px;width:0;background:var(--green);box-shadow:0 0 12px rgba(149,193,31,.55)
   }
 
-  /* shared mask-line reveal */
-  .mask{display:block;overflow:hidden;line-height:1.05;padding:.05em 0}
-  .mask > span{display:inline-block;transform:translateY(110%);will-change:transform}
-
-  /* ---- A1: emotional setup ---- */
-  .a1 .line{
-    font-family:'Fraunces',serif;font-weight:300;font-size:96px;letter-spacing:-.025em;color:var(--ink);
+  /* ======================================
+     SCENE 2 — CREAM · the poem
+     ====================================== */
+  #scene2{
+    background:radial-gradient(120% 100% at 50% 40%, var(--paper) 0%, #ECDFC4 100%);
+    color:var(--ink)
   }
-  .a1 .line em{font-style:italic;font-weight:400}
-
-  /* ---- A2: three echoes (smaller lines that come/go) ---- */
-  .a2 .echo{
-    font-family:'Fraunces',serif;font-weight:300;font-style:italic;font-size:72px;letter-spacing:-.02em;color:var(--ink);opacity:0
+  #scene2 .lead{
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.55em;text-transform:uppercase;color:var(--ink-soft);
+    margin-bottom:48px;opacity:0;display:inline-flex;align-items:center;gap:14px
   }
-
-  /* ---- A3: the pivot ---- */
-  .a3 .pivot{
-    font-family:'Fraunces',serif;font-weight:300;font-size:84px;letter-spacing:-.02em;color:var(--ink-soft);
-    font-style:italic
+  #scene2 .lead .glow{width:5px;height:5px;border-radius:50%;background:var(--green-deep)}
+  #scene2 .echo{
+    font-family:'Fraunces',serif;font-weight:300;font-size:78px;letter-spacing:-.025em;line-height:1.08;color:var(--ink);
+    text-align:left;display:block
   }
-  .a3 .pivot em{color:var(--ink);font-weight:500;font-style:normal;
-    background:linear-gradient(180deg, transparent 65%, rgba(123,159,26,.32) 65%, rgba(123,159,26,.32) 92%, transparent 92%);
-    padding:0 .12em
-  }
-
-  /* ---- A4: the question (the heart of the ad) ---- */
-  .a4 .q{
-    font-family:'Fraunces',serif;font-weight:300;font-size:140px;letter-spacing:-.035em;line-height:.98;color:var(--ink)
-  }
-  .a4 .q em{font-style:italic;font-weight:400}
-  /* small subscript answer */
-  .a4 .ans{
-    margin-top:48px;font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:.5em;text-transform:uppercase;color:var(--green-deep);opacity:0
-  }
-  .a4 .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:14px;vertical-align:middle;box-shadow:0 0 12px rgba(123,159,26,.5)}
-
-  /* ---- A5: the brand moment ---- */
-  .a5 .brand-wrap{display:flex;flex-direction:column;align-items:center;gap:36px}
-  .a5 .name{
-    font-family:'Fraunces',serif;font-weight:300;font-size:152px;letter-spacing:-.045em;color:var(--ink);line-height:1
-  }
-  .a5 .name .it{font-style:italic;font-weight:400}
-  .a5 .ampersand{font-family:'Fraunces',serif;font-style:italic;font-weight:300;color:var(--green-deep);opacity:0}
-  .a5 .seal{
-    width:auto;height:38px;opacity:0
-  }
-  .a5 .rule{height:1px;width:0;background:var(--ink-soft);opacity:.4}
-  .a5 .meta{
-    font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.55em;text-transform:uppercase;color:var(--ink-soft);
-    display:flex;gap:22px;align-items:center;opacity:0
-  }
-  .a5 .meta span{position:relative}
-  .a5 .meta span:not(:last-child)::after{
-    content:"";position:absolute;right:-13px;top:50%;width:3px;height:3px;border-radius:50%;background:var(--ink-soft);transform:translateY(-50%)
+  #scene2 .echo .it{font-style:italic;font-weight:400}
+  #scene2 .echo:nth-of-type(2){padding-left:90px}
+  #scene2 .echo:nth-of-type(3){padding-left:180px;color:var(--green-deep);font-style:italic}
+  #scene2 .echo .word{display:inline-block;opacity:0;transform:translateY(40px)}
+  #scene2 .stripe{
+    position:absolute;right:60px;top:50%;height:0;width:1.5px;background:var(--green);transform:translateY(-50%);
   }
 
-  /* ---- A6: CTA — quiet confidence ---- */
-  .a6 .cta-head{
-    font-family:'Fraunces',serif;font-weight:300;font-size:96px;letter-spacing:-.025em;color:var(--ink);line-height:1.04
+  /* ======================================
+     SCENE 3 — BEIGE · the year
+     ====================================== */
+  #scene3{
+    background:linear-gradient(155deg, #E8D5A8 0%, #D4B987 60%, #B89A65 100%);
+    color:var(--ink)
   }
-  .a6 .cta-head em{font-style:italic;font-weight:500;color:var(--green-deep)}
-  .a6 .cta-url{
-    margin-top:40px;font-family:'Fraunces',serif;font-style:italic;font-weight:400;font-size:42px;color:var(--ink);letter-spacing:-.01em;
-    border-bottom:1.5px solid var(--green);padding-bottom:6px;opacity:0
+  #scene3 .est{
+    font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.55em;text-transform:uppercase;color:var(--ink);
+    margin-bottom:8px;opacity:0;display:inline-flex;gap:12px;align-items:center
+  }
+  #scene3 .est .glow{width:6px;height:6px;border-radius:50%;background:var(--green-deep)}
+  #scene3 .year{
+    font-family:'Fraunces',serif;font-weight:300;font-size:480px;letter-spacing:-.06em;line-height:.85;color:var(--ink);
+    display:flex;justify-content:center;align-items:baseline
+  }
+  #scene3 .year .digit{display:inline-block;opacity:0;transform:translateY(60px)}
+  #scene3 .year .digit.italic{font-style:italic;font-weight:400;color:var(--green-deep)}
+  #scene3 .since{
+    margin-top:18px;font-family:'Fraunces',serif;font-weight:300;font-style:italic;font-size:48px;color:var(--ink-soft);letter-spacing:-.01em;opacity:0
+  }
+  /* horizontal stat ticker */
+  #scene3 .ticker{
+    margin-top:28px;display:flex;justify-content:center;gap:38px;
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.45em;text-transform:uppercase;color:var(--ink);opacity:0
+  }
+  #scene3 .ticker span{position:relative}
+  #scene3 .ticker span:not(:last-child)::after{content:"";position:absolute;right:-20px;top:50%;width:4px;height:4px;border-radius:50%;background:var(--ink-soft);transform:translateY(-50%)}
+
+  /* ======================================
+     SCENE 4 — DARK GREEN · the promise
+     ====================================== */
+  #scene4{
+    background:radial-gradient(140% 100% at 50% 40%, #38491C 0%, #1F2A0A 60%, #0F1604 100%);
+    color:var(--cream)
+  }
+  #scene4 .badge{
+    font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.55em;text-transform:uppercase;color:rgba(244,236,220,.65);
+    margin-bottom:46px;opacity:0;display:inline-flex;align-items:center;gap:14px;
+    padding:8px 18px;border:1px solid rgba(244,236,220,.18);border-radius:999px
+  }
+  #scene4 .badge .glow{width:5px;height:5px;border-radius:50%;background:var(--green-bright);box-shadow:0 0 12px var(--green-bright)}
+  #scene4 .promise{
+    font-family:'Fraunces',serif;font-weight:300;font-size:112px;letter-spacing:-.03em;line-height:1.02;color:var(--cream)
+  }
+  #scene4 .promise em{font-style:italic;font-weight:400;color:var(--green-bright);
+    background:linear-gradient(180deg, transparent 65%, rgba(163,209,36,.18) 65%, rgba(163,209,36,.18) 92%, transparent 92%);
+    padding:0 .08em}
+  #scene4 .sub{
+    margin-top:38px;font-family:'Fraunces',serif;font-weight:300;font-style:italic;font-size:34px;color:rgba(244,236,220,.7);letter-spacing:-.01em
+  }
+  #scene4 .sub .ch{display:inline-block;opacity:0}
+  /* glow line under promise */
+  #scene4 .glow-line{
+    margin:24px auto 0;height:1px;width:0;background:linear-gradient(90deg,transparent,var(--green-bright),transparent);
+    box-shadow:0 0 16px rgba(163,209,36,.45)
   }
 
-  /* signature bottom — appears only at very end */
+  /* ======================================
+     SCENE 5 — BRIGHT GREEN · the CTA
+     ====================================== */
+  #scene5{
+    background:radial-gradient(140% 110% at 50% 35%, #A3D124 0%, #7AA117 65%, #5E7A14 100%);
+    color:var(--ink)
+  }
+  #scene5 .step{
+    font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.6em;text-transform:uppercase;color:rgba(21,16,12,.7);
+    margin-bottom:36px;opacity:0
+  }
+  #scene5 .cta{
+    font-family:'Fraunces',serif;font-weight:300;font-size:112px;letter-spacing:-.03em;line-height:1.02;color:var(--ink)
+  }
+  #scene5 .cta em{font-style:italic;font-weight:500}
+  #scene5 .urlbar{
+    margin-top:52px;display:inline-flex;align-items:center;gap:18px;padding:22px 44px;background:var(--ink);color:var(--green-bright);
+    border-radius:999px;font-family:'Inter Tight',sans-serif;font-weight:600;font-size:30px;letter-spacing:-.01em;
+    box-shadow:0 18px 44px rgba(31,40,8,.4);opacity:0;transform:translateY(20px)
+  }
+  #scene5 .urlbar .arrow{width:34px;height:34px;background:var(--green-bright);border-radius:50%;display:grid;place-items:center}
+  #scene5 .urlbar .arrow svg{width:16px;height:16px;stroke:var(--ink);stroke-width:2.5;fill:none}
+  #scene5 .meta{
+    margin-top:32px;display:flex;justify-content:center;gap:32px;font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.5em;text-transform:uppercase;color:rgba(21,16,12,.7);opacity:0
+  }
+  #scene5 .meta span{position:relative}
+  #scene5 .meta span:not(:last-child)::after{content:"";position:absolute;right:-18px;top:50%;width:4px;height:4px;border-radius:50%;background:rgba(21,16,12,.5);transform:translateY(-50%)}
+
+  /* signature top-right Norleads — only at end */
   .sig{
-    position:absolute;bottom:54px;left:0;right:0;display:flex;justify-content:center;align-items:center;gap:14px;z-index:50;opacity:0;
-    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--ink-soft)
+    position:absolute;top:54px;left:60px;display:flex;align-items:center;gap:10px;z-index:55;opacity:0;
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:rgba(21,16,12,.6)
   }
-  .sig .nl{display:inline-flex;align-items:center;gap:8px}
   .sig .nl-badge{width:22px;height:22px;background:var(--ink);border-radius:5px;display:grid;place-items:center}
   .sig .nl-badge img{height:14px;width:auto;filter:brightness(0) invert(1);opacity:.95}
 
-  /* hidden by default */
-  .act{opacity:0}
-  #a1{opacity:1}  /* first act visible from start; its CONTENTS are masked */
+  /* scanline accent for premium feel */
+  .scan{
+    position:absolute;left:0;right:0;height:1.5px;background:linear-gradient(90deg,transparent,var(--green-bright),transparent);
+    opacity:0;z-index:65;top:0;pointer-events:none;mix-blend-mode:screen
+  }
 </style></head>
 <body>
 
 <div id="stage">
 
-  <!-- ==================== ACT 1: hook (0 — 4s) ==================== -->
-  <div class="act a1" id="a1">
-    <div class="line mask"><span>Et hjem er <em>mer</em></span></div>
-    <div class="line mask"><span>enn et hus.</span></div>
-  </div>
+  <div class="grain"></div>
+  <div class="vignette"></div>
+  <div class="scan" id="scan"></div>
 
-  <!-- ==================== ACT 2: echoes (4 — 11s) ==================== -->
-  <div class="act a2" id="a2">
-    <div class="echo" id="e1">Det er stemmer i trappen.</div>
-    <div class="echo" id="e2" style="position:absolute">Det er kvelder du husker.</div>
-    <div class="echo" id="e3" style="position:absolute">Det er trygghet.</div>
-  </div>
-
-  <!-- ==================== ACT 3: pivot (11 — 14.5s) ==================== -->
-  <div class="act a3" id="a3">
-    <div class="pivot mask"><span>Men det har også <em>en verdi.</em></span></div>
-  </div>
-
-  <!-- ==================== ACT 4: the question (14.5 — 19s) ==================== -->
-  <div class="act a4" id="a4">
-    <div class="q mask"><span>Hva er det <em>verdt</em>?</span></div>
-    <div class="ans"><span class="dot"></span>SVARET FÅR DU GRATIS</div>
-  </div>
-
-  <!-- ==================== ACT 5: brand (19 — 24s) ==================== -->
-  <div class="act a5" id="a5">
-    <div class="brand-wrap">
-      <div class="name">
-        <span class="mask"><span>Lars <span class="it">&amp;</span> Ida</span></span>
-        <span class="mask"><span class="it">Guttulsrød.</span></span>
+  <!-- ============ SCENE 1: dark question ============ -->
+  <div class="scene" id="scene1" style="opacity:1">
+    <div class="serial"><span class="dot"></span>01 / 05</div>
+    <div class="footer-mark">CH 01 · A QUESTION</div>
+    <div class="footer-right">guttulsrod.no</div>
+    <div class="inner">
+      <div class="pre" id="s1pre"><span class="glow"></span>// ET HJEM</div>
+      <div class="q">
+        <span class="mline" id="s1l1"><span>Hva er <em>hjemmet</em></span></span>
+        <span class="mline" id="s1l2"><span>ditt egentlig <em>verdt</em>?</span></span>
       </div>
-      <div class="meta" id="a5meta"><span>Far og datter</span><span>Eiendomsmeglere</span><span>Moss siden 1991</span></div>
+      <div class="underline" id="s1u"></div>
+      <div class="sub" id="s1sub">— en ærlig vurdering tar fem minutter.</div>
     </div>
   </div>
 
-  <!-- ==================== ACT 6: CTA (24 — 30s) ==================== -->
-  <div class="act a6" id="a6">
-    <div class="cta-head mask"><span>Få boligen din</span></div>
-    <div class="cta-head mask"><span>vurdert <em>gratis.</em></span></div>
-    <div class="cta-url" id="ctaUrl">guttulsrod.no</div>
+  <!-- ============ SCENE 2: cream poem ============ -->
+  <div class="scene" id="scene2">
+    <div class="serial"><span class="dot"></span>02 / 05</div>
+    <div class="footer-mark">CH 02 · ET HJEM ER —</div>
+    <div class="footer-right">guttulsrod.no</div>
+    <div class="stripe" id="s2stripe"></div>
+    <div class="inner" style="text-align:left;padding:0 140px">
+      <div class="lead" id="s2lead"><span class="glow"></span>// EN BOLIG, ET MINNE</div>
+      <span class="echo"><span class="it"><span class="word">stemmer</span> <span class="word">i</span> <span class="word">trappen,</span></span></span>
+      <span class="echo"><span class="word">kvelder</span> <span class="word">du</span> <span class="word">husker,</span></span>
+      <span class="echo"><span class="word">11&nbsp;000</span> <span class="word">netter</span> <span class="word">med</span> <span class="word">ro.</span></span>
+    </div>
   </div>
 
-  <!-- signature bottom (only at end) -->
-  <div class="sig" id="sig">
-    <span>Levert av</span>
-    <span class="nl"><span class="nl-badge"><img src="norleads-logo.png" alt="Norleads"></span></span>
+  <!-- ============ SCENE 3: beige year ============ -->
+  <div class="scene" id="scene3">
+    <div class="serial"><span class="dot"></span>03 / 05</div>
+    <div class="footer-mark">CH 03 · ESTABLISHED IN MOSS</div>
+    <div class="footer-right">35 ÅR · 1 BY</div>
+    <div class="inner">
+      <div class="est" id="s3est"><span class="glow"></span>// EST. MOSS</div>
+      <div class="year">
+        <span class="digit">1</span><span class="digit">9</span><span class="digit italic">9</span><span class="digit italic">1</span>
+      </div>
+      <div class="since" id="s3since">— siden den gang.</div>
+      <div class="ticker" id="s3ticker">
+        <span>EIENDOMSMEGLING</span><span>MOSS &amp; OSLO</span><span>SIDEN 1991</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SCENE 4: dark green promise ============ -->
+  <div class="scene" id="scene4">
+    <div class="serial"><span class="dot"></span>04 / 05</div>
+    <div class="footer-mark">CH 04 · LØFTET</div>
+    <div class="footer-right">guttulsrod.no</div>
+    <div class="inner">
+      <div class="badge" id="s4badge"><span class="glow"></span>LOKAL EKSPERTISE</div>
+      <div class="promise">
+        <span class="mline" id="s4l1"><span>Vi vet hva ditt</span></span>
+        <span class="mline" id="s4l2"><span>hjem er <em>verdt</em>.</span></span>
+      </div>
+      <div class="glow-line" id="s4glow"></div>
+      <div class="sub" id="s4sub">— eiendomsmegling i Moss siden 1991.</div>
+    </div>
+  </div>
+
+  <!-- ============ SCENE 5: green CTA ============ -->
+  <div class="scene" id="scene5">
+    <div class="serial"><span class="dot"></span>05 / 05</div>
+    <div class="footer-mark">CH 05 · NESTE STEG</div>
+    <div class="footer-right">— SLUTT —</div>
+    <div class="sig" id="sig"><span>Levert av</span><span class="nl-badge"><img src="norleads-logo.png" alt="Norleads"></span></div>
+    <div class="inner">
+      <div class="step" id="s5step">// BOOK GRATIS</div>
+      <div class="cta">
+        <span class="mline" id="s5l1"><span>Få en <em>ærlig</em></span></span>
+        <span class="mline" id="s5l2"><span>vurdering — i dag.</span></span>
+      </div>
+      <a class="urlbar" id="s5url">
+        guttulsrod.no
+        <span class="arrow"><svg viewBox="0 0 16 16"><polyline points="4,3 11,8 4,13"/></svg></span>
+      </a>
+      <div class="meta" id="s5meta"><span>MOSS</span><span>OSLO</span><span>69 10 99 00</span></div>
+    </div>
   </div>
 
 </div>
@@ -179,65 +315,87 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
 
+  // build char spans for every .word inside scene2 so each word can stagger
+  // (already wrapped in HTML — keep as-is)
+
   const tl = gsap.timeline({ defaults:{ ease:'power3.out' } });
 
   /* ============================================================
-     A1 — emotional hook (0 → 4s)
+     SCENE 1 — DARK QUESTION (0 → 6.2s)
      ============================================================ */
-  tl.to('#a1 .mask > span', { y:0, duration:1.0, stagger:.55 }, 0.6)
-    .to('#a1', { opacity:0, duration:.7, ease:'power2.inOut' }, 3.7);
+  // intro: small pre-roll label, then question lines mask up, then underline draws, then sub fades
+  tl.fromTo('#s1pre', { opacity:0, y:8 }, { opacity:1, y:0, duration:.7 }, 0.6)
+    .to('#s1l1 > span, #s1l2 > span', { y:0, duration:1.1, stagger:.42, ease:'power3.out' }, 1.0)
+    .to('#s1u', { width:240, duration:1.2, ease:'power3.out' }, 2.6)
+    .fromTo('#s1sub', { opacity:0, y:10 }, { opacity:1, y:0, duration:.8 }, 3.4)
+    .fromTo('#scan', { top:'-2px', opacity:.6 }, { top:'100%', duration:1.8, ease:'power2.in' }, 4.0)
+    .to('#scan', { opacity:0, duration:.2 }, 5.8)
+    .to('#scene1', { opacity:0, duration:.6, ease:'power2.inOut' }, 5.6);
 
   /* ============================================================
-     A2 — three echoes (4 → 11s)
+     SCENE 2 — CREAM POEM (6.0 → 13.0s)
+     each line: 3 words stagger in, line holds while next builds
      ============================================================ */
-  tl.set('#a2', { opacity:1 }, 4.2);
-
-  // e1: in @ 4.4, hold, out @ 6.6
-  tl.fromTo('#e1', { opacity:0, y:14 }, { opacity:1, y:0, duration:.9, ease:'power3.out' }, 4.4)
-    .to('#e1', { opacity:0, y:-8, duration:.6, ease:'power2.in' }, 6.6);
-
-  // e2: in @ 6.6, hold, out @ 8.7
-  tl.fromTo('#e2', { opacity:0, y:14 }, { opacity:1, y:0, duration:.9, ease:'power3.out' }, 6.6)
-    .to('#e2', { opacity:0, y:-8, duration:.6, ease:'power2.in' }, 8.7);
-
-  // e3: in @ 8.7, hold longer (it's the emotional peak)
-  tl.fromTo('#e3', { opacity:0, y:14 }, { opacity:1, y:0, duration:.9, ease:'power3.out' }, 8.7)
-    .to('#a2', { opacity:0, duration:.8, ease:'power2.inOut' }, 10.6);
+  tl.set('#scene2', { opacity:1 }, 6.0)
+    .fromTo('#s2lead', { opacity:0, y:8 }, { opacity:1, y:0, duration:.6 }, 6.2)
+    .to('#s2stripe', { height:280, duration:1.0, ease:'power3.out' }, 6.4)
+    // line 1
+    .to('#scene2 .echo:nth-of-type(1) .word', { opacity:1, y:0, duration:.55, stagger:.10, ease:'power3.out' }, 6.7)
+    // line 2
+    .to('#scene2 .echo:nth-of-type(2) .word', { opacity:1, y:0, duration:.55, stagger:.10, ease:'power3.out' }, 8.0)
+    // line 3 (the emotional peak)
+    .to('#scene2 .echo:nth-of-type(3) .word', { opacity:1, y:0, duration:.65, stagger:.13, ease:'power3.out' }, 9.5)
+    .to('#scene2', { opacity:0, duration:.7, ease:'power2.inOut' }, 12.3);
 
   /* ============================================================
-     A3 — pivot (11.4 → 14.6s)
+     SCENE 3 — BEIGE YEAR (13.0 → 18.0s)
+     digits drop in with stagger; "9 1" italics in green
      ============================================================ */
-  tl.set('#a3', { opacity:1 }, 11.5)
-    .to('#a3 .mask > span', { y:0, duration:.9 }, 11.6)
-    .to('#a3', { opacity:0, duration:.6, ease:'power2.inOut' }, 14.2);
+  tl.set('#scene3', { opacity:1 }, 13.0)
+    .fromTo('#s3est', { opacity:0, y:8 }, { opacity:1, y:0, duration:.5 }, 13.1)
+    .to('#scene3 .year .digit', { opacity:1, y:0, duration:.7, stagger:.13, ease:'back.out(1.2)' }, 13.4)
+    .fromTo('#s3since', { opacity:0, y:14 }, { opacity:1, y:0, duration:.7 }, 14.8)
+    .fromTo('#s3ticker', { opacity:0, y:10 }, { opacity:1, y:0, duration:.7 }, 15.3)
+    .fromTo('#scan', { top:'-2px', opacity:.6 }, { top:'100%', duration:1.6, ease:'power2.in' }, 15.5)
+    .to('#scan', { opacity:0, duration:.2 }, 17.1)
+    .to('#scene3', { opacity:0, duration:.7, ease:'power2.inOut' }, 17.3);
 
   /* ============================================================
-     A4 — the question (14.7 → 19s)
+     SCENE 4 — DARK GREEN PROMISE (18.0 → 24.0s)
+     The answer to the opening question
      ============================================================ */
-  tl.set('#a4', { opacity:1 }, 14.8)
-    .to('#a4 .q .mask > span, #a4 .mask > span', { y:0, duration:1.0 }, 14.9)
-    .fromTo('#a4 .ans', { opacity:0, y:10 }, { opacity:1, y:0, duration:.7 }, 16.4)
-    .to('#a4', { opacity:0, duration:.7, ease:'power2.inOut' }, 18.6);
+  tl.set('#scene4', { opacity:1 }, 18.0)
+    .fromTo('#s4badge', { opacity:0, y:10, scale:.9 }, { opacity:1, y:0, scale:1, duration:.7 }, 18.2)
+    .to('#s4l1 > span, #s4l2 > span', { y:0, duration:1.1, stagger:.45, ease:'power3.out' }, 18.7)
+    .to('#s4glow', { width:380, duration:1.1, ease:'power3.out' }, 20.5)
+    // subtitle: char by char typing
+    .call(() => {
+      const sub = document.getElementById('s4sub');
+      const text = sub.textContent;
+      sub.innerHTML = '';
+      text.split('').forEach((c,i) => {
+        const s = document.createElement('span');
+        s.className = 'ch';
+        s.textContent = c === ' ' ? ' ' : c;
+        sub.appendChild(s);
+      });
+      gsap.to('#s4sub .ch', { opacity:1, duration:.02, stagger:.018, ease:'none' });
+    }, null, 21.0)
+    .to('#scene4', { opacity:0, duration:.7, ease:'power2.inOut' }, 23.3);
 
   /* ============================================================
-     A5 — brand (19.2 → 24s)
+     SCENE 5 — BRIGHT GREEN CTA (24.0 → 30s)
      ============================================================ */
-  tl.set('#a5', { opacity:1 }, 19.2)
-    .to('#a5 .mask > span', { y:0, duration:1.0, stagger:.25 }, 19.4)
-    .fromTo('#a5meta', { opacity:0, y:14 }, { opacity:1, y:0, duration:.8 }, 21.0)
-    .to('#a5', { opacity:0, duration:.7, ease:'power2.inOut' }, 23.6);
-
-  /* ============================================================
-     A6 — CTA (24 → 30s)
-     ============================================================ */
-  tl.set('#a6', { opacity:1 }, 24.2)
-    .to('#a6 .mask > span', { y:0, duration:.95, stagger:.35 }, 24.3)
-    .fromTo('#ctaUrl', { opacity:0, y:14 }, { opacity:1, y:0, duration:.9 }, 25.8)
-    // url accent underline already in CSS — emphasize with subtle scale beat
-    .to('#ctaUrl', { letterSpacing:'0em', duration:1.4, ease:'sine.out' }, 25.8);
-
-  // signature appears at very end
-  tl.fromTo('#sig', { opacity:0, y:6 }, { opacity:.85, y:0, duration:.8 }, 27.4);
+  tl.set('#scene5', { opacity:1 }, 24.0)
+    .fromTo('#s5step', { opacity:0, y:8 }, { opacity:1, y:0, duration:.5 }, 24.1)
+    .to('#s5l1 > span, #s5l2 > span', { y:0, duration:1.0, stagger:.35, ease:'power3.out' }, 24.4)
+    .to('#s5url', { opacity:1, y:0, duration:.7, ease:'back.out(1.5)' }, 25.8)
+    .fromTo('#s5meta', { opacity:0, y:10 }, { opacity:1, y:0, duration:.6 }, 26.6)
+    .fromTo('#sig', { opacity:0, y:6 }, { opacity:.85, y:0, duration:.7 }, 27.4)
+    // pulse on the CTA url for emphasis
+    .to('#s5url', { scale:1.04, duration:.6, ease:'sine.inOut', yoyo:true, repeat:3 }, 27.8)
+    .fromTo('#scan', { top:'-2px', opacity:.5 }, { top:'100%', duration:1.6, ease:'power2.in' }, 28.0)
+    .to('#scan', { opacity:0, duration:.2 }, 29.6);
 
 });
 </script>
