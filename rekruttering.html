@@ -92,7 +92,8 @@
   /* ── BIG MONEY ── */
   .money{position:relative;z-index:4;display:grid;justify-items:center;gap:2cqw}
   .money .num{font-size:21cqw;line-height:.9;letter-spacing:.01em;font-variant-numeric:tabular-nums;display:flex;align-items:baseline;gap:.06em;color:var(--white);text-shadow:0 0 44px rgba(124,107,255,.55),0 2px 18px rgba(0,0,0,.5);white-space:nowrap}
-  .money .num .kr{font-size:.4em;font-weight:800;color:var(--violet);font-family:'Sora',sans-serif}
+  .money .num .plus{color:var(--violet);opacity:0;margin-left:.02em}
+  .money .num .kr{font-size:.4em;font-weight:800;color:var(--violet);font-family:'Sora',sans-serif;margin-left:.1em}
   .money .cap{font-weight:800;font-size:4cqw;letter-spacing:.2em;text-transform:uppercase;color:var(--violet)}
   .money .fine{font-weight:600;font-size:3.4cqw;color:rgba(255,255,255,.82);max-width:80%;line-height:1.4}
 
@@ -117,8 +118,13 @@
   /* CTA */
   .cta-stack{display:grid;justify-items:center;gap:3.4cqw;width:100%}
   .cta-stack img.logo{height:13cqw;width:auto;display:block;filter:brightness(0) invert(1) drop-shadow(0 8px 30px rgba(124,107,255,.4))}
-  .cta-link{display:inline-flex;align-items:center;gap:2cqw;padding:4.2cqw 8cqw;background:var(--white);color:var(--blue-deep);font-size:5cqw;letter-spacing:.01em;text-decoration:none;border-radius:999px;box-shadow:0 14px 50px rgba(124,107,255,.5);margin-top:1cqw}
+  .cta-link{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:2cqw;padding:4.2cqw 8cqw;background:var(--white);color:var(--blue-deep);font-size:5cqw;letter-spacing:.01em;text-decoration:none;border-radius:999px;box-shadow:0 14px 50px rgba(124,107,255,.5);margin-top:1cqw}
   .cta-link::after{content:"→"}
+  .cta-link::before{content:"";position:absolute;top:0;left:-60%;width:45%;height:100%;background:linear-gradient(100deg,transparent,rgba(124,107,255,.5),transparent);transform:skewX(-18deg);animation:shine 2.6s ease-in-out infinite}
+  @keyframes shine{0%,55%{left:-60%}100%{left:150%}}
+
+  /* boot cover — hides any first-paint flash before the timeline starts */
+  .boot{position:absolute;inset:0;z-index:97;background:var(--white)}
   .cta-handle{font-weight:800;font-size:3.8cqw;letter-spacing:.06em;color:var(--violet)}
 
   @media(prefers-reduced-motion:reduce){.scene,.bg,.blob,.track,.wipe,.bill{will-change:auto}}
@@ -165,9 +171,9 @@
     <div class="center">
       <span class="kicker">Tjen penger i dag</span>
       <div class="money">
-        <div class="num"><span class="counter">0</span><span class="kr">kr</span></div>
-        <div class="cap">opp mot — i året</div>
-        <div class="fine">Fastlønn + provisjon. Det du legger inn, får du igjen.</div>
+        <div class="num"><span class="counter">0</span><span class="plus">+</span><span class="kr">kr</span></div>
+        <div class="cap">i året — uten tak</div>
+        <div class="fine">Fastlønn + provisjon uten øvre grense. Det du legger inn, får du igjen.</div>
       </div>
     </div>
   </section>
@@ -239,14 +245,22 @@
 
   <div class="wipe"></div>
   <div class="progress"><i></i></div>
+  <div class="boot"></div>
 </main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script>
-  const DURATION = 30;
+  const DURATION = 38;
   gsap.defaults({ease:'power3.out'});
-  const tl = gsap.timeline();
 
+  // Fade out the boot cover once everything is parsed → no first-paint flash
+  function startBoot(){ gsap.to('.boot',{opacity:0,duration:.45,ease:'power2.out',
+    onComplete(){const b=document.querySelector('.boot'); if(b) b.style.display='none';}}); }
+  window.addEventListener('load', startBoot);
+  // safety fallback if load already fired
+  setTimeout(startBoot, 1200);
+
+  const tl = gsap.timeline();
   tl.fromTo('.progress i',{scaleX:0},{scaleX:1,duration:DURATION,ease:'none'},0);
 
   /* Background blobs: drift via transform only (GPU-cheap, no per-frame reblur) */
@@ -274,36 +288,43 @@
   function fadeUp(sel, at, d=.6){
     tl.fromTo(sel,{y:24,opacity:0},{y:0,opacity:1,duration:d,ease:'power3.out'}, at);
   }
+  // slow ken-burns drift over a scene → keeps long reads alive
+  function drift(sel, at, len){
+    tl.fromTo(sel+' .center',{scale:1.045},{scale:1.0,duration:len,ease:'sine.out'}, at);
+  }
 
   gsap.set('.scene',{opacity:0});
 
-  // ── Scene 0 (0 – 3.0s): LOGO INTRO on white
+  // ── Scene 0 (0 – 3.6s): LOGO INTRO on white
   gsap.set('.s0',{visibility:'visible',opacity:1});
-  tl.fromTo('.s0 .intro img.logo',{y:24,scale:.92,opacity:0},{y:0,scale:1,opacity:1,duration:1.0,ease:'back.out(1.5)'},.3)
-    .fromTo('.s0 .intro .rule',{scaleX:0,opacity:0},{scaleX:1,opacity:1,duration:.55,ease:'power3.out',transformOrigin:'center'},1.15)
-    .fromTo('.s0 .intro .tag',{y:14,opacity:0},{y:0,opacity:1,duration:.7,ease:'power2.out'},1.4)
-    // reveal background + chrome as we leave the white intro
-    .to('.bg',{opacity:1,duration:.8,ease:'power2.out'},2.4)
-    .to('.brand, .meta, .progress',{opacity:1,duration:.4,ease:'power2.out'},3.4);
+  tl.fromTo('.s0 .intro img.logo',{y:24,scale:.9,opacity:0},{y:0,scale:1,opacity:1,duration:1.1,ease:'back.out(1.5)'},.4)
+    .fromTo('.s0 .intro .rule',{scaleX:0,opacity:0},{scaleX:1,opacity:1,duration:.6,ease:'power3.out',transformOrigin:'center'},1.4)
+    .fromTo('.s0 .intro .tag',{y:14,opacity:0},{y:0,opacity:1,duration:.7,ease:'power2.out'},1.7)
+    .to('.s0 .intro img.logo',{scale:1.04,duration:1.0,ease:'sine.inOut',yoyo:true,repeat:1},1.8)
+    .to('.bg',{opacity:1,duration:.9,ease:'power2.out'},2.7)
+    .to('.brand, .meta, .progress',{opacity:1,duration:.4,ease:'power2.out'},3.9);
 
-  // ── Scene 1 (3.2 – 7s): HOOK
-  wipeTo('.s1', '.s0', 2.9, 'var(--blue)');
-  popKicker('.s1', 3.4);
-  slamLines('.s1', 3.7, .14);
-  fadeUp('.s1 .sub', 5.0, .6);
-  tl.fromTo('.s1 .center',{scale:1.05},{scale:1,duration:1.6,ease:'power2.out'},3.6);
+  // ── Scene 1 (3.8 – 9.0s): HOOK  (longer read)
+  wipeTo('.s1', '.s0', 3.5, 'var(--blue)');
+  popKicker('.s1', 4.0);
+  slamLines('.s1', 4.3, .16);
+  fadeUp('.s1 .sub', 5.8, .7);
+  drift('.s1', 4.2, 4.6);
 
-  // ── Scene 2 (7.2 – 11.5s): MONEY
-  wipeTo('.s2', '.s1', 7.0, 'var(--blue-bright)');
-  popKicker('.s2', 7.6);
+  // ── Scene 2 (9.2 – 15.5s): MONEY  (longer, slower count)
+  wipeTo('.s2', '.s1', 9.0, 'var(--blue-bright)');
+  popKicker('.s2', 9.6);
   const money = {v:0};
   const fmt = n => Math.round(n).toLocaleString('nb-NO');
-  tl.fromTo('.s2 .num',{scale:.7,opacity:0},{scale:1,opacity:1,duration:.55,ease:'back.out(1.6)'},7.7)
-    .to(money,{v:800000,duration:2.0,ease:'power2.out',
-      onUpdate(){const el=document.querySelector('.s2 .counter'); if(el) el.textContent=fmt(money.v);}}, 7.7)
-    .to('.s2 .num',{scale:1.05,duration:.2,yoyo:true,repeat:1,ease:'power2.out'},9.7);
-  fadeUp('.s2 .cap', 9.8, .5);
-  fadeUp('.s2 .fine', 10.1, .5);
+  tl.fromTo('.s2 .num',{scale:.7,opacity:0},{scale:1,opacity:1,duration:.6,ease:'back.out(1.6)'},9.7)
+    .to(money,{v:800000,duration:2.6,ease:'power2.out',
+      onUpdate(){const el=document.querySelector('.s2 .counter'); if(el) el.textContent=fmt(money.v);}}, 9.8)
+    .fromTo('.s2 .num .plus',{opacity:0,scale:.4,x:-10},{opacity:1,scale:1,x:0,duration:.5,ease:'back.out(2.4)'},12.4)
+    .to('.s2 .num',{scale:1.06,duration:.22,yoyo:true,repeat:1,ease:'power2.out'},12.4)
+    // gentle idle float keeps the big number lively while you read
+    .to('.s2 .money',{y:-8,duration:1.4,ease:'sine.inOut',yoyo:true,repeat:1},12.8);
+  fadeUp('.s2 .cap', 12.7, .55);
+  fadeUp('.s2 .fine', 13.1, .55);
   // cash rain — transform+opacity only, capped count for smoothness
   const rain = document.querySelector('.s2 .rain');
   const glyphs = ['💸','💵','💰'];
@@ -317,40 +338,43 @@
       rain.appendChild(b);
       gsap.fromTo(b,{yPercent:0,opacity:0,rotate:gsap.utils.random(-30,30)},
         {yPercent:1100,opacity:1,rotate:gsap.utils.random(-160,160),
-         duration:gsap.utils.random(2.6,4.2),ease:'none',
-         delay:Math.random()*2.2,repeat:1,repeatDelay:Math.random()*0.8,
-         onStart(){gsap.to(b,{opacity:0,duration:.7,delay:gsap.utils.random(1.8,3)});}});
+         duration:gsap.utils.random(3.2,5.0),ease:'none',
+         delay:Math.random()*3.0,repeat:1,repeatDelay:Math.random()*0.8,
+         onStart(){gsap.to(b,{opacity:0,duration:.8,delay:gsap.utils.random(2.2,3.6)});}});
     }
-  }, 7.5);
+  }, 9.5);
 
-  // ── Scene 3 (11.7 – 15.5s): MARQUEE
-  wipeTo('.s3', '.s2', 11.5, 'var(--violet)');
-  slamLines('.s3', 12.1, .12);
-  fadeUp('.s3 .sub', 14.4, .5);
+  // ── Scene 3 (15.7 – 20.5s): MARQUEE  (longer read)
+  wipeTo('.s3', '.s2', 15.5, 'var(--violet)');
+  slamLines('.s3', 16.1, .14);
+  fadeUp('.s3 .sub', 18.0, .6);
+  drift('.s3', 16.1, 4.2);
   const track = document.querySelector('.s3 .track');
   let marquee;
-  tl.add(()=>{ if(track && !marquee){ marquee = gsap.to(track,{xPercent:-50,duration:9,ease:'none',repeat:-1}); } }, 12.0);
+  tl.add(()=>{ if(track && !marquee){ marquee = gsap.to(track,{xPercent:-50,duration:10,ease:'none',repeat:-1}); } }, 16.0);
 
-  // ── Scene 4 (15.7 – 19.5s): AGE
-  wipeTo('.s4', '.s3', 15.5, 'var(--blue)');
-  popKicker('.s4', 16.1);
-  tl.fromTo('.s4 .age',{scale:.55,opacity:0},{scale:1,opacity:1,duration:.7,ease:'back.out(1.7)'},16.3);
-  slamLines('.s4', 17.1, .14);
+  // ── Scene 4 (20.7 – 25.5s): AGE
+  wipeTo('.s4', '.s3', 20.5, 'var(--blue)');
+  popKicker('.s4', 21.1);
+  tl.fromTo('.s4 .age',{scale:.55,opacity:0},{scale:1,opacity:1,duration:.75,ease:'back.out(1.7)'},21.3)
+    .to('.s4 .age',{y:-10,duration:1.6,ease:'sine.inOut',yoyo:true,repeat:1},22.4);
+  slamLines('.s4', 22.2, .16);
 
-  // ── Scene 5 (19.7 – 24.5s): WHY rows (light)
-  wipeTo('.s5', '.s4', 19.5, 'var(--white)');
-  popKicker('.s5', 20.1);
-  tl.fromTo('.s5 .row',{x:-28,opacity:0},{x:0,opacity:1,duration:.55,stagger:.18,ease:'power3.out'},20.3)
-    .fromTo('.s5 .row .n',{scale:0},{scale:1,duration:.45,stagger:.18,ease:'back.out(2)'},20.45);
+  // ── Scene 5 (25.7 – 32.0s): WHY rows (light) — most reading, longest
+  wipeTo('.s5', '.s4', 25.5, 'var(--white)');
+  popKicker('.s5', 26.1);
+  tl.fromTo('.s5 .row',{x:-28,opacity:0},{x:0,opacity:1,duration:.6,stagger:.28,ease:'power3.out'},26.3)
+    .fromTo('.s5 .row .n',{scale:0},{scale:1,duration:.5,stagger:.28,ease:'back.out(2)'},26.45);
+  drift('.s5', 26.3, 5.5);
 
-  // ── Scene 6 (24.7 – 30s): CTA
-  wipeTo('.s6', '.s5', 24.5, 'var(--blue-deep)');
-  tl.fromTo('.s6 .cta-stack img.logo',{y:24,scale:.85,opacity:0},{y:0,scale:1,opacity:1,duration:.7,ease:'back.out(1.6)'},25.1);
-  popKicker('.s6', 25.6);
-  slamLines('.s6', 25.8, .14);
-  fadeUp('.s6 .cta-link', 26.8, .55);
-  fadeUp('.s6 .cta-handle', 27.2, .5);
-  tl.to('.s6 .cta-link',{scale:1.06,duration:.6,ease:'sine.inOut',yoyo:true,repeat:3},27.7);
+  // ── Scene 6 (32.2 – 38s): CTA
+  wipeTo('.s6', '.s5', 32.0, 'var(--blue-deep)');
+  tl.fromTo('.s6 .cta-stack img.logo',{y:24,scale:.85,opacity:0},{y:0,scale:1,opacity:1,duration:.75,ease:'back.out(1.6)'},32.6);
+  popKicker('.s6', 33.1);
+  slamLines('.s6', 33.3, .16);
+  fadeUp('.s6 .cta-link', 34.4, .6);
+  fadeUp('.s6 .cta-handle', 34.9, .55);
+  tl.to('.s6 .cta-link',{scale:1.06,duration:.6,ease:'sine.inOut',yoyo:true,repeat:4},35.5);
 </script>
 </body>
 </html>
