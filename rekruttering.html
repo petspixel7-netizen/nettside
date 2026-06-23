@@ -60,9 +60,10 @@
   .scene.light .kicker{color:var(--blue)}
 
   /* kinetic headline — line masks + per word */
-  .kin{margin:0;line-height:.94;letter-spacing:.005em;text-transform:uppercase;text-wrap:balance}
+  .kin{margin:0;line-height:1.08;letter-spacing:.02em;text-transform:uppercase;text-wrap:balance}
   .scene.dark .kin{text-shadow:0 2px 24px rgba(0,0,0,.45)}
-  .kin .line{display:block;overflow:hidden;padding-bottom:.04em}
+  /* extra top/bottom room so the ring on Å/Æ/Ø is never clipped by the reveal mask */
+  .kin .line{display:block;overflow:hidden;padding:.14em 0 .08em}
   .kin .line > span{display:inline-block;will-change:transform}
   .xl{font-size:16cqw}
   .lg{font-size:12cqw}
@@ -100,8 +101,8 @@
   /* marquee strip */
   .strip{position:relative;width:120%;overflow:hidden;-webkit-mask:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
   .track{display:flex;gap:3cqw;width:max-content;will-change:transform}
-  .chip{flex:0 0 auto;font-weight:800;font-size:5cqw;letter-spacing:-.02em;padding:2.4cqw 4cqw;border-radius:999px;background:rgba(124,107,255,.18);border:1.5px solid rgba(124,107,255,.45);color:var(--white);white-space:nowrap}
-  .chip .dot{color:var(--violet)}
+  .chip{flex:0 0 auto;font-weight:800;font-size:5.4cqw;letter-spacing:.01em;color:var(--white);white-space:nowrap}
+  .chip .dot{color:var(--violet);margin-left:3cqw}
 
   /* editorial numbered rows */
   .rows{display:grid;gap:0;width:100%;max-width:92%}
@@ -155,7 +156,6 @@
   <!-- 1: HOOK -->
   <section class="scene dark s1">
     <div class="center">
-      <span class="kicker">Stopp scrollingen</span>
       <h1 class="kin xl">
         <span class="line"><span>VIL</span></span>
         <span class="line"><span>DU</span></span>
@@ -306,8 +306,7 @@
 
   // ── Scene 1 (3.8 – 9.0s): HOOK  (longer read)
   wipeTo('.s1', '.s0', 3.5, 'var(--blue)');
-  popKicker('.s1', 4.0);
-  slamLines('.s1', 4.3, .16);
+  slamLines('.s1', 4.0, .16);
   fadeUp('.s1 .sub', 5.8, .7);
   drift('.s1', 4.2, 4.6);
 
