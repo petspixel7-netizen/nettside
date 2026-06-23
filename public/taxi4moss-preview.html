@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Taxi4moss — Forutsigbarhet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #070014;
+    --bg-deep:  #03000A;
+    --pink:     #FF1FA0;
+    --pink-hot: #FF4FC0;
+    --cyan:     #00F0FF;
+    --cyan-s:   #5FF8FF;
+    --yellow:   #F6FF00;
+    --violet:   #B026FF;
+    --white:    #FFFFFF;
+    --font:     'Anton', 'Bebas Neue', 'Impact', 'Arial Black', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #000; overflow: hidden; font-family: 'Inter', sans-serif; }
+
+  /* ─── 16:9 stage that scales to viewport ─────────────────────────── */
+  .stage-wrap {
+    position: fixed; inset: 0;
+    display: flex; justify-content: center; align-items: center;
+    background: #000;
+  }
+  .stage {
+    position: relative;
+    width: 1920px; height: 1080px;
+    background: var(--bg-deep);
+    overflow: hidden;
+    transform-origin: center center;
+  }
+
+  /* ─── Blob background ─────────────────────────────────────────────── */
+  .blob-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 50%, var(--bg) 0%, var(--bg-deep) 100%);
+    overflow: hidden;
+    filter: blur(60px) saturate(1.35);
+  }
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    mix-blend-mode: screen;
+    transform: translate(-50%, -50%);
+  }
+  .blob.b1 { left: 22%; top: 30%; width: 1100px; height: 1100px;
+    background: radial-gradient(circle, var(--pink) 0%, transparent 65%);
+    opacity: 0.55; animation: blobMove1 18s ease-in-out infinite; }
+  .blob.b2 { left: 78%; top: 68%; width: 1300px; height: 1300px;
+    background: radial-gradient(circle, var(--cyan) 0%, transparent 65%);
+    opacity: 0.45; animation: blobMove2 22s ease-in-out infinite; }
+  .blob.b3 { left: 50%; top: 18%; width: 900px; height: 900px;
+    background: radial-gradient(circle, var(--violet) 0%, transparent 65%);
+    opacity: 0.40; animation: blobMove3 20s ease-in-out infinite; }
+  .blob.b4 { left: 85%; top: 22%; width: 800px; height: 800px;
+    background: radial-gradient(circle, var(--pink-hot) 0%, transparent 65%);
+    opacity: 0.35; animation: blobMove4 17s ease-in-out infinite; }
+  .blob.b5 { left: 18%; top: 82%; width: 950px; height: 950px;
+    background: radial-gradient(circle, var(--cyan-s) 0%, transparent 65%);
+    opacity: 0.30; animation: blobMove5 24s ease-in-out infinite; }
+  .blob.b6 { left: 55%; top: 55%; width: 700px; height: 700px;
+    background: radial-gradient(circle, var(--yellow) 0%, transparent 65%);
+    opacity: 0.18; animation: blobMove6 26s ease-in-out infinite; }
+
+  @keyframes blobMove1 { 0%,100% { transform: translate(-50%,-50%) scale(1); } 50% { transform: translate(-30%,-65%) scale(1.15); } }
+  @keyframes blobMove2 { 0%,100% { transform: translate(-50%,-50%) scale(0.95); } 50% { transform: translate(-70%,-35%) scale(1.2); } }
+  @keyframes blobMove3 { 0%,100% { transform: translate(-50%,-50%) scale(1.1); } 50% { transform: translate(-40%,-70%) scale(0.9); } }
+  @keyframes blobMove4 { 0%,100% { transform: translate(-50%,-50%) scale(0.9); } 50% { transform: translate(-60%,-30%) scale(1.1); } }
+  @keyframes blobMove5 { 0%,100% { transform: translate(-50%,-50%) scale(1); } 50% { transform: translate(-30%,-60%) scale(1.25); } }
+  @keyframes blobMove6 { 0%,100% { transform: translate(-50%,-50%) scale(1); } 50% { transform: translate(-70%,-40%) scale(0.85); } }
+
+  /* ─── Grid overlay ─────────────────────────────────────────────────── */
+  .grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,240,255,0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,240,255,0.07) 1px, transparent 1px);
+    background-size: 120px 120px;
+    mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 80%);
+    animation: gridDrift 60s linear infinite;
+  }
+  @keyframes gridDrift {
+    from { background-position: 0 0, 0 0; }
+    to   { background-position: 240px 180px, 240px 180px; }
+  }
+
+  /* ─── Scanlines + vignette ─────────────────────────────────────────── */
+  .scanlines {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image: repeating-linear-gradient(0deg,
+      rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px,
+      transparent 1px, transparent 3px);
+    mix-blend-mode: overlay;
+    z-index: 50;
+  }
+  .vignette {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse 85% 85% at 50% 50%, transparent 35%, rgba(0,0,0,0.75) 100%);
+    z-index: 51;
+  }
+
+  /* ─── Corner brand ─────────────────────────────────────────────────── */
+  .corner-brand {
+    position: absolute; top: 48px; left: 60px;
+    display: flex; align-items: center; gap: 14px;
+    z-index: 40; opacity: 0;
+    animation: cornerIn 1.5s ease-out 4.7s forwards;
+  }
+  .corner-brand .dot {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--yellow);
+    box-shadow: 0 0 16px var(--yellow), 0 0 36px rgba(246,255,0,0.5);
+  }
+  .corner-brand .name {
+    font-family: var(--font);
+    font-size: 34px; color: var(--white);
+    letter-spacing: 4px;
+    text-shadow: 0 0 6px var(--pink), 0 0 18px var(--pink), 0 0 40px rgba(255,31,160,0.8);
+  }
+  @keyframes cornerIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* ─── Scene container ─────────────────────────────────────────────── */
+  .scene {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    text-align: center;
+    opacity: 0; pointer-events: none;
+  }
+
+  /* ─── Slam animation primitives ───────────────────────────────────── */
+  .slam {
+    display: inline-block;
+    font-family: var(--font);
+    font-weight: 400;
+    color: var(--white);
+    text-transform: uppercase;
+    line-height: 0.85;
+    position: relative;
+  }
+  /* Drop from above with overshoot */
+  @keyframes slamDrop {
+    0%   { transform: translateY(-380px) scaleY(1); opacity: 0; }
+    40%  { transform: translateY(0) scaleY(0.82) scaleX(1.16); opacity: 1; }
+    55%  { transform: translateY(-8px) scaleY(1.08) scaleX(0.96); }
+    70%  { transform: translateY(0) scaleY(0.97) scaleX(1.02); }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
+  }
+  @keyframes slamExit {
+    from { transform: translateY(0); opacity: 1; }
+    to   { transform: translateY(-280px); opacity: 0; }
+  }
+  /* Chromatic shake on land */
+  @keyframes shakeImpact {
+    0%   { transform: translate(0,0); }
+    20%  { transform: translate(-14px,8px); }
+    40%  { transform: translate(12px,-6px); }
+    60%  { transform: translate(-8px,4px); }
+    80%  { transform: translate(6px,-3px); }
+    100% { transform: translate(0,0); }
+  }
+  .shake-host { position: absolute; inset: 0; }
+  .shake-host.s1 { animation: shakeImpact 0.45s ease-out 2.65s; }
+  .shake-host.s2 { animation: shakeImpact 0.45s ease-out 3.95s; }
+  .shake-host.s3 { animation: shakeImpact 0.45s ease-out 12.00s; }
+  .shake-host.s4 { animation: shakeImpact 0.45s ease-out 18.65s; }
+  .shake-host.s5 { animation: shakeImpact 0.45s ease-out 24.65s; }
+
+  /* Neon glow helpers */
+  .glow-pink   { text-shadow: 0 0 6px var(--pink), 0 0 18px var(--pink), 0 0 40px rgba(255,31,160,0.8), 0 0 90px rgba(255,31,160,0.5), 0 0 160px rgba(255,31,160,0.27); }
+  .glow-cyan   { text-shadow: 0 0 6px var(--cyan), 0 0 18px var(--cyan), 0 0 40px rgba(0,240,255,0.8),  0 0 90px rgba(0,240,255,0.5),  0 0 160px rgba(0,240,255,0.27); }
+  .glow-yellow { text-shadow: 0 0 6px var(--yellow), 0 0 18px var(--yellow), 0 0 40px rgba(246,255,0,0.8), 0 0 90px rgba(246,255,0,0.5), 0 0 160px rgba(246,255,0,0.27); }
+
+  @keyframes glowPulsePink {
+    0%,100% { text-shadow: 0 0 6px var(--pink), 0 0 18px var(--pink), 0 0 40px rgba(255,31,160,0.8), 0 0 90px rgba(255,31,160,0.5), 0 0 160px rgba(255,31,160,0.27); }
+    50%     { text-shadow: 0 0 8px var(--pink), 0 0 24px var(--pink), 0 0 60px rgba(255,31,160,1),   0 0 120px rgba(255,31,160,0.7), 0 0 220px rgba(255,31,160,0.4); }
+  }
+  @keyframes glowPulseCyan {
+    0%,100% { text-shadow: 0 0 6px var(--cyan), 0 0 18px var(--cyan), 0 0 40px rgba(0,240,255,0.8), 0 0 90px rgba(0,240,255,0.5), 0 0 160px rgba(0,240,255,0.27); }
+    50%     { text-shadow: 0 0 8px var(--cyan), 0 0 24px var(--cyan), 0 0 60px rgba(0,240,255,1),   0 0 120px rgba(0,240,255,0.7), 0 0 220px rgba(0,240,255,0.4); }
+  }
+
+  /* ─── Scene-specific timing ───────────────────────────────────────── */
+  /* Total cycle: 30s */
+
+  /* Scene 1: EN TAXI? (2.5s – 3.5s) */
+  .scene-1 { animation: sceneShow 1.0s ease-out 2.5s forwards, sceneHide 0.5s ease-in 3.5s forwards; }
+  .scene-1 .word {
+    font-size: 240px; letter-spacing: 2px;
+    animation: slamDrop 0.4s cubic-bezier(.16,1.6,.3,1) 2.6s both,
+               slamExit 0.4s ease-in 3.6s both,
+               glowPulsePink 1.8s ease-in-out 3.0s infinite;
+  }
+
+  /* Scene 2: FORUTSIGBARHET (4s – 10.5s) */
+  .scene-2 { animation: sceneShow 1.0s ease-out 3.9s forwards, sceneHide 0.7s ease-in 10.5s forwards; }
+  .scene-2 .kicker {
+    font-family: 'Inter', sans-serif;
+    font-size: 22px; letter-spacing: 14px;
+    color: var(--cyan); text-transform: uppercase;
+    text-shadow: 0 0 6px var(--cyan), 0 0 18px rgba(0,240,255,0.6);
+    opacity: 0;
+    animation: kickerIn 0.8s ease-out 4.6s forwards, kickerOut 0.6s ease-in 10.4s forwards;
+  }
+  .scene-2 .word {
+    font-size: 260px; letter-spacing: -2px;
+    margin-top: 30px;
+    animation: slamDrop 0.5s cubic-bezier(.16,1.6,.3,1) 4.0s both,
+               slamExit 0.6s ease-in 10.5s forwards,
+               glowPulsePink 2.4s ease-in-out 4.6s infinite;
+  }
+  .scene-2 .underline {
+    margin-top: 30px;
+    height: 6px; width: 0;
+    background: linear-gradient(90deg, transparent, var(--cyan), var(--pink), transparent);
+    box-shadow: 0 0 30px rgba(255,31,160,0.65), 0 0 60px rgba(0,240,255,0.4);
+    animation: underlineGrow 1.5s ease-out 4.8s forwards, underlineFade 0.6s ease-in 10.4s forwards;
+  }
+  @keyframes underlineGrow { from { width: 0; } to { width: 880px; } }
+  @keyframes underlineFade { to { opacity: 0; } }
+  @keyframes kickerIn  { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes kickerOut { to { opacity: 0; } }
+
+  /* Scene 3: Du vet alltid prisen + counter (11s – 18s) */
+  .scene-3 { animation: sceneShow 1.0s ease-out 11.0s forwards, sceneHide 0.7s ease-in 18.0s forwards; }
+  .scene-3 .top {
+    font-size: 170px; letter-spacing: 2px;
+    animation: slamDrop 0.45s cubic-bezier(.16,1.6,.3,1) 11.5s both,
+               slamExit 0.6s ease-in 18.0s forwards,
+               glowPulseCyan 2.2s ease-in-out 12.0s infinite;
+  }
+  .scene-3 .price-box {
+    margin: 40px 0;
+    padding: 8px 60px;
+    border: 3px solid rgba(0,240,255,0.55);
+    border-radius: 24px;
+    background: rgba(7,0,20,0.75);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 0 40px rgba(0,240,255,0.35), inset 0 0 30px rgba(0,240,255,0.14);
+    opacity: 0; transform: scale(0.7);
+    animation: priceIn 1.2s cubic-bezier(.34,1.56,.64,1) 12.9s forwards,
+               priceOut 0.6s ease-in 18.0s forwards;
+    display: inline-flex; align-items: flex-end;
+  }
+  .scene-3 .price {
+    font-family: var(--font);
+    font-size: 280px;
+    color: var(--cyan); letter-spacing: -6px; line-height: 0.85;
+    text-shadow: 0 0 6px var(--cyan), 0 0 18px var(--cyan), 0 0 40px rgba(0,240,255,0.8), 0 0 90px rgba(0,240,255,0.5), 0 0 160px rgba(0,240,255,0.27);
+  }
+  .scene-3 .price .kr {
+    font-size: 120px; color: var(--cyan-s); margin-left: 8px;
+  }
+  .scene-3 .bottom {
+    font-size: 170px; letter-spacing: 2px; color: var(--yellow);
+    animation: slamDrop 0.45s cubic-bezier(.16,1.6,.3,1) 15.0s both,
+               slamExit 0.6s ease-in 18.0s forwards,
+               glowPulseYellow 2.2s ease-in-out 15.5s infinite;
+  }
+  @keyframes glowPulseYellow {
+    0%,100% { text-shadow: 0 0 6px var(--yellow), 0 0 18px var(--yellow), 0 0 40px rgba(246,255,0,0.8), 0 0 90px rgba(246,255,0,0.5), 0 0 160px rgba(246,255,0,0.27); }
+    50%     { text-shadow: 0 0 8px var(--yellow), 0 0 24px var(--yellow), 0 0 60px rgba(246,255,0,1),   0 0 120px rgba(246,255,0,0.7), 0 0 220px rgba(246,255,0,0.4); }
+  }
+  @keyframes priceIn  { to { opacity: 1; transform: scale(1); } }
+  @keyframes priceOut { to { opacity: 0; transform: scale(0.95); } }
+  /* Counter digits */
+  .scene-3 .digits {
+    display: inline-block; min-width: 360px; text-align: right;
+  }
+
+  /* Scene 4: TAXI4MOSS AS brand (18.5s – 24.5s) */
+  .scene-4 { animation: sceneShow 1.0s ease-out 18.5s forwards, sceneHide 0.7s ease-in 24.0s forwards; }
+  .scene-4 .badge {
+    display: inline-block;
+    padding: 12px 22px; border-radius: 12px;
+    background: var(--yellow); color: #0A0014;
+    font-family: var(--font); font-size: 56px;
+    letter-spacing: 2px; text-transform: uppercase;
+    border: 4px solid #000;
+    box-shadow: 0 0 40px rgba(246,255,0,0.7), 0 0 90px rgba(246,255,0,0.4);
+    opacity: 0; transform: scale(0.6) rotate(-6deg);
+    animation: badgeIn 0.9s cubic-bezier(.34,1.56,.64,1) 18.8s forwards,
+               badgeWobble 3s ease-in-out 19.7s infinite,
+               badgeOut 0.5s ease-in 24.0s forwards;
+    margin-bottom: 28px;
+  }
+  @keyframes badgeIn { to { opacity: 1; transform: scale(1) rotate(0deg); } }
+  @keyframes badgeWobble {
+    0%,100% { transform: scale(1) rotate(-3deg); }
+    50%     { transform: scale(1.04) rotate(3deg); }
+  }
+  @keyframes badgeOut { to { opacity: 0; transform: scale(0.9); } }
+
+  .scene-4 .brand {
+    font-size: 300px; letter-spacing: -2px;
+    animation: slamDrop 0.5s cubic-bezier(.16,1.6,.3,1) 18.6s both,
+               slamExit 0.6s ease-in 24.0s forwards,
+               glowPulsePink 2.4s ease-in-out 19.2s infinite;
+  }
+  .scene-4 .as {
+    font-family: var(--font);
+    font-size: 76px;
+    color: var(--cyan);
+    letter-spacing: 14px;
+    margin-top: 28px;
+    opacity: 0;
+    animation: kickerIn 0.8s ease-out 20.0s forwards,
+               kickerOut 0.5s ease-in 24.0s forwards,
+               glowPulseCyan 2.4s ease-in-out 20.8s infinite;
+  }
+
+  /* Scene 5: CTA (24.5s – 30s) */
+  .scene-5 { animation: sceneShow 1.0s ease-out 24.6s forwards, sceneHide 0.8s ease-in 29.5s forwards; }
+  .scene-5 .lead {
+    font-family: var(--font);
+    font-size: 100px; color: var(--white);
+    letter-spacing: 4px;
+    text-shadow: 0 0 6px var(--pink), 0 0 18px var(--pink), 0 0 40px rgba(255,31,160,0.7);
+    opacity: 0;
+    animation: leadIn 0.9s ease-out 24.8s forwards;
+  }
+  @keyframes leadIn { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+
+  .scene-5 .url {
+    margin-top: 36px;
+    font-size: 220px; letter-spacing: -2px; color: var(--yellow);
+    animation: slamDrop 0.5s cubic-bezier(.16,1.6,.3,1) 24.7s both,
+               glowPulseYellow 2.2s ease-in-out 25.4s infinite;
+  }
+  .scene-5 .pulse-rings {
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+  .scene-5 .ring {
+    position: absolute; left: 0; top: 0;
+    width: 800px; height: 800px;
+    margin-left: -400px; margin-top: -400px;
+    border-radius: 50%;
+    border: 2px solid var(--yellow);
+    opacity: 0;
+    animation: ringPulse 2.4s ease-out infinite;
+  }
+  .scene-5 .ring:nth-child(2) { animation-delay: 0.8s; }
+  .scene-5 .ring:nth-child(3) { animation-delay: 1.6s; }
+  @keyframes ringPulse {
+    0%   { transform: scale(0.5); opacity: 0.4; }
+    100% { transform: scale(1.8); opacity: 0; }
+  }
+  .scene-5 .tags {
+    margin-top: 40px;
+    font-family: 'Inter', sans-serif;
+    font-size: 28px; color: #bbb;
+    letter-spacing: 10px; text-transform: uppercase;
+    opacity: 0;
+    animation: kickerIn 0.9s ease-out 26.5s forwards;
+  }
+
+  /* Scene show/hide envelopes */
+  @keyframes sceneShow { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes sceneHide { to { opacity: 0; } }
+
+  /* Final fade to black */
+  .final-fade {
+    position: absolute; inset: 0;
+    background: #000;
+    opacity: 0;
+    z-index: 60;
+    pointer-events: none;
+    animation: finalFade 1.0s ease-in 29.0s forwards;
+  }
+  @keyframes finalFade { to { opacity: 1; } }
+
+  /* ─── Master loop — every 30s the whole stage re-keys ──────────── */
+  .stage {
+    animation: cycle 30s linear infinite;
+  }
+  @keyframes cycle { 0%, 100% { opacity: 1; } }
+  /* All inner animations use 'infinite' on pulses, and once on slams.
+     We force a clean restart every 30s by re-mounting via JS below. */
+
+  /* ─── Controls ─────────────────────────────────────────────────── */
+  .controls {
+    position: fixed; right: 16px; bottom: 16px;
+    display: flex; gap: 8px; z-index: 100;
+    font-family: 'Inter', sans-serif;
+  }
+  .controls button {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    backdrop-filter: blur(8px);
+    transition: background 0.2s;
+  }
+  .controls button:hover { background: rgba(255,255,255,0.16); }
+
+  .label {
+    position: fixed; left: 16px; bottom: 16px;
+    font-family: 'Inter', sans-serif; font-size: 12px;
+    color: rgba(255,255,255,0.45); letter-spacing: 2px;
+    text-transform: uppercase; z-index: 100;
+  }
+</style>
+</head>
+<body>
+
+<div class="stage-wrap">
+  <div class="stage" id="stage">
+
+    <div class="blob-bg">
+      <div class="blob b1"></div>
+      <div class="blob b2"></div>
+      <div class="blob b3"></div>
+      <div class="blob b4"></div>
+      <div class="blob b5"></div>
+      <div class="blob b6"></div>
+    </div>
+
+    <div class="grid"></div>
+
+    <!-- Scene 1: EN TAXI? -->
+    <div class="scene scene-1">
+      <div class="slam word glow-pink">EN TAXI?</div>
+    </div>
+
+    <!-- Scene 2: FORUTSIGBARHET -->
+    <div class="scene scene-2">
+      <div class="kicker">— Med Taxi4moss får du —</div>
+      <div class="slam word glow-pink">FORUTSIGBARHET</div>
+      <div class="underline"></div>
+    </div>
+
+    <!-- Scene 3: DU VET ALLTID 249 KR PRISEN -->
+    <div class="scene scene-3">
+      <div class="slam top glow-cyan">DU VET ALLTID</div>
+      <div class="price-box">
+        <div class="price"><span class="digits" id="priceDigits">849</span><span class="kr">kr</span></div>
+      </div>
+      <div class="slam bottom glow-yellow">PRISEN.</div>
+    </div>
+
+    <!-- Scene 4: TAXI4MOSS AS -->
+    <div class="scene scene-4">
+      <div class="badge">TAXI</div>
+      <div class="slam brand glow-pink">TAXI4MOSS</div>
+      <div class="as">AS</div>
+    </div>
+
+    <!-- Scene 5: CTA -->
+    <div class="scene scene-5">
+      <div class="pulse-rings">
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="ring"></div>
+      </div>
+      <div class="lead">BESTILL DIN TUR PÅ</div>
+      <div class="slam url">TAXI4MOSS.NO</div>
+      <div class="tags">Trygt · Raskt · Forutsigbart</div>
+    </div>
+
+    <!-- Persistent corner brand -->
+    <div class="corner-brand">
+      <div class="dot"></div>
+      <div class="name">TAXI4MOSS</div>
+    </div>
+
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+    <div class="final-fade"></div>
+
+  </div>
+</div>
+
+<div class="label">Mockup · Taxi4moss AS · Forutsigbarhet</div>
+<div class="controls">
+  <button onclick="restart()">↻ Spill av</button>
+  <button onclick="toggleFs()">⛶ Fullskjerm</button>
+</div>
+
+<script>
+  // ─── Responsive scale so 1920x1080 fits any viewport ───────────────
+  const stage = document.getElementById('stage');
+  function fit() {
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const scale = Math.min(vw / 1920, vh / 1080);
+    stage.style.transform = `scale(${scale})`;
+  }
+  window.addEventListener('resize', fit);
+  fit();
+
+  // ─── Price counter (849 → 249) timed to scene 3 ───────────────────
+  // Scene 3 starts at 11s; counter window 12.9s → 15.0s (≈2.1s)
+  let priceTimer = null;
+  function runPriceCounter() {
+    const el = document.getElementById('priceDigits');
+    if (!el) return;
+    el.textContent = '849';
+    setTimeout(() => {
+      const start = 849, end = 249, dur = 2100, t0 = performance.now();
+      function tick(now) {
+        const t = Math.min(1, (now - t0) / dur);
+        // easeOutExpo
+        const e = t >= 1 ? 1 : 1 - Math.pow(2, -10 * t);
+        const v = Math.round(start + (end - start) * e);
+        el.textContent = v;
+        if (t < 1) priceTimer = requestAnimationFrame(tick);
+      }
+      priceTimer = requestAnimationFrame(tick);
+    }, 12900);
+  }
+
+  // ─── Restart the whole loop every 30 seconds ─────────────────────
+  let loopTimer = null;
+  function restart() {
+    if (priceTimer) cancelAnimationFrame(priceTimer);
+    if (loopTimer) clearTimeout(loopTimer);
+    // Re-clone the stage to reset all CSS animations
+    const parent = stage.parentNode;
+    const clone = stage.cloneNode(true);
+    parent.replaceChild(clone, stage);
+    // re-bind reference
+    window._stage = clone;
+    document.getElementById('stage').id = 'stage';
+    fit();
+    runPriceCounter();
+    loopTimer = setTimeout(restart, 30000);
+  }
+
+  function toggleFs() {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+    else document.exitFullscreen();
+  }
+
+  // Kick off
+  runPriceCounter();
+  loopTimer = setTimeout(restart, 30000);
+</script>
+
+</body>
+</html>
