@@ -132,16 +132,16 @@
   .cta-qr span{font-weight:800;font-size:1vmin;letter-spacing:.24em;text-transform:uppercase;color:var(--red)}
 
   /* ── TAXI FLYBY (replaces burst) ── */
-  .flyby{position:absolute;inset:0;z-index:60;visibility:hidden;pointer-events:none;overflow:hidden;display:flex;align-items:center}
-  .flyby .lane{position:absolute;left:0;right:0;top:50%;height:0;border-top:2px dashed rgba(229,38,58,.18);transform:translateY(-50%)}
-  .flyby-car{width:56vmin;height:auto;color:var(--ink);position:relative;z-index:3;transform:translateX(-120%)}
+  .flyby{position:absolute;inset:0;z-index:60;visibility:hidden;pointer-events:none;overflow:hidden}
+  .flyby .lane{position:absolute;left:0;right:0;top:50%;height:0;border-top:2px dashed rgba(229,38,58,.18)}
+  .flyby-car{position:absolute;top:50%;left:0;width:56vmin;height:auto;color:var(--ink);z-index:3;transform:translate3d(-130%,-50%,0);will-change:transform}
   .flyby-car .roof-sign{fill:var(--yellow)}
   .flyby-car .sign-text{fill:var(--ink);font-family:'Inter',sans-serif;font-weight:900;font-size:14px;letter-spacing:1px}
   .flyby-car .checker{fill:var(--yellow)}
   .flyby-car .wheel{fill:var(--ink)}
   .flyby-car .rim{fill:var(--paper)}
   .flyby-car .window{fill:var(--paper)}
-  .motion-line{position:absolute;height:5px;background:var(--red);border-radius:3px;opacity:0;z-index:2}
+  .motion-line{position:absolute;height:5px;background:var(--red);border-radius:3px;opacity:0;will-change:transform,opacity;z-index:2}
   .ml-1{top:32%;width:32vmin;left:60%}
   .ml-2{top:42%;width:24vmin;left:48%}
   .ml-3{top:58%;width:38vmin;left:55%}
@@ -338,22 +338,21 @@
     .from('.s1 .hero-mark .tag',{y:14,opacity:0,duration:.6,ease:'power2.out'},2.45);
   hideScene('.s1', 3.0, .35);
 
-  // ── TAXI FLYBY (3.1 – 5.0s): bil speeder over skjermen
+  // ── TAXI FLYBY (3.1 – 5.0s): bil speeder over skjermen (GPU-optimalisert)
   tl.set('.flyby',{visibility:'visible'},3.1)
-    // car blasts across
+    // car: pure translate3d for GPU compositing, smooth power2.inOut
     .fromTo('.flyby-car',
-      {x:'-130%',rotation:-1,filter:'blur(0px)'},
-      {x:'150%',rotation:0,filter:'blur(4px)',duration:1.4,ease:'power3.in'},
+      {xPercent:-130,yPercent:-50,force3D:true},
+      {xPercent:150,yPercent:-50,force3D:true,duration:1.5,ease:'power2.inOut'},
       3.1)
-    .to('.flyby-car',{filter:'blur(0px)',duration:.2,ease:'power2.out'},4.3)
-    // motion lines whip past in the opposite direction
-    .fromTo('.ml-1',{x:'80%',opacity:0},{x:'-120%',opacity:.85,duration:.9,ease:'power2.out'},3.35)
-    .fromTo('.ml-2',{x:'100%',opacity:0},{x:'-130%',opacity:.6,duration:.9,ease:'power2.out'},3.45)
-    .fromTo('.ml-3',{x:'70%',opacity:0},{x:'-140%',opacity:.9,duration:.9,ease:'power2.out'},3.55)
-    .fromTo('.ml-4',{x:'90%',opacity:0},{x:'-130%',opacity:.55,duration:.9,ease:'power2.out'},3.65)
-    .fromTo('.ml-5',{x:'80%',opacity:0},{x:'-120%',opacity:.7,duration:.9,ease:'power2.out'},3.75)
-    .to('.motion-line',{opacity:0,duration:.25},4.55)
-    .set('.flyby',{visibility:'hidden'},4.9);
+    // motion lines whip past in the opposite direction — also force3D
+    .fromTo('.ml-1',{xPercent:80,opacity:0,force3D:true},{xPercent:-120,opacity:.85,duration:.95,ease:'power2.out',force3D:true},3.35)
+    .fromTo('.ml-2',{xPercent:100,opacity:0,force3D:true},{xPercent:-130,opacity:.6,duration:.95,ease:'power2.out',force3D:true},3.45)
+    .fromTo('.ml-3',{xPercent:70,opacity:0,force3D:true},{xPercent:-140,opacity:.9,duration:.95,ease:'power2.out',force3D:true},3.55)
+    .fromTo('.ml-4',{xPercent:90,opacity:0,force3D:true},{xPercent:-130,opacity:.55,duration:.95,ease:'power2.out',force3D:true},3.65)
+    .fromTo('.ml-5',{xPercent:80,opacity:0,force3D:true},{xPercent:-120,opacity:.7,duration:.95,ease:'power2.out',force3D:true},3.75)
+    .to('.motion-line',{opacity:0,duration:.25,ease:'power2.out'},4.6)
+    .set('.flyby',{visibility:'hidden'},4.95);
 
   // Hide brand+meta chrome during flyby
   tl.to('.brand, .meta',{opacity:0,duration:.2},3.0)
