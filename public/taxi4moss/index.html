@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Taxi4 Moss — Rimelig på pris. Best på kundeservice.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://usercontent.one">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#0A0A0A;
+    --ink:#141414;
+    --paper:#F6F2EC;
+    --white:#FFFFFF;
+    --yellow:#FFD65B;
+    --red:#E5263A;
+    --dim:rgba(255,255,255,.6);
+    --dim-ink:rgba(20,20,20,.55);
+    --rule:rgba(255,255,255,.14);
+  }
+  *{box-sizing:border-box}
+  html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#000}
+  body{display:grid;place-items:center;color:var(--white);font-family:'Inter',Arial,sans-serif;font-kerning:normal;-webkit-font-smoothing:antialiased;font-feature-settings:"ss01","cv11"}
+  #film{position:relative;width:min(100vw,100vh);height:min(100vw,100vh);aspect-ratio:1/1;overflow:hidden;background:var(--black);isolation:isolate}
+  #film:after{content:"";position:absolute;inset:0;z-index:80;pointer-events:none;background:radial-gradient(circle at 50% 50%,transparent 55%,rgba(0,0,0,.45) 130%)}
+
+  /* Chrome */
+  .brand{position:absolute;z-index:90;left:5%;top:5%;display:flex;align-items:center;gap:1vmin}
+  .brand img{height:2.8vmin;width:auto;display:block}
+  .meta{position:absolute;z-index:90;right:5%;top:5.4%;font-weight:600;font-size:1.1vmin;letter-spacing:.26em;text-transform:uppercase;color:var(--yellow)}
+
+  .progress{position:absolute;z-index:90;left:5%;right:5%;bottom:4%;height:3px;background:rgba(255,255,255,.14);border-radius:3px;overflow:hidden}
+  .progress i{display:block;width:100%;height:100%;background:var(--yellow);transform:scaleX(0);transform-origin:left;border-radius:3px}
+
+  /* Scene base */
+  .scene{position:absolute;inset:0;visibility:hidden;display:grid;place-items:center;text-align:center;will-change:transform,opacity}
+  .scene.yellow{background:var(--yellow);color:var(--black)}
+  .scene.paper{background:var(--paper);color:var(--ink)}
+
+  .center{position:relative;z-index:4;width:88%;display:grid;justify-items:center;gap:2.2vmin;padding:0 2vmin}
+  .eyebrow{font-weight:700;font-size:1.4vmin;letter-spacing:.3em;text-transform:uppercase;color:var(--yellow);overflow:hidden}
+  .scene.yellow .eyebrow{color:var(--black)}
+  .eyebrow span{display:inline-block}
+
+  h1,h2,h3{margin:0;font-family:'Inter',sans-serif;font-weight:700;line-height:1.04;letter-spacing:-.035em;text-wrap:balance}
+  h1{font-size:9.5vmin;font-weight:700;line-height:1.02}
+  h2{font-size:7vmin;font-weight:700}
+  h3{font-size:4.6vmin;font-weight:600}
+  .yellow-word{color:var(--yellow);font-style:italic;font-weight:700}
+  .scene.yellow .yellow-word{color:var(--red);font-style:italic;font-weight:700}
+
+  .support{max-width:78%;font-weight:400;font-size:2.2vmin;line-height:1.45;color:var(--dim);text-wrap:balance}
+  .scene.yellow .support{color:rgba(10,10,10,.7)}
+
+  .reveal{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.06em;line-height:1.05}
+  .reveal > span{display:inline-block}
+
+  /* ── Scene 1: HOOK ── */
+  .s1 h1{font-size:11vmin}
+
+  /* ── Scene 2: Brand reveal ── */
+  .hero-mark{display:grid;justify-items:center;gap:3vmin}
+  .hero-mark img.logo{height:12vmin;width:auto;display:block}
+  .hero-mark .tag{font-weight:500;font-size:2.8vmin;letter-spacing:-.015em;color:var(--white);max-width:80%}
+  .hero-mark .tag .yellow-word{font-weight:700}
+
+  /* ── Scene 3: Faste priser w/ time icons ── */
+  .price-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.4vmin;width:92%;margin-top:1vmin}
+  .price-card{display:grid;place-items:center;padding:2vmin 1vmin;border:1px solid var(--rule);border-radius:14px;background:rgba(255,255,255,.04);gap:.8vmin}
+  .price-card img{width:5.5vmin;height:5.5vmin;display:block}
+  .price-card b{font-weight:700;font-size:1.5vmin;letter-spacing:-.01em;color:var(--white)}
+  .price-card span{font-weight:500;font-size:1.05vmin;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+
+  /* ── Scene 4: 24/7 ── */
+  .big-num{font-weight:800;font-size:32vmin;line-height:.82;letter-spacing:-.05em;color:var(--yellow);font-variant-numeric:tabular-nums}
+  .big-num em{font-style:normal;font-weight:600;color:var(--white)}
+
+  /* ── Scene 5: Soner ── */
+  .zones{display:flex;flex-wrap:wrap;justify-content:center;gap:1vmin 1.2vmin;max-width:88%;margin-top:1vmin}
+  .zone-chip{padding:1.1vmin 1.8vmin;border:1px solid var(--yellow);background:transparent;color:var(--yellow);font-weight:600;font-size:2vmin;border-radius:999px;letter-spacing:-.005em}
+  .zone-chip.solid{background:var(--yellow);color:var(--black);border-color:var(--yellow)}
+
+  /* ── Scene 6: Trust ── */
+  .trust-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2vmin;width:92%;margin-top:1vmin;align-items:stretch}
+  .trust-card{padding:2.6vmin 1.6vmin;border:1px solid var(--rule);border-radius:16px;background:rgba(255,214,91,.05);display:grid;gap:.8vmin;align-content:start}
+  .trust-card b{display:block;font-weight:800;font-size:5vmin;letter-spacing:-.03em;color:var(--yellow);line-height:1}
+  .trust-card span{font-weight:600;font-size:1.3vmin;letter-spacing:.18em;text-transform:uppercase;color:var(--white)}
+  .trust-card p{margin:0;font-weight:400;font-size:1.5vmin;line-height:1.4;color:var(--dim)}
+
+  /* ── Scene 7: CTA ── */
+  .cta-stack{display:grid;justify-items:center;gap:1.6vmin;width:90%}
+  .cta-stack img.logo{height:6.5vmin;width:auto;display:block}
+  .cta-eyebrow{font-weight:700;font-size:1.5vmin;letter-spacing:.28em;text-transform:uppercase;color:var(--yellow)}
+  .cta-phone{font-weight:800;font-size:22vmin;line-height:.9;letter-spacing:-.05em;color:var(--yellow);font-variant-numeric:tabular-nums}
+  .cta-sub{font-weight:500;font-size:2.2vmin;letter-spacing:-.01em;color:var(--white)}
+  .cta-row{display:flex;align-items:center;gap:2.5vmin;margin-top:1.8vmin}
+  .cta-link{display:inline-flex;align-items:center;gap:1vmin;padding:1.6vmin 2.4vmin;background:var(--yellow);color:var(--black);font-weight:700;font-size:1.7vmin;letter-spacing:-.005em;text-decoration:none;border-radius:999px}
+  .cta-link::after{content:"→"}
+  .cta-qr{display:grid;justify-items:center;gap:.6vmin}
+  .cta-qr img{width:11vmin;height:11vmin;display:block;border:2px solid var(--yellow);border-radius:14px;background:var(--yellow);padding:.6vmin}
+  .cta-qr span{font-weight:700;font-size:1vmin;letter-spacing:.22em;text-transform:uppercase;color:var(--yellow)}
+
+  /* FX */
+  .fx{position:absolute;z-index:70;visibility:hidden;pointer-events:none;will-change:transform,opacity}
+  .fx-wipe{inset:0;background:var(--yellow);transform-origin:left center;transform:scaleX(0)}
+  .fx-wipe.black{background:var(--black)}
+
+  @media(prefers-reduced-motion:reduce){.scene,.fx{will-change:auto}}
+</style>
+</head>
+<body>
+<main id="film">
+  <div class="brand">
+    <img src="https://usercontent.one/wp/www.taxi4moss.no/wp-content/uploads/2023/05/Taxi4_logo-removebg-preview.png" alt="Taxi4Moss">
+  </div>
+  <div class="meta">04231 · 24/7</div>
+
+  <!-- 1: HOOK -->
+  <section class="scene s1">
+    <div class="center">
+      <div class="eyebrow"><span>Trenger du skyss?</span></div>
+      <h1>
+        <span class="reveal"><span>Taxi i</span></span><br>
+        <span class="reveal"><span><span class="yellow-word">Moss?</span></span></span>
+      </h1>
+    </div>
+  </section>
+
+  <!-- 2: Brand reveal -->
+  <section class="scene s2">
+    <div class="center">
+      <div class="hero-mark">
+        <img class="logo" src="https://usercontent.one/wp/www.taxi4moss.no/wp-content/uploads/2023/05/Taxi4_logo-removebg-preview.png" alt="Taxi4Moss">
+        <div class="tag">Rimelig på pris.<br><span class="yellow-word">Best på kundeservice.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3: Faste priser med tids-ikoner -->
+  <section class="scene s3">
+    <div class="center">
+      <div class="eyebrow"><span>Forutsigbarhet</span></div>
+      <h2>
+        <span class="reveal"><span>Du vet alltid</span></span><br>
+        <span class="reveal"><span><span class="yellow-word">prisen.</span></span></span>
+      </h2>
+      <div class="price-grid">
+        <div class="price-card pc-1">
+          <img src="https://usercontent.one/wp/www.taxi4moss.no/wp-content/uploads/2023/05/noun-sun-1174161-FFD65B.png" alt="Dag">
+          <b>06–17</b><span>Dag</span>
+        </div>
+        <div class="price-card pc-2">
+          <img src="https://usercontent.one/wp/www.taxi4moss.no/wp-content/uploads/2023/05/noun-cloudy-3415816-FFD65B.png" alt="Kveld">
+          <b>17–21</b><span>Kveld</span>
+        </div>
+        <div class="price-card pc-3">
+          <img src="https://usercontent.one/wp/www.taxi4moss.no/wp-content/uploads/2023/05/noun-cloudy-night-4183445-FFD65B.png" alt="Natt">
+          <b>21–06</b><span>Natt/Helg</span>
+        </div>
+        <div class="price-card pc-4">
+          <img src="https://usercontent.one/wp/www.taxi4moss.no/wp-content/uploads/2023/05/noun-holiday-2185775-FFD65B.png" alt="Helligdag">
+          <b>12–00</b><span>Helligdag</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4: 24/7 -->
+  <section class="scene s4">
+    <div class="center">
+      <div class="eyebrow"><span>Vi er åpne</span></div>
+      <div class="big-num"><span class="bn-24">24</span><em>/</em><span class="bn-7">7</span></div>
+      <h3>Døgnåpent. Hver dag i året.</h3>
+    </div>
+  </section>
+
+  <!-- 5: Soner -->
+  <section class="scene s5">
+    <div class="center">
+      <div class="eyebrow"><span>Vi kjører hele Moss og Viken</span></div>
+      <h2>
+        <span class="reveal"><span>Fra Jeløya til</span></span><br>
+        <span class="reveal"><span><span class="yellow-word">Kambo.</span></span></span>
+      </h2>
+      <div class="zones">
+        <span class="zone-chip">Moss Sentrum</span>
+        <span class="zone-chip">Jeløya</span>
+        <span class="zone-chip solid">Rygge</span>
+        <span class="zone-chip">Ekholt</span>
+        <span class="zone-chip">Mosseskogen</span>
+        <span class="zone-chip solid">Krapfoss</span>
+        <span class="zone-chip">Kambo</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6: Trust -->
+  <section class="scene s6">
+    <div class="center">
+      <div class="eyebrow"><span>Trygt valg</span></div>
+      <h2>
+        <span class="reveal"><span>Vi er på din side,</span></span><br>
+        <span class="reveal"><span><span class="yellow-word">hele veien.</span></span></span>
+      </h2>
+      <div class="trust-row">
+        <div class="trust-card">
+          <b>15<small style="font-size:.55em">+</small></b>
+          <span>År erfaring</span>
+          <p>Lokalkjent siden 2009. Vi vet veien.</p>
+        </div>
+        <div class="trust-card">
+          <b>ISO</b>
+          <span>9001</span>
+          <p>Sertifisert kvalitet på hver tur.</p>
+        </div>
+        <div class="trust-card">
+          <b>ISO</b>
+          <span>14001</span>
+          <p>Sertifisert på miljø og bærekraft.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7: CTA -->
+  <section class="scene s7">
+    <div class="center cta-stack">
+      <img class="logo" src="https://usercontent.one/wp/www.taxi4moss.no/wp-content/uploads/2023/05/Taxi4_logo-removebg-preview.png" alt="Taxi4Moss">
+      <div class="cta-eyebrow">Ring oss · Døgnåpent</div>
+      <div class="cta-phone">04231</div>
+      <div class="cta-sub">Eller bestill på taxi4moss.no</div>
+      <div class="cta-row">
+        <a class="cta-link" href="tel:04231">Ring 04231</a>
+        <div class="cta-qr">
+          <img src="data:image/png;base64,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Z733ySda++RTvfdJywQAgKoJAABVEwAAqiYAAFRNAAComgAAUDUBAKBqAgBA1QQAgKoJAABVEwAAqiYAAFRNAAComgAAUDUBAKBqAgBA1QQAgKoJAABVEwAAqn6l7L1PPtXaJy1rn7S898mnWvvkU733CX/Oe580rX3yqd77pGXtk2/w3icta580vfdJy9on32DtE35mAgBA1QQAgKoJAABVEwAAqiYAAFRNAAComgAAUDUBAKBqAgBA1QQAgKoJAABVEwAAqiYAAFRNAAComgAAUDUBAKBqAgBA1QQAgKpfKVv75FO990nL2icta598qvc++QZrn3yD9z75Bu998g3e++RTrX3S8t4nTWuf8DPvfdKy9knTe598ogkAAFUTAACqJgAAVE0AAKiaAABQNQEAoGoCAEDVBACAqgkAAFUTAACqJgAAVE0AAKiaAABQNQEAoGoCAEDVBACAqgkAAFUTAACqJgAAVP3KF1n7pOW9Tz7V2icta5/wM+990rT2ySda+6TpvU9a1j5peu+Tlvc+4WfWPvlU733yqdY+aXnvk0+19knLe5+0TAAAqJoAAFA1AQCgagIAQNUEAICqCQAAVRMAAKomAABUTQAAqJoAAFA1AQCgagIAQNUEAICqCQAAVRMAAKomAABUTQAAqJoAAFD11+9//v6dD7X2yTd475OmtU9a3vvkU619ws+89wk/t/bJJ3rvE35u7ZOW9z75VGuf8DPvfdIyAQCgagIAQNUEAICqCQAAVRMAAKomAABUTQAAqJoAAFA1AQCgagIAQNUEAICqCQAAVRMAAKomAABUTQAAqJoAAFA1AQCgagIAQNWvlK190vLeJ59q7ZNvsPbJp3rvk5a1T77B2ict733yqdY+aXrvk0+09knTe598orVPmt775BOtfdL03icta5/wMxMAAKomAABUTQAAqJoAAFA1AQCgagIAQNUEAICqCQAAVRMAAKomAABUTQAAqJoAAFA1AQCgagIAQNUEAICqCQAAVRMAAKomAABUTQAAqPrr9z9//86HWvuk6b1PPtHaJ03vfcLPrH3S8t4nn2rtk5b3Pmla+6TlvU8+1donLe99ws+tfdLy3if8zNonTe998okmAABUTQAAqJoAAFA1AQCgagIAQNUEAICqCQAAVRMAAKomAABUTQAAqJoAAFA1AQCgagIAQNUEAICqCQAAVRMAAKomAABUTQAAqPrr9z9//07R2ict733StPZJy3uffIO1Tz7Ve598orVPPtV7n3yqtU9a3vukae2Tlvc+aVn7pOm9T1rWPuHPeu8T/pwJAABVEwAAqiYAAFRNAAComgAAUDUBAKBqAgBA1QQAgKoJAABVEwAAqiYAAFRNAAComgAAUDUBAKBqAgBA1QQAgKoJAABVEwAAqv76/c/fvwP/QmuffKL3PuHn1j75VO99ws+sfdLy3iffYO2Tpvc++QZrn7S890nLBACAqgkAAFUTAACqJgAAVE0AAKiaAABQNQEAoGoCAEDVBACAqgkAAFUTAACqJgAAVE0AAKiaAABQNQEAoGoCAEDVBACAqgkAAFUTAACqfqVs7RP4X977pOm9T77B2if8zHufNK19wn/H2ict733yDdY+4WcmAABUTQAAqJoAAFA1AQCgagIAQNUEAICqCQAAVRMAAKomAABUTQAAqJoAAFA1AQCgagIAQNUEAICqCQAAVRMAAKomAABUTQAAqPqVD/beJ/xZa598qrVPvsF7n7SsffKp3vukZe2Tpvc+aVn75FO990nL2ief6r1P+Jn3PmlZ++QbTAAAqJoAAFA1AQCgagIAQNUEAICqCQAAVRMAAKomAABUTQAAqJoAAFA1AQCgagIAQNUEAICqCQAAVRMAAKomAABUTQAAqJoAAFD1K19k7ZNv8N4nwGd67xN+Zu0Tfm7tk5b3PvlU733yiSYAAFRNAAComgAAUDUBAKBqAgBA1QQAgKoJAABVEwAAqiYAAFRNAAComgAAUDUBAKBqAgBA1QQAgKoJAABVEwAAqiYAAFRNAAComgAAUPUr8C/13icta5+0vPdJ09on32Dtk0+19sk3eO+Tb/DeJ59o7ZNPtfZJy3uffIMJAABVEwAAqiYAAFRNAAComgAAUDUBAKBqAgBA1QQAgKoJAABVEwAAqiYAAFRNAAComgAAUDUBAKBqAgBA1QQAgKoJAABVEwAAqn4F/qXWPvlEa598qvc+aVn75Fu890nL2ict733StPZJy3uffIO1T/iz1j5pee+TlgkAAFUTAACqJgAAVE0AAKiaAABQNQEAoGoCAEDVBACAqgkAAFUTAACqJgAAVE0AAKiaAABQNQEAoGoCAEDVBACAqgkAAFUTAACqfuWLvPcJ/x3vffKJ1j5peu+TlrVPWt775FOtffKp3vvkU733ScvaJ5/qvU8+0XufNK190vLeJy1rnzS998knmgAAUDUBAKBqAgBA1QQAgKoJAABVEwAAqiYAAFRNAAComgAAUDUBAKBqAgBA1QQAgKoJAABVEwAAqiYAAFRNAAComgAAUDUBAKBqAgBA1a98sLVP4N/mvU++wdonTe998qnWPml575NPtfYJP/PeJy1rn/Bza5+0vPdJywQAgKoJAABVEwAAqiYAAFRNAAComgAAUDUBAKBqAgBA1QQAgKoJAABVEwAAqiYAAFRNAAComgAAUDUBAKBqAgBA1QQAgKoJAABVf/3+5+/fAQCgZgIAQNUEAICqCQAAVRMAAKomAABUTQAAqJoAAFA1AQCgagIAQNUEAICqCQAAVRMAAKomAABUTQAAqJoAAFA1AQCgagIAQNUEAICq/wPvMzE3JuirbwAAAABJRU5ErkJggg==" alt="QR til taxi4moss.no">
+          <span>Scan</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FX -->
+  <div class="fx fx-wipe"></div>
+  <div class="fx fx-wipe black"></div>
+
+  <div class="progress"><i></i></div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+  const DURATION = 30;
+  gsap.defaults({ease:'power2.out'});
+
+  function showScene(sel, at, fadeIn=0.6){
+    tl.set(sel,{visibility:'visible'},at)
+      .fromTo(sel,{opacity:0},{opacity:1,duration:fadeIn,ease:'power2.out'},at);
+  }
+  function hideScene(sel, at, fadeOut=0.5){
+    tl.to(sel,{opacity:0,duration:fadeOut,ease:'power2.in'},at)
+      .set(sel,{visibility:'hidden'},at+fadeOut);
+  }
+
+  gsap.set('.scene',{opacity:0});
+  const tl = gsap.timeline({defaults:{duration:.8}});
+
+  // Master progress
+  tl.fromTo('.progress i',{scaleX:0},{scaleX:1,duration:DURATION,ease:'none'},0);
+
+  // ── Scene 1 (0 – 3.5s): HOOK
+  showScene('.s1', 0, .6);
+  tl.from('.s1 .eyebrow span',{y:'110%',duration:.9,ease:'power2.out'},.3)
+    .from('.s1 .reveal > span',{y:'110%',duration:1.0,stagger:.6,ease:'power2.out'},.6);
+  hideScene('.s1', 3.0, .5);
+
+  // ── Scene 2 (3.5 – 7s): Brand reveal
+  showScene('.s2', 3.4, .6);
+  tl.from('.s2 .hero-mark img.logo',{y:32,opacity:0,duration:1.0,ease:'power4.out'},3.7)
+    .from('.s2 .hero-mark .tag',{y:20,opacity:0,duration:.9,ease:'power2.out'},4.4);
+  hideScene('.s2', 6.6, .5);
+
+  // ── Scene 3 (7 – 11.5s): Faste priser
+  showScene('.s3', 7.0, .6);
+  tl.from('.s3 .eyebrow span',{y:'110%',duration:.9,ease:'power2.out'},7.3)
+    .from('.s3 .reveal > span',{y:'110%',duration:1.0,stagger:.5,ease:'power2.out'},7.55)
+    .from('.s3 .price-card',{y:30,opacity:0,scale:.85,duration:.6,stagger:.13,ease:'back.out(1.7)'},8.5);
+  hideScene('.s3', 11.1, .5);
+
+  // ── Scene 4 (11.5 – 15s): 24/7
+  showScene('.s4', 11.5, .55);
+  tl.from('.s4 .eyebrow span',{y:'110%',duration:.85,ease:'power2.out'},11.8)
+    .from('.s4 .bn-24',{scale:.5,opacity:0,duration:.9,ease:'back.out(1.6)'},12.0)
+    .from('.s4 .big-num em',{opacity:0,duration:.4,ease:'power2.out'},12.5)
+    .from('.s4 .bn-7',{scale:.5,opacity:0,duration:.9,ease:'back.out(1.6)'},12.55)
+    .from('.s4 h3',{y:20,opacity:0,duration:.8,ease:'power2.out'},13.4);
+  hideScene('.s4', 14.6, .5);
+
+  // ── Scene 5 (15 – 19s): Soner
+  showScene('.s5', 15.0, .55);
+  tl.from('.s5 .eyebrow span',{y:'110%',duration:.85,ease:'power2.out'},15.3)
+    .from('.s5 .reveal > span',{y:'110%',duration:1.0,stagger:.5,ease:'power2.out'},15.55)
+    .from('.s5 .zone-chip',{y:18,opacity:0,scale:.85,duration:.45,stagger:.07,ease:'back.out(1.6)'},16.5);
+  hideScene('.s5', 18.6, .5);
+
+  // ── Scene 6 (19 – 23s): Trust
+  showScene('.s6', 19.0, .55);
+  tl.from('.s6 .eyebrow span',{y:'110%',duration:.85,ease:'power2.out'},19.3)
+    .from('.s6 .reveal > span',{y:'110%',duration:1.0,stagger:.5,ease:'power2.out'},19.55)
+    .from('.s6 .trust-card',{y:30,opacity:0,duration:.6,stagger:.15,ease:'back.out(1.6)'},20.6);
+  hideScene('.s6', 22.6, .5);
+
+  // wipe to CTA
+  tl.set('.fx-wipe:not(.black)',{visibility:'visible'},22.55)
+    .fromTo('.fx-wipe:not(.black)',{scaleX:0},{scaleX:1,duration:.45,ease:'power2.inOut'},22.55)
+    .set('.fx-wipe:not(.black)',{transformOrigin:'right center'},23.0)
+    .to('.fx-wipe:not(.black)',{scaleX:0,duration:.4,ease:'power2.inOut'},23.0)
+    .set('.fx-wipe:not(.black)',{visibility:'hidden',transformOrigin:'left center'},23.4);
+
+  // ── Scene 7 (23 – 30s): CTA
+  showScene('.s7', 23.0, .6);
+  tl.from('.s7 .cta-stack img.logo',{y:24,opacity:0,duration:.9,ease:'power4.out'},23.3)
+    .from('.s7 .cta-eyebrow',{y:14,opacity:0,duration:.6,ease:'power2.out'},23.8)
+    .from('.s7 .cta-phone',{scale:.6,opacity:0,duration:1.0,ease:'back.out(1.5)'},24.05)
+    .from('.s7 .cta-sub',{y:14,opacity:0,duration:.6,ease:'power2.out'},25.0)
+    .from('.s7 .cta-link',{y:20,opacity:0,duration:.6,ease:'power2.out'},25.4)
+    .from('.s7 .cta-qr',{y:20,opacity:0,duration:.6,ease:'power2.out'},25.55);
+
+  // Hide chrome on accent scenes (none here, just hide during CTA logo show to avoid clutter)
+</script>
+</body>
+</html>
