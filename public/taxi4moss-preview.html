@@ -272,6 +272,16 @@
   }
   @keyframes priceIn  { to { opacity: 1; transform: scale(1); } }
   @keyframes priceOut { to { opacity: 0; transform: scale(0.95); } }
+  .scene-3 .price-tag {
+    margin-top: 28px;
+    font-family: 'Inter', sans-serif;
+    font-size: 26px; letter-spacing: 10px;
+    color: var(--cyan); text-transform: uppercase;
+    text-shadow: 0 0 6px var(--cyan), 0 0 18px rgba(0,240,255,0.6);
+    opacity: 0;
+    animation: kickerIn 0.8s ease-out 16.0s forwards,
+               kickerOut 0.5s ease-in 18.0s forwards;
+  }
   /* Counter digits */
   .scene-3 .digits {
     display: inline-block; min-width: 360px; text-align: right;
@@ -331,10 +341,19 @@
   @keyframes leadIn { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
 
   .scene-5 .url {
-    margin-top: 36px;
-    font-size: 220px; letter-spacing: -2px; color: var(--yellow);
+    margin-top: 24px;
+    font-size: 360px; letter-spacing: 4px; color: var(--yellow);
     animation: slamDrop 0.5s cubic-bezier(.16,1.6,.3,1) 24.7s both,
                glowPulseYellow 2.2s ease-in-out 25.4s infinite;
+  }
+  .scene-5 .sub-url {
+    margin-top: 16px;
+    font-family: var(--font);
+    font-size: 78px; letter-spacing: 6px; color: var(--white);
+    text-shadow: 0 0 6px var(--pink), 0 0 18px var(--pink), 0 0 40px rgba(255,31,160,0.6);
+    text-transform: lowercase;
+    opacity: 0;
+    animation: kickerIn 0.8s ease-out 25.8s forwards;
   }
   .scene-5 .pulse-rings {
     position: absolute; left: 50%; top: 50%;
@@ -431,9 +450,9 @@
 
     <div class="grid"></div>
 
-    <!-- Scene 1: EN TAXI? -->
+    <!-- Scene 1: TRENGER TAXI? -->
     <div class="scene scene-1">
-      <div class="slam word glow-pink">EN TAXI?</div>
+      <div class="slam word glow-pink">TRENGER TAXI?</div>
     </div>
 
     <!-- Scene 2: FORUTSIGBARHET -->
@@ -443,13 +462,14 @@
       <div class="underline"></div>
     </div>
 
-    <!-- Scene 3: DU VET ALLTID 249 KR PRISEN -->
+    <!-- Scene 3: Du vet alltid prisen — med fast-pris display -->
     <div class="scene scene-3">
       <div class="slam top glow-cyan">DU VET ALLTID</div>
       <div class="price-box">
         <div class="price"><span class="digits" id="priceDigits">849</span><span class="kr">kr</span></div>
       </div>
       <div class="slam bottom glow-yellow">PRISEN.</div>
+      <div class="price-tag">Fast pris · Null overraskelser</div>
     </div>
 
     <!-- Scene 4: TAXI4MOSS AS -->
@@ -466,9 +486,10 @@
         <div class="ring"></div>
         <div class="ring"></div>
       </div>
-      <div class="lead">BESTILL DIN TUR PÅ</div>
-      <div class="slam url">TAXI4MOSS.NO</div>
-      <div class="tags">Trygt · Raskt · Forutsigbart</div>
+      <div class="lead">RING NÅ — DØGNET RUNDT</div>
+      <div class="slam url">04231</div>
+      <div class="sub-url">taxi4moss.no</div>
+      <div class="tags">Trygt · Raskt · 24/7</div>
     </div>
 
     <!-- Persistent corner brand -->
