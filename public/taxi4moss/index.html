@@ -102,6 +102,14 @@
   .cta-qr img{width:12vmin;height:12vmin;display:block;border:2px solid var(--red);border-radius:14px;background:var(--white);padding:.5vmin}
   .cta-qr span{font-weight:800;font-size:1vmin;letter-spacing:.24em;text-transform:uppercase;color:var(--red)}
 
+  /* ── BURST PANELS (Agaas-style) ── */
+  .burst{position:absolute;inset:0;z-index:60;visibility:hidden;pointer-events:none}
+  .burst-panel{position:absolute;inset:0;display:grid;place-items:center;visibility:hidden;opacity:0}
+  .burst-panel span{display:block;font-family:'Inter',sans-serif;font-weight:800;font-size:18vmin;line-height:.88;letter-spacing:-.055em;text-align:center;font-style:italic}
+  .burst-panel .small{font-size:32vmin;font-style:italic;font-weight:800}
+  .burst-red{background:var(--red);color:var(--white)}
+  .burst-white{background:var(--white);color:var(--red)}
+
   /* FX */
   .fx{position:absolute;z-index:70;visibility:hidden;pointer-events:none;will-change:transform,opacity}
   .fx-wipe{inset:0;background:var(--red);transform-origin:left center;transform:scaleX(0)}
@@ -127,6 +135,14 @@
       </div>
     </div>
   </section>
+
+  <!-- BURST: 4 fullskjerm-paneler -->
+  <div class="burst">
+    <div class="burst-panel burst-red bp-1"><span>Trenger?</span></div>
+    <div class="burst-panel burst-white bp-2"><span>Taxi?</span></div>
+    <div class="burst-panel burst-red bp-3"><span class="small">i</span></div>
+    <div class="burst-panel burst-white bp-4"><span>Moss?</span></div>
+  </div>
 
   <!-- 2: HOOK -->
   <section class="scene s2">
@@ -269,18 +285,42 @@
 
   tl.fromTo('.progress i',{scaleX:0},{scaleX:1,duration:DURATION,ease:'none'},0);
 
-  // ── Scene 1 (0 – 4s): LOGO INTRO
+  // ── Scene 1 (0 – 2.8s): LOGO INTRO (shortened to make room for burst)
   showScene('.s1', 0, .7);
-  tl.from('.s1 .hero-mark img.logo',{y:36,opacity:0,duration:1.1,ease:'power4.out'},.3)
-    .fromTo('.s1 .hero-mark .rule',{scaleX:0,opacity:0},{scaleX:1,opacity:1,duration:.7,ease:'power3.out',transformOrigin:'left center'},1.1)
-    .from('.s1 .hero-mark .tag',{y:18,opacity:0,duration:.9,ease:'power2.out'},1.4);
-  hideScene('.s1', 3.6, .55);
+  tl.from('.s1 .hero-mark img.logo',{y:36,opacity:0,duration:1.0,ease:'power4.out'},.25)
+    .fromTo('.s1 .hero-mark .rule',{scaleX:0,opacity:0},{scaleX:1,opacity:1,duration:.6,ease:'power3.out',transformOrigin:'left center'},.95)
+    .from('.s1 .hero-mark .tag',{y:16,opacity:0,duration:.7,ease:'power2.out'},1.2);
+  hideScene('.s1', 2.5, .35);
 
-  // ── Scene 2 (4 – 7.5s): HOOK
-  showScene('.s2', 4.0, .55);
-  tl.from('.s2 .eyebrow span',{y:'110%',duration:.9,ease:'power2.out'},4.25)
-    .from('.s2 .reveal > span',{y:'110%',duration:1.0,stagger:.55,ease:'power2.out'},4.55)
-    .from('.s2 .support',{y:14,opacity:0,duration:.7,ease:'power2.out'},6.0);
+  // ── BURST (2.85 – 5.0s): 4 panels, Agaas-style snap
+  tl.set('.burst',{visibility:'visible'},2.85)
+    // bp-1 "Trenger?"   red bg
+    .set('.bp-1',{visibility:'visible',opacity:1},2.85)
+    .from('.bp-1 span',{scale:.7,duration:.18,ease:'back.out(2.5)'},2.85)
+    .set('.bp-1',{visibility:'hidden',opacity:0},3.45)
+    // bp-2 "Taxi?"      white bg
+    .set('.bp-2',{visibility:'visible',opacity:1},3.45)
+    .from('.bp-2 span',{scale:.7,duration:.18,ease:'back.out(2.5)'},3.45)
+    .set('.bp-2',{visibility:'hidden',opacity:0},4.0)
+    // bp-3 "i"          red bg, quick flash
+    .set('.bp-3',{visibility:'visible',opacity:1},4.0)
+    .from('.bp-3 span',{scale:.5,duration:.14,ease:'back.out(3)'},4.0)
+    .set('.bp-3',{visibility:'hidden',opacity:0},4.3)
+    // bp-4 "Moss?"      white bg, longer hold to land
+    .set('.bp-4',{visibility:'visible',opacity:1},4.3)
+    .from('.bp-4 span',{scale:.7,duration:.22,ease:'back.out(2.5)'},4.3)
+    .set('.bp-4',{visibility:'hidden',opacity:0},5.0)
+    .set('.burst',{visibility:'hidden'},5.0);
+
+  // Hide brand+meta chrome during burst
+  tl.to('.brand, .meta',{opacity:0,duration:.2},2.7)
+    .to('.brand, .meta',{opacity:1,duration:.3},5.05);
+
+  // ── Scene 2 (5 – 7.5s): HOOK — lands the answer
+  showScene('.s2', 5.0, .45);
+  tl.from('.s2 .eyebrow span',{y:'110%',duration:.8,ease:'power2.out'},5.2)
+    .from('.s2 .reveal > span',{y:'110%',duration:.9,stagger:.45,ease:'power2.out'},5.4)
+    .from('.s2 .support',{y:14,opacity:0,duration:.6,ease:'power2.out'},6.5);
   hideScene('.s2', 7.1, .5);
 
   // ── Scene 3 (7.5 – 12s): Faste priser
