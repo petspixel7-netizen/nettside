@@ -22,35 +22,38 @@
   }
   *{box-sizing:border-box}
   html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#000}
-  body{display:grid;place-items:center;color:var(--ink);font-family:'Sora',Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  body{display:grid;place-items:center;color:var(--ink);font-family:'Sora',Arial,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
   /* display font for headlines & big numbers */
   .kin,.money .num,.age,.cta-link{font-family:'Anton',Impact,sans-serif;font-weight:400}
 
   /* 9:16 vertical canvas for SoMe */
   #film{position:relative;width:min(100vw,56.25vh);height:min(177.78vw,100vh);aspect-ratio:9/16;overflow:hidden;background:var(--night);isolation:isolate;container-type:size}
-  /* film grain */
-  #film:after{content:"";position:absolute;inset:0;z-index:95;pointer-events:none;opacity:.05;mix-blend-mode:overlay;
+  /* light film grain (cheap, static) */
+  #film:after{content:"";position:absolute;inset:0;z-index:95;pointer-events:none;opacity:.04;mix-blend-mode:overlay;
     background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>")}
 
-  /* moving gradient blobs background */
-  .bg{position:absolute;inset:-20%;z-index:0;filter:blur(60px);opacity:.0;will-change:transform,opacity}
-  .blob{position:absolute;border-radius:50%;mix-blend-mode:screen;will-change:transform}
-  .blob.a{width:70%;height:70%;left:-10%;top:-5%;background:radial-gradient(circle,var(--blue) 0%,transparent 70%)}
-  .blob.b{width:75%;height:75%;right:-15%;top:25%;background:radial-gradient(circle,var(--blue-bright) 0%,transparent 70%)}
-  .blob.c{width:60%;height:60%;left:15%;bottom:-10%;background:radial-gradient(circle,var(--violet) 0%,transparent 70%)}
+  /* moving gradient blobs — blur lives on each blob so only transforms repaint (smooth) */
+  .bg{position:absolute;inset:-25%;z-index:0;opacity:0;will-change:opacity}
+  .blob{position:absolute;border-radius:50%;mix-blend-mode:screen;filter:blur(42px);will-change:transform;transform:translateZ(0)}
+  .blob.a{width:70%;height:70%;left:-10%;top:-5%;background:radial-gradient(circle,var(--blue) 0%,transparent 68%)}
+  .blob.b{width:75%;height:75%;right:-15%;top:25%;background:radial-gradient(circle,var(--blue-bright) 0%,transparent 68%)}
+  .blob.c{width:60%;height:60%;left:15%;bottom:-10%;background:radial-gradient(circle,var(--violet) 0%,transparent 68%)}
 
   /* Chrome */
-  .brand{position:absolute;z-index:90;left:7%;top:4%;display:flex;align-items:center;gap:1cqw}
+  .brand{position:absolute;z-index:90;left:7%;top:4%;display:flex;align-items:center;gap:1cqw;opacity:0}
   .brand img{height:5cqw;width:auto;display:block;filter:brightness(0) invert(1)}
-  .meta{position:absolute;z-index:90;right:7%;top:4.6%;font-weight:800;font-size:2.6cqw;letter-spacing:.26em;text-transform:uppercase;color:var(--violet)}
+  .meta{position:absolute;z-index:90;right:7%;top:4.6%;font-weight:800;font-size:2.6cqw;letter-spacing:.26em;text-transform:uppercase;color:var(--violet);opacity:0}
 
-  .progress{position:absolute;z-index:90;left:7%;right:7%;bottom:3.4%;height:4px;background:rgba(255,255,255,.12);border-radius:3px;overflow:hidden}
+  .progress{position:absolute;z-index:90;left:7%;right:7%;bottom:3.4%;height:4px;background:rgba(255,255,255,.12);border-radius:3px;overflow:hidden;opacity:0}
   .progress i{display:block;width:100%;height:100%;background:linear-gradient(90deg,var(--violet),var(--blue-bright));transform:scaleX(0);transform-origin:left;border-radius:3px}
 
-  /* Scene base — every scene full-bleed */
+  /* Scene base */
   .scene{position:absolute;inset:0;visibility:hidden;display:grid;place-items:center;text-align:center;will-change:transform,opacity;padding:0 7%}
   .scene.light{background:var(--white);color:var(--ink)}
   .scene.dark{color:var(--white)}
+  /* dark scrim behind text → crisp, readable headlines over the glow */
+  .scene.dark::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:radial-gradient(ellipse 78% 58% at 50% 50%,rgba(5,8,22,.62) 0%,rgba(5,8,22,.30) 55%,transparent 78%)}
   .center{position:relative;z-index:4;width:100%;display:grid;justify-items:center;gap:5cqw}
 
   .kicker{font-weight:800;font-size:3cqw;letter-spacing:.3em;text-transform:uppercase;color:var(--violet);display:inline-block;padding:1.4cqw 3cqw;border:1.5px solid currentColor;border-radius:999px}
@@ -58,6 +61,7 @@
 
   /* kinetic headline — line masks + per word */
   .kin{margin:0;line-height:.94;letter-spacing:.005em;text-transform:uppercase;text-wrap:balance}
+  .scene.dark .kin{text-shadow:0 2px 24px rgba(0,0,0,.45)}
   .kin .line{display:block;overflow:hidden;padding-bottom:.04em}
   .kin .line > span{display:inline-block;will-change:transform}
   .xl{font-size:16cqw}
@@ -65,52 +69,59 @@
   .md{font-size:9cqw}
   .hl{color:var(--violet)}
   .scene.light .hl{color:var(--blue)}
-  .stroke{-webkit-text-stroke:1.5px currentColor;color:transparent}
 
-  .sub{font-weight:500;font-size:4cqw;line-height:1.4;max-width:86%;color:rgba(255,255,255,.72)}
-  .scene.light .sub{color:rgba(8,39,71,.62)}
-  .word{display:inline-block;will-change:transform,opacity}
+  .sub{font-weight:600;font-size:4.2cqw;line-height:1.4;max-width:88%;color:rgba(255,255,255,.92);text-shadow:0 1px 14px rgba(0,0,0,.4)}
+  .scene.light .sub{color:rgba(8,39,71,.66);text-shadow:none}
+  .sub b{font-weight:800;color:#fff}
+  .scene.light .sub b{color:var(--ink)}
 
   /* SWIPE wipe transition */
-  .wipe{position:absolute;inset:0;z-index:88;background:var(--blue);transform:translateY(100%);will-change:transform}
+  .wipe{position:absolute;inset:0;z-index:88;background:var(--blue);transform:translateY(120%);will-change:transform}
 
-  /* cash rain */
+  /* ── Scene 0: LOGO INTRO (white) ── */
+  .intro{display:grid;justify-items:center;gap:5cqw}
+  .intro img.logo{height:18cqw;width:auto;display:block;filter:drop-shadow(0 10px 28px rgba(77,58,219,.18))}
+  .intro .rule{width:18cqw;height:4px;background:var(--blue);border-radius:2px}
+  .intro .tag{font-weight:600;font-size:4.4cqw;color:var(--ink);max-width:80%;line-height:1.3}
+  .intro .tag b{font-weight:800;color:var(--blue)}
+
+  /* cash rain (cheap: transform + opacity only, no filters) */
   .rain{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden}
-  .bill{position:absolute;top:-12%;font-size:6cqw;will-change:transform,opacity;opacity:0;filter:drop-shadow(0 6px 14px rgba(0,0,0,.35))}
+  .bill{position:absolute;top:-12%;line-height:1;will-change:transform,opacity;opacity:0}
 
-  /* ── Scene: BIG MONEY ── */
+  /* ── BIG MONEY ── */
   .money{position:relative;z-index:4;display:grid;justify-items:center;gap:2cqw}
-  .money .num{font-size:21cqw;line-height:.9;letter-spacing:.01em;font-variant-numeric:tabular-nums;display:flex;align-items:baseline;gap:.06em;color:var(--white);text-shadow:0 0 50px rgba(124,107,255,.6);white-space:nowrap}
-  .money .num .kr{font-size:.4em;font-weight:800;color:var(--violet)}
+  .money .num{font-size:21cqw;line-height:.9;letter-spacing:.01em;font-variant-numeric:tabular-nums;display:flex;align-items:baseline;gap:.06em;color:var(--white);text-shadow:0 0 44px rgba(124,107,255,.55),0 2px 18px rgba(0,0,0,.5);white-space:nowrap}
+  .money .num .kr{font-size:.4em;font-weight:800;color:var(--violet);font-family:'Sora',sans-serif}
   .money .cap{font-weight:800;font-size:4cqw;letter-spacing:.2em;text-transform:uppercase;color:var(--violet)}
-  .money .fine{font-weight:500;font-size:3.4cqw;color:rgba(255,255,255,.6);max-width:78%;line-height:1.4}
+  .money .fine{font-weight:600;font-size:3.4cqw;color:rgba(255,255,255,.82);max-width:80%;line-height:1.4}
 
-  /* ── marquee strip of perks ── */
+  /* marquee strip */
   .strip{position:relative;width:120%;overflow:hidden;-webkit-mask:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
   .track{display:flex;gap:3cqw;width:max-content;will-change:transform}
-  .chip{flex:0 0 auto;font-weight:800;font-size:5cqw;letter-spacing:-.02em;padding:2.4cqw 4cqw;border-radius:999px;background:rgba(124,107,255,.14);border:1.5px solid rgba(124,107,255,.4);color:var(--white);white-space:nowrap}
+  .chip{flex:0 0 auto;font-weight:800;font-size:5cqw;letter-spacing:-.02em;padding:2.4cqw 4cqw;border-radius:999px;background:rgba(124,107,255,.18);border:1.5px solid rgba(124,107,255,.45);color:var(--white);white-space:nowrap}
   .chip .dot{color:var(--violet)}
 
-  /* ── numbered feature rows (bold, editorial) ── */
+  /* editorial numbered rows */
   .rows{display:grid;gap:0;width:100%;max-width:92%}
-  .row{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:4cqw;padding:4.4cqw 0;border-top:1.5px solid rgba(8,39,71,.12);text-align:left}
-  .row:last-child{border-bottom:1.5px solid rgba(8,39,71,.12)}
-  .row .n{font-weight:900;font-size:8cqw;letter-spacing:-.04em;color:var(--blue);font-variant-numeric:tabular-nums;line-height:1}
+  .row{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:4cqw;padding:4.4cqw 0;border-top:1.5px solid rgba(8,39,71,.14);text-align:left}
+  .row:last-child{border-bottom:1.5px solid rgba(8,39,71,.14)}
+  .row .n{font-family:'Anton',sans-serif;font-size:8cqw;letter-spacing:.01em;color:var(--blue);font-variant-numeric:tabular-nums;line-height:1}
   .row .rt b{display:block;font-weight:800;font-size:5.4cqw;letter-spacing:-.015em;line-height:1.05;color:var(--ink)}
-  .row .rt span{font-weight:500;font-size:3.2cqw;color:rgba(8,39,71,.58)}
+  .row .rt span{font-weight:500;font-size:3.2cqw;color:rgba(8,39,71,.6)}
 
-  /* ── AGE scene ── */
-  .age{font-size:32cqw;line-height:.86;letter-spacing:.01em;color:var(--white);text-shadow:0 0 60px rgba(124,107,255,.55)}
+  /* AGE */
+  .age{font-size:32cqw;line-height:.86;letter-spacing:.01em;color:var(--white);text-shadow:0 0 56px rgba(124,107,255,.5),0 2px 20px rgba(0,0,0,.5)}
   .age small{font-size:.38em;color:var(--violet)}
 
-  /* ── CTA ── */
+  /* CTA */
   .cta-stack{display:grid;justify-items:center;gap:3.4cqw;width:100%}
   .cta-stack img.logo{height:13cqw;width:auto;display:block;filter:brightness(0) invert(1) drop-shadow(0 8px 30px rgba(124,107,255,.4))}
-  .cta-link{display:inline-flex;align-items:center;gap:2cqw;padding:4.2cqw 8cqw;background:var(--white);color:var(--blue-deep);font-weight:900;font-size:5cqw;letter-spacing:-.01em;text-decoration:none;border-radius:999px;box-shadow:0 14px 50px rgba(124,107,255,.5);margin-top:1cqw}
+  .cta-link{display:inline-flex;align-items:center;gap:2cqw;padding:4.2cqw 8cqw;background:var(--white);color:var(--blue-deep);font-size:5cqw;letter-spacing:.01em;text-decoration:none;border-radius:999px;box-shadow:0 14px 50px rgba(124,107,255,.5);margin-top:1cqw}
   .cta-link::after{content:"→"}
   .cta-handle{font-weight:800;font-size:3.8cqw;letter-spacing:.06em;color:var(--violet)}
 
-  @media(prefers-reduced-motion:reduce){.scene,.bg,.blob,.track,.wipe{will-change:auto}}
+  @media(prefers-reduced-motion:reduce){.scene,.bg,.blob,.track,.wipe,.bill{will-change:auto}}
 </style>
 </head>
 <body>
@@ -123,6 +134,17 @@
 
   <div class="brand"><img src="https://www.mrmobile.no/uploads/5lQSziOk/blue.svg" alt="MR Mobile"></div>
   <div class="meta">Vi ansetter</div>
+
+  <!-- 0: LOGO INTRO (white) -->
+  <section class="scene light s0">
+    <div class="center">
+      <div class="intro">
+        <img class="logo" src="https://www.mrmobile.no/uploads/5lQSziOk/blue.svg" alt="MR Mobile">
+        <div class="rule"></div>
+        <div class="tag">Vi søker nye folk til <b>laget.</b></div>
+      </div>
+    </div>
+  </section>
 
   <!-- 1: HOOK -->
   <section class="scene dark s1">
@@ -165,7 +187,6 @@
           <span class="chip">Rask vei opp <span class="dot">●</span></span>
           <span class="chip">Store merkevarer <span class="dot">●</span></span>
           <span class="chip">Bonuser &amp; turer <span class="dot">●</span></span>
-          <!-- duplicate for seamless loop -->
           <span class="chip">Ingen erfaring <span class="dot">●</span></span>
           <span class="chip">Full opplæring <span class="dot">●</span></span>
           <span class="chip">Ungt team <span class="dot">●</span></span>
@@ -222,21 +243,19 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script>
-  const DURATION = 26;
+  const DURATION = 30;
   gsap.defaults({ease:'power3.out'});
   const tl = gsap.timeline();
 
   tl.fromTo('.progress i',{scaleX:0},{scaleX:1,duration:DURATION,ease:'none'},0);
 
-  /* Background blobs: always-on drifting parallax */
-  gsap.to('.bg',{opacity:1,duration:1.2,ease:'power2.out'});
-  gsap.to('.blob.a',{xPercent:18,yPercent:14,duration:9,ease:'sine.inOut',yoyo:true,repeat:-1});
-  gsap.to('.blob.b',{xPercent:-20,yPercent:-12,duration:11,ease:'sine.inOut',yoyo:true,repeat:-1});
-  gsap.to('.blob.c',{xPercent:14,yPercent:-16,duration:13,ease:'sine.inOut',yoyo:true,repeat:-1});
+  /* Background blobs: drift via transform only (GPU-cheap, no per-frame reblur) */
+  gsap.to('.blob.a',{xPercent:16,yPercent:12,duration:10,ease:'sine.inOut',yoyo:true,repeat:-1});
+  gsap.to('.blob.b',{xPercent:-18,yPercent:-10,duration:12,ease:'sine.inOut',yoyo:true,repeat:-1});
+  gsap.to('.blob.c',{xPercent:12,yPercent:-14,duration:14,ease:'sine.inOut',yoyo:true,repeat:-1});
 
-  /* WIPE transition between scenes: cover -> swap -> reveal */
+  /* WIPE transition: cover -> swap scenes -> reveal */
   function wipeTo(showSel, hideSel, at, color='var(--blue)'){
-    const dir = Math.random() > .5 ? -100 : 100;
     tl.set('.wipe',{backgroundColor:color, y:'120%'}, at)
       .to('.wipe',{y:'0%',duration:.32,ease:'power3.in'}, at)
       .add(()=>{
@@ -245,12 +264,9 @@
       }, at+0.33)
       .to('.wipe',{y:'-120%',duration:.38,ease:'power3.out'}, at+0.34);
   }
-
-  /* headline line reveal helper */
   function slamLines(sel, at, stag=.12){
     tl.fromTo(sel+' .kin .line > span',
-      {yPercent:115, rotate:6},
-      {yPercent:0, rotate:0, duration:.7, stagger:stag, ease:'power4.out'}, at);
+      {yPercent:115},{yPercent:0,duration:.7,stagger:stag,ease:'power4.out'}, at);
   }
   function popKicker(sel, at){
     tl.fromTo(sel+' .kicker',{scale:.7,opacity:0},{scale:1,opacity:1,duration:.5,ease:'back.out(2)'}, at);
@@ -261,74 +277,80 @@
 
   gsap.set('.scene',{opacity:0});
 
-  // ── Scene 1 (0 – 3.8s): HOOK
-  gsap.set('.s1',{visibility:'visible',opacity:1});
-  popKicker('.s1', .2);
-  slamLines('.s1', .5, .14);
-  fadeUp('.s1 .sub', 1.7, .6);
-  // punch zoom on whole scene
-  tl.fromTo('.s1 .center',{scale:1.06},{scale:1,duration:1.6,ease:'power2.out'},.4);
+  // ── Scene 0 (0 – 3.0s): LOGO INTRO on white
+  gsap.set('.s0',{visibility:'visible',opacity:1});
+  tl.fromTo('.s0 .intro img.logo',{y:24,scale:.92,opacity:0},{y:0,scale:1,opacity:1,duration:1.0,ease:'back.out(1.5)'},.3)
+    .fromTo('.s0 .intro .rule',{scaleX:0,opacity:0},{scaleX:1,opacity:1,duration:.55,ease:'power3.out',transformOrigin:'center'},1.15)
+    .fromTo('.s0 .intro .tag',{y:14,opacity:0},{y:0,opacity:1,duration:.7,ease:'power2.out'},1.4)
+    // reveal background + chrome as we leave the white intro
+    .to('.bg',{opacity:1,duration:.8,ease:'power2.out'},2.4)
+    .to('.brand, .meta, .progress',{opacity:1,duration:.4,ease:'power2.out'},3.4);
 
-  // ── Scene 2 (4 – 8s): MONEY
-  wipeTo('.s2', '.s1', 3.7, 'var(--blue-bright)');
-  popKicker('.s2', 4.3);
+  // ── Scene 1 (3.2 – 7s): HOOK
+  wipeTo('.s1', '.s0', 2.9, 'var(--blue)');
+  popKicker('.s1', 3.4);
+  slamLines('.s1', 3.7, .14);
+  fadeUp('.s1 .sub', 5.0, .6);
+  tl.fromTo('.s1 .center',{scale:1.05},{scale:1,duration:1.6,ease:'power2.out'},3.6);
+
+  // ── Scene 2 (7.2 – 11.5s): MONEY
+  wipeTo('.s2', '.s1', 7.0, 'var(--blue-bright)');
+  popKicker('.s2', 7.6);
   const money = {v:0};
   const fmt = n => Math.round(n).toLocaleString('nb-NO');
-  tl.to(money,{v:800000,duration:2.0,ease:'power2.out',
-      onUpdate(){const el=document.querySelector('.s2 .counter'); if(el) el.textContent=fmt(money.v);}}, 4.4)
-    // slight scramble-glow shake while counting
-    .fromTo('.s2 .num',{scale:.6,opacity:0,filter:'blur(8px)'},{scale:1,opacity:1,filter:'blur(0px)',duration:.6,ease:'back.out(1.6)'},4.4)
-    .to('.s2 .num',{scale:1.05,duration:.2,yoyo:true,repeat:1,ease:'power2.out'},6.4);
-  fadeUp('.s2 .cap', 6.5, .5);
-  fadeUp('.s2 .fine', 6.8, .5);
-  // cash rain bursts while the number climbs
+  tl.fromTo('.s2 .num',{scale:.7,opacity:0},{scale:1,opacity:1,duration:.55,ease:'back.out(1.6)'},7.7)
+    .to(money,{v:800000,duration:2.0,ease:'power2.out',
+      onUpdate(){const el=document.querySelector('.s2 .counter'); if(el) el.textContent=fmt(money.v);}}, 7.7)
+    .to('.s2 .num',{scale:1.05,duration:.2,yoyo:true,repeat:1,ease:'power2.out'},9.7);
+  fadeUp('.s2 .cap', 9.8, .5);
+  fadeUp('.s2 .fine', 10.1, .5);
+  // cash rain — transform+opacity only, capped count for smoothness
   const rain = document.querySelector('.s2 .rain');
-  const glyphs = ['💸','💵','kr','💰','kr'];
+  const glyphs = ['💸','💵','💰'];
   tl.add(()=>{
     if(!rain || rain.childElementCount) return;
-    for(let i=0;i<26;i++){
+    for(let i=0;i<16;i++){
       const b=document.createElement('div'); b.className='bill';
       b.textContent=glyphs[i%glyphs.length];
       b.style.left=Math.random()*100+'%';
-      b.style.fontSize=(4+Math.random()*5)+'cqw';
+      b.style.fontSize=(4+Math.random()*4)+'cqw';
       rain.appendChild(b);
-      gsap.fromTo(b,{y:'-15%',opacity:0,rotate:gsap.utils.random(-40,40)},
-        {y:'120cqh',opacity:1,rotate:gsap.utils.random(-180,180),
-         duration:gsap.utils.random(2.2,3.8),ease:'none',
-         delay:Math.random()*2.4,repeat:1,repeatDelay:Math.random(),
-         onStart(){gsap.to(b,{opacity:0,duration:.6,delay:gsap.utils.random(1.6,3)});}});
+      gsap.fromTo(b,{yPercent:0,opacity:0,rotate:gsap.utils.random(-30,30)},
+        {yPercent:1100,opacity:1,rotate:gsap.utils.random(-160,160),
+         duration:gsap.utils.random(2.6,4.2),ease:'none',
+         delay:Math.random()*2.2,repeat:1,repeatDelay:Math.random()*0.8,
+         onStart(){gsap.to(b,{opacity:0,duration:.7,delay:gsap.utils.random(1.8,3)});}});
     }
-  }, 4.3);
+  }, 7.5);
 
-  // ── Scene 3 (8 – 12s): MARQUEE
-  wipeTo('.s3', '.s2', 7.9, 'var(--violet)');
-  slamLines('.s3', 8.5, .12);
-  fadeUp('.s3 .sub', 11.2, .5);
-  // continuous marquee scroll (independent loop, started here)
+  // ── Scene 3 (11.7 – 15.5s): MARQUEE
+  wipeTo('.s3', '.s2', 11.5, 'var(--violet)');
+  slamLines('.s3', 12.1, .12);
+  fadeUp('.s3 .sub', 14.4, .5);
   const track = document.querySelector('.s3 .track');
   let marquee;
-  tl.add(()=>{ if(track && !marquee){ marquee = gsap.to(track,{xPercent:-50,duration:9,ease:'none',repeat:-1}); } }, 8.4);
+  tl.add(()=>{ if(track && !marquee){ marquee = gsap.to(track,{xPercent:-50,duration:9,ease:'none',repeat:-1}); } }, 12.0);
 
-  // ── Scene 4 (12 – 16s): AGE
-  wipeTo('.s4', '.s3', 11.9, 'var(--blue)');
-  popKicker('.s4', 12.5);
-  tl.fromTo('.s4 .age',{scale:.5,opacity:0,filter:'blur(10px)'},{scale:1,opacity:1,filter:'blur(0px)',duration:.7,ease:'back.out(1.7)'},12.7);
-  slamLines('.s4', 13.5, .14);
+  // ── Scene 4 (15.7 – 19.5s): AGE
+  wipeTo('.s4', '.s3', 15.5, 'var(--blue)');
+  popKicker('.s4', 16.1);
+  tl.fromTo('.s4 .age',{scale:.55,opacity:0},{scale:1,opacity:1,duration:.7,ease:'back.out(1.7)'},16.3);
+  slamLines('.s4', 17.1, .14);
 
-  // ── Scene 5 (16 – 21s): WHY rows (light)
-  wipeTo('.s5', '.s4', 15.9, 'var(--white)');
-  popKicker('.s5', 16.5);
-  tl.fromTo('.s5 .row',{x:-30,opacity:0},{x:0,opacity:1,duration:.55,stagger:.18,ease:'power3.out'},16.7)
-    .fromTo('.s5 .row .n',{scale:0},{scale:1,duration:.45,stagger:.18,ease:'back.out(2)'},16.85);
+  // ── Scene 5 (19.7 – 24.5s): WHY rows (light)
+  wipeTo('.s5', '.s4', 19.5, 'var(--white)');
+  popKicker('.s5', 20.1);
+  tl.fromTo('.s5 .row',{x:-28,opacity:0},{x:0,opacity:1,duration:.55,stagger:.18,ease:'power3.out'},20.3)
+    .fromTo('.s5 .row .n',{scale:0},{scale:1,duration:.45,stagger:.18,ease:'back.out(2)'},20.45);
 
-  // ── Scene 6 (21 – 26s): CTA
-  wipeTo('.s6', '.s5', 20.9, 'var(--blue-deep)');
-  tl.fromTo('.s6 .cta-stack img.logo',{y:24,scale:.85,opacity:0},{y:0,scale:1,opacity:1,duration:.7,ease:'back.out(1.6)'},21.5);
-  popKicker('.s6', 22.0);
-  slamLines('.s6', 22.2, .14);
-  fadeUp('.s6 .cta-link', 23.2, .55);
-  fadeUp('.s6 .cta-handle', 23.6, .5);
-  tl.to('.s6 .cta-link',{scale:1.06,duration:.6,ease:'sine.inOut',yoyo:true,repeat:3},24.1);
+  // ── Scene 6 (24.7 – 30s): CTA
+  wipeTo('.s6', '.s5', 24.5, 'var(--blue-deep)');
+  tl.fromTo('.s6 .cta-stack img.logo',{y:24,scale:.85,opacity:0},{y:0,scale:1,opacity:1,duration:.7,ease:'back.out(1.6)'},25.1);
+  popKicker('.s6', 25.6);
+  slamLines('.s6', 25.8, .14);
+  fadeUp('.s6 .cta-link', 26.8, .55);
+  fadeUp('.s6 .cta-handle', 27.2, .5);
+  tl.to('.s6 .cta-link',{scale:1.06,duration:.6,ease:'sine.inOut',yoyo:true,repeat:3},27.7);
 </script>
 </body>
 </html>
