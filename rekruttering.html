@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://www.mrmobile.no">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
     --white:#FFFFFF;
@@ -22,7 +22,9 @@
   }
   *{box-sizing:border-box}
   html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#000}
-  body{display:grid;place-items:center;color:var(--ink);font-family:'Inter',Arial,sans-serif;-webkit-font-smoothing:antialiased;font-feature-settings:"ss01","cv11"}
+  body{display:grid;place-items:center;color:var(--ink);font-family:'Sora',Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  /* display font for headlines & big numbers */
+  .kin,.money .num,.age,.cta-link{font-family:'Anton',Impact,sans-serif;font-weight:400}
 
   /* 9:16 vertical canvas for SoMe */
   #film{position:relative;width:min(100vw,56.25vh);height:min(177.78vw,100vh);aspect-ratio:9/16;overflow:hidden;background:var(--night);isolation:isolate;container-type:size}
@@ -55,7 +57,7 @@
   .scene.light .kicker{color:var(--blue)}
 
   /* kinetic headline — line masks + per word */
-  .kin{margin:0;font-weight:900;line-height:.96;letter-spacing:-.045em;text-wrap:balance}
+  .kin{margin:0;line-height:.94;letter-spacing:.005em;text-transform:uppercase;text-wrap:balance}
   .kin .line{display:block;overflow:hidden;padding-bottom:.04em}
   .kin .line > span{display:inline-block;will-change:transform}
   .xl{font-size:16cqw}
@@ -78,7 +80,7 @@
 
   /* ── Scene: BIG MONEY ── */
   .money{position:relative;z-index:4;display:grid;justify-items:center;gap:2cqw}
-  .money .num{font-weight:900;font-size:20cqw;line-height:.9;letter-spacing:-.05em;font-variant-numeric:tabular-nums;display:flex;align-items:baseline;gap:.05em;color:var(--white);text-shadow:0 0 50px rgba(124,107,255,.6);white-space:nowrap}
+  .money .num{font-size:21cqw;line-height:.9;letter-spacing:.01em;font-variant-numeric:tabular-nums;display:flex;align-items:baseline;gap:.06em;color:var(--white);text-shadow:0 0 50px rgba(124,107,255,.6);white-space:nowrap}
   .money .num .kr{font-size:.4em;font-weight:800;color:var(--violet)}
   .money .cap{font-weight:800;font-size:4cqw;letter-spacing:.2em;text-transform:uppercase;color:var(--violet)}
   .money .fine{font-weight:500;font-size:3.4cqw;color:rgba(255,255,255,.6);max-width:78%;line-height:1.4}
@@ -94,11 +96,11 @@
   .row{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:4cqw;padding:4.4cqw 0;border-top:1.5px solid rgba(8,39,71,.12);text-align:left}
   .row:last-child{border-bottom:1.5px solid rgba(8,39,71,.12)}
   .row .n{font-weight:900;font-size:8cqw;letter-spacing:-.04em;color:var(--blue);font-variant-numeric:tabular-nums;line-height:1}
-  .row .rt b{display:block;font-weight:900;font-size:5.4cqw;letter-spacing:-.02em;line-height:1.05;color:var(--ink)}
+  .row .rt b{display:block;font-weight:800;font-size:5.4cqw;letter-spacing:-.015em;line-height:1.05;color:var(--ink)}
   .row .rt span{font-weight:500;font-size:3.2cqw;color:rgba(8,39,71,.58)}
 
   /* ── AGE scene ── */
-  .age{font-weight:900;font-size:30cqw;line-height:.86;letter-spacing:-.06em;color:var(--white);text-shadow:0 0 60px rgba(124,107,255,.55)}
+  .age{font-size:32cqw;line-height:.86;letter-spacing:.01em;color:var(--white);text-shadow:0 0 60px rgba(124,107,255,.55)}
   .age small{font-size:.38em;color:var(--violet)}
 
   /* ── CTA ── */
