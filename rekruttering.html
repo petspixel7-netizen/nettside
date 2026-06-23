@@ -60,10 +60,10 @@
   .scene.light .kicker{color:var(--blue)}
 
   /* kinetic headline — line masks + per word */
-  .kin{margin:0;line-height:1.08;letter-spacing:.02em;text-transform:uppercase;text-wrap:balance}
+  .kin{margin:0;line-height:1.0;letter-spacing:.02em;text-transform:uppercase;text-wrap:balance}
   .scene.dark .kin{text-shadow:0 2px 24px rgba(0,0,0,.45)}
-  /* extra top/bottom room so the ring on Å/Æ/Ø is never clipped by the reveal mask */
-  .kin .line{display:block;overflow:hidden;padding:.14em 0 .08em}
+  /* generous top room so the ring on Å/Æ/Ø clears the reveal mask, and the lines breathe apart */
+  .kin .line{display:block;overflow:hidden;padding:.34em 0 .12em}
   .kin .line > span{display:inline-block;will-change:transform}
   .xl{font-size:16cqw}
   .lg{font-size:12cqw}
