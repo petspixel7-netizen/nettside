@@ -66,7 +66,7 @@
   .s2 h1{font-size:13vmin;line-height:1}
 
   /* ── Scene 3: Faste priser ── */
-  .price-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.4vmin;width:94%;margin-top:1vmin}
+  .price-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.4vmin;width:94%;margin-top:1vmin;perspective:1200px}
   .price-card{display:grid;place-items:center;padding:2.2vmin 1vmin;border:1px solid var(--rule);border-radius:18px;background:var(--paper);gap:.8vmin;box-shadow:0 10px 28px rgba(14,14,16,.04)}
   .price-card .iconwrap{width:7vmin;height:7vmin;display:grid;place-items:center;background:var(--cream);border-radius:50%}
   .price-card .iconwrap img{width:5vmin;height:5vmin;display:block}
@@ -83,7 +83,7 @@
   .zone-chip.solid{background:var(--red);color:var(--white);border-color:var(--red)}
 
   /* ── Scene 6: Trust ── */
-  .trust-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.8vmin;width:94%;margin-top:1vmin}
+  .trust-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.8vmin;width:94%;margin-top:1vmin;perspective:1400px}
   .trust-card{padding:2.8vmin 1.6vmin;border:1px solid var(--rule);border-radius:18px;background:var(--paper);display:grid;gap:.7vmin;align-content:start;box-shadow:0 10px 28px rgba(14,14,16,.04)}
   .trust-card b{display:block;font-weight:800;font-size:5.4vmin;letter-spacing:-.03em;color:var(--red);line-height:1}
   .trust-card span{font-weight:700;font-size:1.25vmin;letter-spacing:.18em;text-transform:uppercase;color:var(--ink)}
@@ -93,7 +93,8 @@
   .cta-stack{display:grid;justify-items:center;gap:1.6vmin;width:94%}
   .cta-stack img.logo{height:7.5vmin;width:auto;display:block;filter:drop-shadow(0 8px 22px rgba(229,38,58,.15))}
   .cta-eyebrow{font-weight:800;font-size:1.45vmin;letter-spacing:.3em;text-transform:uppercase;color:var(--red)}
-  .cta-phone{font-weight:800;font-size:23vmin;line-height:.88;letter-spacing:-.05em;color:var(--red);font-variant-numeric:tabular-nums}
+  .cta-phone{font-weight:800;font-size:23vmin;line-height:.88;letter-spacing:-.05em;color:var(--red);font-variant-numeric:tabular-nums;display:flex;justify-content:center;gap:.02em}
+  .cta-phone .d{display:inline-block;will-change:transform,opacity}
   .cta-sub{font-weight:500;font-size:2.1vmin;letter-spacing:-.01em;color:var(--ink)}
   .cta-row{display:flex;align-items:center;gap:2.6vmin;margin-top:1.4vmin}
   .cta-link{display:inline-flex;align-items:center;gap:1vmin;padding:1.8vmin 2.6vmin;background:var(--red);color:var(--white);font-weight:700;font-size:1.8vmin;letter-spacing:-.005em;text-decoration:none;border-radius:999px;box-shadow:var(--shadow)}
@@ -194,26 +195,6 @@
     </div>
   </section>
 
-  <!-- 5: SONER -->
-  <section class="scene s5">
-    <div class="center">
-      <div class="eyebrow"><span>Vi kjører hele Moss og Viken</span></div>
-      <h2>
-        <span class="reveal"><span>Fra Jeløya til</span></span><br>
-        <span class="reveal"><span><span class="red-word">Kambo.</span></span></span>
-      </h2>
-      <div class="zones">
-        <span class="zone-chip">Moss Sentrum</span>
-        <span class="zone-chip">Jeløya</span>
-        <span class="zone-chip solid">Rygge</span>
-        <span class="zone-chip">Ekholt</span>
-        <span class="zone-chip solid">Mosseskogen</span>
-        <span class="zone-chip">Krapfoss</span>
-        <span class="zone-chip">Kambo</span>
-      </div>
-    </div>
-  </section>
-
   <!-- 6: TRUST -->
   <section class="scene s6">
     <div class="center">
@@ -247,7 +228,7 @@
     <div class="center cta-stack">
       <img class="logo" src="https://usercontent.one/wp/www.taxi4moss.no/wp-content/uploads/2023/05/Taxi4_logo-removebg-preview.png" alt="Taxi4Moss">
       <div class="cta-eyebrow">Ring oss · Døgnåpent</div>
-      <div class="cta-phone">04231</div>
+      <div class="cta-phone"><span class="d">0</span><span class="d">4</span><span class="d">2</span><span class="d">3</span><span class="d">1</span></div>
       <div class="cta-sub">Eller bestill på taxi4moss.no</div>
       <div class="cta-row">
         <a class="cta-link" href="tel:04231">Ring 04231</a>
@@ -323,51 +304,70 @@
     .from('.s2 .support',{y:14,opacity:0,duration:.6,ease:'power2.out'},6.5);
   hideScene('.s2', 7.1, .5);
 
-  // ── Scene 3 (7.5 – 12s): Faste priser
+  // ── Scene 3 (7.5 – 12.8s): Faste priser — cards flip in 3D
   showScene('.s3', 7.5, .55);
   tl.from('.s3 .eyebrow span',{y:'110%',duration:.9,ease:'power2.out'},7.8)
     .from('.s3 .reveal > span',{y:'110%',duration:1.0,stagger:.5,ease:'power2.out'},8.05)
-    .from('.s3 .price-card',{y:28,opacity:0,scale:.9,duration:.55,stagger:.13,ease:'back.out(1.6)'},9.1);
-  hideScene('.s3', 11.6, .5);
+    .from('.s3 .price-card',{
+      rotationY:-75, opacity:0, y:30, z:-100,
+      duration:.7, stagger:.14, ease:'back.out(1.4)',
+      transformOrigin:'center center -40px'
+    },9.2)
+    .from('.s3 .price-card .iconwrap img',{scale:0,rotation:-90,duration:.5,stagger:.14,ease:'back.out(2.2)'},9.55);
+  hideScene('.s3', 12.5, .55);
 
-  // ── Scene 4 (12 – 15.5s): 24/7
-  showScene('.s4', 12.0, .55);
-  tl.from('.s4 .eyebrow span',{y:'110%',duration:.85,ease:'power2.out'},12.25)
-    .from('.s4 .bn-24',{scale:.5,opacity:0,duration:.85,ease:'back.out(1.5)'},12.5)
-    .from('.s4 .big-num em',{opacity:0,duration:.4,ease:'power2.out'},12.95)
-    .from('.s4 .bn-7',{scale:.5,opacity:0,duration:.85,ease:'back.out(1.5)'},13.0)
-    .from('.s4 h3',{y:18,opacity:0,duration:.7,ease:'power2.out'},13.7);
-  hideScene('.s4', 15.1, .5);
+  // ── Scene 4 (12.8 – 17s): 24/7 — dramatic split-in
+  showScene('.s4', 12.8, .55);
+  tl.from('.s4 .eyebrow span',{y:'110%',duration:.85,ease:'power2.out'},13.05)
+    // 24 flies in from far left with motion blur (using a quick blur via filter)
+    .fromTo('.s4 .bn-24',{x:-300,opacity:0,filter:'blur(8px)'},{x:0,opacity:1,filter:'blur(0px)',duration:.7,ease:'power3.out'},13.3)
+    // slash drops from above + rotates
+    .fromTo('.s4 .big-num em',{y:-200,rotation:-90,opacity:0},{y:0,rotation:0,opacity:1,duration:.55,ease:'back.out(2)'},13.55)
+    // 7 flies in from far right
+    .fromTo('.s4 .bn-7',{x:300,opacity:0,filter:'blur(8px)'},{x:0,opacity:1,filter:'blur(0px)',duration:.7,ease:'power3.out'},13.7)
+    // pulse the whole number
+    .to('.s4 .big-num',{scale:1.05,duration:.18,ease:'power2.out'},14.45)
+    .to('.s4 .big-num',{scale:1,duration:.32,ease:'power2.out'},14.63)
+    .from('.s4 h3',{y:18,opacity:0,duration:.7,ease:'power2.out'},14.7);
+  hideScene('.s4', 16.5, .5);
 
-  // ── Scene 5 (15.5 – 19.5s): Soner
-  showScene('.s5', 15.5, .55);
-  tl.from('.s5 .eyebrow span',{y:'110%',duration:.85,ease:'power2.out'},15.75)
-    .from('.s5 .reveal > span',{y:'110%',duration:1.0,stagger:.5,ease:'power2.out'},16.0)
-    .from('.s5 .zone-chip',{y:16,opacity:0,scale:.85,duration:.4,stagger:.07,ease:'back.out(1.5)'},16.95);
-  hideScene('.s5', 19.1, .5);
+  // ── Scene 6 (16.5 – 22s): Trust — cards 3D flip in with shadow grow
+  showScene('.s6', 16.5, .55);
+  tl.from('.s6 .eyebrow span',{y:'110%',duration:.85,ease:'power2.out'},16.75)
+    .from('.s6 .reveal > span',{y:'110%',duration:1.0,stagger:.5,ease:'power2.out'},17.0)
+    .from('.s6 .trust-card',{
+      rotationX:60, y:60, opacity:0, z:-200,
+      duration:.8, stagger:.18, ease:'back.out(1.5)',
+      transformOrigin:'center bottom'
+    },18.0)
+    // big number inside each trust card pops on top
+    .from('.s6 .trust-card b',{scale:0,opacity:0,duration:.45,stagger:.18,ease:'back.out(2.2)'},18.4);
+  hideScene('.s6', 21.6, .55);
 
-  // ── Scene 6 (19.5 – 23.5s): Trust
-  showScene('.s6', 19.5, .55);
-  tl.from('.s6 .eyebrow span',{y:'110%',duration:.85,ease:'power2.out'},19.75)
-    .from('.s6 .reveal > span',{y:'110%',duration:1.0,stagger:.5,ease:'power2.out'},20.0)
-    .from('.s6 .trust-card',{y:28,opacity:0,duration:.55,stagger:.13,ease:'back.out(1.5)'},21.0);
-  hideScene('.s6', 23.1, .5);
+  // big red flash transition into CTA
+  tl.set('.fx-wipe:not(.white)',{visibility:'visible'},21.5)
+    .fromTo('.fx-wipe:not(.white)',{scaleX:0},{scaleX:1,duration:.45,ease:'power3.inOut'},21.5)
+    .set('.fx-wipe:not(.white)',{transformOrigin:'right center'},21.95)
+    .to('.fx-wipe:not(.white)',{scaleX:0,duration:.4,ease:'power3.inOut'},21.95)
+    .set('.fx-wipe:not(.white)',{visibility:'hidden',transformOrigin:'left center'},22.35);
 
-  // soft red flash transition
-  tl.set('.fx-wipe:not(.white)',{visibility:'visible'},23.05)
-    .fromTo('.fx-wipe:not(.white)',{scaleX:0,opacity:.85},{scaleX:1,duration:.4,ease:'power2.inOut'},23.05)
-    .set('.fx-wipe:not(.white)',{transformOrigin:'right center'},23.45)
-    .to('.fx-wipe:not(.white)',{scaleX:0,duration:.35,ease:'power2.inOut'},23.45)
-    .set('.fx-wipe:not(.white)',{visibility:'hidden',transformOrigin:'left center'},23.8);
-
-  // ── Scene 7 (23.5 – 30s): CTA
-  showScene('.s7', 23.5, .6);
-  tl.from('.s7 .cta-stack img.logo',{y:26,opacity:0,duration:1.0,ease:'power4.out'},23.75)
-    .from('.s7 .cta-eyebrow',{y:14,opacity:0,duration:.6,ease:'power2.out'},24.3)
-    .from('.s7 .cta-phone',{scale:.55,opacity:0,duration:1.0,ease:'back.out(1.5)'},24.55)
-    .from('.s7 .cta-sub',{y:14,opacity:0,duration:.6,ease:'power2.out'},25.5)
-    .from('.s7 .cta-link',{y:18,opacity:0,duration:.6,ease:'power2.out'},25.85)
-    .from('.s7 .cta-qr',{y:18,opacity:0,duration:.6,ease:'power2.out'},26.0);
+  // ── Scene 7 (22 – 30s): CTA — digit-by-digit phone reveal
+  showScene('.s7', 22.0, .6);
+  tl.from('.s7 .cta-stack img.logo',{y:26,scale:.85,opacity:0,duration:.9,ease:'back.out(1.6)'},22.3)
+    .from('.s7 .cta-eyebrow',{y:14,opacity:0,duration:.6,ease:'power2.out'},22.9)
+    // digits flip in one by one like a slot machine
+    .from('.s7 .cta-phone .d',{
+      y:-80, opacity:0, scale:.4,
+      duration:.5, stagger:.14, ease:'back.out(2.2)'
+    },23.15)
+    // pulse the whole phone number on completion
+    .to('.s7 .cta-phone',{scale:1.04,duration:.2,ease:'power2.out'},24.2)
+    .to('.s7 .cta-phone',{scale:1,duration:.35,ease:'power2.out'},24.4)
+    .from('.s7 .cta-sub',{y:14,opacity:0,duration:.6,ease:'power2.out'},24.7)
+    .from('.s7 .cta-link',{y:18,scale:.9,opacity:0,duration:.6,ease:'back.out(1.7)'},25.1)
+    .from('.s7 .cta-qr',{y:18,scale:.9,opacity:0,duration:.6,ease:'back.out(1.7)'},25.25)
+    // subtle QR shimmer
+    .to('.s7 .cta-qr img',{rotation:3,duration:.2,ease:'power1.inOut',yoyo:true,repeat:1},26.5);
 </script>
 </body>
 </html>
