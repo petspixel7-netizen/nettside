@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MR Mobile — Bli med på laget</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.mrmobile.no">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --white:#FFFFFF;
+    --paper:#FAFAFD;
+    --ink:#082747;
+    --blue:#4D3ADB;
+    --blue-deep:#3825B4;
+    --blue-bright:#0550E8;
+    --yellow:#FFBE30;
+    --soft:#E9F4F5;
+    --dim:rgba(8,39,71,.58);
+    --softer:rgba(8,39,71,.42);
+    --rule:rgba(8,39,71,.10);
+    --shadow:0 18px 50px rgba(77,58,219,.10), 0 6px 14px rgba(8,39,71,.05);
+  }
+  *{box-sizing:border-box}
+  html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#000}
+  body{display:grid;place-items:center;color:var(--ink);font-family:'Inter',Arial,sans-serif;font-kerning:normal;-webkit-font-smoothing:antialiased;font-feature-settings:"ss01","cv11"}
+
+  /* 9:16 vertical canvas for SoMe (Reels / TikTok / Stories) */
+  #film{position:relative;width:min(100vw,56.25vh);height:min(177.78vw,100vh);aspect-ratio:9/16;overflow:hidden;background:var(--white);isolation:isolate;container-type:size}
+  #film:after{content:"";position:absolute;inset:0;z-index:80;pointer-events:none;background:radial-gradient(circle at 50% 42%,transparent 58%,rgba(77,58,219,.07) 130%)}
+
+  /* sizing unit: 1u = 1% of canvas width, stable in vertical format */
+  .u{}
+
+  /* Chrome */
+  .brand{position:absolute;z-index:90;left:7%;top:4%;display:flex;align-items:center;gap:1cqw}
+  .brand img{height:5cqw;width:auto;display:block}
+  .meta{position:absolute;z-index:90;right:7%;top:4.6%;font-weight:700;font-size:2.4cqw;letter-spacing:.26em;text-transform:uppercase;color:var(--blue)}
+
+  .progress{position:absolute;z-index:90;left:7%;right:7%;bottom:3.4%;height:4px;background:rgba(8,39,71,.08);border-radius:3px;overflow:hidden}
+  .progress i{display:block;width:100%;height:100%;background:var(--blue);transform:scaleX(0);transform-origin:left;border-radius:3px}
+
+  /* Scene base */
+  .scene{position:absolute;inset:0;visibility:hidden;display:grid;place-items:center;text-align:center;will-change:transform,opacity;color:var(--ink)}
+  .center{position:relative;z-index:4;width:88%;display:grid;justify-items:center;gap:5cqw;padding:0 4cqw}
+
+  .eyebrow{font-weight:800;font-size:3cqw;letter-spacing:.28em;text-transform:uppercase;color:var(--blue);overflow:hidden}
+  .eyebrow span{display:inline-block}
+
+  h1,h2,h3{margin:0;font-family:'Inter',sans-serif;font-weight:800;line-height:1.0;letter-spacing:-.04em;text-wrap:balance;color:var(--ink)}
+  h1{font-size:15cqw}
+  h2{font-size:11cqw}
+  h3{font-size:7.5cqw;font-weight:700}
+  .blue-word{color:var(--blue);font-style:italic;font-weight:800}
+  .support{max-width:84%;font-weight:400;font-size:3.8cqw;line-height:1.5;color:var(--dim);text-wrap:balance}
+
+  .reveal{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.06em;line-height:1.05}
+  .reveal > span{display:inline-block}
+
+  /* ── Scene 1: Hook intro ── */
+  .hero-mark{display:grid;justify-items:center;gap:6cqw}
+  .hero-mark img.logo{height:18cqw;width:auto;display:block;filter:drop-shadow(0 10px 28px rgba(77,58,219,.18))}
+  .hero-mark .rule{width:16cqw;height:4px;background:var(--blue);border-radius:2px}
+  .hero-mark .tag{font-weight:600;font-size:5cqw;letter-spacing:-.015em;color:var(--ink);max-width:90%;line-height:1.25}
+  .hero-mark .tag .blue-word{font-weight:800}
+
+  /* ── Scene 2: SIGNAL WAVES transition ── */
+  .signal{position:absolute;inset:0;z-index:60;visibility:hidden;pointer-events:none;display:grid;place-items:center;overflow:hidden}
+  .signal .wave{position:absolute;width:18cqw;height:18cqw;border-radius:50%;border:3px solid var(--blue);opacity:0;will-change:transform,opacity}
+  .signal .core{position:relative;z-index:3;width:30cqw;height:30cqw;border-radius:50%;background:var(--blue);display:grid;place-items:center;box-shadow:0 0 60px rgba(77,58,219,.5);will-change:transform,opacity}
+  .signal .core svg{width:15cqw;height:15cqw;color:var(--white)}
+  .signal .label{position:absolute;bottom:24%;font-weight:800;font-size:6cqw;color:var(--blue);letter-spacing:-.02em;will-change:transform,opacity}
+
+  /* ── Scene 4: BIG STAT ── */
+  .big-stat{display:grid;justify-items:center;gap:3cqw}
+  .big-stat .num{font-weight:800;font-size:24cqw;line-height:.86;letter-spacing:-.05em;color:var(--blue);font-variant-numeric:tabular-nums;display:flex;align-items:baseline;gap:.06em;white-space:nowrap}
+  .big-stat .num .kr{font-size:.44em;font-weight:800}
+  .big-stat .label{font-weight:700;font-size:3.4cqw;letter-spacing:.18em;text-transform:uppercase;color:var(--ink)}
+  .big-stat .label em{font-style:italic;font-weight:500;text-transform:none;letter-spacing:0;color:var(--blue)}
+  .stat-cap{font-weight:500;font-size:4cqw;color:var(--dim);max-width:80%;line-height:1.4}
+
+  /* ── Scene 3 & 6: feature pills ── */
+  .perks{display:grid;gap:2.6cqw;width:92%;margin-top:1cqw}
+  .perk{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:3.4cqw;padding:4.4cqw 4cqw;border:1px solid var(--rule);border-radius:22px;background:var(--paper);box-shadow:0 8px 22px rgba(8,39,71,.04);text-align:left}
+  .perk .icon{width:13cqw;height:13cqw;border-radius:16px;background:var(--soft);display:grid;place-items:center;color:var(--blue)}
+  .perk .icon svg{width:7cqw;height:7cqw}
+  .perk .pt{display:grid;gap:.6cqw}
+  .perk b{font-weight:800;font-size:4.6cqw;color:var(--ink);letter-spacing:-.015em;line-height:1.05}
+  .perk span{font-weight:500;font-size:3cqw;color:var(--dim);line-height:1.3}
+
+  /* ── Scene 5: who / target ── */
+  .who{display:grid;justify-items:center;gap:3cqw}
+  .who .age{font-weight:800;font-size:26cqw;line-height:.86;letter-spacing:-.05em;color:var(--blue);font-variant-numeric:tabular-nums}
+  .who .age small{font-size:.42em;color:var(--ink)}
+
+  /* ── Scene 7: CTA ── */
+  .cta-stack{display:grid;justify-items:center;gap:3.4cqw;width:94%}
+  .cta-stack img.logo{height:13cqw;width:auto;display:block;filter:drop-shadow(0 8px 22px rgba(77,58,219,.15))}
+  .cta-eyebrow{font-weight:800;font-size:3cqw;letter-spacing:.28em;text-transform:uppercase;color:var(--blue)}
+  .cta-head{font-weight:800;font-size:11cqw;line-height:1.0;letter-spacing:-.04em;color:var(--ink)}
+  .cta-head .blue-word{font-style:italic}
+  .cta-sub{font-weight:500;font-size:4cqw;letter-spacing:-.01em;color:var(--ink)}
+  .cta-sub a{color:var(--blue);font-weight:700;text-decoration:none}
+  .cta-link{display:inline-flex;align-items:center;gap:2cqw;padding:4cqw 7cqw;background:var(--blue);color:var(--white);font-weight:700;font-size:4.4cqw;letter-spacing:-.005em;text-decoration:none;border-radius:999px;box-shadow:var(--shadow);margin-top:1cqw}
+  .cta-link::after{content:"→"}
+  .cta-handle{font-weight:800;font-size:3.6cqw;letter-spacing:.04em;color:var(--blue)}
+
+  @media(prefers-reduced-motion:reduce){.scene,.signal{will-change:auto}}
+</style>
+</head>
+<body>
+<main id="film">
+  <div class="brand">
+    <img src="https://www.mrmobile.no/uploads/5lQSziOk/blue.svg" alt="MR Mobile">
+  </div>
+  <div class="meta">Vi ansetter</div>
+
+  <!-- 1: HOOK INTRO -->
+  <section class="scene s1">
+    <div class="center">
+      <div class="hero-mark">
+        <div class="eyebrow"><span>20–30 år? Les dette.</span></div>
+        <h2>Vil du jobbe med <span class="blue-word">Nordens største merkevarer?</span></h2>
+        <div class="rule"></div>
+        <div class="tag">Vi søker deg som vil bygge karriere — ikke bare en jobb.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2: SIGNAL WAVES TRANSITION -->
+  <div class="signal">
+    <div class="wave w1"></div>
+    <div class="wave w2"></div>
+    <div class="wave w3"></div>
+    <div class="wave w4"></div>
+    <div class="core">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M2 8.5C7 3.5 17 3.5 22 8.5l-2 2c-3.9-3.9-12.1-3.9-16 0L2 8.5zm4 4c2.8-2.8 7.2-2.8 10 0l-2 2c-1.7-1.7-4.3-1.7-6 0l-2-2zM12 16a2 2 0 100 4 2 2 0 000-4z"/>
+      </svg>
+    </div>
+    <div class="label">Klar?</div>
+  </div>
+
+  <!-- 3: THE OFFER / why -->
+  <section class="scene s3">
+    <div class="center">
+      <div class="eyebrow"><span>Hva du får</span></div>
+      <h2>
+        <span class="reveal"><span>Mer enn</span></span><br>
+        <span class="reveal"><span><span class="blue-word">en lønnsslipp.</span></span></span>
+      </h2>
+      <div class="perks">
+        <div class="perk pk-1">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1l3.09 6.26L22 8.27l-5 4.87 1.18 6.88L12 16.77l-6.18 3.25L7 13.14 2 8.27l6.91-1.01L12 1z"/></svg></div>
+          <div class="pt"><b>Nordens største merkevarer</b><span>Jobb med navn du allerede kjenner</span></div>
+        </div>
+        <div class="perk pk-2">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v7H3zm4-5h2v12H7zm4 8h2v4h-2zm4-12h2v16h-2zm4 6h2v10h-2z"/></svg></div>
+          <div class="pt"><b>Ingen erfaring nødvendig</b><span>Full opplæring fra dag én</span></div>
+        </div>
+        <div class="perk pk-3">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div>
+          <div class="pt"><b>Et ungt, sosialt team</b><span>God stemning, høyt tempo, ekte vennskap</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4: BIG STAT — 800 000 kr -->
+  <section class="scene s4">
+    <div class="center">
+      <div class="eyebrow"><span>Inntektspotensial</span></div>
+      <div class="big-stat">
+        <div class="num"><span class="counter">0</span><span class="kr">kr</span></div>
+        <div class="label">opp mot <em>i året</em></div>
+        <div class="stat-cap">Fastlønn + provisjon. Det du legger inn, får du igjen.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5: WHO — target audience -->
+  <section class="scene s5">
+    <div class="center">
+      <div class="eyebrow"><span>Vi ser etter deg</span></div>
+      <div class="who">
+        <div class="age">20<small>–</small>30</div>
+        <h3>Sulten, sosial og klar for å vinne.</h3>
+      </div>
+      <div class="support">Er du mellom 20 og 30 og vil ha en jobb som faktisk betyr noe? Da vil vi høre fra deg.</div>
+    </div>
+  </section>
+
+  <!-- 6: WHY MR MOBILE -->
+  <section class="scene s6">
+    <div class="center">
+      <div class="eyebrow"><span>Derfor MR Mobile</span></div>
+      <h2>
+        <span class="reveal"><span>Vi heier</span></span><br>
+        <span class="reveal"><span><span class="blue-word">på deg.</span></span></span>
+      </h2>
+      <div class="perks">
+        <div class="perk pk-1">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 14l5-5 5 5z"/><path d="M5 19h14v2H5z"/></svg></div>
+          <div class="pt"><b>Rask vei oppover</b><span>Bevis deg — så vokser du hos oss</span></div>
+        </div>
+        <div class="perk pk-2">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1112 6.5a2.5 2.5 0 010 5z"/></svg></div>
+          <div class="pt"><b>Hele Norge</b><span>Vi er etablert i hele landet</span></div>
+        </div>
+        <div class="perk pk-3">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+          <div class="pt"><b>Trygg arbeidsgiver</b><span>Seriøs partner med lang erfaring</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7: CTA -->
+  <section class="scene s7">
+    <div class="center cta-stack">
+      <img class="logo" src="https://www.mrmobile.no/uploads/5lQSziOk/blue.svg" alt="MR Mobile">
+      <div class="cta-eyebrow">Søk nå</div>
+      <div class="cta-head">Bli med på <span class="blue-word">laget.</span></div>
+      <div class="cta-sub">Send DM eller søk på <a href="https://www.mrmobile.no">mrmobile.no</a></div>
+      <a class="cta-link" href="https://www.mrmobile.no">Søk i dag</a>
+      <div class="cta-handle">@mrmobile.no</div>
+    </div>
+  </section>
+
+  <div class="progress"><i></i></div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+  const DURATION = 28;
+  gsap.defaults({ease:'power2.out'});
+
+  function showScene(sel, at, fadeIn=0.55){
+    tl.set(sel,{visibility:'visible'},at)
+      .fromTo(sel,{opacity:0},{opacity:1,duration:fadeIn,ease:'power2.out'},at);
+  }
+  function hideScene(sel, at, fadeOut=0.5){
+    tl.to(sel,{opacity:0,duration:fadeOut,ease:'power2.in'},at)
+      .set(sel,{visibility:'hidden'},at+fadeOut);
+  }
+
+  gsap.set('.scene',{opacity:0});
+  const tl = gsap.timeline({defaults:{duration:.8}});
+  tl.fromTo('.progress i',{scaleX:0},{scaleX:1,duration:DURATION,ease:'none'},0);
+
+  // ── Scene 1 (0 – 4s): HOOK
+  showScene('.s1', 0, .55);
+  tl.from('.s1 .eyebrow span',{y:'110%',duration:.7,ease:'power2.out'},.3)
+    .from('.s1 h2',{y:26,opacity:0,duration:.9,ease:'power3.out'},.6)
+    .fromTo('.s1 .hero-mark .rule',{scaleX:0,opacity:0},{scaleX:1,opacity:1,duration:.55,ease:'power3.out',transformOrigin:'left center'},1.5)
+    .from('.s1 .hero-mark .tag',{y:14,opacity:0,duration:.7,ease:'power2.out'},1.7);
+  hideScene('.s1', 3.8, .35);
+
+  // ── SIGNAL WAVES (4.0 – 6.0s)
+  tl.set('.signal',{visibility:'visible'},4.0)
+    .from('.signal .core',{scale:0,opacity:0,duration:.55,ease:'back.out(2)'},4.0)
+    .fromTo('.signal .w1',{scale:.6,opacity:0,borderWidth:'3px'},{scale:6,opacity:0,borderWidth:'1px',duration:1.4,ease:'power2.out'},4.25)
+    .fromTo('.signal .w2',{scale:.6,opacity:0,borderWidth:'3px'},{scale:6,opacity:0,borderWidth:'1px',duration:1.4,ease:'power2.out'},4.55)
+    .fromTo('.signal .w3',{scale:.6,opacity:0,borderWidth:'3px'},{scale:6,opacity:0,borderWidth:'1px',duration:1.4,ease:'power2.out'},4.85)
+    .fromTo('.signal .w4',{scale:.6,opacity:0,borderWidth:'3px'},{scale:6,opacity:0,borderWidth:'1px',duration:1.4,ease:'power2.out'},5.15)
+    .to('.signal .w1',{opacity:.7,duration:.3,ease:'power2.out'},4.25)
+    .to('.signal .w1',{opacity:0,duration:1.0,ease:'power2.in'},4.55)
+    .to('.signal .w2',{opacity:.7,duration:.3,ease:'power2.out'},4.55)
+    .to('.signal .w2',{opacity:0,duration:1.0,ease:'power2.in'},4.85)
+    .to('.signal .w3',{opacity:.7,duration:.3,ease:'power2.out'},4.85)
+    .to('.signal .w3',{opacity:0,duration:1.0,ease:'power2.in'},5.15)
+    .to('.signal .w4',{opacity:.7,duration:.3,ease:'power2.out'},5.15)
+    .to('.signal .w4',{opacity:0,duration:.85,ease:'power2.in'},5.45)
+    .to('.signal .core',{scale:1.08,duration:.2,ease:'power2.out',yoyo:true,repeat:1},4.55)
+    .from('.signal .label',{y:20,opacity:0,duration:.6,ease:'power3.out'},5.3)
+    .to('.signal .core, .signal .label',{opacity:0,duration:.3,ease:'power2.in'},5.7)
+    .set('.signal',{visibility:'hidden'},6.0);
+
+  tl.to('.brand, .meta',{opacity:0,duration:.2},3.9)
+    .to('.brand, .meta',{opacity:1,duration:.3},6.0);
+
+  // ── Scene 3 (6 – 11s): THE OFFER
+  showScene('.s3', 6.0, .55);
+  tl.from('.s3 .eyebrow span',{y:'110%',duration:.8,ease:'power2.out'},6.25)
+    .from('.s3 .reveal > span',{y:'110%',duration:1.0,stagger:.45,ease:'power2.out'},6.5)
+    .from('.s3 .perk',{y:34,opacity:0,scale:.96,duration:.55,stagger:.16,ease:'back.out(1.5)'},7.7)
+    .from('.s3 .perk .icon',{scale:0,rotation:-90,duration:.45,stagger:.16,ease:'back.out(2)'},7.95);
+  hideScene('.s3', 10.8, .5);
+
+  // ── Scene 4 (11 – 16s): BIG STAT 800 000 kr
+  showScene('.s4', 11.0, .55);
+  const counterObj = {v: 0};
+  const fmt = n => Math.round(n).toLocaleString('nb-NO');
+  tl.from('.s4 .eyebrow span',{y:'110%',duration:.8,ease:'power2.out'},11.25)
+    .to(counterObj, {
+      v: 800000, duration: 2.2, ease:'power2.out',
+      onUpdate: function(){
+        const el = document.querySelector('.s4 .counter');
+        if (el) el.textContent = fmt(counterObj.v);
+      }
+    }, 11.5)
+    .from('.s4 .label',{y:18,opacity:0,duration:.7,ease:'power2.out'},13.7)
+    .from('.s4 .stat-cap',{y:16,opacity:0,duration:.6,ease:'power2.out'},14.0)
+    .to('.s4 .num',{scale:1.06,duration:.22,ease:'power2.out'},13.7)
+    .to('.s4 .num',{scale:1,duration:.36,ease:'power2.out'},13.92);
+  hideScene('.s4', 15.6, .5);
+
+  // ── Scene 5 (16 – 20s): WHO
+  showScene('.s5', 15.8, .55);
+  tl.from('.s5 .eyebrow span',{y:'110%',duration:.8,ease:'power2.out'},16.05)
+    .from('.s5 .age',{scale:.6,opacity:0,duration:.7,ease:'back.out(1.6)'},16.3)
+    .from('.s5 h3',{y:22,opacity:0,duration:.7,ease:'power2.out'},16.9)
+    .from('.s5 .support',{y:18,opacity:0,duration:.6,ease:'power2.out'},17.3);
+  hideScene('.s5', 19.4, .5);
+
+  // ── Scene 6 (20 – 24s): WHY MR MOBILE
+  showScene('.s6', 19.6, .55);
+  tl.from('.s6 .eyebrow span',{y:'110%',duration:.8,ease:'power2.out'},19.85)
+    .from('.s6 .reveal > span',{y:'110%',duration:1.0,stagger:.45,ease:'power2.out'},20.1)
+    .from('.s6 .perk',{y:34,opacity:0,scale:.96,duration:.55,stagger:.16,ease:'back.out(1.5)'},21.1)
+    .from('.s6 .perk .icon',{scale:0,rotation:-90,duration:.45,stagger:.16,ease:'back.out(2)'},21.35);
+  hideScene('.s6', 23.6, .5);
+
+  // ── Scene 7 (24 – 28s): CTA
+  showScene('.s7', 23.8, .6);
+  tl.from('.s7 .cta-stack img.logo',{y:26,scale:.9,opacity:0,duration:.8,ease:'back.out(1.5)'},24.1)
+    .from('.s7 .cta-eyebrow',{y:14,opacity:0,duration:.5,ease:'power2.out'},24.6)
+    .from('.s7 .cta-head',{y:22,opacity:0,duration:.7,ease:'power3.out'},24.85)
+    .from('.s7 .cta-sub',{y:14,opacity:0,duration:.55,ease:'power2.out'},25.4)
+    .from('.s7 .cta-link',{y:18,scale:.9,opacity:0,duration:.55,ease:'back.out(1.7)'},25.7)
+    .from('.s7 .cta-handle',{y:14,opacity:0,duration:.5,ease:'power2.out'},26.0)
+    .to('.s7 .cta-link',{scale:1.04,duration:.7,ease:'sine.inOut',yoyo:true,repeat:2},26.6);
+</script>
+</body>
+</html>
