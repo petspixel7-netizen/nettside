@@ -131,13 +131,22 @@
   .cta-qr img{width:12vmin;height:12vmin;display:block;border:2px solid var(--red);border-radius:14px;background:var(--white);padding:.5vmin}
   .cta-qr span{font-weight:800;font-size:1vmin;letter-spacing:.24em;text-transform:uppercase;color:var(--red)}
 
-  /* ── BURST PANELS (Agaas-style) ── */
-  .burst{position:absolute;inset:0;z-index:60;visibility:hidden;pointer-events:none}
-  .burst-panel{position:absolute;inset:0;display:grid;place-items:center;visibility:hidden;opacity:0}
-  .burst-panel span{display:block;font-family:'Inter',sans-serif;font-weight:800;font-size:18vmin;line-height:.88;letter-spacing:-.055em;text-align:center;font-style:italic}
-  .burst-panel .small{font-size:32vmin;font-style:italic;font-weight:800}
-  .burst-red{background:var(--red);color:var(--white)}
-  .burst-white{background:var(--white);color:var(--red)}
+  /* ── TAXI FLYBY (replaces burst) ── */
+  .flyby{position:absolute;inset:0;z-index:60;visibility:hidden;pointer-events:none;overflow:hidden;display:flex;align-items:center}
+  .flyby .lane{position:absolute;left:0;right:0;top:50%;height:0;border-top:2px dashed rgba(229,38,58,.18);transform:translateY(-50%)}
+  .flyby-car{width:56vmin;height:auto;color:var(--ink);position:relative;z-index:3;transform:translateX(-120%)}
+  .flyby-car .roof-sign{fill:var(--yellow)}
+  .flyby-car .sign-text{fill:var(--ink);font-family:'Inter',sans-serif;font-weight:900;font-size:14px;letter-spacing:1px}
+  .flyby-car .checker{fill:var(--yellow)}
+  .flyby-car .wheel{fill:var(--ink)}
+  .flyby-car .rim{fill:var(--paper)}
+  .flyby-car .window{fill:var(--paper)}
+  .motion-line{position:absolute;height:5px;background:var(--red);border-radius:3px;opacity:0;z-index:2}
+  .ml-1{top:32%;width:32vmin;left:60%}
+  .ml-2{top:42%;width:24vmin;left:48%}
+  .ml-3{top:58%;width:38vmin;left:55%}
+  .ml-4{top:66%;width:20vmin;left:42%}
+  .ml-5{top:74%;width:28vmin;left:50%}
 
   /* FX */
   .fx{position:absolute;z-index:70;visibility:hidden;pointer-events:none;will-change:transform,opacity}
@@ -185,12 +194,29 @@
     </div>
   </section>
 
-  <!-- BURST: 4 fullskjerm-paneler -->
-  <div class="burst">
-    <div class="burst-panel burst-red bp-1"><span>Trenger?</span></div>
-    <div class="burst-panel burst-white bp-2"><span>Taxi?</span></div>
-    <div class="burst-panel burst-red bp-3"><span class="small">i</span></div>
-    <div class="burst-panel burst-white bp-4"><span>Moss?</span></div>
+  <!-- FLYBY: taxi speeder over skjermen -->
+  <div class="flyby">
+    <div class="lane"></div>
+    <div class="motion-line ml-1"></div>
+    <div class="motion-line ml-2"></div>
+    <div class="motion-line ml-3"></div>
+    <div class="motion-line ml-4"></div>
+    <div class="motion-line ml-5"></div>
+    <svg class="flyby-car" viewBox="0 0 280 110" xmlns="http://www.w3.org/2000/svg" aria-label="Taxi">
+      <rect class="roof-sign" x="105" y="2" width="70" height="18" rx="3"/>
+      <text class="sign-text" x="140" y="16" text-anchor="middle">TAXI</text>
+      <path d="M20,75 Q22,55 50,50 L90,40 Q120,30 180,30 Q220,30 240,45 L260,55 Q272,58 272,75 L272,82 Q272,86 268,86 L24,86 Q20,86 20,82 Z"/>
+      <path class="window" d="M70,50 L88,38 Q110,32 145,32 L160,48 Z"/>
+      <path class="window" d="M165,32 Q195,32 222,42 L235,52 L168,52 Z"/>
+      <g class="checker" transform="translate(60,68)">
+        <rect width="6" height="6"/><rect x="12" width="6" height="6"/><rect x="24" width="6" height="6"/><rect x="36" width="6" height="6"/>
+        <rect x="6" y="6" width="6" height="6"/><rect x="18" y="6" width="6" height="6"/><rect x="30" y="6" width="6" height="6"/>
+      </g>
+      <circle class="wheel" cx="70" cy="92" r="14"/>
+      <circle class="rim" cx="70" cy="92" r="5"/>
+      <circle class="wheel" cx="220" cy="92" r="14"/>
+      <circle class="rim" cx="220" cy="92" r="5"/>
+    </svg>
   </div>
 
   <!-- 3: FASTE PRISER -->
@@ -312,52 +338,66 @@
     .from('.s1 .hero-mark .tag',{y:14,opacity:0,duration:.6,ease:'power2.out'},2.45);
   hideScene('.s1', 3.0, .35);
 
-  // ── BURST (3.3 – 5.4s): 4 panels, Agaas-style snap
-  tl.set('.burst',{visibility:'visible'},3.3)
-    .set('.bp-1',{visibility:'visible',opacity:1},3.3)
-    .from('.bp-1 span',{scale:.7,duration:.18,ease:'back.out(2.5)'},3.3)
-    .set('.bp-1',{visibility:'hidden',opacity:0},3.85)
-    .set('.bp-2',{visibility:'visible',opacity:1},3.85)
-    .from('.bp-2 span',{scale:.7,duration:.18,ease:'back.out(2.5)'},3.85)
-    .set('.bp-2',{visibility:'hidden',opacity:0},4.4)
-    .set('.bp-3',{visibility:'visible',opacity:1},4.4)
-    .from('.bp-3 span',{scale:.5,duration:.14,ease:'back.out(3)'},4.4)
-    .set('.bp-3',{visibility:'hidden',opacity:0},4.7)
-    .set('.bp-4',{visibility:'visible',opacity:1},4.7)
-    .from('.bp-4 span',{scale:.7,duration:.22,ease:'back.out(2.5)'},4.7)
-    .set('.bp-4',{visibility:'hidden',opacity:0},5.4)
-    .set('.burst',{visibility:'hidden'},5.4);
+  // ── TAXI FLYBY (3.1 – 5.0s): bil speeder over skjermen
+  tl.set('.flyby',{visibility:'visible'},3.1)
+    // car blasts across
+    .fromTo('.flyby-car',
+      {x:'-130%',rotation:-1,filter:'blur(0px)'},
+      {x:'150%',rotation:0,filter:'blur(4px)',duration:1.4,ease:'power3.in'},
+      3.1)
+    .to('.flyby-car',{filter:'blur(0px)',duration:.2,ease:'power2.out'},4.3)
+    // motion lines whip past in the opposite direction
+    .fromTo('.ml-1',{x:'80%',opacity:0},{x:'-120%',opacity:.85,duration:.9,ease:'power2.out'},3.35)
+    .fromTo('.ml-2',{x:'100%',opacity:0},{x:'-130%',opacity:.6,duration:.9,ease:'power2.out'},3.45)
+    .fromTo('.ml-3',{x:'70%',opacity:0},{x:'-140%',opacity:.9,duration:.9,ease:'power2.out'},3.55)
+    .fromTo('.ml-4',{x:'90%',opacity:0},{x:'-130%',opacity:.55,duration:.9,ease:'power2.out'},3.65)
+    .fromTo('.ml-5',{x:'80%',opacity:0},{x:'-120%',opacity:.7,duration:.9,ease:'power2.out'},3.75)
+    .to('.motion-line',{opacity:0,duration:.25},4.55)
+    .set('.flyby',{visibility:'hidden'},4.9);
 
-  // Hide brand+meta chrome during burst
-  tl.to('.brand, .meta',{opacity:0,duration:.2},3.15)
-    .to('.brand, .meta',{opacity:1,duration:.3},5.45);
+  // Hide brand+meta chrome during flyby
+  tl.to('.brand, .meta',{opacity:0,duration:.2},3.0)
+    .to('.brand, .meta',{opacity:1,duration:.3},4.95);
 
-  // ── Scene 3 (5.5 – 10.7s): Faste priser — cards flip in 3D
-  showScene('.s3', 5.5, .55);
-  tl.from('.s3 .eyebrow span',{y:'110%',duration:.9,ease:'power2.out'},5.8)
-    .from('.s3 .reveal > span',{y:'110%',duration:1.0,stagger:.5,ease:'power2.out'},6.05)
+  // ── Scene 3 (5.2 – 11s): Faste priser — cards flip in 3D, deretter rød sweep
+  showScene('.s3', 5.2, .55);
+  tl.from('.s3 .eyebrow span',{y:'110%',duration:.9,ease:'power2.out'},5.5)
+    .from('.s3 .reveal > span',{y:'110%',duration:1.0,stagger:.5,ease:'power2.out'},5.75)
     .from('.s3 .price-card',{
       rotationY:-75, opacity:0, y:30, z:-100,
       duration:.7, stagger:.14, ease:'back.out(1.4)',
       transformOrigin:'center center -40px'
-    },7.2)
-    .from('.s3 .price-card .iconwrap img',{scale:0,rotation:-90,duration:.5,stagger:.14,ease:'back.out(2.2)'},7.55);
-  hideScene('.s3', 10.5, .55);
+    },6.9)
+    .from('.s3 .price-card .iconwrap img',{scale:0,rotation:-90,duration:.5,stagger:.14,ease:'back.out(2.2)'},7.25);
 
-  // ── Scene 4 (11 – 15s): 24/7 — dramatic split-in with motion blur
-  showScene('.s4', 11.0, .55);
-  tl.from('.s4 .eyebrow span',{y:'110%',duration:.85,ease:'power2.out'},11.25)
-    // 24 flies in from far left with motion blur
-    .fromTo('.s4 .bn-24',{x:-350,opacity:0,filter:'blur(10px)'},{x:0,opacity:1,filter:'blur(0px)',duration:.75,ease:'power3.out'},11.5)
-    // slash drops from above + rotates
-    .fromTo('.s4 .big-num em',{y:-220,rotation:-90,opacity:0},{y:0,rotation:0,opacity:1,duration:.6,ease:'back.out(2)'},11.75)
-    // 7 flies in from far right
-    .fromTo('.s4 .bn-7',{x:350,opacity:0,filter:'blur(10px)'},{x:0,opacity:1,filter:'blur(0px)',duration:.75,ease:'power3.out'},11.9)
-    // pulse the whole number
-    .to('.s4 .big-num',{scale:1.06,duration:.2,ease:'power2.out'},12.7)
-    .to('.s4 .big-num',{scale:1,duration:.36,ease:'power2.out'},12.9)
-    .from('.s4 h3',{y:18,opacity:0,duration:.7,ease:'power2.out'},13.0);
-  hideScene('.s4', 14.7, .5);
+  // Rød sweep — sekvensielt: hvert kort blir rødt, holdes, og slippes
+  ['.s3 .pc-1','.s3 .pc-2','.s3 .pc-3','.s3 .pc-4'].forEach((sel,i)=>{
+    const onAt = 8.0 + i * 0.32;
+    const offAt = 9.65 + i * 0.18;
+    // turn red
+    tl.to(sel,{backgroundColor:'#E5263A',borderColor:'#E5263A',boxShadow:'0 18px 46px rgba(229,38,58,.4)',duration:.32,ease:'power2.out'},onAt)
+      .to(sel+' .iconwrap',{backgroundColor:'rgba(255,255,255,.96)',duration:.32,ease:'power2.out'},onAt)
+      .to(sel+' b',{color:'#FFFFFF',duration:.32,ease:'power2.out'},onAt)
+      .to(sel+' span',{color:'rgba(255,255,255,.85)',duration:.32,ease:'power2.out'},onAt)
+      // return to neutral
+      .to(sel,{backgroundColor:'#FAFAF7',borderColor:'rgba(14,14,16,.10)',boxShadow:'0 10px 28px rgba(14,14,16,.04)',duration:.4,ease:'power2.out'},offAt)
+      .to(sel+' .iconwrap',{backgroundColor:'#FFF6DE',duration:.4,ease:'power2.out'},offAt)
+      .to(sel+' b',{color:'#0E0E10',duration:.4,ease:'power2.out'},offAt)
+      .to(sel+' span',{color:'rgba(14,14,16,.42)',duration:.4,ease:'power2.out'},offAt);
+  });
+
+  hideScene('.s3', 10.9, .55);
+
+  // ── Scene 4 (11.5 – 15.5s): 24/7 — dramatic split-in with motion blur
+  showScene('.s4', 11.5, .55);
+  tl.from('.s4 .eyebrow span',{y:'110%',duration:.85,ease:'power2.out'},11.75)
+    .fromTo('.s4 .bn-24',{x:-350,opacity:0,filter:'blur(10px)'},{x:0,opacity:1,filter:'blur(0px)',duration:.75,ease:'power3.out'},12.0)
+    .fromTo('.s4 .big-num em',{y:-220,rotation:-90,opacity:0},{y:0,rotation:0,opacity:1,duration:.6,ease:'back.out(2)'},12.25)
+    .fromTo('.s4 .bn-7',{x:350,opacity:0,filter:'blur(10px)'},{x:0,opacity:1,filter:'blur(0px)',duration:.75,ease:'power3.out'},12.4)
+    .to('.s4 .big-num',{scale:1.06,duration:.2,ease:'power2.out'},13.2)
+    .to('.s4 .big-num',{scale:1,duration:.36,ease:'power2.out'},13.4)
+    .from('.s4 h3',{y:18,opacity:0,duration:.7,ease:'power2.out'},13.5);
+  hideScene('.s4', 15.2, .5);
 
   // ── Scene 6 (15 – 20.5s): Trust — cards 3D flip in
   showScene('.s6', 15.0, .55);
