@@ -55,6 +55,34 @@
   .reveal{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.06em;line-height:1.05}
   .reveal > span{display:inline-block}
 
+  /* ── Crisp inline wordmark (replaces low-res PNG) ── */
+  .tm-wordmark{
+    display:inline-block;
+    font-family:'Inter',sans-serif;
+    font-weight:900;
+    font-style:italic;
+    color:var(--red);
+    letter-spacing:-.05em;
+    line-height:1;
+    white-space:nowrap;
+    transform:scaleX(.96);
+    transform-origin:left center;
+    -webkit-font-smoothing:antialiased;
+  }
+  .brand .tm-wordmark{font-size:2.3vmin}
+  .hero-mark .tm-wordmark{font-size:14vmin;filter:drop-shadow(0 10px 28px rgba(229,38,58,.18))}
+  .cta-stack .tm-wordmark{font-size:8.5vmin;filter:drop-shadow(0 8px 22px rgba(229,38,58,.15))}
+
+  /* ── Taxi car (inline SVG) ── */
+  .taxi-svg{display:block}
+  .s1 .taxi-svg{width:34vmin;height:auto;color:var(--ink)}
+  .s1 .taxi-svg .roof-sign{fill:var(--yellow)}
+  .s1 .taxi-svg .sign-text{fill:var(--ink);font-family:'Inter',sans-serif;font-weight:900;font-size:14px;letter-spacing:1px}
+  .s1 .taxi-svg .checker{fill:var(--yellow)}
+  .s1 .taxi-svg .wheel{fill:var(--ink)}
+  .s1 .taxi-svg .rim{fill:var(--paper)}
+  .s1 .taxi-svg .window{fill:var(--paper)}
+
   /* ── Scene 1 & 7: Logo intro / outro ── */
   .hero-mark{display:grid;justify-items:center;gap:3.4vmin}
   .hero-mark img.logo{height:13vmin;width:auto;display:block;filter:drop-shadow(0 10px 28px rgba(229,38,58,.18))}
@@ -122,16 +150,36 @@
 <body>
 <main id="film">
   <div class="brand">
-    <img src="https://usercontent.one/wp/www.taxi4moss.no/wp-content/uploads/2023/05/Taxi4_logo-removebg-preview.png" alt="Taxi4Moss">
+    <span class="tm-wordmark">TAXI4MOSS</span>
   </div>
   <div class="meta">04231 · Døgnåpent</div>
 
-  <!-- 1: LOGO INTRO -->
+  <!-- 1: LOGO INTRO (with taxi car driving in) -->
   <section class="scene s1">
     <div class="center">
       <div class="hero-mark">
-        <img class="logo" src="https://usercontent.one/wp/www.taxi4moss.no/wp-content/uploads/2023/05/Taxi4_logo-removebg-preview.png" alt="Taxi4Moss">
+        <svg class="taxi-svg taxi-anim" viewBox="0 0 280 110" xmlns="http://www.w3.org/2000/svg" aria-label="Taxi">
+          <!-- TAXI roof sign -->
+          <rect class="roof-sign" x="105" y="2" width="70" height="18" rx="3"/>
+          <text class="sign-text" x="140" y="16" text-anchor="middle">TAXI</text>
+          <!-- car body (slightly rounded silhouette) -->
+          <path d="M20,75 Q22,55 50,50 L90,40 Q120,30 180,30 Q220,30 240,45 L260,55 Q272,58 272,75 L272,82 Q272,86 268,86 L24,86 Q20,86 20,82 Z"/>
+          <!-- windows -->
+          <path class="window" d="M70,50 L88,38 Q110,32 145,32 L160,48 Z"/>
+          <path class="window" d="M165,32 Q195,32 222,42 L235,52 L168,52 Z"/>
+          <!-- checker stripe -->
+          <g class="checker" transform="translate(60,68)">
+            <rect width="6" height="6"/><rect x="12" width="6" height="6"/><rect x="24" width="6" height="6"/><rect x="36" width="6" height="6"/>
+            <rect x="6" y="6" width="6" height="6"/><rect x="18" y="6" width="6" height="6"/><rect x="30" y="6" width="6" height="6"/>
+          </g>
+          <!-- wheels -->
+          <circle class="wheel" cx="70" cy="92" r="14"/>
+          <circle class="rim" cx="70" cy="92" r="5"/>
+          <circle class="wheel" cx="220" cy="92" r="14"/>
+          <circle class="rim" cx="220" cy="92" r="5"/>
+        </svg>
         <div class="rule"></div>
+        <div class="hero-wordmark-wrap"><span class="tm-wordmark">TAXI4MOSS</span></div>
         <div class="tag">Rimelig på pris.<br><span class="red-word">Best på kundeservice.</span></div>
       </div>
     </div>
@@ -144,18 +192,6 @@
     <div class="burst-panel burst-red bp-3"><span class="small">i</span></div>
     <div class="burst-panel burst-white bp-4"><span>Moss?</span></div>
   </div>
-
-  <!-- 2: HOOK -->
-  <section class="scene s2">
-    <div class="center">
-      <div class="eyebrow"><span>Trenger du skyss?</span></div>
-      <h1>
-        <span class="reveal"><span>Taxi i</span></span><br>
-        <span class="reveal"><span><span class="red-word">Moss.</span></span></span>
-      </h1>
-      <div class="support">Lokalkjent, tilgjengelig og forutsigbar — døgnet rundt.</div>
-    </div>
-  </section>
 
   <!-- 3: FASTE PRISER -->
   <section class="scene s3">
@@ -226,7 +262,7 @@
   <!-- 7: LOGO + CTA -->
   <section class="scene s7">
     <div class="center cta-stack">
-      <img class="logo" src="https://usercontent.one/wp/www.taxi4moss.no/wp-content/uploads/2023/05/Taxi4_logo-removebg-preview.png" alt="Taxi4Moss">
+      <span class="tm-wordmark">TAXI4MOSS</span>
       <div class="cta-eyebrow">Ring oss · Døgnåpent</div>
       <div class="cta-phone"><span class="d">0</span><span class="d">4</span><span class="d">2</span><span class="d">3</span><span class="d">1</span></div>
       <div class="cta-sub">Eller bestill på taxi4moss.no</div>
@@ -266,108 +302,101 @@
 
   tl.fromTo('.progress i',{scaleX:0},{scaleX:1,duration:DURATION,ease:'none'},0);
 
-  // ── Scene 1 (0 – 2.8s): LOGO INTRO (shortened to make room for burst)
-  showScene('.s1', 0, .7);
-  tl.from('.s1 .hero-mark img.logo',{y:36,opacity:0,duration:1.0,ease:'power4.out'},.25)
-    .fromTo('.s1 .hero-mark .rule',{scaleX:0,opacity:0},{scaleX:1,opacity:1,duration:.6,ease:'power3.out',transformOrigin:'left center'},.95)
-    .from('.s1 .hero-mark .tag',{y:16,opacity:0,duration:.7,ease:'power2.out'},1.2);
-  hideScene('.s1', 2.5, .35);
+  // ── Scene 1 (0 – 3.2s): LOGO INTRO — taxi drives in, then wordmark + tag
+  showScene('.s1', 0, .55);
+  tl.fromTo('.s1 .taxi-svg',{x:'-110%',opacity:0,rotation:-2},{x:0,opacity:1,rotation:0,duration:1.3,ease:'power3.out'},.15)
+    // tiny bounce on settle
+    .to('.s1 .taxi-svg',{y:-8,duration:.18,ease:'power2.out',yoyo:true,repeat:1},1.4)
+    .from('.s1 .hero-mark .hero-wordmark-wrap',{y:30,opacity:0,duration:.85,ease:'power4.out'},1.6)
+    .fromTo('.s1 .hero-mark .rule',{scaleX:0,opacity:0},{scaleX:1,opacity:1,duration:.55,ease:'power3.out',transformOrigin:'left center'},2.25)
+    .from('.s1 .hero-mark .tag',{y:14,opacity:0,duration:.6,ease:'power2.out'},2.45);
+  hideScene('.s1', 3.0, .35);
 
-  // ── BURST (2.85 – 5.0s): 4 panels, Agaas-style snap
-  tl.set('.burst',{visibility:'visible'},2.85)
-    // bp-1 "Trenger?"   red bg
-    .set('.bp-1',{visibility:'visible',opacity:1},2.85)
-    .from('.bp-1 span',{scale:.7,duration:.18,ease:'back.out(2.5)'},2.85)
-    .set('.bp-1',{visibility:'hidden',opacity:0},3.45)
-    // bp-2 "Taxi?"      white bg
-    .set('.bp-2',{visibility:'visible',opacity:1},3.45)
-    .from('.bp-2 span',{scale:.7,duration:.18,ease:'back.out(2.5)'},3.45)
-    .set('.bp-2',{visibility:'hidden',opacity:0},4.0)
-    // bp-3 "i"          red bg, quick flash
-    .set('.bp-3',{visibility:'visible',opacity:1},4.0)
-    .from('.bp-3 span',{scale:.5,duration:.14,ease:'back.out(3)'},4.0)
-    .set('.bp-3',{visibility:'hidden',opacity:0},4.3)
-    // bp-4 "Moss?"      white bg, longer hold to land
-    .set('.bp-4',{visibility:'visible',opacity:1},4.3)
-    .from('.bp-4 span',{scale:.7,duration:.22,ease:'back.out(2.5)'},4.3)
-    .set('.bp-4',{visibility:'hidden',opacity:0},5.0)
-    .set('.burst',{visibility:'hidden'},5.0);
+  // ── BURST (3.3 – 5.4s): 4 panels, Agaas-style snap
+  tl.set('.burst',{visibility:'visible'},3.3)
+    .set('.bp-1',{visibility:'visible',opacity:1},3.3)
+    .from('.bp-1 span',{scale:.7,duration:.18,ease:'back.out(2.5)'},3.3)
+    .set('.bp-1',{visibility:'hidden',opacity:0},3.85)
+    .set('.bp-2',{visibility:'visible',opacity:1},3.85)
+    .from('.bp-2 span',{scale:.7,duration:.18,ease:'back.out(2.5)'},3.85)
+    .set('.bp-2',{visibility:'hidden',opacity:0},4.4)
+    .set('.bp-3',{visibility:'visible',opacity:1},4.4)
+    .from('.bp-3 span',{scale:.5,duration:.14,ease:'back.out(3)'},4.4)
+    .set('.bp-3',{visibility:'hidden',opacity:0},4.7)
+    .set('.bp-4',{visibility:'visible',opacity:1},4.7)
+    .from('.bp-4 span',{scale:.7,duration:.22,ease:'back.out(2.5)'},4.7)
+    .set('.bp-4',{visibility:'hidden',opacity:0},5.4)
+    .set('.burst',{visibility:'hidden'},5.4);
 
   // Hide brand+meta chrome during burst
-  tl.to('.brand, .meta',{opacity:0,duration:.2},2.7)
-    .to('.brand, .meta',{opacity:1,duration:.3},5.05);
+  tl.to('.brand, .meta',{opacity:0,duration:.2},3.15)
+    .to('.brand, .meta',{opacity:1,duration:.3},5.45);
 
-  // ── Scene 2 (5 – 7.5s): HOOK — lands the answer
-  showScene('.s2', 5.0, .45);
-  tl.from('.s2 .eyebrow span',{y:'110%',duration:.8,ease:'power2.out'},5.2)
-    .from('.s2 .reveal > span',{y:'110%',duration:.9,stagger:.45,ease:'power2.out'},5.4)
-    .from('.s2 .support',{y:14,opacity:0,duration:.6,ease:'power2.out'},6.5);
-  hideScene('.s2', 7.1, .5);
-
-  // ── Scene 3 (7.5 – 12.8s): Faste priser — cards flip in 3D
-  showScene('.s3', 7.5, .55);
-  tl.from('.s3 .eyebrow span',{y:'110%',duration:.9,ease:'power2.out'},7.8)
-    .from('.s3 .reveal > span',{y:'110%',duration:1.0,stagger:.5,ease:'power2.out'},8.05)
+  // ── Scene 3 (5.5 – 10.7s): Faste priser — cards flip in 3D
+  showScene('.s3', 5.5, .55);
+  tl.from('.s3 .eyebrow span',{y:'110%',duration:.9,ease:'power2.out'},5.8)
+    .from('.s3 .reveal > span',{y:'110%',duration:1.0,stagger:.5,ease:'power2.out'},6.05)
     .from('.s3 .price-card',{
       rotationY:-75, opacity:0, y:30, z:-100,
       duration:.7, stagger:.14, ease:'back.out(1.4)',
       transformOrigin:'center center -40px'
-    },9.2)
-    .from('.s3 .price-card .iconwrap img',{scale:0,rotation:-90,duration:.5,stagger:.14,ease:'back.out(2.2)'},9.55);
-  hideScene('.s3', 12.5, .55);
+    },7.2)
+    .from('.s3 .price-card .iconwrap img',{scale:0,rotation:-90,duration:.5,stagger:.14,ease:'back.out(2.2)'},7.55);
+  hideScene('.s3', 10.5, .55);
 
-  // ── Scene 4 (12.8 – 17s): 24/7 — dramatic split-in
-  showScene('.s4', 12.8, .55);
-  tl.from('.s4 .eyebrow span',{y:'110%',duration:.85,ease:'power2.out'},13.05)
-    // 24 flies in from far left with motion blur (using a quick blur via filter)
-    .fromTo('.s4 .bn-24',{x:-300,opacity:0,filter:'blur(8px)'},{x:0,opacity:1,filter:'blur(0px)',duration:.7,ease:'power3.out'},13.3)
+  // ── Scene 4 (11 – 15s): 24/7 — dramatic split-in with motion blur
+  showScene('.s4', 11.0, .55);
+  tl.from('.s4 .eyebrow span',{y:'110%',duration:.85,ease:'power2.out'},11.25)
+    // 24 flies in from far left with motion blur
+    .fromTo('.s4 .bn-24',{x:-350,opacity:0,filter:'blur(10px)'},{x:0,opacity:1,filter:'blur(0px)',duration:.75,ease:'power3.out'},11.5)
     // slash drops from above + rotates
-    .fromTo('.s4 .big-num em',{y:-200,rotation:-90,opacity:0},{y:0,rotation:0,opacity:1,duration:.55,ease:'back.out(2)'},13.55)
+    .fromTo('.s4 .big-num em',{y:-220,rotation:-90,opacity:0},{y:0,rotation:0,opacity:1,duration:.6,ease:'back.out(2)'},11.75)
     // 7 flies in from far right
-    .fromTo('.s4 .bn-7',{x:300,opacity:0,filter:'blur(8px)'},{x:0,opacity:1,filter:'blur(0px)',duration:.7,ease:'power3.out'},13.7)
+    .fromTo('.s4 .bn-7',{x:350,opacity:0,filter:'blur(10px)'},{x:0,opacity:1,filter:'blur(0px)',duration:.75,ease:'power3.out'},11.9)
     // pulse the whole number
-    .to('.s4 .big-num',{scale:1.05,duration:.18,ease:'power2.out'},14.45)
-    .to('.s4 .big-num',{scale:1,duration:.32,ease:'power2.out'},14.63)
-    .from('.s4 h3',{y:18,opacity:0,duration:.7,ease:'power2.out'},14.7);
-  hideScene('.s4', 16.5, .5);
+    .to('.s4 .big-num',{scale:1.06,duration:.2,ease:'power2.out'},12.7)
+    .to('.s4 .big-num',{scale:1,duration:.36,ease:'power2.out'},12.9)
+    .from('.s4 h3',{y:18,opacity:0,duration:.7,ease:'power2.out'},13.0);
+  hideScene('.s4', 14.7, .5);
 
-  // ── Scene 6 (16.5 – 22s): Trust — cards 3D flip in with shadow grow
-  showScene('.s6', 16.5, .55);
-  tl.from('.s6 .eyebrow span',{y:'110%',duration:.85,ease:'power2.out'},16.75)
-    .from('.s6 .reveal > span',{y:'110%',duration:1.0,stagger:.5,ease:'power2.out'},17.0)
+  // ── Scene 6 (15 – 20.5s): Trust — cards 3D flip in
+  showScene('.s6', 15.0, .55);
+  tl.from('.s6 .eyebrow span',{y:'110%',duration:.85,ease:'power2.out'},15.25)
+    .from('.s6 .reveal > span',{y:'110%',duration:1.0,stagger:.5,ease:'power2.out'},15.5)
     .from('.s6 .trust-card',{
       rotationX:60, y:60, opacity:0, z:-200,
       duration:.8, stagger:.18, ease:'back.out(1.5)',
       transformOrigin:'center bottom'
-    },18.0)
-    // big number inside each trust card pops on top
-    .from('.s6 .trust-card b',{scale:0,opacity:0,duration:.45,stagger:.18,ease:'back.out(2.2)'},18.4);
-  hideScene('.s6', 21.6, .55);
+    },16.5)
+    .from('.s6 .trust-card b',{scale:0,opacity:0,duration:.45,stagger:.18,ease:'back.out(2.2)'},16.9);
+  hideScene('.s6', 20.2, .55);
 
   // big red flash transition into CTA
-  tl.set('.fx-wipe:not(.white)',{visibility:'visible'},21.5)
-    .fromTo('.fx-wipe:not(.white)',{scaleX:0},{scaleX:1,duration:.45,ease:'power3.inOut'},21.5)
-    .set('.fx-wipe:not(.white)',{transformOrigin:'right center'},21.95)
-    .to('.fx-wipe:not(.white)',{scaleX:0,duration:.4,ease:'power3.inOut'},21.95)
-    .set('.fx-wipe:not(.white)',{visibility:'hidden',transformOrigin:'left center'},22.35);
+  tl.set('.fx-wipe:not(.white)',{visibility:'visible'},20.1)
+    .fromTo('.fx-wipe:not(.white)',{scaleX:0},{scaleX:1,duration:.5,ease:'power3.inOut'},20.1)
+    .set('.fx-wipe:not(.white)',{transformOrigin:'right center'},20.6)
+    .to('.fx-wipe:not(.white)',{scaleX:0,duration:.45,ease:'power3.inOut'},20.6)
+    .set('.fx-wipe:not(.white)',{visibility:'hidden',transformOrigin:'left center'},21.05);
 
-  // ── Scene 7 (22 – 30s): CTA — digit-by-digit phone reveal
-  showScene('.s7', 22.0, .6);
-  tl.from('.s7 .cta-stack img.logo',{y:26,scale:.85,opacity:0,duration:.9,ease:'back.out(1.6)'},22.3)
-    .from('.s7 .cta-eyebrow',{y:14,opacity:0,duration:.6,ease:'power2.out'},22.9)
-    // digits flip in one by one like a slot machine
+  // ── Scene 7 (20.7 – 30s): CTA — digit-by-digit phone reveal with breathing room
+  showScene('.s7', 20.7, .6);
+  tl.from('.s7 .cta-stack .tm-wordmark',{y:30,scale:.85,opacity:0,duration:.9,ease:'back.out(1.6)'},21.0)
+    .from('.s7 .cta-eyebrow',{y:14,opacity:0,duration:.6,ease:'power2.out'},21.7)
+    // digits flip in one by one slot-machine style
     .from('.s7 .cta-phone .d',{
-      y:-80, opacity:0, scale:.4,
-      duration:.5, stagger:.14, ease:'back.out(2.2)'
-    },23.15)
+      y:-90, opacity:0, scale:.4,
+      duration:.55, stagger:.16, ease:'back.out(2.2)'
+    },22.0)
     // pulse the whole phone number on completion
-    .to('.s7 .cta-phone',{scale:1.04,duration:.2,ease:'power2.out'},24.2)
-    .to('.s7 .cta-phone',{scale:1,duration:.35,ease:'power2.out'},24.4)
-    .from('.s7 .cta-sub',{y:14,opacity:0,duration:.6,ease:'power2.out'},24.7)
-    .from('.s7 .cta-link',{y:18,scale:.9,opacity:0,duration:.6,ease:'back.out(1.7)'},25.1)
-    .from('.s7 .cta-qr',{y:18,scale:.9,opacity:0,duration:.6,ease:'back.out(1.7)'},25.25)
-    // subtle QR shimmer
-    .to('.s7 .cta-qr img',{rotation:3,duration:.2,ease:'power1.inOut',yoyo:true,repeat:1},26.5);
+    .to('.s7 .cta-phone',{scale:1.05,duration:.22,ease:'power2.out'},23.3)
+    .to('.s7 .cta-phone',{scale:1,duration:.4,ease:'power2.out'},23.52)
+    .from('.s7 .cta-sub',{y:14,opacity:0,duration:.6,ease:'power2.out'},23.95)
+    .from('.s7 .cta-link',{y:20,scale:.9,opacity:0,duration:.6,ease:'back.out(1.7)'},24.4)
+    .from('.s7 .cta-qr',{y:20,scale:.9,opacity:0,duration:.6,ease:'back.out(1.7)'},24.55)
+    // subtle QR shimmer late in scene
+    .to('.s7 .cta-qr img',{rotation:3,duration:.22,ease:'power1.inOut',yoyo:true,repeat:1},26.5)
+    // gentle phone breath at the end
+    .to('.s7 .cta-phone',{scale:1.02,duration:.6,ease:'sine.inOut',yoyo:true,repeat:1},27.8);
 </script>
 </body>
 </html>
