@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MR Mobile — Moderne telefoniløsning for din bedrift</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.mrmobile.no">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --white:#FFFFFF;
+    --paper:#FAFAFD;
+    --ink:#082747;
+    --blue:#4D3ADB;
+    --blue-deep:#3825B4;
+    --blue-bright:#0550E8;
+    --yellow:#FFBE30;
+    --soft:#E9F4F5;
+    --dim:rgba(8,39,71,.58);
+    --softer:rgba(8,39,71,.42);
+    --rule:rgba(8,39,71,.10);
+    --shadow:0 18px 50px rgba(77,58,219,.10), 0 6px 14px rgba(8,39,71,.05);
+  }
+  *{box-sizing:border-box}
+  html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#000}
+  body{display:grid;place-items:center;color:var(--ink);font-family:'Inter',Arial,sans-serif;font-kerning:normal;-webkit-font-smoothing:antialiased;font-feature-settings:"ss01","cv11"}
+  #film{position:relative;width:min(100vw,100vh);height:min(100vw,100vh);aspect-ratio:1/1;overflow:hidden;background:var(--white);isolation:isolate}
+  #film:after{content:"";position:absolute;inset:0;z-index:80;pointer-events:none;background:radial-gradient(circle at 50% 50%,transparent 60%,rgba(77,58,219,.06) 130%)}
+
+  /* Chrome */
+  .brand{position:absolute;z-index:90;left:5%;top:5%;display:flex;align-items:center;gap:1vmin}
+  .brand img{height:3.6vmin;width:auto;display:block}
+  .meta{position:absolute;z-index:90;right:5%;top:5.4%;font-weight:700;font-size:1.1vmin;letter-spacing:.28em;text-transform:uppercase;color:var(--blue)}
+
+  .progress{position:absolute;z-index:90;left:5%;right:5%;bottom:4%;height:3px;background:rgba(8,39,71,.08);border-radius:3px;overflow:hidden}
+  .progress i{display:block;width:100%;height:100%;background:var(--blue);transform:scaleX(0);transform-origin:left;border-radius:3px}
+
+  /* Scene base */
+  .scene{position:absolute;inset:0;visibility:hidden;display:grid;place-items:center;text-align:center;will-change:transform,opacity;color:var(--ink)}
+
+  .center{position:relative;z-index:4;width:88%;display:grid;justify-items:center;gap:2.4vmin;padding:0 2vmin}
+  .eyebrow{font-weight:800;font-size:1.45vmin;letter-spacing:.3em;text-transform:uppercase;color:var(--blue);overflow:hidden}
+  .eyebrow span{display:inline-block}
+
+  h1,h2,h3{margin:0;font-family:'Inter',sans-serif;font-weight:800;line-height:1.02;letter-spacing:-.04em;text-wrap:balance;color:var(--ink)}
+  h1{font-size:11vmin}
+  h2{font-size:8vmin}
+  h3{font-size:5vmin;font-weight:700}
+  .blue-word{color:var(--blue);font-style:italic;font-weight:800}
+
+  .support{max-width:80%;font-weight:400;font-size:2vmin;line-height:1.5;color:var(--dim);text-wrap:balance}
+
+  .reveal{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.06em;line-height:1.05}
+  .reveal > span{display:inline-block}
+
+  /* ── Scene 1 & 7: Logo intro/outro ── */
+  .hero-mark{display:grid;justify-items:center;gap:3.4vmin}
+  .hero-mark img.logo{height:14vmin;width:auto;display:block;filter:drop-shadow(0 10px 28px rgba(77,58,219,.18))}
+  .hero-mark .rule{width:8vmin;height:3px;background:var(--blue);border-radius:2px}
+  .hero-mark .tag{font-weight:500;font-size:2.6vmin;letter-spacing:-.015em;color:var(--ink);max-width:88%;line-height:1.35}
+  .hero-mark .tag .blue-word{font-weight:700}
+
+  /* ── Scene 2: SIGNAL WAVES transition ── */
+  .signal{position:absolute;inset:0;z-index:60;visibility:hidden;pointer-events:none;display:grid;place-items:center;overflow:hidden}
+  .signal .wave{position:absolute;width:8vmin;height:8vmin;border-radius:50%;border:3px solid var(--blue);opacity:0;will-change:transform,opacity}
+  .signal .core{position:relative;z-index:3;width:14vmin;height:14vmin;border-radius:50%;background:var(--blue);display:grid;place-items:center;box-shadow:0 0 60px rgba(77,58,219,.5);will-change:transform,opacity}
+  .signal .core svg{width:7vmin;height:7vmin;color:var(--white)}
+  .signal .label{position:absolute;bottom:18%;font-weight:800;font-size:3vmin;color:var(--blue);letter-spacing:-.02em;will-change:transform,opacity}
+
+  /* ── Scene 3: Services ── */
+  .services-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.6vmin;width:90%;margin-top:1vmin}
+  .svc-card{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:1.4vmin;padding:2.2vmin 2vmin;border:1px solid var(--rule);border-radius:18px;background:var(--paper);box-shadow:0 8px 22px rgba(8,39,71,.04);text-align:left}
+  .svc-card .icon{width:6vmin;height:6vmin;border-radius:14px;background:var(--soft);display:grid;place-items:center;color:var(--blue)}
+  .svc-card .icon svg{width:3.4vmin;height:3.4vmin}
+  .svc-card .meta-text{display:grid;gap:.3vmin}
+  .svc-card b{font-weight:800;font-size:2.2vmin;color:var(--ink);letter-spacing:-.015em;line-height:1}
+  .svc-card span{font-weight:500;font-size:1.3vmin;color:var(--dim);line-height:1.3}
+
+  /* ── Scene 4: BIG STAT ── */
+  .big-stat{display:grid;justify-items:center;gap:1.5vmin}
+  .big-stat .num{font-weight:800;font-size:28vmin;line-height:.82;letter-spacing:-.05em;color:var(--blue);font-variant-numeric:tabular-nums;display:flex;align-items:flex-start}
+  .big-stat .num sup{font-size:.4em;font-weight:800;line-height:1;margin-top:.8vmin;opacity:0}
+  .big-stat .label{font-weight:700;font-size:1.6vmin;letter-spacing:.24em;text-transform:uppercase;color:var(--ink)}
+  .big-stat .label em{font-style:italic;font-weight:500;text-transform:none;letter-spacing:0;color:var(--blue)}
+
+  /* ── Scene 5: TRUST / clients ── */
+  .clients-grid{display:grid;grid-template-columns:1fr 1fr;gap:2vmin;width:80%;margin-top:1vmin;perspective:1200px}
+  .client-card{aspect-ratio:2/1;display:grid;place-items:center;padding:2vmin;background:var(--paper);border:1px solid var(--rule);border-radius:18px;box-shadow:0 8px 22px rgba(8,39,71,.04);overflow:hidden}
+  .client-card img{max-width:80%;max-height:80%;width:auto;height:auto;display:block;object-fit:contain;mix-blend-mode:multiply}
+
+  /* ── Scene 6: Why us — pillars ── */
+  .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6vmin;width:94%;margin-top:1vmin;perspective:1400px}
+  .pillar{padding:2.6vmin 1.4vmin;border:1px solid var(--rule);border-radius:18px;background:var(--paper);display:grid;gap:.7vmin;align-content:start;box-shadow:0 8px 22px rgba(8,39,71,.04)}
+  .pillar .num{font-weight:800;font-size:4.6vmin;color:var(--blue);line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+  .pillar b{font-weight:800;font-size:1.8vmin;color:var(--ink);letter-spacing:-.01em;line-height:1.1}
+  .pillar p{margin:0;font-weight:400;font-size:1.4vmin;line-height:1.45;color:var(--dim)}
+
+  /* ── Scene 7: CTA ── */
+  .cta-stack{display:grid;justify-items:center;gap:1.6vmin;width:94%}
+  .cta-stack img.logo{height:7.5vmin;width:auto;display:block;filter:drop-shadow(0 8px 22px rgba(77,58,219,.15))}
+  .cta-eyebrow{font-weight:800;font-size:1.45vmin;letter-spacing:.3em;text-transform:uppercase;color:var(--blue)}
+  .cta-phone{font-weight:800;font-size:18vmin;line-height:.88;letter-spacing:-.05em;color:var(--blue);font-variant-numeric:tabular-nums;display:flex;justify-content:center;gap:.04em;white-space:nowrap}
+  .cta-phone .d{display:inline-block;will-change:transform,opacity}
+  .cta-phone .gap{display:inline-block;width:.18em}
+  .cta-sub{font-weight:500;font-size:2vmin;letter-spacing:-.01em;color:var(--ink)}
+  .cta-sub a{color:var(--blue);font-weight:700;text-decoration:none}
+  .cta-row{display:flex;align-items:center;gap:2.6vmin;margin-top:1.4vmin}
+  .cta-link{display:inline-flex;align-items:center;gap:1vmin;padding:1.8vmin 2.6vmin;background:var(--blue);color:var(--white);font-weight:700;font-size:1.8vmin;letter-spacing:-.005em;text-decoration:none;border-radius:999px;box-shadow:var(--shadow)}
+  .cta-link::after{content:"→"}
+  .cta-qr{display:grid;justify-items:center;gap:.6vmin}
+  .cta-qr img{width:12vmin;height:12vmin;display:block;border:2px solid var(--blue);border-radius:14px;background:var(--white);padding:.5vmin}
+  .cta-qr span{font-weight:800;font-size:1vmin;letter-spacing:.24em;text-transform:uppercase;color:var(--blue)}
+
+  @media(prefers-reduced-motion:reduce){.scene,.signal{will-change:auto}}
+</style>
+</head>
+<body>
+<main id="film">
+  <div class="brand">
+    <img src="https://www.mrmobile.no/uploads/5lQSziOk/blue.svg" alt="MR Mobile">
+  </div>
+  <div class="meta">989 02 200 · post@mrmobile.no</div>
+
+  <!-- 1: LOGO INTRO -->
+  <section class="scene s1">
+    <div class="center">
+      <div class="hero-mark">
+        <img class="logo" src="https://www.mrmobile.no/uploads/5lQSziOk/blue.svg" alt="MR Mobile">
+        <div class="rule"></div>
+        <div class="tag">Vi hjelper din bedrift til en <span class="blue-word">moderne telefoniløsning.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2: SIGNAL WAVES TRANSITION -->
+  <div class="signal">
+    <div class="wave w1"></div>
+    <div class="wave w2"></div>
+    <div class="wave w3"></div>
+    <div class="wave w4"></div>
+    <div class="core">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M2 8.5C7 3.5 17 3.5 22 8.5l-2 2c-3.9-3.9-12.1-3.9-16 0L2 8.5zm4 4c2.8-2.8 7.2-2.8 10 0l-2 2c-1.7-1.7-4.3-1.7-6 0l-2-2zM12 16a2 2 0 100 4 2 2 0 000-4z"/>
+      </svg>
+    </div>
+    <div class="label">Tilkoblet.</div>
+  </div>
+
+  <!-- 3: SERVICES -->
+  <section class="scene s3">
+    <div class="center">
+      <div class="eyebrow"><span>Komplett telefoniløsning</span></div>
+      <h2>
+        <span class="reveal"><span>Vi finner</span></span><br>
+        <span class="reveal"><span><span class="blue-word">løsningen.</span></span></span>
+      </h2>
+      <div class="services-grid">
+        <div class="svc-card sc-1">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.15 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg></div>
+          <div class="meta-text"><b>Bedriftsmobil</b><span>Phonero-abonnement for hele teamet</span></div>
+        </div>
+        <div class="svc-card sc-2">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg></div>
+          <div class="meta-text"><b>Bedriftsnett</b><span>Sentralbord og samtaleflyt</span></div>
+        </div>
+        <div class="svc-card sc-3">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1a9 9 0 00-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2a7 7 0 0114 0v2h-4v8h3c1.66 0 3-1.34 3-3v-7a9 9 0 00-9-9z"/></svg></div>
+          <div class="meta-text"><b>VoIP-telefoni</b><span>Moderne IP-baserte løsninger</span></div>
+        </div>
+        <div class="svc-card sc-4">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg></div>
+          <div class="meta-text"><b>Internett</b><span>Stabil og rask bedriftsinternett</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4: BIG STAT -->
+  <section class="scene s4">
+    <div class="center">
+      <div class="eyebrow"><span>Erfaring du kan stole på</span></div>
+      <div class="big-stat">
+        <div class="num"><span class="counter">0</span><sup>+</sup></div>
+        <div class="label">år som <em>Phonero-partner</em></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5: TRUST / clients -->
+  <section class="scene s5">
+    <div class="center">
+      <div class="eyebrow"><span>Bedrifter som stoler på oss</span></div>
+      <h3>Fra Mandals til Avonova.</h3>
+      <div class="clients-grid">
+        <div class="client-card cl-1"><img src="https://www.mrmobile.no/uploads/la6wZKEq/336x0_219x0/mandals-logo.jpeg" alt="Mandals"></div>
+        <div class="client-card cl-2"><img src="https://www.mrmobile.no/uploads/FQ3Y7zin/443x0_320x0/avonova-logo-bht.jpg" alt="Avonova"></div>
+        <div class="client-card cl-3"><img src="https://www.mrmobile.no/uploads/3o4W2dwv/157x0_157x0/DarkDesignGroup_240x.png" alt="Dark Design Group"></div>
+        <div class="client-card cl-4"><img src="https://www.mrmobile.no/uploads/dPc3Clwp/146x0_146x0/636421326562306349gruppen-copy-2.png" alt="Adam og Eva Gruppen"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6: WHY US -->
+  <section class="scene s6">
+    <div class="center">
+      <div class="eyebrow"><span>Derfor MR Mobile</span></div>
+      <h2>
+        <span class="reveal"><span>På din side,</span></span><br>
+        <span class="reveal"><span><span class="blue-word">hele veien.</span></span></span>
+      </h2>
+      <div class="pillars">
+        <div class="pillar">
+          <div class="num">01</div>
+          <b>Løsningsorientert</b>
+          <p>Vi finner riktig løsning og pris for din bedrift.</p>
+        </div>
+        <div class="pillar">
+          <div class="num">02</div>
+          <b>Hele Norge</b>
+          <p>Levering og support til hele landet.</p>
+        </div>
+        <div class="pillar">
+          <div class="num">03</div>
+          <b>Effektiv prosess</b>
+          <p>Rask oppstart, ferdig satt opp og klart til bruk.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7: CTA -->
+  <section class="scene s7">
+    <div class="center cta-stack">
+      <img class="logo" src="https://www.mrmobile.no/uploads/5lQSziOk/blue.svg" alt="MR Mobile">
+      <div class="cta-eyebrow">Ta kontakt i dag</div>
+      <div class="cta-phone"><span class="d">9</span><span class="d">8</span><span class="d">9</span><span class="gap"></span><span class="d">0</span><span class="d">2</span><span class="gap"></span><span class="d">2</span><span class="d">0</span><span class="d">0</span></div>
+      <div class="cta-sub">eller skriv til <a href="mailto:post@mrmobile.no">post@mrmobile.no</a></div>
+      <div class="cta-row">
+        <a class="cta-link" href="tel:98902200">Ring oss</a>
+        <div class="cta-qr">
+          <img src="data:image/png;base64,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" alt="QR til mrmobile.no">
+          <span>Scan</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="progress"><i></i></div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+  const DURATION = 30;
+  gsap.defaults({ease:'power2.out'});
+
+  function showScene(sel, at, fadeIn=0.6){
+    tl.set(sel,{visibility:'visible'},at)
+      .fromTo(sel,{opacity:0},{opacity:1,duration:fadeIn,ease:'power2.out'},at);
+  }
+  function hideScene(sel, at, fadeOut=0.5){
+    tl.to(sel,{opacity:0,duration:fadeOut,ease:'power2.in'},at)
+      .set(sel,{visibility:'hidden'},at+fadeOut);
+  }
+
+  gsap.set('.scene',{opacity:0});
+  const tl = gsap.timeline({defaults:{duration:.8}});
+  tl.fromTo('.progress i',{scaleX:0},{scaleX:1,duration:DURATION,ease:'none'},0);
+
+  // ── Scene 1 (0 – 3s): LOGO INTRO
+  showScene('.s1', 0, .6);
+  tl.from('.s1 .hero-mark img.logo',{y:32,scale:.92,opacity:0,duration:1.0,ease:'back.out(1.4)'},.25)
+    .fromTo('.s1 .hero-mark .rule',{scaleX:0,opacity:0},{scaleX:1,opacity:1,duration:.55,ease:'power3.out',transformOrigin:'left center'},1.05)
+    .from('.s1 .hero-mark .tag',{y:14,opacity:0,duration:.7,ease:'power2.out'},1.3);
+  hideScene('.s1', 2.8, .35);
+
+  // ── SIGNAL WAVES (3.0 – 5.0s)
+  tl.set('.signal',{visibility:'visible'},3.0)
+    .from('.signal .core',{scale:0,opacity:0,duration:.55,ease:'back.out(2)'},3.0)
+    // 4 waves emanating outward, staggered
+    .fromTo('.signal .w1',{scale:.6,opacity:0,borderWidth:'3px'},{scale:6,opacity:0,borderWidth:'1px',duration:1.4,ease:'power2.out'},3.25)
+    .fromTo('.signal .w2',{scale:.6,opacity:0,borderWidth:'3px'},{scale:6,opacity:0,borderWidth:'1px',duration:1.4,ease:'power2.out'},3.55)
+    .fromTo('.signal .w3',{scale:.6,opacity:0,borderWidth:'3px'},{scale:6,opacity:0,borderWidth:'1px',duration:1.4,ease:'power2.out'},3.85)
+    .fromTo('.signal .w4',{scale:.6,opacity:0,borderWidth:'3px'},{scale:6,opacity:0,borderWidth:'1px',duration:1.4,ease:'power2.out'},4.15)
+    // wave keyframe trick: opacity 0 → .7 → 0 via separate tween
+    .to('.signal .w1',{opacity:.7,duration:.3,ease:'power2.out'},3.25)
+    .to('.signal .w1',{opacity:0,duration:1.0,ease:'power2.in'},3.55)
+    .to('.signal .w2',{opacity:.7,duration:.3,ease:'power2.out'},3.55)
+    .to('.signal .w2',{opacity:0,duration:1.0,ease:'power2.in'},3.85)
+    .to('.signal .w3',{opacity:.7,duration:.3,ease:'power2.out'},3.85)
+    .to('.signal .w3',{opacity:0,duration:1.0,ease:'power2.in'},4.15)
+    .to('.signal .w4',{opacity:.7,duration:.3,ease:'power2.out'},4.15)
+    .to('.signal .w4',{opacity:0,duration:.85,ease:'power2.in'},4.45)
+    // core pulses with waves
+    .to('.signal .core',{scale:1.08,duration:.2,ease:'power2.out',yoyo:true,repeat:1},3.55)
+    // label fades in late
+    .from('.signal .label',{y:20,opacity:0,duration:.6,ease:'power3.out'},4.3)
+    .to('.signal .core, .signal .label',{opacity:0,duration:.3,ease:'power2.in'},4.7)
+    .set('.signal',{visibility:'hidden'},5.0);
+
+  // Hide chrome during signal transition
+  tl.to('.brand, .meta',{opacity:0,duration:.2},2.9)
+    .to('.brand, .meta',{opacity:1,duration:.3},5.0);
+
+  // ── Scene 3 (5 – 10.5s): SERVICES + blå sweep
+  showScene('.s3', 5.0, .55);
+  tl.from('.s3 .eyebrow span',{y:'110%',duration:.85,ease:'power2.out'},5.25)
+    .from('.s3 .reveal > span',{y:'110%',duration:1.0,stagger:.5,ease:'power2.out'},5.5)
+    .from('.s3 .svc-card',{y:30,opacity:0,scale:.95,duration:.55,stagger:.12,ease:'back.out(1.5)'},6.7)
+    .from('.s3 .svc-card .icon',{scale:0,rotation:-90,duration:.45,stagger:.12,ease:'back.out(2)'},6.9);
+
+  // Sequential blue highlight on service cards
+  ['.s3 .sc-1','.s3 .sc-2','.s3 .sc-3','.s3 .sc-4'].forEach((sel,i)=>{
+    const onAt = 8.2 + i * 0.22;
+    const offAt = 9.4 + i * 0.15;
+    tl.to(sel,{backgroundColor:'#4D3ADB',borderColor:'#4D3ADB',boxShadow:'0 18px 46px rgba(77,58,219,.4)',duration:.3,ease:'power2.out'},onAt)
+      .to(sel+' .icon',{backgroundColor:'rgba(255,255,255,.96)',duration:.3,ease:'power2.out'},onAt)
+      .to(sel+' b',{color:'#FFFFFF',duration:.3,ease:'power2.out'},onAt)
+      .to(sel+' span',{color:'rgba(255,255,255,.85)',duration:.3,ease:'power2.out'},onAt)
+      .to(sel,{backgroundColor:'#FAFAFD',borderColor:'rgba(8,39,71,.10)',boxShadow:'0 8px 22px rgba(8,39,71,.04)',duration:.4,ease:'power2.out'},offAt)
+      .to(sel+' .icon',{backgroundColor:'#E9F4F5',duration:.4,ease:'power2.out'},offAt)
+      .to(sel+' b',{color:'#082747',duration:.4,ease:'power2.out'},offAt)
+      .to(sel+' span',{color:'rgba(8,39,71,.58)',duration:.4,ease:'power2.out'},offAt);
+  });
+  hideScene('.s3', 10.6, .5);
+
+  // ── Scene 4 (11 – 15s): BIG STAT — counter 0 → 12
+  showScene('.s4', 11.0, .55);
+  const counterObj = {v: 0};
+  tl.from('.s4 .eyebrow span',{y:'110%',duration:.85,ease:'power2.out'},11.25)
+    .to(counterObj, {
+      v: 12, duration: 2.0, ease:'power2.out',
+      onUpdate: function(){
+        const el = document.querySelector('.s4 .counter');
+        if (el) el.textContent = Math.round(counterObj.v);
+      }
+    }, 11.5)
+    .to('.s4 .num sup',{opacity:1,duration:.4,ease:'back.out(2)'},13.4)
+    .from('.s4 .label',{y:18,opacity:0,duration:.7,ease:'power2.out'},13.6)
+    .to('.s4 .num',{scale:1.06,duration:.22,ease:'power2.out'},13.6)
+    .to('.s4 .num',{scale:1,duration:.36,ease:'power2.out'},13.82);
+  hideScene('.s4', 14.7, .5);
+
+  // ── Scene 5 (15 – 19.5s): TRUST / clients
+  showScene('.s5', 15.0, .55);
+  tl.from('.s5 .eyebrow span',{y:'110%',duration:.85,ease:'power2.out'},15.25)
+    .from('.s5 h3',{y:24,opacity:0,duration:.8,ease:'power2.out'},15.5)
+    .from('.s5 .client-card',{
+      rotationY:-60, opacity:0, y:28, z:-100,
+      duration:.7, stagger:.16, ease:'back.out(1.4)',
+      transformOrigin:'center center -40px'
+    },16.0);
+  hideScene('.s5', 19.1, .5);
+
+  // ── Scene 6 (19.5 – 24s): WHY US — pillars
+  showScene('.s6', 19.5, .55);
+  tl.from('.s6 .eyebrow span',{y:'110%',duration:.85,ease:'power2.out'},19.75)
+    .from('.s6 .reveal > span',{y:'110%',duration:1.0,stagger:.5,ease:'power2.out'},20.0)
+    .from('.s6 .pillar',{
+      rotationX:60, y:50, opacity:0, z:-150,
+      duration:.75, stagger:.18, ease:'back.out(1.4)',
+      transformOrigin:'center bottom'
+    },21.0)
+    .from('.s6 .pillar .num',{scale:0,opacity:0,duration:.45,stagger:.18,ease:'back.out(2)'},21.4);
+  hideScene('.s6', 23.4, .5);
+
+  // ── Scene 7 (24 – 30s): CTA — digit-by-digit phone reveal
+  showScene('.s7', 23.8, .6);
+  tl.from('.s7 .cta-stack img.logo',{y:26,scale:.9,opacity:0,duration:.85,ease:'back.out(1.5)'},24.1)
+    .from('.s7 .cta-eyebrow',{y:14,opacity:0,duration:.55,ease:'power2.out'},24.7)
+    // digits flip in one by one
+    .from('.s7 .cta-phone .d',{
+      y:-70, opacity:0, scale:.4,
+      duration:.5, stagger:.1, ease:'back.out(2.2)'
+    },24.95)
+    .to('.s7 .cta-phone',{scale:1.04,duration:.2,ease:'power2.out'},26.1)
+    .to('.s7 .cta-phone',{scale:1,duration:.35,ease:'power2.out'},26.3)
+    .from('.s7 .cta-sub',{y:14,opacity:0,duration:.55,ease:'power2.out'},26.4)
+    .from('.s7 .cta-link',{y:18,scale:.9,opacity:0,duration:.55,ease:'back.out(1.7)'},26.85)
+    .from('.s7 .cta-qr',{y:18,scale:.9,opacity:0,duration:.55,ease:'back.out(1.7)'},27.0)
+    // breathing on phone late in scene
+    .to('.s7 .cta-phone',{scale:1.025,duration:.7,ease:'sine.inOut',yoyo:true,repeat:1},28.0);
+</script>
+</body>
+</html>
