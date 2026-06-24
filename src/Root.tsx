@@ -1,5 +1,6 @@
 import { Composition } from 'remotion';
 import { NorLeadsAd } from './NorLeadsAd';
+import { NorLeadsExplainer } from './NorLeadsExplainer';
 import { IgnoredAds } from './IgnoredAds';
 import { ThumbStopper } from './ThumbStopper';
 import { HotelRiviera } from './HotelRiviera';
@@ -11,6 +12,14 @@ export const RemotionRoot: React.FC = () => {
         id="NorLeadsAd"
         component={NorLeadsAd}
         durationInFrames={500}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="NorLeadsExplainer"
+        component={NorLeadsExplainer}
+        durationInFrames={900}
         fps={30}
         width={1920}
         height={1080}
