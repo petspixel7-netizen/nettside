@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MR Mobile — Bli en av oss</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.mrmobile.no">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --white:#FFFFFF;
+    --paper:#FAFAFD;
+    --ink:#082747;
+    --ink-deep:#04162B;
+    --blue:#4D3ADB;
+    --yellow:#FFBE30;
+    --yellow-deep:#E5A41A;
+    --soft:#E9F4F5;
+    --dim:rgba(8,39,71,.6);
+    --dim-on-dark:rgba(255,255,255,.65);
+  }
+  *{box-sizing:border-box}
+  html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#000}
+  body{display:grid;place-items:center;color:var(--ink);font-family:'Inter',Arial,sans-serif;-webkit-font-smoothing:antialiased;font-feature-settings:"ss01","cv11"}
+  #film{
+    position:relative;
+    width:min(56.25vh,100vw);
+    height:min(100vh,177.78vw);
+    aspect-ratio:9/16;
+    overflow:hidden;
+    background:var(--white);
+    container-type:inline-size;
+    isolation:isolate;
+  }
+  #film:after{content:"";position:absolute;inset:0;z-index:80;pointer-events:none;background:radial-gradient(circle at 50% 50%,transparent 65%,rgba(0,0,0,.18) 130%)}
+
+  /* Chrome */
+  .brand{position:absolute;z-index:90;left:6cqw;top:5cqw;display:flex;align-items:center;gap:1.2cqw}
+  .brand img{height:5cqw;width:auto;display:block}
+  .meta{position:absolute;z-index:90;right:6cqw;top:5.6cqw;font-weight:700;font-size:2.3cqw;letter-spacing:.28em;text-transform:uppercase;color:var(--blue)}
+  .scene.dark ~ .brand img, .scene.dark ~ .meta{filter:invert(1) brightness(2)}
+
+  .progress{position:absolute;z-index:90;left:6cqw;right:6cqw;bottom:4cqw;height:.6cqw;background:rgba(8,39,71,.12);border-radius:3px;overflow:hidden}
+  .progress i{display:block;width:100%;height:100%;background:var(--blue);transform:scaleX(0);transform-origin:left}
+
+  /* Scene base */
+  .scene{position:absolute;inset:0;visibility:hidden;display:grid;place-items:center;text-align:center;will-change:transform,opacity;color:var(--ink);padding:18cqw 6cqw 14cqw}
+  .scene.dark{background:var(--ink-deep);color:var(--white)}
+  .scene.dark .eyebrow{color:var(--yellow)}
+  .scene.yellow{background:var(--yellow);color:var(--ink-deep)}
+  .scene.yellow .eyebrow{color:var(--ink-deep)}
+
+  .center{position:relative;z-index:4;width:100%;display:grid;justify-items:center;gap:5cqw}
+  .eyebrow{font-weight:800;font-size:3cqw;letter-spacing:.28em;text-transform:uppercase;color:var(--blue);overflow:hidden}
+  .eyebrow span{display:inline-block}
+
+  h1,h2,h3{margin:0;font-family:'Inter',sans-serif;font-weight:900;line-height:1.01;letter-spacing:-.04em;text-wrap:balance;color:inherit}
+  h1{font-size:14cqw}
+  h2{font-size:13cqw}
+  h3{font-size:8cqw;font-weight:700}
+  .accent{color:var(--blue);font-style:italic;font-weight:900}
+  .scene.dark .accent{color:var(--yellow)}
+  .scene.yellow .accent{color:var(--blue)}
+  .yellow-word{color:var(--yellow);font-style:italic;font-weight:900}
+  .scene.yellow .yellow-word{color:var(--blue)}
+
+  .support{max-width:88%;font-weight:400;font-size:4cqw;line-height:1.45;color:var(--dim);text-wrap:balance}
+  .scene.dark .support{color:var(--dim-on-dark)}
+  .scene.yellow .support{color:rgba(8,22,43,.7)}
+
+  .reveal{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:.06em;line-height:1.05}
+  .reveal > span{display:inline-block}
+
+  /* ── Scene 1: LOGO INTRO ── */
+  .hero-mark{display:grid;justify-items:center;gap:6cqw}
+  .hero-mark img.logo{height:18cqw;width:auto;display:block}
+  .hero-mark .rule{width:14cqw;height:.7cqw;background:var(--blue);border-radius:2px}
+  .hero-mark .tag{font-weight:900;font-size:7cqw;letter-spacing:-.025em;color:var(--ink);text-transform:uppercase}
+  .hero-mark .sub{font-weight:500;font-size:3.4cqw;letter-spacing:-.01em;color:var(--dim)}
+
+  /* ── Scene 3: BRAND DROP ── */
+  .brands-stack{display:grid;gap:3cqw;width:90%;margin-top:2cqw}
+  .brand-row{display:grid;grid-template-columns:1fr 1fr;gap:3cqw}
+  .brand-card{aspect-ratio:2/1;display:grid;place-items:center;padding:3cqw;background:var(--white);border:1.5px solid rgba(8,39,71,.12);border-radius:18px;box-shadow:0 14px 30px rgba(8,39,71,.08);overflow:hidden}
+  .scene.dark .brand-card{background:var(--white);border-color:transparent}
+  .brand-card img{max-width:90%;max-height:90%;width:auto;height:auto;display:block;object-fit:contain;mix-blend-mode:multiply}
+
+  /* ── Scene 4: HIRING URGENCY ── */
+  .urgency{display:grid;justify-items:center;gap:3cqw;position:relative}
+  .urgency .pulse-dot{width:4cqw;height:4cqw;border-radius:50%;background:#FF3B30;box-shadow:0 0 0 0 rgba(255,59,48,.5);animation:pulseDot 1.4s ease-out infinite;display:inline-block;vertical-align:middle;margin-right:1.5cqw}
+  @keyframes pulseDot{
+    0%{box-shadow:0 0 0 0 rgba(255,59,48,.65)}
+    70%{box-shadow:0 0 0 6cqw rgba(255,59,48,0)}
+    100%{box-shadow:0 0 0 0 rgba(255,59,48,0)}
+  }
+  .urgency .live{font-weight:900;font-size:3.4cqw;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-deep);display:flex;align-items:center}
+  .urgency .big{font-weight:900;font-size:22cqw;line-height:.9;letter-spacing:-.04em;color:var(--ink-deep);text-transform:uppercase}
+  .urgency .big .accent{color:var(--blue);font-style:italic}
+  .urgency .sub{font-weight:700;font-size:5cqw;letter-spacing:-.015em;color:var(--ink-deep);max-width:90%}
+  .urgency .stillinger{display:grid;grid-template-columns:repeat(3,auto);gap:1.5cqw;margin-top:2cqw}
+  .urgency .pill{padding:2cqw 3cqw;background:var(--ink-deep);color:var(--yellow);border-radius:999px;font-weight:800;font-size:2.8cqw;letter-spacing:.05em;text-transform:uppercase}
+
+  /* ── Scene 5: WORK CULTURE ── */
+  .perks{display:grid;gap:2.2cqw;width:90%;margin-top:1cqw}
+  .perk{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:3cqw;padding:4cqw 4.5cqw;background:var(--paper);border:1.5px solid rgba(8,39,71,.10);border-radius:18px;box-shadow:0 8px 22px rgba(8,39,71,.05);text-align:left}
+  .perk .check{width:8cqw;height:8cqw;border-radius:50%;background:var(--blue);color:var(--white);display:grid;place-items:center;font-weight:900;font-size:5cqw}
+  .perk b{display:block;font-weight:900;font-size:4.5cqw;color:var(--ink);letter-spacing:-.015em;line-height:1.1}
+  .perk span{font-weight:500;font-size:3cqw;color:var(--dim);line-height:1.3}
+
+  /* ── Scene 6: ROLE — counters/quick facts ── */
+  .role-stack{display:grid;justify-items:center;gap:3cqw}
+  .role-stack .icon-blob{width:24cqw;height:24cqw;border-radius:50%;background:var(--yellow);display:grid;place-items:center;box-shadow:0 18px 40px rgba(255,190,48,.45)}
+  .role-stack .icon-blob svg{width:13cqw;height:13cqw;color:var(--ink-deep)}
+  .role-quick{display:grid;grid-template-columns:1fr 1fr;gap:2.6cqw;width:90%;margin-top:1cqw}
+  .role-quick .qf{padding:3.5cqw 2.5cqw;border-radius:16px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.18);display:grid;gap:.5cqw}
+  .role-quick .qf b{display:block;font-weight:900;font-size:5cqw;color:var(--yellow);letter-spacing:-.02em;line-height:1}
+  .role-quick .qf span{font-weight:600;font-size:2.6cqw;color:var(--dim-on-dark);letter-spacing:.15em;text-transform:uppercase}
+
+  /* ── Scene 7: CTA ── */
+  .cta-stack{display:grid;justify-items:center;gap:4cqw;width:96%}
+  .cta-stack img.logo{height:11cqw;width:auto;display:block}
+  .cta-eyebrow{font-weight:900;font-size:3.4cqw;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-deep)}
+  .cta-headline{font-weight:900;font-size:13cqw;line-height:.95;letter-spacing:-.04em;color:var(--ink-deep);text-transform:uppercase}
+  .cta-headline .accent{color:var(--blue)}
+  .cta-row{display:grid;justify-items:center;gap:3cqw;margin-top:2cqw}
+  .cta-link{display:inline-flex;align-items:center;gap:2cqw;padding:4cqw 6.5cqw;background:var(--ink-deep);color:var(--white);font-weight:800;font-size:4.5cqw;letter-spacing:-.005em;text-decoration:none;border-radius:999px;box-shadow:0 14px 36px rgba(0,0,0,.18)}
+  .cta-link::after{content:"→"}
+  .cta-qr{display:grid;justify-items:center;gap:1.5cqw;padding-top:2cqw}
+  .cta-qr img{width:28cqw;height:28cqw;display:block;border:.7cqw solid var(--ink-deep);border-radius:16px;background:var(--white);padding:1.5cqw}
+  .cta-qr span{font-weight:900;font-size:2.6cqw;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-deep)}
+
+  @media(prefers-reduced-motion:reduce){.scene{will-change:auto}}
+</style>
+</head>
+<body>
+<main id="film">
+  <div class="brand">
+    <img src="https://www.mrmobile.no/uploads/5lQSziOk/blue.svg" alt="MR Mobile">
+  </div>
+  <div class="meta">Karriere · 2026</div>
+
+  <!-- 1: LOGO INTRO -->
+  <section class="scene s1">
+    <div class="center">
+      <div class="hero-mark">
+        <img class="logo" src="https://www.mrmobile.no/uploads/5lQSziOk/blue.svg" alt="MR Mobile">
+        <div class="rule"></div>
+        <div class="tag">VI ANSETTER</div>
+        <div class="sub">Bli en av oss.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2: HOOK -->
+  <section class="scene dark s2">
+    <div class="center">
+      <div class="eyebrow"><span>Stillingen er ledig nå</span></div>
+      <h1>
+        <span class="reveal"><span>Vil du jobbe</span></span><br>
+        <span class="reveal"><span>med <span class="accent">Nordens</span></span></span><br>
+        <span class="reveal"><span><span class="accent">største</span> merkevarer?</span></span>
+      </h1>
+    </div>
+  </section>
+
+  <!-- 3: BRAND DROP -->
+  <section class="scene s3">
+    <div class="center">
+      <div class="eyebrow"><span>Våre kunder</span></div>
+      <h3>Du jobber for de største.</h3>
+      <div class="brands-stack">
+        <div class="brand-row">
+          <div class="brand-card bc-1"><img src="https://www.mrmobile.no/uploads/la6wZKEq/336x0_219x0/mandals-logo.jpeg" alt="Mandals"></div>
+          <div class="brand-card bc-2"><img src="https://www.mrmobile.no/uploads/FQ3Y7zin/443x0_320x0/avonova-logo-bht.jpg" alt="Avonova"></div>
+        </div>
+        <div class="brand-row">
+          <div class="brand-card bc-3"><img src="https://www.mrmobile.no/uploads/3o4W2dwv/157x0_157x0/DarkDesignGroup_240x.png" alt="Dark Design Group"></div>
+          <div class="brand-card bc-4"><img src="https://www.mrmobile.no/uploads/dPc3Clwp/146x0_146x0/636421326562306349gruppen-copy-2.png" alt="Adam og Eva"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4: HIRING URGENCY -->
+  <section class="scene yellow s4">
+    <div class="center">
+      <div class="urgency">
+        <div class="live"><span class="pulse-dot"></span>Ledig nå</div>
+        <div class="big">VI<br><span class="accent">VOKSER.</span></div>
+        <div class="sub">Vi ansetter flere — bli med på reisen.</div>
+        <div class="stillinger">
+          <div class="pill">Salgskonsulent</div>
+          <div class="pill">Bedriftsrådgiver</div>
+          <div class="pill">Selger</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5: WORK CULTURE -->
+  <section class="scene s5">
+    <div class="center">
+      <div class="eyebrow"><span>Slik er det hos oss</span></div>
+      <h2>
+        <span class="reveal"><span>Ungt og</span></span><br>
+        <span class="reveal"><span><span class="accent">aktivt miljø.</span></span></span>
+      </h2>
+      <div class="perks">
+        <div class="perk p-1"><div class="check">✓</div><div><b>Bedrift i sterk vekst</b><span>Bli med på reisen — vi vokser raskt.</span></div></div>
+        <div class="perk p-2"><div class="check">✓</div><div><b>Lærer deg salg fra A til Å</b><span>Ingen erfaring? Vi gir deg opplæring.</span></div></div>
+        <div class="perk p-3"><div class="check">✓</div><div><b>Lørenskog · 15 min fra Oslo</b><span>Lett å komme seg til jobben.</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6: ROLE & LOCATION -->
+  <section class="scene dark s6">
+    <div class="center">
+      <div class="role-stack">
+        <div class="icon-blob">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57-.35-.11-.74-.03-1.02.24l-2.2 2.2c-2.83-1.44-5.15-3.76-6.59-6.59l2.2-2.2c.27-.27.36-.67.24-1.02C8.7 6.45 8.5 5.25 8.5 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.5c0-.55-.45-1-1-1z"/></svg>
+        </div>
+        <div class="eyebrow" style="color:var(--yellow)"><span>Stillingen</span></div>
+        <h2 style="color:var(--white);font-size:11cqw">
+          <span class="reveal"><span>B2B-salg</span></span><br>
+          <span class="reveal"><span>fra <span class="yellow-word">Lørenskog.</span></span></span>
+        </h2>
+        <div class="role-quick">
+          <div class="qf"><b>B2B</b><span>Bedrifter er kundene</span></div>
+          <div class="qf"><b>Telefon</b><span>Du ringer, vi backer</span></div>
+          <div class="qf"><b>Opplæring</b><span>Vi lærer deg opp</span></div>
+          <div class="qf"><b>Vekst</b><span>Reell karrierevei</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7: CTA -->
+  <section class="scene yellow s7">
+    <div class="center cta-stack">
+      <img class="logo" src="https://www.mrmobile.no/uploads/5lQSziOk/blue.svg" alt="MR Mobile">
+      <div class="cta-eyebrow">Søk nå · Ledig stilling</div>
+      <div class="cta-headline">SEND<br><span class="accent">CV-EN</span></div>
+      <div class="cta-row">
+        <a class="cta-link" href="https://www.mrmobile.no/ledige-stillinger">mrmobile.no/ledige-stillinger</a>
+        <div class="cta-qr">
+          <img src="data:image/png;base64,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" alt="QR til ledige stillinger">
+          <span>Scan for å søke</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="progress"><i></i></div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+  const DURATION = 30;
+  gsap.defaults({ease:'power2.out'});
+
+  function showScene(sel, at, fadeIn=0.45){
+    tl.set(sel,{visibility:'visible'},at)
+      .fromTo(sel,{opacity:0},{opacity:1,duration:fadeIn,ease:'power2.out'},at);
+  }
+  function hideScene(sel, at, fadeOut=0.35){
+    tl.to(sel,{opacity:0,duration:fadeOut,ease:'power2.in'},at)
+      .set(sel,{visibility:'hidden'},at+fadeOut);
+  }
+
+  gsap.set('.scene',{opacity:0});
+  const tl = gsap.timeline({defaults:{duration:.7}});
+  tl.fromTo('.progress i',{scaleX:0},{scaleX:1,duration:DURATION,ease:'none'},0);
+
+  // ── Scene 1 (0 – 2.6s): LOGO INTRO
+  showScene('.s1', 0, .5);
+  tl.from('.s1 .hero-mark img.logo',{y:30,scale:.9,opacity:0,duration:.9,ease:'back.out(1.5)'},.2)
+    .fromTo('.s1 .hero-mark .rule',{scaleX:0,opacity:0},{scaleX:1,opacity:1,duration:.5,ease:'power3.out',transformOrigin:'left'},.95)
+    .from('.s1 .hero-mark .tag',{y:18,opacity:0,duration:.65,ease:'power2.out'},1.15)
+    .from('.s1 .hero-mark .sub',{y:14,opacity:0,duration:.55,ease:'power2.out'},1.55);
+  hideScene('.s1', 2.4, .3);
+
+  // ── Scene 2 (2.6 – 6.5s): HOOK
+  showScene('.s2', 2.55, .45);
+  tl.from('.s2 .eyebrow span',{y:'110%',duration:.8,ease:'power2.out'},2.85)
+    .from('.s2 .reveal > span',{y:'110%',duration:.95,stagger:.55,ease:'power2.out'},3.1);
+  hideScene('.s2', 6.1, .35);
+
+  // ── Scene 3 (6.4 – 10.4s): BRAND DROP — logos cascade in
+  showScene('.s3', 6.4, .45);
+  tl.from('.s3 .eyebrow span',{y:'110%',duration:.7,ease:'power2.out'},6.65)
+    .from('.s3 h3',{y:24,opacity:0,duration:.65,ease:'power2.out'},6.85)
+    .from('.s3 .brand-card',{
+      y:50, opacity:0, scale:.85,
+      duration:.55, stagger:.16, ease:'back.out(1.6)'
+    },7.3)
+    // each brand card flashes blue briefly when landing
+    .to('.s3 .brand-card',{boxShadow:'0 20px 50px rgba(77,58,219,.35)',duration:.3,stagger:.16,yoyo:true,repeat:1},7.5);
+  hideScene('.s3', 10.1, .35);
+
+  // ── Scene 4 (10.3 – 14.5s): HIRING URGENCY — VI VOKSER
+  showScene('.s4', 10.3, .45);
+  tl.from('.s4 .live',{y:18,opacity:0,duration:.55,ease:'power2.out'},10.6)
+    // big "VI VOKSER." reveals line by line
+    .from('.s4 .big',{y:60,opacity:0,scale:.92,duration:.8,ease:'back.out(1.6)'},10.85)
+    // pulse the big number
+    .to('.s4 .big',{scale:1.04,duration:.22,ease:'power2.out'},11.85)
+    .to('.s4 .big',{scale:1,duration:.4,ease:'power2.out'},12.07)
+    .from('.s4 .sub',{y:18,opacity:0,duration:.55,ease:'power2.out'},12.3)
+    // job pills cascade in
+    .from('.s4 .pill',{y:24,scale:.85,opacity:0,duration:.45,stagger:.13,ease:'back.out(2)'},12.7);
+  hideScene('.s4', 14.2, .35);
+
+  // ── Scene 5 (14.4 – 18.6s): WORK CULTURE
+  showScene('.s5', 14.4, .45);
+  tl.from('.s5 .eyebrow span',{y:'110%',duration:.7,ease:'power2.out'},14.65)
+    .from('.s5 .reveal > span',{y:'110%',duration:.85,stagger:.4,ease:'power2.out'},14.9)
+    .from('.s5 .perk',{x:-50,opacity:0,duration:.5,stagger:.15,ease:'power3.out'},15.85)
+    .from('.s5 .perk .check',{scale:0,rotation:-90,duration:.4,stagger:.15,ease:'back.out(2.2)'},16.05);
+  hideScene('.s5', 18.3, .35);
+
+  // ── Scene 6 (18.5 – 22.5s): ROLE & LOCATION
+  showScene('.s6', 18.5, .45);
+  tl.from('.s6 .icon-blob',{scale:0,rotation:-30,duration:.65,ease:'back.out(1.8)'},18.75)
+    .from('.s6 .eyebrow span',{y:'110%',duration:.6,ease:'power2.out'},19.2)
+    .from('.s6 .reveal > span',{y:'110%',duration:.8,stagger:.4,ease:'power2.out'},19.45)
+    .from('.s6 .qf',{y:30,opacity:0,scale:.9,duration:.5,stagger:.1,ease:'back.out(1.6)'},20.4);
+  hideScene('.s6', 22.2, .35);
+
+  // ── Scene 7 (22.3 – 30s): CTA — yellow finish
+  showScene('.s7', 22.3, .5);
+  tl.from('.s7 .cta-stack img.logo',{y:24,scale:.9,opacity:0,duration:.7,ease:'back.out(1.5)'},22.55)
+    .from('.s7 .cta-eyebrow',{y:16,opacity:0,duration:.55,ease:'power2.out'},23.05)
+    .from('.s7 .cta-headline',{y:34,opacity:0,duration:.8,ease:'back.out(1.4)'},23.4)
+    .from('.s7 .cta-link',{y:20,scale:.92,opacity:0,duration:.55,ease:'back.out(1.7)'},24.4)
+    .from('.s7 .cta-qr',{y:20,scale:.92,opacity:0,duration:.55,ease:'back.out(1.7)'},24.6)
+    // breathe on the QR + button
+    .to('.s7 .cta-qr img',{scale:1.04,duration:.7,ease:'sine.inOut',yoyo:true,repeat:3},25.5);
+
+  // Hide chrome on dark/yellow scenes
+  tl.to('.brand, .meta',{opacity:0,duration:.2},2.55)
+    .to('.brand, .meta',{opacity:1,duration:.3},6.4)
+    .to('.brand, .meta',{opacity:0,duration:.2},10.3)
+    .to('.brand, .meta',{opacity:1,duration:.3},14.4)
+    .to('.brand, .meta',{opacity:0,duration:.2},18.5)
+    .to('.brand, .meta',{opacity:1,duration:.3},22.3)
+    .to('.brand, .meta',{opacity:0,duration:.2},22.3);
+</script>
+</body>
+</html>
