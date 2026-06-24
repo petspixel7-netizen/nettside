@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<title>NorLeads — Den menneskelige psykologien</title>
+<style>
+  :root {
+    --bg: #0D0D0D;
+    --gold: #D4AF37;
+    --goldLight: #F0D060;
+    --white: #FFFFFF;
+    --gray: #888888;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); }
+  body { font-family: sans-serif; }
+
+  .slide {
+    position: relative;
+    width: 1920px;
+    height: 1080px;
+    margin: 0 auto 40px auto;
+    overflow: hidden;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+  }
+
+  /* ambient background shared by every slide */
+  .bg-orb {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    filter: blur(2px);
+  }
+  .bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(212,175,55,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(212,175,55,0.05) 1px, transparent 1px);
+    background-size: 80px 80px;
+  }
+  .bg-vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 80% at 50% 50%, transparent 40%, rgba(0,0,0,0.65) 100%);
+  }
+  .slide-label {
+    position: absolute;
+    top: 36px;
+    left: 56px;
+    font-family: sans-serif;
+    font-size: 15px;
+    letter-spacing: 4px;
+    color: rgba(212,175,55,0.5);
+    text-transform: uppercase;
+    z-index: 5;
+  }
+
+  .heading {
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 700;
+    color: var(--white);
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+  .gold { color: var(--gold); text-shadow: 0 0 30px rgba(212,175,55,0.4); }
+
+  /* ── Slide 1: Hook ───────────────────────────────────────────── */
+  #s1 .heading.line1 { font-size: 50px; opacity: 0.9; }
+  #s1 .heading.line2 { font-size: 64px; font-weight: 900; }
+
+  /* ── Slide 2: Human Edge ─────────────────────────────────────── */
+  .compare-row { display: flex; gap: 110px; align-items: flex-end; position: relative; z-index: 2; }
+  .compare-col { display: flex; flex-direction: column; align-items: center; gap: 22px; }
+  .ai-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 84px);
+    grid-template-rows: repeat(2, 84px);
+    gap: 14px;
+    padding: 32px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 16px;
+  }
+  .ai-box { background: rgba(255,255,255,0.10); border-radius: 6px; }
+  .human-card {
+    position: relative;
+    width: 300px; height: 200px;
+    padding: 32px;
+    background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(255,255,255,0.03));
+    border: 1px solid rgba(212,175,55,0.35);
+    border-radius: 16px;
+    transform: rotate(-1.4deg);
+    box-shadow: 0 0 40px rgba(212,175,55,0.08);
+  }
+  .h-block-a { position: absolute; top: 22px; left: 28px; width: 116px; height: 54px; background: rgba(212,175,55,0.55); border-radius: 6px; box-shadow: 0 0 20px rgba(212,175,55,0.5); }
+  .h-block-b { position: absolute; top: 58px; left: 104px; width: 144px; height: 74px; background: rgba(255,255,255,0.16); border-radius: 6px; transform: rotate(-3deg); }
+  .h-block-c { position: absolute; bottom: 18px; right: 22px; width: 86px; height: 26px; background: rgba(240,208,96,0.45); border-radius: 13px; }
+  .col-label { font-family: sans-serif; font-size: 17px; letter-spacing: 4px; text-transform: uppercase; }
+  .col-label.dim { color: var(--gray); }
+  .col-label.lit { color: var(--gold); }
+  #s2 .heading.top { font-size: 46px; }
+  #s2 .heading.bottom { font-size: 36px; }
+
+  /* ── Slide 3: Why before what ───────────────────────────────── */
+  .tag-list { display: flex; flex-direction: column; gap: 22px; position: relative; z-index: 2; margin-top: 10px; }
+  .tag-row { display: flex; align-items: center; gap: 24px; }
+  .tag-q { font-family: sans-serif; font-size: 22px; color: #999; min-width: 380px; text-align: right; }
+  .tag-sep { width: 36px; height: 1px; background: var(--gold); }
+  .tag-a { font-family: Georgia, serif; font-size: 25px; font-weight: 700; color: var(--gold); }
+  #s3 .heading.top { font-size: 58px; }
+  #s3 .heading.bottom { font-size: 58px; }
+
+  /* ── Slide 4: Predictive empathy ────────────────────────────── */
+  .banner-row { display: flex; gap: 80px; align-items: center; position: relative; z-index: 2; }
+  .banner {
+    width: 560px;
+    padding: 44px 46px;
+    border-radius: 18px;
+    text-align: center;
+  }
+  .banner.loud {
+    background: rgb(170, 38, 28);
+    border: 2px solid rgba(255, 110, 70, 0.6);
+    box-shadow: 0 0 60px rgba(170,38,28,0.4);
+    transform: rotate(-0.8deg);
+  }
+  .banner.loud .b-title { font-family: Georgia, serif; font-weight: 900; font-size: 36px; color: #fff; letter-spacing: 0; }
+  .banner.calm {
+    background: #16110a;
+    border: 2px solid rgba(212,175,55,0.4);
+    box-shadow: 0 0 40px rgba(212,175,55,0.12);
+  }
+  .banner.calm .b-title { font-family: Georgia, serif; font-weight: 900; font-size: 30px; color: #fff; letter-spacing: 1px; }
+  .banner .b-sub { margin-top: 12px; font-family: sans-serif; font-size: 17px; color: var(--goldLight); }
+  .banner-arrow { font-size: 40px; color: var(--gold); }
+  #s4 .heading.bottom { font-size: 34px; }
+
+  /* ── Slide 5: Memory encoding ───────────────────────────────── */
+  .mark-wrap { position: relative; width: 320px; height: 200px; z-index: 2; }
+  .mark-tri {
+    position: absolute; left: 110px; top: 64px;
+    width: 0; height: 0;
+    border-top: 46px solid transparent;
+    border-bottom: 46px solid transparent;
+    border-left: 74px solid var(--gold);
+    filter: drop-shadow(0 0 22px rgba(212,175,55,0.7));
+  }
+  .mark-n {
+    position: absolute; right: 78px; top: 18px;
+    font-family: Georgia, serif; font-weight: 900; font-size: 90px; color: var(--white);
+    text-shadow: 0 0 26px rgba(212,175,55,0.5);
+  }
+  #s5 .heading.bottom { font-size: 40px; }
+
+  /* ── Slide 6: CTA ───────────────────────────────────────────── */
+  .logo-big { font-family: Georgia, serif; font-size: 130px; font-weight: 900; position: relative; z-index: 2; }
+  .logo-big .nor { color: var(--white); text-shadow: 0 4px 24px rgba(0,0,0,0.5); }
+  .logo-big .leads { color: var(--gold); text-shadow: 0 0 40px rgba(212,175,55,0.6), 0 0 90px rgba(212,175,55,0.27); }
+  .cta-line { font-family: sans-serif; font-size: 30px; color: #ccc; font-weight: 300; letter-spacing: 2px; text-align: center; z-index: 2; }
+  .cta-line .gold-big { display: block; font-family: Georgia, serif; font-size: 54px; color: var(--gold); font-weight: 700; text-shadow: 0 0 30px rgba(212,175,55,0.4); margin-top: 4px; }
+  .cta-btn {
+    font-family: sans-serif; font-size: 28px; font-weight: 800;
+    color: var(--bg); padding: 22px 70px; border-radius: 60px;
+    background: linear-gradient(135deg, #C9A227, var(--goldLight), #C9A227);
+    box-shadow: 0 0 50px rgba(212,175,55,0.45), 0 0 90px rgba(212,175,55,0.2);
+    letter-spacing: 1px; z-index: 2;
+  }
+  .cta-url { font-family: sans-serif; font-size: 20px; color: rgba(212,175,55,0.55); letter-spacing: 5px; text-transform: uppercase; z-index: 2; }
+  .cta-rings { position: absolute; border-radius: 50%; border: 1px solid rgba(212,175,55,0.25); top: 50%; left: 50%; transform: translate(-50%,-50%); }
+</style>
+</head>
+<body>
+
+  <!-- SLIDE 1 — HOOK -->
+  <section class="slide" id="s1">
+    <div class="bg-grid"></div>
+    <div class="bg-orb" style="width:700px;height:700px;left:10%;top:10%;background:radial-gradient(circle,var(--gold) 0%,transparent 70%);opacity:0.08;"></div>
+    <div class="bg-orb" style="width:600px;height:600px;left:65%;top:45%;background:radial-gradient(circle,#3B82F6 0%,transparent 70%);opacity:0.06;"></div>
+    <div class="bg-vignette"></div>
+    <div class="slide-label">Ark 1 — Hook</div>
+    <div class="heading line1">AI lager perfekte design.</div>
+    <div class="heading line2">Vi lager design som <span class="gold">selger</span>.</div>
+  </section>
+
+  <!-- SLIDE 2 — THE HUMAN EDGE -->
+  <section class="slide" id="s2">
+    <div class="bg-grid"></div>
+    <div class="bg-orb" style="width:650px;height:650px;left:75%;top:15%;background:radial-gradient(circle,var(--goldLight) 0%,transparent 70%);opacity:0.07;"></div>
+    <div class="bg-vignette"></div>
+    <div class="slide-label">Ark 2 — The Human Edge</div>
+    <div class="heading top">To layout. Samme innhold.</div>
+    <div class="compare-row">
+      <div class="compare-col">
+        <div class="ai-grid">
+          <div class="ai-box"></div><div class="ai-box"></div><div class="ai-box"></div>
+          <div class="ai-box"></div><div class="ai-box"></div><div class="ai-box"></div>
+        </div>
+        <div class="col-label dim">AI-mal</div>
+      </div>
+      <div class="compare-col">
+        <div class="human-card">
+          <div class="h-block-a"></div>
+          <div class="h-block-b"></div>
+          <div class="h-block-c"></div>
+        </div>
+        <div class="col-label lit">NorLeads</div>
+      </div>
+    </div>
+    <div class="heading bottom">Perfekt blir glemt. Med vilje blir <span class="gold">husket</span>.</div>
+  </section>
+
+  <!-- SLIDE 3 — WHY BEFORE WHAT -->
+  <section class="slide" id="s3">
+    <div class="bg-grid"></div>
+    <div class="bg-orb" style="width:700px;height:700px;left:20%;top:60%;background:radial-gradient(circle,var(--gold) 0%,transparent 70%);opacity:0.07;"></div>
+    <div class="bg-vignette"></div>
+    <div class="slide-label">Ark 3 — Why Before What</div>
+    <div class="heading top">Vi spør <span class="gold">hvorfor</span></div>
+    <div class="heading bottom">før vi designer hva</div>
+    <div class="tag-list">
+      <div class="tag-row"><div class="tag-q">Hvorfor denne farge?</div><div class="tag-sep"></div><div class="tag-a">For å skape tillit</div></div>
+      <div class="tag-row"><div class="tag-q">Hvorfor denne plassering?</div><div class="tag-sep"></div><div class="tag-a">For å lede blikket</div></div>
+      <div class="tag-row"><div class="tag-q">Hvorfor denne pause?</div><div class="tag-sep"></div><div class="tag-a">For å gi rom til budskapet</div></div>
+    </div>
+  </section>
+
+  <!-- SLIDE 4 — PREDICTIVE EMPATHY -->
+  <section class="slide" id="s4">
+    <div class="bg-grid"></div>
+    <div class="bg-orb" style="width:600px;height:600px;left:50%;top:20%;background:radial-gradient(circle,var(--gold) 0%,transparent 70%);opacity:0.06;"></div>
+    <div class="bg-vignette"></div>
+    <div class="slide-label">Ark 4 — Predictive Empathy</div>
+    <div class="banner-row">
+      <div class="banner loud">
+        <div class="b-title">KJØP NÅ!! IKKE GÅ GLIPP AV DETTE!!</div>
+      </div>
+      <div class="banner-arrow">→</div>
+      <div class="banner calm">
+        <div class="b-title">Vi har noe du vil like.</div>
+        <div class="b-sub">Rolig. Tydelig. Til å stole på.</div>
+      </div>
+    </div>
+    <div class="heading bottom">Vi designer for hvordan du føler deg <span class="gold">etterpå</span></div>
+  </section>
+
+  <!-- SLIDE 5 — MEMORY ENCODING -->
+  <section class="slide" id="s5">
+    <div class="bg-grid"></div>
+    <div class="bg-orb" style="width:650px;height:650px;left:50%;top:50%;background:radial-gradient(circle,var(--gold) 0%,transparent 70%);opacity:0.08;"></div>
+    <div class="bg-vignette"></div>
+    <div class="slide-label">Ark 5 — Memory Encoding</div>
+    <div class="mark-wrap">
+      <div class="mark-tri"></div>
+      <div class="mark-n">N</div>
+    </div>
+    <div class="heading bottom">Det som er <span class="gold">uforglemmelig</span>, blir valgt</div>
+  </section>
+
+  <!-- SLIDE 6 — CTA -->
+  <section class="slide" id="s6">
+    <div class="bg-grid"></div>
+    <div class="bg-orb" style="width:750px;height:750px;left:50%;top:50%;background:radial-gradient(circle,var(--gold) 0%,transparent 65%);opacity:0.12;"></div>
+    <div class="bg-vignette"></div>
+    <div class="slide-label">Ark 6 — CTA</div>
+    <div class="cta-rings" style="width:560px;height:560px;"></div>
+    <div class="cta-rings" style="width:680px;height:680px;opacity:0.6;"></div>
+    <div class="cta-rings" style="width:800px;height:800px;opacity:0.35;"></div>
+    <div class="logo-big"><span class="nor">Nor</span><span class="leads">Leads</span></div>
+    <div class="cta-line">Klar for en video som<span class="gold-big">faktisk selger?</span></div>
+    <div class="cta-btn">Ta kontakt i dag</div>
+    <div class="cta-url">norleads.no</div>
+  </section>
+
+</body>
+</html>
