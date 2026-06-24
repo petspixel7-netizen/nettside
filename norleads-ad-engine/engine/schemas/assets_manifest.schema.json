@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "assets_manifest",
+  "type": "object",
+  "required": ["count", "all"],
+  "properties": {
+    "domain": {"type": ["string", "null"]},
+    "count": {"type": "integer"},
+    "logo": {"$ref": "#/definitions/asset"},
+    "hero": {"$ref": "#/definitions/asset"},
+    "heroes": {"type": "array", "items": {"$ref": "#/definitions/asset"}},
+    "people": {"type": "array", "items": {"$ref": "#/definitions/asset"}},
+    "all": {"type": "array", "items": {"$ref": "#/definitions/asset"}},
+    "warnings": {"type": "array", "items": {"type": "string"}}
+  },
+  "definitions": {
+    "asset": {
+      "type": ["object", "null"],
+      "properties": {
+        "source_url": {"type": "string"},
+        "local_path": {"type": "string"},
+        "role": {"type": "string", "enum": ["logo", "hero", "product", "people", "texture"]},
+        "alt": {"type": "string"},
+        "stats": {"type": ["object", "null"]},
+        "quality": {"type": "number", "minimum": 0, "maximum": 1},
+        "relevance": {"type": "number", "minimum": 0, "maximum": 1},
+        "crop_safe": {"type": "boolean"},
+        "score": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    }
+  }
+}

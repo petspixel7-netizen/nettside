@@ -1,0 +1,21 @@
+{
+  "business_name": "Bella Trattoria",
+  "industry": "restaurant",
+  "audience": "lokale gjester i Oslo som vil ut og spise godt i kveld eller i helgen",
+  "hook": "I kveld lukter det nybakt focaccia",
+  "problem": "Det er vanskelig å finne et sted som leverer ekte italiensk hver gang.",
+  "offer": "Pasta laget for hånd og 9 småretter til",
+  "proof": ["4,9★ · 412 omtaler", "Siden 2011", "Råvarer fra Italia ukentlig"],
+  "cta": {"text": "Bestill bord", "href": "https://bellatrattoria.no/bestill"},
+  "location": "Storgata 4, Oslo",
+  "tone": "warm, sensory, inviting",
+  "channel": {"format": "reels", "duration": 40},
+  "key_facts": {
+    "services": ["Håndlaget pasta", "Pizza fra steinovn", "Tiramisu", "Vinkart"],
+    "prices": ["fra 189,-"],
+    "phone": "+47 22 33 44 55",
+    "socials": {"instagram": "https://instagram.com/bellatrattoria"}
+  },
+  "must_use_assets": ["assets/logo.png", "assets/pasta-hero.jpg"],
+  "avoid": ["stock-mat", "neon", "for mange retter"]
+}

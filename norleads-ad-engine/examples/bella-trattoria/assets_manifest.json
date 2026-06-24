@@ -1,0 +1,29 @@
+{
+  "domain": "bellatrattoria.no",
+  "count": 6,
+  "logo": {
+    "source_url": "https://bellatrattoria.no/img/logo.png",
+    "local_path": "assets/logo.png",
+    "role": "logo", "alt": "Bella Trattoria logo",
+    "stats": {"width": 640, "height": 200, "ratio": 3.2, "mp": 0.13, "mode": "RGBA"},
+    "quality": 0.45, "relevance": 0.95, "crop_safe": false, "score": 0.7
+  },
+  "hero": {
+    "source_url": "https://bellatrattoria.no/img/pasta-hero.jpg",
+    "local_path": "assets/pasta-hero.jpg",
+    "role": "hero", "alt": "Håndlaget pasta",
+    "stats": {"width": 1920, "height": 1280, "ratio": 1.5, "mp": 2.46, "mode": "RGB"},
+    "quality": 1.0, "relevance": 0.85, "crop_safe": true, "score": 0.93
+  },
+  "heroes": [
+    {"source_url": "https://bellatrattoria.no/img/pasta-hero.jpg", "local_path": "assets/pasta-hero.jpg", "role": "hero", "alt": "Håndlaget pasta", "stats": {"width": 1920, "height": 1280, "ratio": 1.5, "mp": 2.46, "mode": "RGB"}, "quality": 1.0, "relevance": 0.85, "crop_safe": true, "score": 0.93},
+    {"source_url": "https://bellatrattoria.no/img/interior.jpg", "local_path": "assets/interior.jpg", "role": "hero", "alt": "Restaurant interiør", "stats": {"width": 1800, "height": 1200, "ratio": 1.5, "mp": 2.16, "mode": "RGB"}, "quality": 1.0, "relevance": 0.85, "crop_safe": true, "score": 0.92},
+    {"source_url": "https://bellatrattoria.no/img/pizza.jpg", "local_path": "assets/pizza.jpg", "role": "product", "alt": "Pizza fra steinovn", "stats": {"width": 1600, "height": 1066, "ratio": 1.5, "mp": 1.7, "mode": "RGB"}, "quality": 0.9, "relevance": 0.8, "crop_safe": true, "score": 0.85},
+    {"source_url": "https://bellatrattoria.no/img/dessert.jpg", "local_path": "assets/dessert.jpg", "role": "product", "alt": "Tiramisu", "stats": {"width": 1500, "height": 1000, "ratio": 1.5, "mp": 1.5, "mode": "RGB"}, "quality": 0.85, "relevance": 0.8, "crop_safe": true, "score": 0.82}
+  ],
+  "people": [
+    {"source_url": "https://bellatrattoria.no/img/chef.jpg", "local_path": "assets/chef.jpg", "role": "people", "alt": "Kokk Marco", "stats": {"width": 1400, "height": 1400, "ratio": 1.0, "mp": 1.96, "mode": "RGB"}, "quality": 0.95, "relevance": 0.7, "crop_safe": true, "score": 0.82}
+  ],
+  "all": [],
+  "warnings": []
+}

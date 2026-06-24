@@ -1,0 +1,26 @@
+{
+  "_doc": "Timing recipes. roles: hook|context|offer|proof|cta. seconds per scene sum to the duration. Unknown durations are linearly rescaled from the nearest recipe (see planner/timing.py).",
+  "recipes": {
+    "6":  {"scenes": [
+      {"role": "hook", "seconds": 2.0}, {"role": "offer", "seconds": 2.0}, {"role": "cta", "seconds": 2.0}
+    ]},
+    "10": {"scenes": [
+      {"role": "hook", "seconds": 2.5}, {"role": "offer", "seconds": 3.0}, {"role": "proof", "seconds": 2.0}, {"role": "cta", "seconds": 2.5}
+    ]},
+    "15": {"scenes": [
+      {"role": "hook", "seconds": 3.0}, {"role": "context", "seconds": 3.0}, {"role": "offer", "seconds": 4.0}, {"role": "proof", "seconds": 2.5}, {"role": "cta", "seconds": 2.5}
+    ]},
+    "20": {"scenes": [
+      {"role": "hook", "seconds": 3.5}, {"role": "context", "seconds": 3.5}, {"role": "offer", "seconds": 5.0}, {"role": "proof", "seconds": 4.0}, {"role": "cta", "seconds": 4.0}
+    ]},
+    "30": {"scenes": [
+      {"role": "hook", "seconds": 4.0}, {"role": "context", "seconds": 5.0}, {"role": "offer", "seconds": 7.0}, {"role": "proof", "seconds": 7.0}, {"role": "cta", "seconds": 7.0}
+    ]},
+    "40": {"scenes": [
+      {"role": "hook", "seconds": 5.0}, {"role": "context", "seconds": 6.0}, {"role": "offer", "seconds": 9.0}, {"role": "proof", "seconds": 7.0}, {"role": "offer", "seconds": 6.0}, {"role": "cta", "seconds": 7.0}
+    ]},
+    "60": {"scenes": [
+      {"role": "hook", "seconds": 6.0}, {"role": "context", "seconds": 8.0}, {"role": "offer", "seconds": 10.0}, {"role": "proof", "seconds": 9.0}, {"role": "offer", "seconds": 9.0}, {"role": "proof", "seconds": 8.0}, {"role": "cta", "seconds": 10.0}
+    ]}
+  }
+}

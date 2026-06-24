@@ -1,0 +1,9 @@
+{
+  "url": "https://bellatrattoria.no",
+  "format": "reels",
+  "duration": 40,
+  "style": "restaurant",
+  "preview_only": false,
+  "use_llm": false,
+  "slug": "bellatrattoria-reels-40s"
+}

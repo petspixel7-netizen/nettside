@@ -1,0 +1,21 @@
+{
+  "domain": "bellatrattoria.no",
+  "name": "Bella Trattoria",
+  "colors": {
+    "primary": "#6b1f2a",
+    "accent": "#c9a36a",
+    "ink": "#1a1411",
+    "paper": "#f6f1e7",
+    "palette": ["#6b1f2a", "#c9a36a", "#1a1411", "#3c2a1e", "#8a5a3b"]
+  },
+  "fonts": {
+    "heading": "Playfair Display",
+    "body": "Inter",
+    "fallback_heading": "Georgia, 'Times New Roman', serif",
+    "fallback_body": "-apple-system, Segoe UI, Roboto, sans-serif",
+    "detected": ["Playfair Display", "Inter"]
+  },
+  "tone": "warm, sensory, inviting",
+  "tagline": "Ekte italiensk kjøkken i hjertet av Oslo — laget fra bunnen hver dag.",
+  "confidence": {"colors": "high", "fonts": "high"}
+}

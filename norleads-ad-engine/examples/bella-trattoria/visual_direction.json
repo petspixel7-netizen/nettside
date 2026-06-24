@@ -1,0 +1,32 @@
+{
+  "look": "premium editorial — warm, restrained, real food photography, no neon",
+  "grade": {
+    "base": "subtle contrast lift, warm shadows",
+    "overlay": "#1a1411 gradient 0->55% from bottom for text legibility",
+    "duotone": false,
+    "grain": {"enabled": true, "opacity": 0.05},
+    "vignette": {"enabled": true, "strength": 0.25}
+  },
+  "type": {
+    "heading_family": "Playfair Display",
+    "body_family": "Inter",
+    "scale": {"kicker": "1.6vw", "headline": "6.2vw", "sub": "2.4vw"},
+    "tracking": {"kicker": "0.28em", "headline": "-0.01em"},
+    "weight": {"kicker": 600, "headline": 600, "sub": 400},
+    "case": {"kicker": "uppercase", "headline": "none"}
+  },
+  "color_roles": {"primary": "#6b1f2a", "accent": "#c9a36a", "ink": "#1a1411", "paper": "#f6f1e7"},
+  "motion_feel": "weighty, eased (power3/expo), continuous — never linear slide",
+  "transitions": "shared-element + masked wipes aligned to camera direction",
+  "logo_treatment": "mono-knockout in paper color, max 18% canvas width",
+  "image_treatment": "full-bleed, object-fit cover, ken-burns, focal-safe center",
+  "forbidden": ["neon glow", "drop-shadow stacks", "rainbow gradients", "spinning 3d cards", "emoji", "default bootstrap blue"],
+  "per_scene": [
+    {"index": 0, "role": "hook", "text_anchor": "bottom-left", "image": "assets/pasta-hero.jpg", "treatment": "warm editorial grade"},
+    {"index": 1, "role": "context", "text_anchor": "bottom-left", "image": "assets/interior.jpg", "treatment": "warm editorial grade"},
+    {"index": 2, "role": "offer", "text_anchor": "bottom-left", "image": "assets/pizza.jpg", "treatment": "warm editorial grade"},
+    {"index": 3, "role": "proof", "text_anchor": "bottom-left", "image": "assets/chef.jpg", "treatment": "warm editorial grade"},
+    {"index": 4, "role": "offer", "text_anchor": "bottom-left", "image": "assets/dessert.jpg", "treatment": "warm editorial grade"},
+    {"index": 5, "role": "cta", "text_anchor": "center", "image": "assets/pasta-hero.jpg", "treatment": "warm editorial grade"}
+  ]
+}

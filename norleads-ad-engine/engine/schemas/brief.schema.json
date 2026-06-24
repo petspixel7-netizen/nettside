@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "brief",
+  "type": "object",
+  "required": ["business_name", "industry", "audience", "hook", "problem", "offer", "proof", "cta", "channel"],
+  "properties": {
+    "business_name": {"type": "string"},
+    "industry": {"type": "string"},
+    "audience": {"type": "string"},
+    "hook": {"type": "string", "maxLength": 80},
+    "problem": {"type": "string"},
+    "offer": {"type": "string"},
+    "proof": {"type": "array", "items": {"type": "string"}},
+    "cta": {
+      "type": "object",
+      "required": ["text"],
+      "properties": {"text": {"type": "string"}, "href": {"type": ["string", "null"]}}
+    },
+    "location": {"type": ["string", "null"]},
+    "tone": {"type": ["string", "null"]},
+    "channel": {
+      "type": "object",
+      "required": ["format", "duration"],
+      "properties": {"format": {"type": "string"}, "duration": {"type": "number"}}
+    },
+    "key_facts": {"type": "object"},
+    "must_use_assets": {"type": "array", "items": {"type": "string"}},
+    "avoid": {"type": "array", "items": {"type": "string"}}
+  }
+}

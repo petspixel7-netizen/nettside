@@ -1,0 +1,143 @@
+{
+  "_doc": "Industry playbooks. Keys match --style. {name}/{service} are interpolated by planner. Each: audience, hooks[], problem, default_offer, default_cta, trust[], prioritize_assets[], avoid[], motion_style, metaphor, tone.",
+
+  "restaurant": {
+    "audience": "lokale gjester som vil ut og spise i kveld eller i helgen",
+    "hooks": ["I kveld lukter det {service}.", "Bordet er dekket hos {name}.", "Sulten? Vi har en plass til deg."],
+    "problem": "Det er vanskelig å finne et sted som faktisk leverer hver gang.",
+    "default_offer": "Sesongmeny laget fra bunnen",
+    "default_cta": "Bestill bord",
+    "trust": ["anmeldelser/stjerner", "år i drift", "lokale råvarer", "fullt hus"],
+    "prioritize_assets": ["mat-nærbilde", "interiør-stemning", "kokk/team", "logo"],
+    "avoid": ["stock-mat", "neon", "fristperiod-clip-art", "for mange retter"],
+    "motion_style": "warm-push-in",
+    "metaphor": "ett kontinuerlig kamerasveip fra råvare til servert tallerken",
+    "tone": "varm, sanselig, innbydende"
+  },
+
+  "handverker": {
+    "audience": "huseiere som trenger en håndverker de kan stole på",
+    "hooks": ["Jobben gjort riktig — første gang.", "{name}: håndverk du ser forskjell på.", "Slutt å vente på tilbud."],
+    "problem": "For mange opplever dårlig kommunikasjon og uforutsigbar pris.",
+    "default_offer": "Befaring og fast pris",
+    "default_cta": "Be om befaring",
+    "trust": ["sentralgodkjenning", "garanti", "før/etter", "år i bransjen", "anmeldelser"],
+    "prioritize_assets": ["før/etter", "team på jobb", "ferdig prosjekt", "logo"],
+    "avoid": ["stock-verktøy", "AI-hus", "overdreven glow"],
+    "motion_style": "solid-build",
+    "metaphor": "et bygg som reiser seg lag for lag i én bevegelse",
+    "tone": "trygg, konkret, jordnær"
+  },
+
+  "klinikk": {
+    "audience": "pasienter som søker trygg, profesjonell behandling lokalt",
+    "hooks": ["Trygg behandling, nær deg.", "Et smil du kan stole på.", "Vi tar deg på alvor."],
+    "problem": "Helse er sårbart — du vil vite at du er i gode hender.",
+    "default_offer": "Time uten lang ventetid",
+    "default_cta": "Bestill time",
+    "trust": ["autorisert personell", "moderne utstyr", "pasientomtaler", "år i drift"],
+    "prioritize_assets": ["ren klinikk", "personell-portrett", "utstyr", "logo"],
+    "avoid": ["sterile stockbilder", "blod/skremsel", "neon", "kald blåtone"],
+    "motion_style": "calm-glide",
+    "metaphor": "en rolig, sammenhengende panorering gjennom en lys klinikk",
+    "tone": "rolig, tillitvekkende, presis"
+  },
+
+  "eiendom": {
+    "audience": "boligkjøpere og selgere i nærområdet",
+    "hooks": ["Din neste adresse starter her.", "Vi selger {name}-området.", "Klar for visning?"],
+    "problem": "Boligreisen er full av usikkerhet og store beslutninger.",
+    "default_offer": "Gratis verdivurdering",
+    "default_cta": "Book verdivurdering",
+    "trust": ["solgte boliger", "snittpris over takst", "lokalkunnskap", "omtaler"],
+    "prioritize_assets": ["interiør", "fasade", "nabolag", "megler-portrett", "logo"],
+    "avoid": ["fisheye", "overmettet HDR", "neon", "tomme rom uten stemning"],
+    "motion_style": "architectural-glide",
+    "metaphor": "én kamerareise gjennom hjemmet, rom for rom",
+    "tone": "elegant, lokal, selvsikker"
+  },
+
+  "trening": {
+    "audience": "folk som vil komme i form med lokal oppfølging",
+    "hooks": ["Start der du er.", "Sterkere på 12 uker.", "Treningen du faktisk møter opp til."],
+    "problem": "De fleste gir opp fordi de mangler plan og fellesskap.",
+    "default_offer": "Gratis prøveuke",
+    "default_cta": "Start prøveuken",
+    "trust": ["medlemstall", "resultater", "PT-kompetanse", "åpningstider"],
+    "prioritize_assets": ["folk i bevegelse", "utstyr", "lokalet", "logo"],
+    "avoid": ["urealistiske kropper", "stock-fitness", "for mye neon glow"],
+    "motion_style": "kinetic-energy",
+    "metaphor": "én sammenhengende bevegelse som bygger tempo mot CTA",
+    "tone": "energisk, motiverende, ekte"
+  },
+
+  "saas": {
+    "audience": "team og bedrifter som vil jobbe smartere",
+    "hooks": ["Mindre styr. Mer flyt.", "{name} gjør jobben enklere.", "Slik sparer teamet timer hver uke."],
+    "problem": "Verktøyene dine snakker ikke sammen — og det koster tid.",
+    "default_offer": "Prøv gratis i 14 dager",
+    "default_cta": "Start gratis",
+    "trust": ["kunder/logoer", "oppetid", "integrasjoner", "omtaler/G2"],
+    "prioritize_assets": ["produkt-UI", "dashboard", "team", "logo"],
+    "avoid": ["generisk tech-stock", "neon hologram", "3d-blobs", "lorem ipsum"],
+    "motion_style": "clean-ui-flow",
+    "metaphor": "én sammenhengende reise gjennom produktets flyt/skjermer",
+    "tone": "klar, trygg, moderne"
+  },
+
+  "nettbutikk": {
+    "audience": "netthandlere som vil ha kvalitet og rask levering",
+    "hooks": ["Nyhet inn nå.", "Det selger fort.", "Frakt på 1–3 dager."],
+    "problem": "For mye valg, for lite tillit til at kvaliteten holder.",
+    "default_offer": "Fri frakt over et beløp",
+    "default_cta": "Handle nå",
+    "trust": ["antall solgte", "anmeldelser", "fri retur", "rask levering"],
+    "prioritize_assets": ["produkt-pakkeshot", "lifestyle", "detalj", "logo"],
+    "avoid": ["rotete kollasj", "neon sale-banner", "lav oppløsning"],
+    "motion_style": "product-spotlight",
+    "metaphor": "produktet i sentrum med kontinuerlig kamerafokus",
+    "tone": "ren, fristende, presis"
+  },
+
+  "local-service": {
+    "audience": "lokale kunder som søker en pålitelig leverandør",
+    "hooks": ["Lokal hjelp du kan stole på.", "{name} — vi rykker ut.", "Rask, ærlig, lokal."],
+    "problem": "Det er vanskelig å vite hvem man kan stole på.",
+    "default_offer": "Uforpliktende tilbud",
+    "default_cta": "Ta kontakt i dag",
+    "trust": ["år i drift", "anmeldelser", "lokal", "garanti"],
+    "prioritize_assets": ["team", "jobb i aksjon", "resultat", "logo"],
+    "avoid": ["stock-clipart", "neon", "tomme floskler"],
+    "motion_style": "continuous-push",
+    "metaphor": "én sammenhengende kamerabevegelse gjennom merkevaren",
+    "tone": "profesjonell, lokal, tillitvekkende"
+  },
+
+  "bil": {
+    "audience": "bileiere som trenger service eller verksted de kan stole på",
+    "hooks": ["Bilen din, i trygge hender.", "Service uten overraskelser.", "Klar for EU-kontroll?"],
+    "problem": "Verkstedregninger er ofte uforutsigbare og uklare.",
+    "default_offer": "Fastpris på service",
+    "default_cta": "Bestill verkstedtime",
+    "trust": ["sertifisert", "garanti", "år i drift", "anmeldelser"],
+    "prioritize_assets": ["verksted", "mekaniker", "bil-detalj", "logo"],
+    "avoid": ["stock-sportsbil", "neon", "urealistisk glans"],
+    "motion_style": "precision-glide",
+    "metaphor": "én kamerabevegelse rundt og inn i bilen/verkstedet",
+    "tone": "konkret, trygg, profesjonell"
+  },
+
+  "beauty": {
+    "audience": "kunder som vil unne seg behandling og føle seg vel",
+    "hooks": ["Tid for deg.", "Glød som varer.", "Book din me-time."],
+    "problem": "Du fortjener et sted som faktisk lytter til hva du vil ha.",
+    "default_offer": "Ny-kunde tilbud",
+    "default_cta": "Book time",
+    "trust": ["anmeldelser", "før/etter", "produkter", "erfaring"],
+    "prioritize_assets": ["resultat-nærbilde", "salong-stemning", "behandling", "logo"],
+    "avoid": ["overfiltrerte AI-ansikter", "neon", "urealistisk hud"],
+    "motion_style": "soft-glow-glide",
+    "metaphor": "én myk, sammenhengende kamerabevegelse gjennom behandlingen",
+    "tone": "varm, eksklusiv, innbydende"
+  }
+}

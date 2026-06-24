@@ -1,0 +1,17 @@
+{
+  "config": {
+    "url": "https://bellatrattoria.no",
+    "format": "reels",
+    "duration": 40,
+    "style": "restaurant",
+    "preview_only": false,
+    "use_llm": false,
+    "slug": "bellatrattoria-reels-40s"
+  },
+  "extracted_summary": {
+    "title": "Bella Trattoria — Ekte italiensk i Oslo",
+    "domain": "bellatrattoria.no",
+    "asset_count": 6,
+    "warnings": []
+  }
+}

@@ -1,0 +1,14 @@
+# Engine runtime artifacts
+projects/*
+outputs/*
+!projects/.gitkeep
+!outputs/.gitkeep
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# OS
+.DS_Store

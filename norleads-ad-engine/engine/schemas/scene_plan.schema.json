@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "scene_plan",
+  "type": "object",
+  "required": ["business_name", "format", "duration", "scenes", "palette", "fonts"],
+  "properties": {
+    "business_name": {"type": "string"},
+    "format": {"type": "string"},
+    "duration": {"type": "number"},
+    "fps_target": {"type": "integer"},
+    "metaphor": {"type": "string"},
+    "transition_style": {"type": "string"},
+    "scene_count": {"type": "integer"},
+    "palette": {"type": "object"},
+    "fonts": {"type": "object"},
+    "scenes": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "required": ["index", "role", "start", "seconds", "end", "copy"],
+        "properties": {
+          "index": {"type": "integer"},
+          "role": {"type": "string", "enum": ["hook", "context", "offer", "proof", "cta"]},
+          "start": {"type": "number"},
+          "seconds": {"type": "number"},
+          "end": {"type": "number"},
+          "copy": {
+            "type": "object",
+            "properties": {
+              "kicker": {"type": "string"},
+              "headline": {"type": "string"},
+              "sub": {"type": "string"}
+            }
+          },
+          "image": {"type": ["string", "null"]},
+          "logo": {"type": ["string", "null"]},
+          "motion": {"type": "object"},
+          "treatment": {"type": "string"}
+        }
+      }
+    }
+  }
+}

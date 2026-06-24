@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "project",
+  "type": "object",
+  "required": ["config"],
+  "properties": {
+    "config": {
+      "type": "object",
+      "required": ["url", "format", "duration", "style", "slug"]
+    },
+    "extracted_summary": {"type": "object"}
+  }
+}

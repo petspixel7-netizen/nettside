@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "render_config",
+  "type": "object",
+  "required": ["url", "format", "duration", "style", "slug"],
+  "properties": {
+    "url": {"type": "string"},
+    "format": {"type": "string"},
+    "duration": {"type": "number"},
+    "style": {"type": "string"},
+    "slug": {"type": "string"},
+    "preview_only": {"type": "boolean"},
+    "use_llm": {"type": "boolean"}
+  }
+}

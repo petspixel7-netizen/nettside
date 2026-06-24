@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bella Trattoria</title>
+<!-- Fonts: brand-detected with safe fallbacks (no FOIT; swap). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cw: 1080px;
+  --ch: 1920px;
+  --head-font: "Playfair Display", Georgia, 'Times New Roman', serif;
+  --body-font: "Inter", -apple-system, Segoe UI, Roboto, sans-serif;
+}
+/* film.css — fullscreen, no-UI, no-scroll, F11-ready, responsive scaling.
+   The film lives on a fixed-aspect #stage that is scaled to fit the viewport,
+   so layout is pixel-stable regardless of screen size (no layout shift). */
+
+:root {
+  --ink: #141414;
+  --paper: #f6f3ee;
+  --primary: #1a1a1a;
+  --accent: #c9a36a;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;                 /* no scrollbars, ever */
+  background: #000;                 /* letterbox color */
+  cursor: none;                     /* no UI for screen recording */
+  -webkit-font-smoothing: antialiased;
+}
+
+#viewport {
+  position: fixed; inset: 0;
+  display: grid; place-items: center;
+  background: #000;
+}
+
+/* #stage is the fixed-aspect canvas; JS sets --cw/--ch and the scale. */
+#stage {
+  position: relative;
+  width: var(--cw); height: var(--ch);
+  transform-origin: center center;
+  background: var(--ink);
+  overflow: hidden;
+  will-change: transform;
+}
+
+.scene {
+  position: absolute; inset: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.scene__img {
+  position: absolute; inset: -4%;     /* bleed for ken-burns */
+  width: 108%; height: 108%;
+  object-fit: cover; object-position: center;
+  will-change: transform;
+  transform: scale(1.06);
+}
+
+/* Legibility scrim — gradient from ink, not a flat dark box. */
+.scene__scrim {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top,
+    color-mix(in srgb, var(--ink) 70%, transparent) 0%,
+    transparent 55%);
+  pointer-events: none;
+}
+
+.scene__grain {
+  position: absolute; inset: 0;
+  opacity: .05; pointer-events: none; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+.scene__vignette {
+  position: absolute; inset: 0; pointer-events: none;
+  box-shadow: inset 0 0 22vh rgba(0,0,0,.45);
+}
+
+/* Text block — anchored, safe-area padded. */
+.copy {
+  position: absolute; left: 7%; right: 7%; bottom: 11%;
+  color: var(--paper);
+  text-shadow: 0 1px 24px rgba(0,0,0,.35);
+}
+.copy[data-anchor="center"] {
+  bottom: auto; top: 50%; transform: translateY(-50%);
+  text-align: center; left: 8%; right: 8%;
+}
+
+.kicker {
+  font-family: var(--body-font);
+  text-transform: uppercase; letter-spacing: .28em;
+  font-size: 1.6vw; font-weight: 600; color: var(--accent);
+  margin-bottom: .8em;
+  overflow: hidden;
+}
+.headline {
+  font-family: var(--head-font);
+  font-size: 6.2vw; line-height: 1.02; font-weight: 600;
+  letter-spacing: -.01em;
+  /* clip-reveal handled per line by JS */
+}
+.headline .line { display: block; overflow: hidden; }
+.headline .line > span { display: block; transform: translateY(110%); }
+.sub {
+  font-family: var(--body-font);
+  font-size: 2.4vw; font-weight: 400; margin-top: .7em; opacity: .92;
+}
+
+/* Logo lockup. */
+.logo {
+  position: absolute; top: 7%; left: 7%;
+  max-width: 18%; max-height: 9%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 14px rgba(0,0,0,.3));
+  opacity: 0;
+}
+.copy[data-anchor="center"] ~ .logo,
+.logo[data-place="cta"] {
+  top: auto; left: 50%; bottom: 64%;
+  transform: translateX(-50%);
+}
+
+/* When ?still=1 the timeline is frozen — disable transitions cleanly. */
+.still * { animation: none !important; }
+
+</style>
+</head>
+<body>
+<div id="viewport">
+  <div id="stage">
+    
+    <section class="scene" data-role="hook">
+      <img class="scene__img" src="assets/pasta-hero.jpg" alt="">
+      <div class="scene__scrim"></div>
+      <div class="scene__grain"></div>
+      <div class="scene__vignette"></div>
+      <img class="logo" data-place="hook" src="assets/logo.png" alt="logo">
+      <div class="copy" data-anchor="bottom">
+        
+        
+        
+      </div>
+    </section>
+    
+    <section class="scene" data-role="context">
+      <img class="scene__img" src="assets/interior.jpg" alt="">
+      <div class="scene__scrim"></div>
+      <div class="scene__grain"></div>
+      <div class="scene__vignette"></div>
+      
+      <div class="copy" data-anchor="bottom">
+        
+        
+        
+      </div>
+    </section>
+    
+    <section class="scene" data-role="offer">
+      <img class="scene__img" src="assets/pizza.jpg" alt="">
+      <div class="scene__scrim"></div>
+      <div class="scene__grain"></div>
+      <div class="scene__vignette"></div>
+      
+      <div class="copy" data-anchor="bottom">
+        
+        
+        
+      </div>
+    </section>
+    
+    <section class="scene" data-role="proof">
+      <img class="scene__img" src="assets/chef.jpg" alt="">
+      <div class="scene__scrim"></div>
+      <div class="scene__grain"></div>
+      <div class="scene__vignette"></div>
+      
+      <div class="copy" data-anchor="bottom">
+        
+        
+        
+      </div>
+    </section>
+    
+    <section class="scene" data-role="offer">
+      <img class="scene__img" src="assets/dessert.jpg" alt="">
+      <div class="scene__scrim"></div>
+      <div class="scene__grain"></div>
+      <div class="scene__vignette"></div>
+      
+      <div class="copy" data-anchor="bottom">
+        
+        
+        
+      </div>
+    </section>
+    
+    <section class="scene" data-role="cta">
+      <img class="scene__img" src="assets/pasta-hero.jpg" alt="">
+      <div class="scene__scrim"></div>
+      <div class="scene__grain"></div>
+      <div class="scene__vignette"></div>
+      <img class="logo" data-place="cta" src="assets/logo.png" alt="logo">
+      <div class="copy" data-anchor="center">
+        
+        
+        
+      </div>
+    </section>
+    
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+  window.SCENE_PLAN = {"business_name": "Bella Trattoria", "format": "reels", "duration": 40.0, "fps_target": 60, "metaphor": "ett kontinuerlig kamerasveip fra råvare til servert tallerken", "transition_style": "match-cut / shared-element, never hard slide", "scene_count": 6, "palette": {"primary": "#6b1f2a", "accent": "#c9a36a", "ink": "#1a1411", "paper": "#f6f1e7", "palette": ["#6b1f2a", "#c9a36a", "#1a1411"]}, "fonts": {"heading": "Playfair Display", "body": "Inter", "fallback_heading": "Georgia, serif", "fallback_body": "-apple-system, sans-serif"}, "scenes": [{"index": 0, "role": "hook", "start": 0.0, "seconds": 5.0, "end": 5.0, "copy": {"kicker": "I KVELD", "headline": "Det lukter nybakt focaccia", "sub": ""}, "image": "assets/pasta-hero.jpg", "logo": "assets/logo.png", "motion": {"camera": "slow push-in", "type_in": "mask-reveal up", "image": "ken-burns 1.04->1.14", "style": "warm-push-in"}, "treatment": "warm editorial grade"}, {"index": 1, "role": "context", "start": 5.0, "seconds": 6.0, "end": 11.0, "copy": {"kicker": "", "headline": "Ekte italiensk — hver gang", "sub": ""}, "image": "assets/interior.jpg", "logo": null, "motion": {"camera": "lateral drift", "type_in": "line clip", "image": "parallax bg", "style": "warm-push-in"}, "treatment": "warm editorial grade"}, {"index": 2, "role": "offer", "start": 11.0, "seconds": 9.0, "end": 20.0, "copy": {"kicker": "PÅ MENYEN", "headline": "Pasta laget for hånd", "sub": "Pizza fra steinovn, Tiramisu, Vinkart"}, "image": "assets/pizza.jpg", "logo": null, "motion": {"camera": "rack-focus to product", "type_in": "stagger up", "image": "scale 1.1->1.0", "style": "warm-push-in"}, "treatment": "warm editorial grade"}, {"index": 3, "role": "proof", "start": 20.0, "seconds": 7.0, "end": 27.0, "copy": {"kicker": "", "headline": "4,9★ · 412 omtaler · siden 2011", "sub": ""}, "image": "assets/chef.jpg", "logo": null, "motion": {"camera": "settle", "type_in": "fade", "image": "subtle drift", "style": "warm-push-in"}, "treatment": "warm editorial grade"}, {"index": 4, "role": "offer", "start": 27.0, "seconds": 6.0, "end": 33.0, "copy": {"kicker": "FRA 189,-", "headline": "Søtt til slutt", "sub": "Hjemmelaget tiramisu"}, "image": "assets/dessert.jpg", "logo": null, "motion": {"camera": "rack-focus to product", "type_in": "stagger up", "image": "scale 1.1->1.0", "style": "warm-push-in"}, "treatment": "warm editorial grade"}, {"index": 5, "role": "cta", "start": 33.0, "seconds": 7.0, "end": 40.0, "copy": {"kicker": "BELLA TRATTORIA", "headline": "Bestill bord", "sub": "Storgata 4, Oslo · +47 22 33 44 55"}, "image": "assets/pasta-hero.jpg", "logo": "assets/logo.png", "motion": {"camera": "pull to logo", "type_in": "logo draw + clamp", "image": "vignette focus", "style": "warm-push-in"}, "treatment": "warm editorial grade"}]};
+  window.SCENE_PLAN._canvas_w = 1080;
+  window.SCENE_PLAN._canvas_h = 1920;
+  window.VISUAL = {"look": "premium editorial — warm, restrained, real food photography, no neon", "grade": {"base": "subtle contrast lift, warm shadows", "overlay": "#1a1411 gradient 0->55% from bottom for text legibility", "duotone": false, "grain": {"enabled": true, "opacity": 0.05}, "vignette": {"enabled": true, "strength": 0.25}}, "type": {"heading_family": "Playfair Display", "body_family": "Inter", "scale": {"kicker": "1.6vw", "headline": "6.2vw", "sub": "2.4vw"}, "tracking": {"kicker": "0.28em", "headline": "-0.01em"}, "weight": {"kicker": 600, "headline": 600, "sub": 400}, "case": {"kicker": "uppercase", "headline": "none"}}, "color_roles": {"primary": "#6b1f2a", "accent": "#c9a36a", "ink": "#1a1411", "paper": "#f6f1e7"}, "motion_feel": "weighty, eased (power3/expo), continuous — never linear slide", "transitions": "shared-element + masked wipes aligned to camera direction", "logo_treatment": "mono-knockout in paper color, max 18% canvas width", "image_treatment": "full-bleed, object-fit cover, ken-burns, focal-safe center", "forbidden": ["neon glow", "drop-shadow stacks", "rainbow gradients", "spinning 3d cards", "emoji", "default bootstrap blue"], "per_scene": [{"index": 0, "role": "hook", "text_anchor": "bottom-left", "image": "assets/pasta-hero.jpg", "treatment": "warm editorial grade"}, {"index": 1, "role": "context", "text_anchor": "bottom-left", "image": "assets/interior.jpg", "treatment": "warm editorial grade"}, {"index": 2, "role": "offer", "text_anchor": "bottom-left", "image": "assets/pizza.jpg", "treatment": "warm editorial grade"}, {"index": 3, "role": "proof", "text_anchor": "bottom-left", "image": "assets/chef.jpg", "treatment": "warm editorial grade"}, {"index": 4, "role": "offer", "text_anchor": "bottom-left", "image": "assets/dessert.jpg", "treatment": "warm editorial grade"}, {"index": 5, "role": "cta", "text_anchor": "center", "image": "assets/pasta-hero.jpg", "treatment": "warm editorial grade"}]};
+  window.PREVIEW = false;
+</script>
+<script>/* timeline.js — builds ONE continuous GSAP timeline from window.SCENE_PLAN.
+ *
+ * Principles (enforce skills/gsap-animation-rules.md):
+ *  - One master timeline, scenes overlap with shared-element transitions.
+ *  - No hard slides. Crossfade + scale continuity = continuous camera feel.
+ *  - Ken-burns on every image so nothing is ever static.
+ *  - Headlines reveal line-by-line via clip masks (kinetic typography).
+ *  - window.timeline exposed for debugging; ?seek=<t>&still=1 freezes a frame.
+ *
+ * Requires GSAP (loaded from CDN in base.html.j2).
+ */
+(function () {
+  const PLAN = window.SCENE_PLAN;
+  const VISUAL = window.VISUAL || {};
+  const params = new URLSearchParams(location.search);
+  const STILL = params.get("still") === "1";
+  const SEEK = parseFloat(params.get("seek") || "0");
+
+  // ---- responsive scaling: fit fixed canvas into viewport, keep aspect ----
+  const stage = document.getElementById("stage");
+  const cw = PLAN._canvas_w || parseInt(getComputedStyle(stage).getPropertyValue("--cw")) || 1080;
+  const ch = PLAN._canvas_h || parseInt(getComputedStyle(stage).getPropertyValue("--ch")) || 1920;
+  function fit() {
+    const s = Math.min(window.innerWidth / cw, window.innerHeight / ch);
+    stage.style.transform = `scale(${s})`;
+  }
+  window.addEventListener("resize", fit);
+  fit();
+
+  // ---- apply palette ----
+  const c = PLAN.palette || {};
+  const root = document.documentElement.style;
+  if (c.ink) root.setProperty("--ink", c.ink);
+  if (c.paper) root.setProperty("--paper", c.paper);
+  if (c.primary) root.setProperty("--primary", c.primary);
+  if (c.accent) root.setProperty("--accent", c.accent);
+
+  const sceneEls = Array.from(document.querySelectorAll(".scene"));
+
+  // Split each headline into clip-masked lines for kinetic reveal.
+  sceneEls.forEach((el) => {
+    const h = el.querySelector(".headline");
+    if (!h) return;
+    const words = h.textContent.trim();
+    h.innerHTML = `<span class="line"><span>${words}</span></span>`;
+  });
+
+  if (STILL) {
+    buildAndSeek();
+  } else {
+    // Preload images, then play.
+    const imgs = Array.from(document.images);
+    let left = imgs.length;
+    if (!left) start();
+    imgs.forEach((im) => {
+      if (im.complete) tick();
+      else { im.onload = tick; im.onerror = tick; }
+    });
+    function tick() { if (--left <= 0) start(); }
+  }
+
+  function start() {
+    const tl = build();
+    window.timeline = tl;
+    tl.play(0);
+  }
+
+  function buildAndSeek() {
+    const tl = build();
+    window.timeline = tl;
+    tl.pause();
+    tl.seek(SEEK);
+    document.body.classList.add("still");
+  }
+
+  function build() {
+    const tl = gsap.timeline({ defaults: { ease: "power3.out" }, paused: true });
+    const OVERLAP = 0.5; // seconds of shared-element crossfade between scenes
+
+    PLAN.scenes.forEach((sc, i) => {
+      const el = sceneEls[i];
+      const at = Math.max(0, sc.start - (i ? OVERLAP : 0));
+      const dur = sc.seconds + (i ? OVERLAP : 0);
+      const img = el.querySelector(".scene__img");
+      const kicker = el.querySelector(".kicker");
+      const lineInner = el.querySelector(".headline .line > span");
+      const sub = el.querySelector(".sub");
+      const logo = el.querySelector(".logo");
+
+      // Scene container crossfade (continuous, not a hard cut).
+      tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.6 }, at);
+      if (i < PLAN.scenes.length - 1) {
+        tl.to(el, { opacity: 0, duration: 0.6 }, sc.end - 0.1);
+      }
+
+      // Ken-burns: continuous slow scale, never resets to static.
+      if (img) {
+        const from = 1.04 + (i % 2) * 0.04;
+        const to = from + 0.10;
+        tl.fromTo(img, { scale: from, xPercent: i % 2 ? -2 : 2 },
+          { scale: to, xPercent: 0, duration: dur + 0.8, ease: "none" }, at);
+      }
+
+      // Kinetic type: clip-reveal line up, kicker fade-rise, sub fade.
+      if (kicker && kicker.textContent.trim())
+        tl.fromTo(kicker, { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7 }, at + 0.25);
+      if (lineInner)
+        tl.fromTo(lineInner, { yPercent: 110 }, { yPercent: 0, duration: 0.9, ease: "expo.out" }, at + 0.35);
+      if (sub && sub.textContent.trim())
+        tl.fromTo(sub, { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7 }, at + 0.6);
+
+      // Logo reveal on hook + cta.
+      if (logo)
+        tl.fromTo(logo, { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.8 }, at + 0.2);
+    });
+
+    // Final hold so last frame lingers.
+    tl.to({}, { duration: 0.4 });
+    return tl;
+  }
+
+  // expose duration verifier
+  window.verifyDuration = function () {
+    return { planned: PLAN.duration, timeline: window.timeline && window.timeline.duration() };
+  };
+})();
+</script>
+</body>
+</html>

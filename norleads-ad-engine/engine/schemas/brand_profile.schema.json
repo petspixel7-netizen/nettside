@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "brand_profile",
+  "type": "object",
+  "required": ["name", "colors", "fonts", "tone"],
+  "properties": {
+    "domain": {"type": ["string", "null"]},
+    "name": {"type": "string"},
+    "colors": {
+      "type": "object",
+      "required": ["primary", "accent", "ink", "paper"],
+      "properties": {
+        "primary": {"type": "string", "pattern": "^#"},
+        "accent": {"type": "string", "pattern": "^#"},
+        "ink": {"type": "string", "pattern": "^#"},
+        "paper": {"type": "string", "pattern": "^#"},
+        "palette": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "fonts": {
+      "type": "object",
+      "required": ["heading", "body"],
+      "properties": {
+        "heading": {"type": "string"},
+        "body": {"type": "string"},
+        "fallback_heading": {"type": "string"},
+        "fallback_body": {"type": "string"},
+        "detected": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "tone": {"type": "string"},
+    "tagline": {"type": "string"},
+    "confidence": {"type": "object"}
+  }
+}

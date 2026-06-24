@@ -1,0 +1,21 @@
+{
+  "slug": "bellatrattoria-reels-40s",
+  "passed": true,
+  "score": 1.0,
+  "total": 11,
+  "failed": 0,
+  "verdict": "PASS",
+  "checks": [
+    {"check": "duration_matches", "ok": true, "detail": "target=40s actual=40.0s"},
+    {"check": "logo_present", "ok": true, "detail": "logo used in hook/cta scene"},
+    {"check": "cta_present", "ok": true, "detail": "Bestill bord"},
+    {"check": "assets_exist", "ok": true, "detail": "missing=[]"},
+    {"check": "text_length_safe", "ok": true, "detail": "too_long_scenes=[]"},
+    {"check": "real_facts_used", "ok": true, "detail": "services/proof sourced from site"},
+    {"check": "no_horizontal_scroll", "ok": true, "detail": "sw=1080 cw=1080"},
+    {"check": "no_vertical_scroll", "ok": true, "detail": "sh=1920 ch=1920"},
+    {"check": "viewport_covered", "ok": true, "detail": ""},
+    {"check": "no_text_overflow", "ok": true, "detail": ""},
+    {"check": "canvas_not_blank", "ok": true, "detail": "png_bytes=184320"}
+  ]
+}

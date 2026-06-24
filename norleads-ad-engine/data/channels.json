@@ -1,0 +1,13 @@
+{
+  "_doc": "Channel/format rules. canvas in px; margins as fraction of canvas; text_limit_chars per headline line; pacing = avg seconds/scene; cta_at = fraction of duration where CTA should land.",
+  "channels": {
+    "reels":        {"width": 1080, "height": 1920, "aspect": "9:16",  "safe_top": 0.14, "safe_bottom": 0.20, "safe_x": 0.07, "text_limit_chars": 42, "pacing": 3.0, "cta_at": 0.82, "duration_default": 30},
+    "tiktok":       {"width": 1080, "height": 1920, "aspect": "9:16",  "safe_top": 0.12, "safe_bottom": 0.24, "safe_x": 0.07, "text_limit_chars": 40, "pacing": 2.6, "cta_at": 0.80, "duration_default": 30},
+    "shorts":       {"width": 1080, "height": 1920, "aspect": "9:16",  "safe_top": 0.10, "safe_bottom": 0.22, "safe_x": 0.07, "text_limit_chars": 42, "pacing": 2.8, "cta_at": 0.82, "duration_default": 30},
+    "story":        {"width": 1080, "height": 1920, "aspect": "9:16",  "safe_top": 0.16, "safe_bottom": 0.16, "safe_x": 0.08, "text_limit_chars": 38, "pacing": 3.2, "cta_at": 0.85, "duration_default": 15},
+    "feed":         {"width": 1080, "height": 1350, "aspect": "4:5",   "safe_top": 0.08, "safe_bottom": 0.10, "safe_x": 0.07, "text_limit_chars": 44, "pacing": 3.4, "cta_at": 0.82, "duration_default": 20},
+    "square":       {"width": 1080, "height": 1080, "aspect": "1:1",   "safe_top": 0.08, "safe_bottom": 0.10, "safe_x": 0.08, "text_limit_chars": 40, "pacing": 3.2, "cta_at": 0.82, "duration_default": 15},
+    "website-hero": {"width": 1920, "height": 1080, "aspect": "16:9",  "safe_top": 0.10, "safe_bottom": 0.12, "safe_x": 0.06, "text_limit_chars": 56, "pacing": 4.0, "cta_at": 0.80, "duration_default": 40},
+    "signage":      {"width": 1920, "height": 1080, "aspect": "16:9",  "safe_top": 0.08, "safe_bottom": 0.08, "safe_x": 0.05, "text_limit_chars": 50, "pacing": 4.5, "cta_at": 0.85, "duration_default": 30}
+  }
+}

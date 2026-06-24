@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "visual_direction",
+  "type": "object",
+  "required": ["look", "grade", "type", "color_roles", "per_scene"],
+  "properties": {
+    "look": {"type": "string"},
+    "grade": {"type": "object"},
+    "type": {"type": "object"},
+    "color_roles": {"type": "object"},
+    "motion_feel": {"type": "string"},
+    "transitions": {"type": "string"},
+    "logo_treatment": {"type": "string"},
+    "image_treatment": {"type": "string"},
+    "forbidden": {"type": "array", "items": {"type": "string"}},
+    "per_scene": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["index", "role"],
+        "properties": {
+          "index": {"type": "integer"},
+          "role": {"type": "string"},
+          "text_anchor": {"type": "string"},
+          "image": {"type": ["string", "null"]},
+          "treatment": {"type": "string"}
+        }
+      }
+    }
+  }
+}

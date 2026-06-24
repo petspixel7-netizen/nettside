@@ -1,0 +1,118 @@
+/* film.css — fullscreen, no-UI, no-scroll, F11-ready, responsive scaling.
+   The film lives on a fixed-aspect #stage that is scaled to fit the viewport,
+   so layout is pixel-stable regardless of screen size (no layout shift). */
+
+:root {
+  --ink: #141414;
+  --paper: #f6f3ee;
+  --primary: #1a1a1a;
+  --accent: #c9a36a;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;                 /* no scrollbars, ever */
+  background: #000;                 /* letterbox color */
+  cursor: none;                     /* no UI for screen recording */
+  -webkit-font-smoothing: antialiased;
+}
+
+#viewport {
+  position: fixed; inset: 0;
+  display: grid; place-items: center;
+  background: #000;
+}
+
+/* #stage is the fixed-aspect canvas; JS sets --cw/--ch and the scale. */
+#stage {
+  position: relative;
+  width: var(--cw); height: var(--ch);
+  transform-origin: center center;
+  background: var(--ink);
+  overflow: hidden;
+  will-change: transform;
+}
+
+.scene {
+  position: absolute; inset: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.scene__img {
+  position: absolute; inset: -4%;     /* bleed for ken-burns */
+  width: 108%; height: 108%;
+  object-fit: cover; object-position: center;
+  will-change: transform;
+  transform: scale(1.06);
+}
+
+/* Legibility scrim — gradient from ink, not a flat dark box. */
+.scene__scrim {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top,
+    color-mix(in srgb, var(--ink) 70%, transparent) 0%,
+    transparent 55%);
+  pointer-events: none;
+}
+
+.scene__grain {
+  position: absolute; inset: 0;
+  opacity: .05; pointer-events: none; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+.scene__vignette {
+  position: absolute; inset: 0; pointer-events: none;
+  box-shadow: inset 0 0 22vh rgba(0,0,0,.45);
+}
+
+/* Text block — anchored, safe-area padded. */
+.copy {
+  position: absolute; left: 7%; right: 7%; bottom: 11%;
+  color: var(--paper);
+  text-shadow: 0 1px 24px rgba(0,0,0,.35);
+}
+.copy[data-anchor="center"] {
+  bottom: auto; top: 50%; transform: translateY(-50%);
+  text-align: center; left: 8%; right: 8%;
+}
+
+.kicker {
+  font-family: var(--body-font);
+  text-transform: uppercase; letter-spacing: .28em;
+  font-size: 1.6vw; font-weight: 600; color: var(--accent);
+  margin-bottom: .8em;
+  overflow: hidden;
+}
+.headline {
+  font-family: var(--head-font);
+  font-size: 6.2vw; line-height: 1.02; font-weight: 600;
+  letter-spacing: -.01em;
+  /* clip-reveal handled per line by JS */
+}
+.headline .line { display: block; overflow: hidden; }
+.headline .line > span { display: block; transform: translateY(110%); }
+.sub {
+  font-family: var(--body-font);
+  font-size: 2.4vw; font-weight: 400; margin-top: .7em; opacity: .92;
+}
+
+/* Logo lockup. */
+.logo {
+  position: absolute; top: 7%; left: 7%;
+  max-width: 18%; max-height: 9%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 14px rgba(0,0,0,.3));
+  opacity: 0;
+}
+.copy[data-anchor="center"] ~ .logo,
+.logo[data-place="cta"] {
+  top: auto; left: 50%; bottom: 64%;
+  transform: translateX(-50%);
+}
+
+/* When ?still=1 the timeline is frozen — disable transitions cleanly. */
+.still * { animation: none !important; }

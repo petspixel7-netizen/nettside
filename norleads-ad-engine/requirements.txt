@@ -1,0 +1,17 @@
+# Core (required)
+httpx>=0.27           # HTTP fetch with proxy/redirect handling
+selectolax>=0.3       # fast HTML parsing (lxml-free); BeautifulSoup ok as alt
+beautifulsoup4>=4.12  # convenience parsing / fallback
+lxml>=5.2             # parser backend
+jinja2>=3.1           # HTML template rendering
+jsonschema>=4.22      # validate every artifact
+Pillow>=10.3          # image quality/aspect/crop-safety scoring
+colorthief>=0.2.1     # dominant color palette from images
+tinycss2>=1.3         # parse CSS for brand colors/fonts
+
+# Recommended (graceful fallback if missing)
+playwright>=1.44      # JS-rendered scrape, screenshots, frames, QA checks
+# after install: playwright install chromium
+
+# Optional (only if LLM enhancement enabled)
+# anthropic>=0.40     # engine/llm.py backend (Claude); set ANTHROPIC_API_KEY
