@@ -1,0 +1,134 @@
+/* ── SPILLER — fullskjerm, kvadratisk canvas for screen recording ── */
+html, body { width:100%; height:100%; margin:0; background:#000; overflow:hidden; }
+body { display:grid; place-items:center; color:var(--ink); font-feature-settings:"ss01","cv11"; }
+
+#film {
+  position:relative;
+  width: min(100vw, 100vh);
+  height: min(100vw, 100vh);
+  aspect-ratio: 1/1;
+  overflow:hidden;
+  background: var(--white);
+  isolation: isolate;
+}
+#film::after {
+  content:""; position:absolute; inset:0; z-index:80; pointer-events:none;
+  background: radial-gradient(circle at 50% 50%, transparent 60%, rgba(229,38,58,.06) 130%);
+}
+
+/* persistent chrome */
+.brand-chip {
+  position:absolute; z-index:90; left:5%; top:5%;
+  font-weight:900; font-style:italic; letter-spacing:-.04em;
+  font-size:2.3vmin;
+}
+.meta-chip {
+  position:absolute; z-index:90; right:5%; top:5.4%;
+  font-weight:700; font-size:1.1vmin; letter-spacing:.28em;
+  text-transform:uppercase;
+}
+.progress { position:absolute; z-index:90; left:5%; right:5%; bottom:4%;
+  height:3px; background:rgba(14,14,16,.08); border-radius:3px; overflow:hidden; }
+.progress i { display:block; width:100%; height:100%; transform:scaleX(0);
+  transform-origin:left; border-radius:3px; }
+
+/* ── REC-bar (vises kun utenfor #film) ─────────────────── */
+.rec-bar {
+  position: fixed; top: 14px; left: 14px; z-index: 200;
+  display: flex; gap: 8px; align-items: center;
+  background: rgba(255,255,255,.92); backdrop-filter: blur(8px);
+  padding: 8px 12px; border-radius: 999px;
+  border: 1px solid rgba(14,14,16,.15);
+  box-shadow: 0 6px 18px rgba(14,14,16,.12);
+  font-family: 'Inter', sans-serif; font-size: 12px; color: #0E0E10;
+}
+.rec-bar.hide { display: none; }
+.rec-bar button {
+  border: none; background: #E5263A; color: #fff;
+  padding: 7px 14px; border-radius: 999px; font-weight: 700;
+  font-size: 12px; letter-spacing: .04em; cursor: pointer;
+}
+.rec-bar button.ghost { background: transparent; color: #0E0E10; padding: 6px 10px; }
+.rec-bar .dot { width: 8px; height: 8px; border-radius: 50%; background: #E5263A; }
+.rec-bar.recording .dot { animation: rec-pulse 1s infinite; }
+@keyframes rec-pulse { 50% { opacity: .3; } }
+.rec-bar .msg { color: #555; }
+
+/* scene container */
+.scene { position:absolute; inset:0; visibility:hidden; display:grid; place-items:center;
+  text-align:center; will-change: transform, opacity; color:var(--ink); }
+.center { position:relative; z-index:4; width:88%;
+  display:grid; justify-items:center; gap:2.4vmin; padding:0 2vmin; }
+
+.eyebrow { font-weight:800; font-size:1.5vmin; letter-spacing:.3em;
+  text-transform:uppercase; overflow:hidden; }
+h1, h2, h3 { margin:0; font-weight:800; line-height:1.02; letter-spacing:-.04em;
+  text-wrap:balance; color:var(--ink); }
+h1 { font-size: 11vmin; }
+h2 { font-size: 8.4vmin; }
+h3 { font-size: 5vmin; font-weight:700; }
+.red-word { font-style:italic; font-weight:800; }
+
+.reveal { display:inline-block; overflow:hidden; vertical-align:bottom;
+  padding-bottom:.06em; line-height:1.05; }
+.reveal > span { display:inline-block; }
+
+/* ── logo intro ── */
+.hero-mark { gap:3.4vmin; }
+.logo-wordmark { font-weight:900; font-style:italic; font-size:14vmin;
+  letter-spacing:-.05em; line-height:1; filter:drop-shadow(0 10px 28px rgba(229,38,58,.18)); }
+.hero-mark .rule { width:8vmin; height:3px; border-radius:2px; }
+.hero-mark .tag { font-weight:500; font-size:2.6vmin; max-width:84%; line-height:1.35; }
+
+/* ── hook ── */
+.hook-head { font-size:13vmin; line-height:1; }
+
+/* ── feature grid ── */
+.grid-head { font-size:8.4vmin; }
+.price-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1.4vmin;
+  width:94%; margin-top:1vmin; perspective:1200px; }
+.price-card { display:grid; place-items:center; padding:2.2vmin 1vmin;
+  border:1px solid var(--rule); border-radius:18px; background:var(--paper);
+  gap:.8vmin; box-shadow: var(--shadow-card); }
+.price-card .iconwrap { width:7vmin; height:7vmin; border-radius:50%; }
+.price-card b { font-weight:800; font-size:2vmin; letter-spacing:-.01em; }
+.price-card span { font-weight:600; font-size:1.1vmin; letter-spacing:.2em;
+  text-transform:uppercase; color: var(--softer); }
+
+/* ── big number ── */
+.big-num { font-weight:800; font-size:34vmin; line-height:.82; letter-spacing:-.05em;
+  font-variant-numeric:tabular-nums; }
+.big-num em { font-style:normal; font-weight:700; color:var(--ink); }
+.big-sub { color:var(--ink); }
+
+/* ── trust ── */
+.trust-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1.8vmin;
+  width:94%; margin-top:1vmin; perspective:1400px; }
+.trust-card { padding:2.8vmin 1.6vmin; border:1px solid var(--rule);
+  border-radius:18px; background:var(--paper); display:grid; gap:.7vmin;
+  align-content:start; box-shadow: var(--shadow-card); }
+.trust-card b { display:block; font-weight:800; font-size:5.4vmin;
+  letter-spacing:-.03em; line-height:1; }
+.trust-card span { font-weight:700; font-size:1.3vmin; letter-spacing:.18em;
+  text-transform:uppercase; }
+.trust-card p { margin:0; font-weight:400; font-size:1.55vmin;
+  line-height:1.45; color:var(--dim); }
+
+/* ── text swap ── */
+.swap-head { font-size:11vmin; }
+.swap-zone { position:relative; display:inline-block; line-height:.95; }
+.sw { position:relative; display:inline-block; }
+.sw-2 { position:absolute; inset:0; opacity:0; }
+.sw-2 .paint-bg { position:absolute; left:-.08em; right:-.08em; top:.06em; bottom:.02em;
+  z-index:-1; transform:scaleX(0); transform-origin:left; }
+.sw-2 .paint-txt { position:relative; z-index:2; padding:0 .1em; }
+
+/* ── CTA ── */
+.cta-stack { gap:1.6vmin; }
+.cta-logo { font-size:8.5vmin; }
+.cta-phone { font-weight:800; font-size:22vmin; line-height:.88; letter-spacing:-.05em;
+  font-variant-numeric:tabular-nums; display:flex; justify-content:center; gap:.02em; }
+.cta-phone .d { display:inline-block; will-change:transform, opacity; }
+.cta-sub { font-weight:500; font-size:2.1vmin; }
+.cta-url { display:inline-block; padding:1.6vmin 2.8vmin; color:#fff;
+  font-weight:700; font-size:1.8vmin; border-radius:999px; box-shadow: var(--shadow); }
