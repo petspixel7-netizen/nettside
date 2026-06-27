@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Yaku Sushi & Bubble Tea — Autentiske smakene.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FFFFFF;
+    --ink:#0F0F0F;
+    --ink-soft:#6B6B6B;
+    --paper:#FFF4ED;
+    --orange:#FF5A1F;
+    --orange-d:#E03D00;
+    --orange-l:#FFB07A;
+    --green:#2E7D32;
+    --pink:#FF6B9D;
+    --gold:#C99A2E;
+    --aqua:#00B3A6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased}
+  body{display:grid;place-items:center;color:var(--ink)}
+
+  #film{
+    position:relative;
+    width:min(56.25vh,100vw);
+    height:min(100vh,177.78vw);
+    aspect-ratio:9/16;
+    overflow:hidden;
+    background:var(--bg);
+    container-type:inline-size;
+    isolation:isolate;
+  }
+
+  /* Always-on background grid that pans */
+  .bg-grid{
+    position:absolute;inset:-20%;z-index:1;
+    background-image:
+      linear-gradient(rgba(255,90,31,.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,90,31,.05) 1px, transparent 1px);
+    background-size:5cqw 5cqw;
+    will-change:transform;
+  }
+  /* Noise overlay */
+  #film:after{
+    content:"";position:absolute;inset:0;z-index:90;pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.10'/%3E%3C/svg%3E");
+    mix-blend-mode:multiply;opacity:.35;
+  }
+
+  /* Chrome */
+  .chrome-tl{position:absolute;z-index:88;left:5cqw;top:4.5cqw;display:flex;align-items:center;gap:1.4cqw}
+  .chrome-tl img{height:5.2cqw;width:auto;display:block;will-change:transform;border-radius:.6cqw}
+  .chrome-tl span{font-weight:900;font-size:2.8cqw;letter-spacing:-.02em;color:var(--orange)}
+  .chrome-tr{position:absolute;z-index:88;right:5cqw;top:5cqw;font-weight:700;font-size:2.1cqw;letter-spacing:.3em;text-transform:uppercase;color:var(--ink);display:flex;align-items:center;gap:1.2cqw}
+  .chrome-tr .dot{width:1.4cqw;height:1.4cqw;border-radius:50%;background:var(--orange);will-change:transform}
+
+  .progress{position:absolute;z-index:88;left:5cqw;right:5cqw;bottom:3cqw;height:.4cqw;background:rgba(15,15,15,.08);overflow:hidden}
+  .progress i{display:block;width:100%;height:100%;background:var(--orange);transform:scaleX(0);transform-origin:left}
+
+  /* Scene base */
+  .scene{position:absolute;inset:0;z-index:5;visibility:hidden;will-change:transform,opacity;overflow:hidden}
+  .scene.cream{background:var(--paper)}
+  .scene.orange{background:var(--orange);color:#fff}
+
+  .h{font-family:'Inter',sans-serif;font-weight:900;line-height:.95;letter-spacing:-.04em}
+  .letter{display:inline-block;will-change:transform,opacity}
+
+  /* ===== Scene 1: LOGO INTRO ===== */
+  .s1{display:grid;place-items:center;padding:14cqw 6cqw}
+  .s1 .logo-stack{position:relative;display:grid;place-items:center;gap:3cqw}
+  .s1 .logo-mark{height:22cqw;width:auto;will-change:transform,opacity;filter:drop-shadow(0 8px 22px rgba(255,90,31,.25));border-radius:1.5cqw}
+  .s1 .wordmark{font-size:11cqw;font-weight:900;letter-spacing:-.035em;color:var(--orange);display:flex;gap:.04em;font-style:italic}
+  .s1 .underline{width:0;height:.7cqw;background:var(--ink);will-change:transform}
+  .s1 .sub{font-weight:600;font-size:2.7cqw;color:var(--ink-soft);letter-spacing:.18em;text-transform:uppercase}
+  .s1 .particle{position:absolute;width:1.1cqw;height:1.1cqw;border-radius:50%;background:var(--orange);top:50%;left:50%;will-change:transform,opacity;pointer-events:none}
+  .s1 .ring{position:absolute;top:50%;left:50%;width:8cqw;height:8cqw;border-radius:50%;border:2px solid var(--orange);transform:translate(-50%,-50%);will-change:transform,opacity}
+
+  /* ===== Scene 2: KINETIC TYPE ===== */
+  .s2{display:grid;place-items:center}
+  .s2 .stage{position:relative;width:100%;height:100%;overflow:hidden;display:grid;place-items:center}
+  .s2 .row{position:absolute;display:flex;gap:.04em;will-change:transform}
+  .s2 .word-1{font-size:17cqw;font-weight:900;color:var(--ink);font-style:italic;letter-spacing:-.05em;top:30%}
+  .s2 .word-2{font-size:18cqw;font-weight:900;color:var(--orange);font-style:italic;letter-spacing:-.05em;top:50%}
+  .s2 .bg-word{position:absolute;font-size:28cqw;font-weight:900;color:rgba(255,90,31,.07);letter-spacing:-.05em;font-style:italic;top:8%;left:-6%;will-change:transform;pointer-events:none;white-space:nowrap}
+  .s2 .stamp{position:absolute;font-weight:900;font-size:4.6cqw;letter-spacing:-.02em;font-style:italic;text-transform:uppercase;padding:.8cqw 1.6cqw;will-change:transform,opacity}
+  .s2 .stamp.tl{top:14cqw;left:6cqw;background:var(--orange);color:#fff;transform:rotate(-10deg)}
+  .s2 .stamp.br{bottom:18cqw;right:6cqw;background:var(--ink);color:#fff;transform:rotate(7deg)}
+  .s2 .stripe{position:absolute;left:-10%;right:-10%;height:4cqw;background:var(--orange);will-change:transform,opacity}
+  .s2 .stripe.s{top:85%;transform:rotate(-3deg)}
+
+  /* ===== Scene 3: GEOMETRIC INTERLUDE ===== */
+  .s3{display:grid;place-items:center;background:var(--bg)}
+  .s3 .geo-stage{position:relative;width:100%;height:100%;overflow:hidden}
+  .s3 .geo{position:absolute;will-change:transform,opacity}
+  .s3 .c1{width:30cqw;height:30cqw;border-radius:50%;background:var(--orange);top:18%;left:-15%}
+  .s3 .c2{width:22cqw;height:22cqw;border-radius:50%;background:var(--ink);top:55%;right:-12%}
+  .s3 .c3{width:16cqw;height:16cqw;border-radius:50%;background:var(--orange-l);top:32%;left:60%}
+  .s3 .tri{width:0;height:0;border-left:14cqw solid transparent;border-right:14cqw solid transparent;border-bottom:24cqw solid var(--orange-d);top:62%;left:20%}
+  .s3 .line-1{width:100%;height:.8cqw;background:var(--ink);top:48%;left:0;transform-origin:left}
+  .s3 .line-2{width:60%;height:.5cqw;background:var(--orange);top:72%;left:20%;transform-origin:right}
+  .s3 .photo{width:24cqw;height:24cqw;background-image:url('assets/img-2.jpg');background-size:cover;background-position:center;top:5%;left:33%;border-radius:50%;border:.6cqw solid var(--ink);box-shadow:0 6px 18px rgba(0,0,0,.18)}
+  .s3 .label{position:absolute;font-weight:900;font-size:7.6cqw;color:var(--ink);letter-spacing:-.04em;line-height:.95;z-index:5;text-align:center;left:50%;top:50%;transform:translate(-50%,-50%);font-style:italic;background:#fff;padding:1.2cqw 2cqw}
+  .s3 .label em{color:var(--orange);font-style:italic}
+
+  /* ===== Scene 4: MANIFESTO ===== */
+  .s4{padding:0;background:var(--paper)}
+  .s4 .ey{position:absolute;top:16cqw;left:6cqw;font-weight:800;font-size:2.7cqw;letter-spacing:.3em;text-transform:uppercase;color:var(--orange)}
+  .s4 .h1{position:absolute;top:24cqw;left:6cqw;right:-5cqw;font-size:13cqw;line-height:.97;font-weight:900;letter-spacing:-.04em;color:var(--ink)}
+  .s4 .h1 em{font-style:italic;color:var(--orange)}
+  .s4 .h1 .line{display:block;overflow:hidden;white-space:nowrap}
+  .s4 .h1 .line.creep{padding-left:6cqw}
+  .s4 .h1 .reveal{display:inline-block;will-change:transform}
+  .s4 .note{position:absolute;bottom:14cqw;right:6cqw;max-width:55%;font-weight:500;font-size:2.8cqw;line-height:1.4;color:var(--ink-soft);text-align:right}
+  .s4 .dot{position:absolute;bottom:30cqw;left:6cqw;width:5cqw;height:5cqw;border-radius:50%;background:var(--orange);will-change:transform}
+  .s4 .corner-tl{position:absolute;top:6cqw;right:6cqw;width:14cqw;height:14cqw;border-top:.4cqw solid var(--ink);border-right:.4cqw solid var(--ink);will-change:transform,opacity}
+  .s4 .corner-br{position:absolute;bottom:6cqw;left:6cqw;width:14cqw;height:14cqw;border-bottom:.4cqw solid var(--orange);border-left:.4cqw solid var(--orange);will-change:transform,opacity}
+
+  /* ===== Scene 5: STAT ===== */
+  .s5{display:grid;place-items:center;background:var(--bg)}
+  .s5 .stat-stage{position:relative;display:grid;place-items:center;gap:3cqw;padding:0 6cqw;text-align:center}
+  .s5 .ey{font-weight:800;font-size:2.7cqw;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-soft)}
+  .s5 .nums{font-weight:900;font-size:58cqw;line-height:.85;letter-spacing:-.05em;color:var(--orange);font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:0;position:relative}
+  .s5 .nums .d{display:inline-block;will-change:transform}
+  .s5 .nums .plus{color:var(--ink);font-size:.6em;line-height:1;font-weight:900;margin-left:.05em}
+  .s5 .label{font-weight:800;font-size:5cqw;color:var(--ink);letter-spacing:-.02em}
+  .s5 .label em{font-style:italic;color:var(--orange);font-weight:900}
+  .s5 .confetti{position:absolute;width:1.4cqw;height:1.4cqw;will-change:transform,opacity;pointer-events:none}
+
+  /* ===== Scene 6: MENU CATEGORIES ===== */
+  .s6{display:grid;align-content:center;padding:18cqw 6cqw 14cqw;gap:4cqw;background:var(--bg)}
+  .s6 .ey{font-weight:800;font-size:2.7cqw;letter-spacing:.3em;text-transform:uppercase;color:var(--orange);text-align:left}
+  .s6 .heading{font-weight:900;font-size:12cqw;line-height:.95;letter-spacing:-.04em;color:var(--ink)}
+  .s6 .heading em{font-style:italic;color:var(--orange)}
+  .s6 .formats{display:grid;grid-template-columns:repeat(3,1fr);gap:3cqw;align-items:end;margin-top:3cqw}
+  .s6 .fmt{display:grid;justify-items:center;gap:1.5cqw;will-change:transform,opacity}
+  .s6 .fmt .box{border:.3cqw solid var(--ink);overflow:hidden;position:relative;background-size:cover;background-position:center}
+  .s6 .fmt.f-sushi .box{width:22cqw;height:22cqw;background-image:url('assets/img-1.jpg')}
+  .s6 .fmt.f-tea .box{width:22cqw;height:22cqw;background-image:url('assets/img-3.jpg')}
+  .s6 .fmt.f-poke .box{width:22cqw;height:22cqw;background-image:url('assets/img-4.jpg')}
+  .s6 .fmt .tag{font-weight:900;font-size:3.6cqw;color:var(--orange);letter-spacing:-.01em;font-style:italic}
+  .s6 .fmt .where{font-weight:600;font-size:2cqw;color:var(--ink-soft);letter-spacing:.18em;text-transform:uppercase;text-align:center;line-height:1.35}
+
+  /* ===== Scene 7: LOCATIONS ===== */
+  .s7{background:var(--bg);overflow:hidden}
+  .s7 .ey{position:absolute;top:18cqw;left:6cqw;font-weight:800;font-size:2.7cqw;letter-spacing:.3em;text-transform:uppercase;color:var(--orange);z-index:10}
+  .s7 .name{position:absolute;font-weight:900;line-height:.9;letter-spacing:-.04em;will-change:transform,opacity;font-style:italic}
+  .s7 .n1{top:30cqw;left:6cqw;font-size:24cqw;color:var(--orange)}
+  .s7 .n2{top:78cqw;right:6cqw;font-size:24cqw;color:var(--ink);text-align:right}
+  .s7 .meta{position:absolute;font-weight:600;font-size:2.4cqw;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);will-change:transform,opacity}
+  .s7 .m1{top:58cqw;left:6cqw}
+  .s7 .m2{top:106cqw;right:6cqw;text-align:right}
+  .s7 .divider{position:absolute;left:6cqw;right:6cqw;top:72cqw;height:.3cqw;background:var(--orange);transform-origin:left}
+
+  /* ===== Scene 8: SLOGAN ===== */
+  .s8{display:grid;place-items:center;background:var(--orange);color:#fff;padding:0 6cqw}
+  .s8 .stack{display:grid;justify-items:center;gap:4cqw;text-align:center}
+  .s8 .pre{font-weight:800;font-size:3cqw;letter-spacing:.32em;text-transform:uppercase;color:#fff}
+  .s8 .big{font-weight:900;font-size:17cqw;line-height:.95;letter-spacing:-.045em;color:#fff;display:grid;gap:.3em}
+  .s8 .big .row{display:flex;justify-content:center;gap:.04em}
+  .s8 .rule{width:0;height:.7cqw;background:#fff;will-change:transform}
+
+  /* ===== Scene 9: CTA ===== */
+  .s9{display:grid;align-content:center;justify-items:center;padding:14cqw 6cqw;gap:4cqw;background:var(--bg)}
+  .s9 .logo-row{display:flex;align-items:center;gap:2cqw}
+  .s9 .logo-row img{height:11cqw;width:auto;border-radius:1cqw}
+  .s9 .logo-row .name{font-weight:900;font-size:6cqw;letter-spacing:-.025em;color:var(--orange);font-style:italic}
+  .s9 .ey{font-weight:800;font-size:2.8cqw;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-soft)}
+  .s9 .mail{font-weight:900;font-size:6.2cqw;line-height:1;color:var(--ink);letter-spacing:-.025em;text-align:center;font-family:'Space Grotesk', monospace;display:flex;align-items:center;gap:.04em}
+  .s9 .mail .at{color:var(--orange);font-style:italic}
+  .s9 .mail .cursor{display:inline-block;width:.06em;height:1em;background:var(--orange);margin-left:.05em;will-change:opacity}
+  .s9 .qr-wrap{display:grid;justify-items:center;gap:2cqw;margin-top:2cqw}
+  .s9 .qr-wrap img{width:30cqw;height:30cqw;background:#fff;padding:1.2cqw;border-radius:1.2cqw;border:.3cqw solid var(--orange);will-change:transform}
+  .s9 .qr-wrap span{font-weight:800;font-size:2.4cqw;letter-spacing:.28em;text-transform:uppercase;color:var(--orange)}
+  .s9 .loc{position:absolute;bottom:7cqw;left:0;right:0;text-align:center;font-weight:600;font-size:2.3cqw;letter-spacing:.32em;text-transform:uppercase;color:var(--ink-soft)}
+</style>
+</head>
+<body>
+
+<main id="film">
+  <div class="bg-grid"></div>
+
+  <div class="chrome-tl">
+    <img src="assets/logo.jpg" alt="Yaku">
+    <span>Yaku</span>
+  </div>
+  <div class="chrome-tr">
+    <div class="dot"></div>
+    <span>Horten · Moss</span>
+  </div>
+
+  <!-- 1: LOGO INTRO -->
+  <section class="scene s1">
+    <div class="logo-stack">
+      <div class="ring r1"></div>
+      <div class="ring r2"></div>
+      <div class="ring r3"></div>
+      <img class="logo-mark" src="assets/logo.jpg" alt="Yaku Sushi & Bubble Tea">
+      <div class="wordmark"><span class="letter">Y</span><span class="letter">a</span><span class="letter">k</span><span class="letter">u</span></div>
+      <div class="underline"></div>
+      <div class="sub">Sushi · Bubble Tea</div>
+      <div class="particle p1"></div>
+      <div class="particle p2"></div>
+      <div class="particle p3"></div>
+      <div class="particle p4"></div>
+      <div class="particle p5"></div>
+      <div class="particle p6"></div>
+      <div class="particle p7"></div>
+      <div class="particle p8"></div>
+      <div class="particle p9"></div>
+      <div class="particle p10"></div>
+      <div class="particle p11"></div>
+      <div class="particle p12"></div>
+    </div>
+  </section>
+
+  <!-- 2: KINETIC TYPE -->
+  <section class="scene s2">
+    <div class="stage">
+      <div class="bg-word">SMAK</div>
+      <div class="row word-1"><span class="letter">A</span><span class="letter">u</span><span class="letter">t</span><span class="letter">e</span><span class="letter">n</span><span class="letter">t</span><span class="letter">i</span><span class="letter">s</span><span class="letter">k</span><span class="letter">e</span></div>
+      <div class="row word-2"><span class="letter">s</span><span class="letter">m</span><span class="letter">a</span><span class="letter">k</span><span class="letter">e</span><span class="letter">n</span><span class="letter">e</span><span class="letter">.</span></div>
+      <div class="stripe s"></div>
+      <div class="stamp tl">+ ekte</div>
+      <div class="stamp br">+ ferskt</div>
+    </div>
+  </section>
+
+  <!-- 3: GEOMETRIC INTERLUDE -->
+  <section class="scene s3">
+    <div class="geo-stage">
+      <div class="geo c1"></div>
+      <div class="geo c2"></div>
+      <div class="geo c3"></div>
+      <div class="geo tri"></div>
+      <div class="geo line-1"></div>
+      <div class="geo line-2"></div>
+      <div class="geo photo"></div>
+      <div class="label">Friskt &amp;<br><em>laget på dagen.</em></div>
+    </div>
+  </section>
+
+  <!-- 4: MANIFESTO -->
+  <section class="scene s4">
+    <div class="corner-tl"></div>
+    <div class="corner-br"></div>
+    <div class="ey">Manifest</div>
+    <div class="h1">
+      <span class="line"><span class="reveal">Vi lager</span></span>
+      <span class="line creep"><span class="reveal">japansk mat</span></span>
+      <span class="line"><span class="reveal"><em>som smaker</em></span></span>
+      <span class="line creep"><span class="reveal">helt ekte.</span></span>
+    </div>
+    <div class="dot"></div>
+    <div class="note">Ingen snarveier. Ingen kompromiss. Bare råvarer som forteller historien sin selv.</div>
+  </section>
+
+  <!-- 5: STAT 6+ -->
+  <section class="scene s5">
+    <div class="stat-stage">
+      <div class="ey">Erfaring</div>
+      <div class="nums">
+        <span class="d n6">6</span>
+        <span class="plus">+</span>
+      </div>
+      <div class="label">år med <em>autentisk japansk mat.</em></div>
+      <div class="confetti c-1" style="background:var(--orange);left:30%;top:35%"></div>
+      <div class="confetti c-2" style="background:var(--ink);left:55%;top:25%"></div>
+      <div class="confetti c-3" style="background:var(--green);left:70%;top:45%"></div>
+      <div class="confetti c-4" style="background:var(--orange-d);left:25%;top:55%"></div>
+      <div class="confetti c-5" style="background:var(--gold);left:60%;top:60%"></div>
+      <div class="confetti c-6" style="background:var(--pink);left:40%;top:30%"></div>
+      <div class="confetti c-7" style="background:var(--orange);left:65%;top:55%"></div>
+      <div class="confetti c-8" style="background:var(--aqua);left:35%;top:50%"></div>
+    </div>
+  </section>
+
+  <!-- 6: MENU -->
+  <section class="scene s6">
+    <div class="ey">På menyen</div>
+    <div class="heading">Sushi.<br><em>Bubble tea.</em></div>
+    <div class="formats">
+      <div class="fmt f-sushi"><div class="box"></div><div class="tag">Sushi</div><div class="where">Maki<br>Nigiri<br>Sashimi</div></div>
+      <div class="fmt f-tea"><div class="box"></div><div class="tag">Bubble</div><div class="where">Tea<br>Smoothie<br>Latte</div></div>
+      <div class="fmt f-poke"><div class="box"></div><div class="tag">Poke</div><div class="where">Bowls<br>Friske<br>Mektige</div></div>
+    </div>
+  </section>
+
+  <!-- 7: LOCATIONS -->
+  <section class="scene s7">
+    <div class="ey">To byer</div>
+    <div class="name n1">Horten</div>
+    <div class="meta m1">01 · Langgata 2 · 3187</div>
+    <div class="divider"></div>
+    <div class="name n2">Moss</div>
+    <div class="meta m2">02 · Varnaveien 35 · 1526</div>
+  </section>
+
+  <!-- 8: SLOGAN -->
+  <section class="scene s8">
+    <div class="stack">
+      <div class="pre">— Yaku —</div>
+      <div class="big">
+        <div class="row"><span class="letter">A</span><span class="letter">u</span><span class="letter">t</span><span class="letter">e</span><span class="letter">n</span><span class="letter">t</span><span class="letter">i</span><span class="letter">s</span><span class="letter">k</span><span class="letter">e</span></div>
+        <div class="row" style="font-style:italic"><span class="letter">s</span><span class="letter">m</span><span class="letter">a</span><span class="letter">k</span><span class="letter">e</span><span class="letter">n</span><span class="letter">e</span><span class="letter">.</span></div>
+      </div>
+      <div class="rule"></div>
+    </div>
+  </section>
+
+  <!-- 9: CTA -->
+  <section class="scene s9">
+    <div class="logo-row">
+      <img src="assets/logo.jpg" alt="">
+      <span class="name">Yaku</span>
+    </div>
+    <div class="ey">Bestill online</div>
+    <div class="mail"><span class="typed"></span><span class="cursor"></span></div>
+    <div class="qr-wrap">
+      <img id="qr" alt="QR — yaku.ordera.no">
+      <span>Scan</span>
+    </div>
+    <div class="loc">Horten · Moss · Norge</div>
+  </section>
+
+  <div class="progress"><i></i></div>
+</main>
+
+<script>
+  // Inject QR data URI
+  (function(){
+    const QR = "data:image/png;base64,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";
+    const el = document.getElementById('qr');
+    if (el) el.src = QR;
+  })();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+  const DURATION = 40;
+  gsap.defaults({ease:'power2.out'});
+
+  function showScene(sel, at, fadeIn=0.3){
+    tl.set(sel,{visibility:'visible'},at).fromTo(sel,{opacity:0},{opacity:1,duration:fadeIn,ease:'power2.out'},at);
+  }
+  function hideScene(sel, at, fadeOut=0.25){
+    tl.to(sel,{opacity:0,duration:fadeOut,ease:'power2.in'},at).set(sel,{visibility:'hidden'},at+fadeOut);
+  }
+
+  gsap.set('.scene',{opacity:0});
+
+  // Infinite background tweens — kept OUTSIDE the main timeline
+  gsap.to('.bg-grid',{x:'-5cqw',y:'-5cqw',duration:DURATION*2,ease:'none',repeat:-1});
+  gsap.to('.chrome-tr .dot',{scale:1.4,duration:.6,ease:'sine.inOut',yoyo:true,repeat:-1});
+
+  const tl = gsap.timeline({defaults:{duration:.5}});
+  tl.fromTo('.progress i',{scaleX:0},{scaleX:1,duration:DURATION,ease:'none'},0);
+
+  // ============ SCENE 1: LOGO INTRO (0 – 4s) ============
+  showScene('.s1', 0, .35);
+  tl.fromTo('.s1 .logo-mark',{scale:0,rotation:-180,opacity:0},{scale:1,rotation:0,opacity:1,duration:.9,ease:'back.out(1.7)'},.15)
+    .fromTo('.s1 .ring',{scale:.3,opacity:.7,borderWidth:'3px'},{scale:7,opacity:0,borderWidth:'.5px',duration:1.2,stagger:.15,ease:'power2.out'},.4)
+    .from('.s1 .wordmark .letter',{y:'105%',opacity:0,duration:.55,stagger:.05,ease:'back.out(1.7)'},1.0)
+    .to('.s1 .underline',{width:'22cqw',duration:.55,ease:'power3.out'},1.45)
+    .from('.s1 .sub',{y:14,opacity:0,duration:.45,ease:'power2.out'},1.85)
+    .set('.s1 .particle',{x:0,y:0,opacity:0,scale:1},.85)
+    .to('.s1 .particle',{
+      x:(i)=>Math.cos(i*30*Math.PI/180)*(80+i*8)+'cqw',
+      y:(i)=>Math.sin(i*30*Math.PI/180)*(80+i*8)+'cqw',
+      opacity:0,scale:0,duration:1.0,stagger:.02,ease:'power2.out'
+    },.85);
+  hideScene('.s1', 3.7, .3);
+
+  // ============ SCENE 2: KINETIC TYPE (4 – 9s) ============
+  showScene('.s2', 4.0, .3);
+  tl.fromTo('.s2 .bg-word',{x:-100,opacity:0},{x:0,opacity:1,duration:1.2,ease:'power2.out'},4.05)
+    .from('.s2 .word-1 .letter',{x:-200,rotation:-360,opacity:0,duration:.65,stagger:.05,ease:'back.out(1.6)'},4.25)
+    .from('.s2 .word-2 .letter',{y:-150,scale:0,opacity:0,duration:.6,stagger:.06,ease:'back.out(2)'},4.85)
+    .fromTo('.s2 .stripe',{scaleX:0,opacity:0},{scaleX:1,opacity:.85,duration:.45,ease:'power3.out',transformOrigin:'left'},5.5)
+    .fromTo('.s2 .stamp.tl',{scale:0,opacity:0,rotation:-40},{scale:1,opacity:1,rotation:-10,duration:.4,ease:'back.out(2.4)'},5.9)
+    .fromTo('.s2 .stamp.br',{scale:0,opacity:0,rotation:40},{scale:1,opacity:1,rotation:7,duration:.4,ease:'back.out(2.4)'},6.1)
+    .to('.s2 .word-2',{x:-4,duration:.05,ease:'power2.in',repeat:5,yoyo:true},6.4)
+    .to('.s2 .bg-word',{x:80,duration:2,ease:'none'},6.6);
+  hideScene('.s2', 8.6, .3);
+
+  // ============ SCENE 3: GEOMETRIC INTERLUDE (9 – 13s) ============
+  showScene('.s3', 9.0, .3);
+  tl.fromTo('.s3 .c1',{x:-300,scale:.3,rotation:-120},{x:0,scale:1,rotation:0,duration:.7,ease:'power3.out'},9.05)
+    .fromTo('.s3 .c2',{x:300,scale:.3,rotation:120},{x:0,scale:1,rotation:0,duration:.7,ease:'power3.out'},9.2)
+    .fromTo('.s3 .c3',{y:-300,scale:0,rotation:180},{y:0,scale:1,rotation:0,duration:.55,ease:'back.out(2)'},9.35)
+    .fromTo('.s3 .tri',{y:300,opacity:0,rotation:90},{y:0,opacity:1,rotation:0,duration:.6,ease:'back.out(1.7)'},9.45)
+    .fromTo('.s3 .photo',{y:-200,opacity:0,scale:.4},{y:0,opacity:1,scale:1,duration:.6,ease:'back.out(1.7)'},9.55)
+    .fromTo('.s3 .line-1',{scaleX:0},{scaleX:1,duration:.5,ease:'power3.out'},9.7)
+    .fromTo('.s3 .line-2',{scaleX:0},{scaleX:1,duration:.5,ease:'power3.out',transformOrigin:'right'},9.85)
+    .to('.s3 .geo',{scale:1.05,duration:.4,ease:'sine.inOut',yoyo:true,repeat:1,stagger:.02},10.5)
+    .fromTo('.s3 .label',{scale:.5,opacity:0,y:30},{scale:1,opacity:1,y:0,duration:.6,ease:'back.out(1.7)'},10.7)
+    .to('.s3 .c1',{rotation:25,duration:2.5,ease:'sine.inOut'},10.0)
+    .to('.s3 .c2',{rotation:-20,duration:2.5,ease:'sine.inOut'},10.0)
+    .to('.s3 .c3',{rotation:45,duration:2.5,ease:'sine.inOut'},10.0)
+    .to('.s3 .tri',{rotation:-10,duration:2.5,ease:'sine.inOut'},10.0)
+    .to('.s3 .photo',{rotation:6,duration:2.5,ease:'sine.inOut'},10.0);
+  hideScene('.s3', 12.6, .3);
+
+  // ============ SCENE 4: MANIFESTO (13 – 18.5s) ============
+  showScene('.s4', 13.0, .3);
+  tl.fromTo('.s4 .corner-tl',{scale:0,opacity:0,rotation:-90},{scale:1,opacity:1,rotation:0,duration:.55,ease:'back.out(1.8)'},13.05)
+    .fromTo('.s4 .corner-br',{scale:0,opacity:0,rotation:90},{scale:1,opacity:1,rotation:0,duration:.55,ease:'back.out(1.8)'},13.2)
+    .from('.s4 .ey',{y:'110%',opacity:0,duration:.45,ease:'power2.out'},13.35)
+    .from('.s4 .h1 .reveal',{y:'105%',opacity:0,duration:.65,stagger:.16,ease:'power3.out'},13.55)
+    .fromTo('.s4 .dot',{scale:0,opacity:0},{scale:1,opacity:1,duration:.4,ease:'back.out(2)'},15.5)
+    .to('.s4 .dot',{scale:1.5,duration:.4,ease:'sine.inOut',yoyo:true,repeat:2},15.95)
+    .from('.s4 .note',{y:18,opacity:0,duration:.55,ease:'power2.out'},16.1)
+    .to('.s4 .corner-tl',{rotation:90,duration:3,ease:'sine.inOut'},14.0)
+    .to('.s4 .corner-br',{rotation:-90,duration:3,ease:'sine.inOut'},14.0);
+  hideScene('.s4', 18.2, .3);
+
+  // ============ SCENE 5: STAT 6+ (18.5 – 23s) ============
+  showScene('.s5', 18.5, .3);
+  tl.from('.s5 .ey',{y:'110%',opacity:0,duration:.4,ease:'power2.out'},18.7)
+    .fromTo('.s5 .n6',{y:-150,opacity:0,scale:.5,rotationX:-90},{y:0,opacity:1,scale:1,rotationX:0,duration:.7,ease:'back.out(1.8)'},18.9)
+    .fromTo('.s5 .plus',{scale:0,opacity:0,rotation:-90},{scale:1,opacity:1,rotation:0,duration:.45,ease:'back.out(2)'},19.5)
+    .to('.s5 .nums',{x:-10,duration:.04,ease:'power2.in',repeat:7,yoyo:true},19.95)
+    .set('.s5 .confetti',{x:0,y:0,scale:1,opacity:0,rotation:0},20.0)
+    .to('.s5 .confetti',{
+      x:(i)=>(Math.random()-0.5)*120+'cqw',
+      y:(i)=>(Math.random()-0.5)*120+'cqw',
+      rotation:(i)=>Math.random()*720,
+      scale:(i)=>0.5+Math.random()*1.5,
+      opacity:1,
+      duration:.8,stagger:.02,ease:'power3.out'
+    },20.0)
+    .to('.s5 .confetti',{opacity:0,duration:.6,ease:'power2.in'},20.7)
+    .from('.s5 .label',{y:20,opacity:0,duration:.5,ease:'power2.out'},20.5)
+    .to('.s5 .nums',{scale:1.05,duration:.25,ease:'power2.out'},20.4)
+    .to('.s5 .nums',{scale:1,duration:.4,ease:'power2.out'},20.65);
+  hideScene('.s5', 22.7, .3);
+
+  // ============ SCENE 6: MENU (23 – 27s) ============
+  showScene('.s6', 23.0, .3);
+  tl.from('.s6 .ey',{y:'110%',opacity:0,duration:.4,ease:'power2.out'},23.2)
+    .from('.s6 .heading',{y:30,opacity:0,duration:.65,ease:'power3.out'},23.4)
+    .fromTo('.s6 .f-sushi',{rotationY:-90,opacity:0,y:30},{rotationY:0,opacity:1,y:0,duration:.7,ease:'back.out(1.6)',transformOrigin:'center'},24.0)
+    .fromTo('.s6 .f-tea',{rotationY:-90,opacity:0,y:30},{rotationY:0,opacity:1,y:0,duration:.7,ease:'back.out(1.6)',transformOrigin:'center'},24.2)
+    .fromTo('.s6 .f-poke',{rotationY:-90,opacity:0,y:30},{rotationY:0,opacity:1,y:0,duration:.7,ease:'back.out(1.6)',transformOrigin:'center'},24.4)
+    .to('.s6 .f-sushi',{y:-8,duration:1.5,ease:'sine.inOut',yoyo:true,repeat:1},25.2)
+    .to('.s6 .f-tea',{y:-8,duration:1.5,ease:'sine.inOut',yoyo:true,repeat:1},25.35)
+    .to('.s6 .f-poke',{y:-8,duration:1.5,ease:'sine.inOut',yoyo:true,repeat:1},25.5);
+  hideScene('.s6', 26.7, .3);
+
+  // ============ SCENE 7: LOCATIONS (27 – 31s) ============
+  showScene('.s7', 27.0, .3);
+  tl.from('.s7 .ey',{y:'110%',opacity:0,duration:.4,ease:'power2.out'},27.2)
+    .fromTo('.s7 .n1',{x:'-110%',opacity:0,rotation:-8},{x:0,opacity:1,rotation:0,duration:.6,ease:'power3.out'},27.4)
+    .from('.s7 .m1',{x:-20,opacity:0,duration:.4,ease:'power2.out'},27.75)
+    .fromTo('.s7 .divider',{scaleX:0},{scaleX:1,duration:.5,ease:'power3.out'},28.0)
+    .fromTo('.s7 .n2',{x:'110%',opacity:0,rotation:8},{x:0,opacity:1,rotation:0,duration:.6,ease:'power3.out'},28.2)
+    .from('.s7 .m2',{x:20,opacity:0,duration:.4,ease:'power2.out'},28.55)
+    .to('.s7 .n1',{x:-6,duration:1.5,ease:'sine.inOut',yoyo:true,repeat:1},29.0)
+    .to('.s7 .n2',{x:6,duration:1.5,ease:'sine.inOut',yoyo:true,repeat:1},29.3);
+  hideScene('.s7', 30.7, .3);
+
+  // ============ SCENE 8: SLOGAN (31 – 35.5s) ============
+  showScene('.s8', 31.0, .3);
+  tl.from('.s8 .pre',{y:18,opacity:0,duration:.45,ease:'power2.out'},31.2)
+    .from('.s8 .big .row:nth-child(1) .letter',{
+      y:(i)=>(i%2===0?-100:100),x:(i)=>(i%3===0?-50:50),rotation:(i)=>(i%2===0?-180:180),
+      opacity:0,scale:.5,duration:.6,stagger:.04,ease:'back.out(1.6)'
+    },31.45)
+    .from('.s8 .big .row:nth-child(2) .letter',{
+      y:(i)=>(i%2===0?100:-100),x:(i)=>(i%3===0?50:-50),rotation:(i)=>(i%2===0?180:-180),
+      opacity:0,scale:.5,duration:.6,stagger:.05,ease:'back.out(1.6)'
+    },32.0)
+    .to('.s8 .rule',{width:'18cqw',duration:.45,ease:'power3.out'},32.9)
+    .to('.s8 .big',{scale:1.03,duration:.2,ease:'power2.out'},33.2)
+    .to('.s8 .big',{scale:1,duration:.35,ease:'power2.out'},33.4);
+  hideScene('.s8', 35.2, .3);
+
+  // ============ SCENE 9: CTA (35.5 – 40s) ============
+  showScene('.s9', 35.5, .3);
+  tl.fromTo('.s9 .logo-row',{y:-40,opacity:0,scale:.85},{y:0,opacity:1,scale:1,duration:.6,ease:'back.out(1.7)'},35.7)
+    .from('.s9 .ey',{y:14,opacity:0,duration:.45,ease:'power2.out'},36.2)
+    .set('.s9 .typed',{innerText:''},36.5);
+
+  // Typewriter: yaku.ordera.no
+  const txt = 'yaku.ordera.no';
+  let t = 36.5;
+  for (let i=1; i<=txt.length; i++){
+    const slice = txt.slice(0,i);
+    const display = slice.replace('.ordera','<span class="at">.ordera</span>');
+    tl.call(()=>{
+      const el = document.querySelector('.s9 .typed');
+      if (el) el.innerHTML = display;
+    }, [], t);
+    t += 0.08;
+  }
+  tl.fromTo('.s9 .cursor',{opacity:1},{opacity:0,duration:.4,ease:'steps(1)',repeat:6,yoyo:true},36.5);
+
+  tl.from('.s9 .qr-wrap',{y:30,scale:.85,opacity:0,duration:.5,ease:'back.out(1.7)'},38.4)
+    .from('.s9 .loc',{y:10,opacity:0,duration:.4,ease:'power2.out'},38.85)
+    .to('.s9 .qr-wrap img',{scale:1.04,duration:.55,ease:'sine.inOut',yoyo:true,repeat:2},39.0);
+
+  // Hide chrome on orange slogan scene so it doesn't clash
+  tl.to('.chrome-tl, .chrome-tr',{opacity:0,duration:.2},30.9)
+    .to('.chrome-tl, .chrome-tr',{opacity:1,duration:.3},35.5);
+</script>
+</body>
+</html>
