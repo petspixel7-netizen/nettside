@@ -10,23 +10,25 @@ const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
 const rd = (p) => readFileSync(join(root, p), "utf8");
 
+// [source path in this repo, destination path in the Lovable project]
 const FILES = [
-  "reel/directions/types.ts",
-  "reel/helpers.ts",
-  "reel/fit-text.ts",
-  "reel/directions/swiss.ts",
-  "reel/directions/cinematic.ts",
-  "reel/directions/editorial.ts",
-  "reel/directions/index.ts",
-  "reel/direction-router.ts",
-  "reel/quality-gates.ts",
-  "reel/index.ts",
+  ["intel/brand-intelligence.ts", "brand-intelligence.server.ts"],
+  ["reel/directions/types.ts", "reel/directions/types.ts"],
+  ["reel/helpers.ts", "reel/helpers.ts"],
+  ["reel/fit-text.ts", "reel/fit-text.ts"],
+  ["reel/directions/swiss.ts", "reel/directions/swiss.ts"],
+  ["reel/directions/cinematic.ts", "reel/directions/cinematic.ts"],
+  ["reel/directions/editorial.ts", "reel/directions/editorial.ts"],
+  ["reel/directions/index.ts", "reel/directions/index.ts"],
+  ["reel/direction-router.ts", "reel/direction-router.ts"],
+  ["reel/quality-gates.ts", "reel/quality-gates.ts"],
+  ["reel/index.ts", "reel/index.ts"],
 ];
 
 const header = rd("HANDOFF-HEADER.md");
-const codeBlocks = FILES.map((f) => {
-  const code = rd(f).trimEnd();
-  return `\n### \`src/lib/${f}\`\n\n\`\`\`ts\n${code}\n\`\`\`\n`;
+const codeBlocks = FILES.map(([src, dest]) => {
+  const code = rd(src).trimEnd();
+  return `\n### \`src/lib/${dest}\`\n\n\`\`\`ts\n${code}\n\`\`\`\n`;
 }).join("\n");
 
 const footer = rd("HANDOFF-FOOTER.md");

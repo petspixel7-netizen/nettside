@@ -28,6 +28,8 @@ const CATEGORY_MAP: Record<string, string[]> = {
   wellness: ["cinematic", "editorial", "swiss"],
   travel: ["cinematic", "editorial", "swiss"],
   realestate: ["cinematic", "editorial", "swiss"],
+  mining: ["cinematic", "editorial", "swiss"],
+  industrial: ["cinematic", "swiss", "editorial"],
   architecture: ["editorial", "cinematic", "swiss"],
   interior: ["editorial", "cinematic", "swiss"],
   fashion: ["editorial", "cinematic", "swiss"],
