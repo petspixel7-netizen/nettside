@@ -7,8 +7,10 @@ description: Lag NorLeads-merkevarevideoer (Remotion eller selvstendig HTML) som
 
 Du lager videoer for **NorLeads**, et norsk videoproduksjonsselskap. Videoene
 legges ut på norleads.no og må se dyre, rolige og bevisste ut. Den fulle
-regelboken ligger i `docs/typografi-regelbok.md` — les den ved tvil. Under er det
-operative sammendraget.
+regelboken ligger i `docs/typografi-regelbok.md` — les den ved tvil. Den er
+destillert fra tre kilder: Ellen Lupton *Thinking with Type* (typografi),
+Val Head *Animation in Design Systems* (Adobe) og Material *Understanding Motion*
+(bevegelse). Under er det operative sammendraget.
 
 ## Når skal denne skillen brukes
 - «Lag en (reklame)video for NorLeads / norleads.no»
@@ -39,7 +41,21 @@ funksjons-font: sans-serif       → etiketter, knapp, URL
 9. **Lesetid:** hvert hovedbudskap lesbart ≥ 1,5–2 s ferdig animert.
 10. **Slutt:** alltid myk `easeInOutCubic`-fade til `#000` siste ~1 s.
 
-Unngå: strekk/klem av glyfer, falsk fet/kursiv, sperret brødtekst, midtstilt tekst > 2 linjer, tekst rett på urolig bilde uten plate, blinkende elementer.
+Unngå: strekk/klem av glyfer, falsk fet/kursiv, sperret brødtekst, midtstilt tekst > 2 linjer, tekst rett på urolig bilde uten plate, blinkende elementer, feil tegn (bruk em/en-dash, smart quotes, ekte ellipse …).
+
+## Motion-system (Adobe + Material)
+**Prinsipper (motstest):** Målrettet · Rolig-premium · Sammenhengende. Bryter en idé med disse → redesign eller dropp.
+
+**Easing-roller** (kurvene finnes i `src/utils/easing.ts`):
+- `easeOutExpo` → bring elementer **inn** (decelerate)
+- `easeInOutCubic` → **ut** av bildet + punkt-til-punkt + sluttfade
+- `easeOutBack` → **emphasis**, kun ett element per scene (logo/knapp)
+
+**Varighet-tokens @30fps:** quick ~6f (fade) · base ~9f (standard inn/ut) · entrance ~15–18f (blur-inn) · exit ~18–24f (rolig ut) · count ~75f (tall teller opp). Inn litt raskere enn ut; mindre skjerm = stram inn.
+
+**Animer kun** `opacity / transform / blur / stroke-dasharray` — aldri layout (width/top/left) på store elementer.
+
+**Bevegelsen skal si noe (Material):** Informative (vis hvor noe kom fra/går), Focused (én ting om gangen), Expressive (gull-glød/shimmer/puls, dosert).
 
 ## Logo-reisen (den røde tråden)
 Stor sentrert logo i intro → krymper til topp-venstre hjørne mellom seksjoner →
