@@ -207,7 +207,39 @@ animere `width/height/top/left` på store elementer – det hakker.
 - **Informative:** bevegelse viser relasjoner – hvor noe kom fra og hvor det går
   (logoen krymper *til* hjørnet, ikke bare forsvinner).
 - **Focused:** led oppmerksomheten til én ting; ikke konkurrerende bevegelse.
-- **Expressive:** her er merkevaren – gull-glød, shimmer, puls – men dosert.
+- **Expressive:** her er merkevaren – glød, shimmer, puls – men dosert.
+
+### 5.6 Matematikken — eksakte kurver og tokens (IBM Carbon, Apache-2.0)
+Bevegelse skal være drevet av **tall**, ikke gjetning. Vi bruker Carbon sine
+åpne (Apache-2.0) motion-tokens, løst med en ekte cubic-bézier-løser
+(Newton–Raphson) i koden – ikke generiske CSS-defaults.
+
+**Easing-kurver (cubic-bézier):**
+
+| Rolle | Expressive (merkevare-øyeblikk) | Productive (UI/nytte) |
+|---|---|---|
+| Entré (decelerate) | `(0, 0, 0.3, 1)` | `(0, 0, 0.38, 0.9)` |
+| Standard / flytt | `(0.4, 0.14, 0.3, 1)` | `(0.2, 0, 0.38, 0.9)` |
+| Exit (accelerate) | `(0.4, 0.14, 1, 1)` | `(0.2, 0, 1, 0.9)` |
+
+NorLeads-film = **expressive**. Entré = expressive-entrance, ut = expressive-exit,
+flytt/hold = expressive-standard.
+
+**Varighet-tokens (ms):** `fast-01` 70 · `fast-02` 110 · `moderate-01` 150 ·
+`moderate-02` 240 · `slow-01` 400 · `slow-02` 700. Regel: **varighet skaler med
+avstand/størrelse** – små UI-detaljer korte tokens, store hero-bevegelser ≈
+`slow-02` × 1.5. Mindre skjerm (9:16) = stram inn ett steg.
+
+**Spring (fjær-fysikk):** dempet harmonisk – `1 − e^(−d·p)·cos(f·π·p)` (d=demping,
+f=frekvens). Brukes dosert på taktile pop (CTA-knapp, spark), aldri på brødtekst.
+
+**Spacing-skala (8px-basis):** 2 · 4 · 8 · 12 · 16 · 24 · 32 · 40 · 48 · 64 · 80 ·
+96 · 160 px. Alle marger/mellomrom skal være et token herfra.
+
+**2x-rutenett:** 16 kolonner, 32 px (2rem) gutter. Layout legges på dette.
+
+**Interpolasjon:** `lerp(a,b,t)=a+(b−a)·t`; map et område til et annet med
+`(v−inMin)/(inMax−inMin)` før lerp. Baner med `sin/cos`, organisk drift med støy.
 
 ---
 

@@ -55,7 +55,15 @@ Unngå: strekk/klem av glyfer, falsk fet/kursiv, sperret brødtekst, midtstilt t
 
 **Animer kun** `opacity / transform / blur / stroke-dasharray` — aldri layout (width/top/left) på store elementer.
 
-**Bevegelsen skal si noe (Material):** Informative (vis hvor noe kom fra/går), Focused (én ting om gangen), Expressive (gull-glød/shimmer/puls, dosert).
+**Bevegelsen skal si noe (Material):** Informative (vis hvor noe kom fra/går), Focused (én ting om gangen), Expressive (glød/shimmer/puls, dosert).
+
+## Matematikken (IBM Carbon, Apache-2.0) — driv bevegelse med tall
+Bruk en ekte cubic-bézier-løser (Newton–Raphson) i koden, ikke CSS-defaults.
+**Expressive-kurver** (NorLeads-film): entré `(0,0,.3,1)` · standard `(.4,.14,.3,1)` · exit `(.4,.14,1,1)`. **Productive** (UI): `(0,0,.38,.9)` / `(.2,0,.38,.9)` / `(.2,0,1,.9)`.
+**Varighet-tokens (ms):** 70·110·150·240·400·700; varighet skaler med avstand/størrelse (hero ≈ 700×1.5).
+**Spring:** `1−e^(−d·p)·cos(f·π·p)` — kun dosert på taktile pop.
+**Spacing (8px):** 2/4/8/12/16/24/32/40/48/64/80/96/160. **Grid:** 16 kol, 32px gutter. **Lerp:** `a+(b−a)·t`.
+Full matematikk i `docs/typografi-regelbok.md` §5.6.
 
 ## Logo-reisen (den røde tråden)
 Stor sentrert logo i intro → krymper til topp-venstre hjørne mellom seksjoner →
