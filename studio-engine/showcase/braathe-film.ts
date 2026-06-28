@@ -52,24 +52,21 @@ tl.from('#logo1',{opacity:0,clipPath:'inset(0 100% 0 0)',duration:1.1,ease:'powe
 tl.from('#logo1 .cls-2',{scaleX:0,transformOrigin:'left center',duration:0.7,ease:'power2.out'},1.0);
 tl.from('#logo-sub',{opacity:0,y:12,duration:0.7,ease:'power2.out'},1.3);
 tl.from('#hud',{opacity:0,duration:1.0},0.9);
-tl.to('#scene-logo',{opacity:0,duration:0.7,ease:'power2.inOut'},3.0);
 
-// S2 HOOK (3.4-9) — real hero layout
-tl.fromTo('#scene-hook',{opacity:0},{opacity:1,duration:0.6,ease:'power1.out'},3.5);
+// S2 HOOK — crossfades in ON TOP of the previous scene (no black gap)
+tl.fromTo('#scene-hook',{opacity:0},{opacity:1,duration:0.8,ease:'power1.inOut'},3.4);
 tl.from('#hook-tag',{opacity:0,y:12,duration:0.5,ease:'power2.out'},3.8);
 tl.from('#hook-h1 .w span',{yPercent:120,opacity:0,duration:0.9,stagger:0.05,ease:'expo.out'},4.0);
 tl.from('#hook-sub',{opacity:0,y:16,duration:0.7,ease:'power2.out'},4.8);
 tl.from('#hook-photo',{clipPath:'inset(0 0 100% 0)',scale:0.97,opacity:0,duration:1.0,ease:'power3.out'},4.3);
-tl.to('#scene-hook',{opacity:0,duration:0.7,ease:'power2.inOut'},8.4);
 
-// S3 SERVICES (9-18) — uniform rounded cards, one by one
-tl.fromTo('#scene-svc',{opacity:0},{opacity:1,duration:0.6},9.0);
+// S3 SERVICES — crossfades in on top
+tl.fromTo('#scene-svc',{opacity:0},{opacity:1,duration:0.8,ease:'power1.inOut'},8.8);
 tl.from('#svc-head .w span',{yPercent:120,opacity:0,duration:0.7,stagger:0.04,ease:'expo.out'},9.2);
 tl.from('.card',{y:48,opacity:0,duration:0.7,stagger:0.55,ease:'power3.out'},10.0);
-tl.to('#scene-svc',{opacity:0,duration:0.7,ease:'power2.inOut'},17.2);
 
-// S4 MAP PROOF (18-24)
-tl.fromTo('#scene-map',{opacity:0},{opacity:1,duration:0.6},18.0);
+// S4 MAP PROOF — crossfades in on top
+tl.fromTo('#scene-map',{opacity:0},{opacity:1,duration:0.8,ease:'power1.inOut'},17.8);
 tl.from('#map-panel',{scale:0.92,opacity:0,duration:0.9,ease:'power3.out'},18.2);
 tl.from('#map-img',{opacity:0,duration:1.2,ease:'power1.out'},18.4);
 tl.from('#map-head .w span',{yPercent:120,opacity:0,duration:0.7,stagger:0.05,ease:'expo.out'},18.6);
@@ -77,10 +74,9 @@ var stats=[['n1',400],['n2',40]];
 stats.forEach(function(p){var o={v:0};tl.to(o,{v:p[1],duration:1.4,ease:'power2.out',onUpdate:function(){var e=document.getElementById(p[0]);if(e)e.textContent=Math.round(o.v)+'+';}},18.9);});
 tl.from('#map-stats .stat',{opacity:0,y:18,duration:0.6,stagger:0.14,ease:'power2.out'},19.0);
 tl.from('#map-foot',{opacity:0,y:12,duration:0.6,ease:'power2.out'},19.8);
-tl.to('#scene-map',{opacity:0,duration:0.7,ease:'power2.inOut'},23.4);
 
-// S5 END (24-30) — petrol, white iteam logo
-tl.fromTo('#scene-end',{opacity:0},{opacity:1,duration:0.7},23.9);
+// S5 END — petrol, white iteam logo; crossfades in on top
+tl.fromTo('#scene-end',{opacity:0},{opacity:1,duration:0.9,ease:'power1.inOut'},23.6);
 tl.from('#logo2',{opacity:0,clipPath:'inset(0 100% 0 0)',duration:1.0,ease:'power3.inOut'},24.2);
 tl.from('#end-claim .w span',{yPercent:120,opacity:0,duration:0.9,stagger:0.06,ease:'expo.out'},24.6);
 tl.from('#end-cta',{opacity:0,y:14,duration:0.7,ease:'power2.out'},25.5);
@@ -102,7 +98,7 @@ const html = `<!DOCTYPE html>
 :root{--petrol:#004851;--green:#00ce7c;--paper:#f3f3f3;--paper2:#ffffff;--ink:#0e1a1e;--dim:rgba(14,26,30,.6);--mono:'JetBrains Mono',monospace;--disp:'Hanken Grotesk',sans-serif}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:'Inter',system-ui,sans-serif}
-#stage{position:relative;margin:auto;width:min(100vw,177.78vh);height:min(56.25vw,100vh);aspect-ratio:16/9;overflow:hidden;container-type:size}
+#stage{position:relative;margin:auto;width:min(100vw,177.78vh);height:min(56.25vw,100vh);aspect-ratio:16/9;overflow:hidden;container-type:size;background:var(--paper)}
 #world{position:absolute;inset:0;z-index:2}
 #grain{position:absolute;inset:-100px;z-index:8;pointer-events:none;opacity:.03;background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxNjAnIGhlaWdodD0nMTYwJz48ZmlsdGVyIGlkPSduJz48ZmVUdXJidWxlbmNlIHR5cGU9J2ZyYWN0YWxOb2lzZScgYmFzZUZyZXF1ZW5jeT0nLjknIG51bU9jdGF2ZXM9JzInLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0nMTAwJScgaGVpZ2h0PScxMDAlJyBmaWx0ZXI9J3VybCgjbiknLz48L3N2Zz4=")}
 #hud{position:absolute;inset:0;z-index:7;pointer-events:none;font-family:var(--mono);font-size:.92cqw;letter-spacing:.26em;text-transform:uppercase;color:rgba(14,26,30,.5)}
