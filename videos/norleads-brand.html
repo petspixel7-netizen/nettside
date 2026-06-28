@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NorLeads — Animasjonsvideoer som selger</title>
+<style>
+  :root{
+    --bg:#0D0D0D; --gold:#D4AF37; --goldLight:#F0D060;
+    --white:#FFFFFF; --gray:#888888;
+    --serif:Georgia,"Times New Roman",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;background:#000;overflow:hidden}
+  #wrap{
+    position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(circle at 50% 40%,#141414,#000 70%);
+  }
+  /* Fixed 16:9 stage, scaled to viewport in JS */
+  #stage{
+    position:relative;width:1920px;height:1080px;transform-origin:center center;
+    background:var(--bg);overflow:hidden;border-radius:4px;
+    box-shadow:0 30px 120px rgba(0,0,0,.8);
+  }
+  .fill{position:absolute;inset:0}
+  .center{display:flex;flex-direction:column;align-items:center;justify-content:center}
+
+  /* ---- animated background ---- */
+  .bgGlow{position:absolute;border-radius:50%;filter:blur(20px);will-change:transform,opacity}
+  .grain{position:absolute;inset:0;opacity:.04;mix-blend-mode:screen;
+    background-image:radial-gradient(rgba(255,255,255,.6) 1px,transparent 1px);
+    background-size:4px 4px}
+  .particle{position:absolute;width:3px;height:3px;border-radius:50%;
+    background:var(--gold);box-shadow:0 0 8px var(--gold);will-change:transform,opacity}
+
+  /* ---- type ---- */
+  .letter{display:inline-block;font-family:var(--serif);font-weight:900;
+    font-size:114px;letter-spacing:-1px;will-change:transform,opacity}
+  .line{height:2px;border-radius:2px;
+    background:linear-gradient(90deg,transparent,var(--gold) 20%,var(--goldLight) 50%,var(--gold) 80%,transparent);
+    box-shadow:0 0 12px #D4AF37aa,0 0 30px #D4AF3755}
+  .kicker{font-family:var(--sans);font-size:20px;letter-spacing:8px;color:#999;text-transform:uppercase}
+
+  .h1{font-family:var(--serif);font-weight:700;font-size:62px;color:var(--white);line-height:1.12}
+  .gold{color:var(--gold)}
+  .card{
+    background:linear-gradient(135deg,rgba(255,255,255,.04),rgba(212,175,55,.05));
+    border:1px solid rgba(212,175,55,.18);border-radius:14px;padding:26px 36px;
+    box-shadow:0 0 18px rgba(212,175,55,.06);will-change:transform,opacity}
+  .cardTitle{font-family:var(--serif);font-size:23px;font-weight:700;color:var(--white)}
+  .cardSub{font-family:var(--sans);font-size:15px;color:#888;margin-top:5px}
+
+  .statVal{font-family:var(--serif);font-size:62px;font-weight:900;color:var(--gold);line-height:1;
+    text-shadow:0 0 24px #D4AF3799}
+  .statLabel{font-family:var(--sans);font-size:20px;color:var(--white);font-weight:600}
+  .statSub{font-family:var(--sans);font-size:15px;color:#777;margin-top:5px}
+
+  .cornerLogo{position:absolute;top:48px;left:60px;font-family:var(--serif);
+    font-size:32px;font-weight:900;color:var(--white);z-index:10;will-change:transform,opacity}
+
+  .ctaBtn{font-family:var(--sans);font-size:26px;font-weight:800;color:var(--bg);
+    padding:20px 64px;border-radius:60px;letter-spacing:1px;position:relative;overflow:hidden;
+    background:linear-gradient(135deg,#C9A227,var(--goldLight),#C9A227);
+    box-shadow:0 0 40px #D4AF3777,0 0 80px #D4AF3733}
+  .shimmer{position:absolute;top:0;bottom:0;width:60px;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);
+    transform:skewX(-20deg)}
+  .ring{position:absolute;top:50%;left:50%;border-radius:50%;will-change:transform,opacity}
+  .ctaUrl{font-family:var(--sans);font-size:18px;letter-spacing:4px;text-transform:uppercase;color:#D4AF3788}
+
+  #replay{position:fixed;right:16px;bottom:14px;font-family:var(--sans);font-size:13px;
+    color:#D4AF3799;background:#ffffff10;border:1px solid #D4AF3733;border-radius:20px;
+    padding:7px 16px;cursor:pointer;letter-spacing:1px;backdrop-filter:blur(4px)}
+  #replay:hover{color:#F0D060;border-color:#D4AF3766}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="stage">
+    <!-- background -->
+    <div class="fill" id="bg">
+      <div class="grain"></div>
+    </div>
+
+    <!-- 1: center logo intro -->
+    <div class="fill center" id="introLayer" style="gap:20px;pointer-events:none">
+      <div class="bgGlow" id="introGlow" style="width:700px;height:700px;
+        background:radial-gradient(circle,#D4AF3720 0%,transparent 65%)"></div>
+      <div id="logoWord" style="display:flex;position:relative;z-index:1"></div>
+      <div id="introLineWrap"><div class="line" id="introLine" style="width:520px"></div></div>
+      <div class="kicker" id="kicker">Animasjonsvideoer som selger</div>
+    </div>
+
+    <!-- corner logo -->
+    <div class="cornerLogo" id="cornerLogo">Nor<span class="gold">Leads</span></div>
+
+    <!-- 2: services -->
+    <div class="fill" id="svcLayer" style="display:flex;flex-direction:column;justify-content:center;padding:0 120px;gap:44px;pointer-events:none">
+      <div id="svcHead">
+        <div class="h1" id="svcH1a">Vi lager videoer</div>
+        <div class="h1" id="svcH1b">som gir <span class="gold">resultater</span></div>
+        <div style="margin-top:16px"><div class="line" id="svcLine" style="width:540px"></div></div>
+      </div>
+      <div id="svcGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:20px"></div>
+    </div>
+
+    <!-- 3: stats -->
+    <div class="fill center" id="statLayer" style="gap:60px;pointer-events:none">
+      <div class="h1" id="statHead" style="text-align:center">Hvorfor <span class="gold">video</span> virker</div>
+      <div id="statRow" style="display:flex;gap:90px"></div>
+    </div>
+
+    <!-- 4: CTA -->
+    <div class="fill center" id="ctaLayer" style="gap:28px;pointer-events:none">
+      <div id="ctaRings"></div>
+      <div id="ctaLogo" style="display:flex"></div>
+      <div id="ctaLineWrap"><div class="line" id="ctaLine" style="width:480px"></div></div>
+      <div id="ctaText" style="text-align:center">
+        <div style="font-family:var(--sans);font-size:28px;color:#ccc;font-weight:300;letter-spacing:2px">Klar for en video som</div>
+        <div style="font-family:var(--serif);font-size:48px;color:var(--gold);font-weight:700;text-shadow:0 0 30px #D4AF3766">faktisk selger?</div>
+      </div>
+      <div id="ctaBtnWrap">
+        <div class="ctaBtn">Ta kontakt i dag<div class="shimmer" id="shimmer"></div></div>
+      </div>
+      <div class="ctaUrl" id="ctaUrl">norleads.no</div>
+    </div>
+
+    <!-- final fade -->
+    <div class="fill" id="fade" style="background:#000;opacity:0;pointer-events:none"></div>
+  </div>
+</div>
+<button id="replay">⟳ SPILL IGJEN</button>
+
+<script>
+/* ───── easing & timeline helpers (portet fra Remotion-koden) ───── */
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const prog=(f,a,b)=>(f-a)/(b-a);
+const lerp=(a,b,t)=>a+(b-a)*t;
+const easeOutExpo=t=>t>=1?1:1-Math.pow(2,-10*t);
+const easeOutBack=t=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2);};
+const easeInOutCubic=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const presence=(f,a,b,c,d)=>easeOutExpo(clamp(prog(f,a,b)))*(1-easeInOutCubic(clamp(prog(f,c,d))));
+
+const S=document.getElementById('stage');
+function fit(){
+  const s=Math.min(innerWidth/1920,innerHeight/1080);
+  S.style.transform=`scale(${s})`;
+}
+addEventListener('resize',fit);fit();
+
+/* ───── build dynamic elements ───── */
+const logoLetters=[['N','#fff'],['o','#fff'],['r','#fff'],['L','var(--gold)'],['e','var(--gold)'],['a','var(--gold)'],['d','var(--gold)'],['s','var(--gold)']];
+const logoWord=document.getElementById('logoWord');
+const letterEls=logoLetters.map(([ch,col])=>{
+  const s=document.createElement('span');s.className='letter';s.textContent=ch;s.style.color=col;
+  s.style.textShadow=col==='var(--gold)'?'0 0 40px #D4AF3799,0 0 80px #D4AF3744':'0 4px 24px rgba(0,0,0,.5)';
+  logoWord.appendChild(s);return s;
+});
+const ctaLogo=document.getElementById('ctaLogo');
+logoLetters.forEach(([ch,col])=>{
+  const s=document.createElement('span');s.className='letter';s.textContent=ch;s.style.fontSize='100px';s.style.color=col;
+  s.style.textShadow=col==='var(--gold)'?'0 0 40px #D4AF3799,0 0 90px #D4AF3744':'0 4px 24px rgba(0,0,0,.5)';
+  ctaLogo.appendChild(s);
+});
+
+const services=[
+  ['Reklamevideo','Sosiale medier & TV'],
+  ['Produktanimasjon','Vis frem det du selger'],
+  ['Firmaintro','Profesjonell merkevare'],
+  ['Kampanjevideoer','Tilbud som konverterer'],
+];
+const svcGrid=document.getElementById('svcGrid');
+const cardEls=services.map(([t,sub])=>{
+  const c=document.createElement('div');c.className='card';
+  c.innerHTML=`<div class="cardTitle">${t}</div><div class="cardSub">${sub}</div>`;
+  svcGrid.appendChild(c);return c;
+});
+
+const stats=[
+  [3,'x','Mer engasjement','video vs. bilde'],
+  [80,'%','Husker budskapet','etter video'],
+  [10,'x','Mer rekkevidde','på sosiale medier'],
+];
+const statRow=document.getElementById('statRow');
+const statEls=stats.map(([val,suf,label,sub])=>{
+  const wrap=document.createElement('div');wrap.style.textAlign='center';
+  const len=2*Math.PI*96;
+  wrap.innerHTML=`
+    <div style="position:relative;width:210px;height:210px;margin:0 auto 18px">
+      <svg width="210" height="210" style="position:absolute;inset:0">
+        <circle cx="105" cy="105" r="96" fill="none" stroke="#D4AF3722" stroke-width="2"/>
+        <circle class="arc" cx="105" cy="105" r="96" fill="none" stroke="var(--gold)" stroke-width="3"
+          stroke-linecap="round" transform="rotate(-90 105 105)"
+          stroke-dasharray="0 ${len}" style="filter:drop-shadow(0 0 8px #D4AF37bb)"/>
+      </svg>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+        <div class="statVal"><span class="num">0</span>${suf}</div>
+      </div>
+    </div>
+    <div class="statLabel">${label}</div>
+    <div class="statSub">${sub}</div>`;
+  statRow.appendChild(wrap);
+  return {wrap,arc:wrap.querySelector('.arc'),num:wrap.querySelector('.num'),val,len};
+});
+
+/* CTA rings */
+const ctaRings=document.getElementById('ctaRings');
+const ringSizes=[[560,'#D4AF3744'],[680,'#D4AF372a'],[800,'#D4AF3716']];
+const ringEls=ringSizes.map(([sz,col])=>{
+  const r=document.createElement('div');r.className='ring';
+  r.style.width=sz+'px';r.style.height=sz+'px';r.style.border=`1px solid ${col}`;
+  ctaRings.appendChild(r);return r;
+});
+
+/* particles */
+const bg=document.getElementById('bg');
+const particles=[];
+for(let i=0;i<26;i++){
+  const p=document.createElement('div');p.className='particle';
+  const x=Math.random()*1920,y=Math.random()*1080;
+  p.dataset.x=x;p.dataset.y=y;p.dataset.sp=0.2+Math.random()*0.6;p.dataset.ph=Math.random()*6.28;
+  bg.appendChild(p);particles.push(p);
+}
+
+/* refs */
+const $=id=>document.getElementById(id);
+const introLayer=$('introLayer'),introGlow=$('introGlow'),introLineWrap=$('introLineWrap'),
+  introLine=$('introLine'),kicker=$('kicker'),cornerLogo=$('cornerLogo'),
+  svcLayer=$('svcLayer'),svcHead=$('svcHead'),svcH1a=$('svcH1a'),svcH1b=$('svcH1b'),svcLine=$('svcLine'),
+  statLayer=$('statLayer'),statHead=$('statHead'),
+  ctaLayer=$('ctaLayer'),ctaLogoEl=$('ctaLogo'),ctaLineWrap=$('ctaLineWrap'),ctaLine=$('ctaLine'),
+  ctaText=$('ctaText'),ctaBtnWrap=$('ctaBtnWrap'),ctaUrl=$('ctaUrl'),shimmer=$('shimmer'),fade=$('fade');
+
+/* ───── per-frame render (30 fps, loops 0..500) ───── */
+const TOTAL=500, FPS=30;
+function render(frame){
+  // background particles + slow glow
+  particles.forEach(p=>{
+    const x=+p.dataset.x, sp=+p.dataset.sp, ph=+p.dataset.ph;
+    const yy=((+p.dataset.y - frame*sp)%1080+1080)%1080;
+    const tw=0.3+0.5*(0.5+0.5*Math.sin(frame*0.05+ph));
+    p.style.transform=`translate(${x+Math.sin(frame*0.02+ph)*14}px,${yy}px)`;
+    p.style.opacity=tw*0.6;
+  });
+
+  // 1) intro logo
+  const introP=presence(frame,0,20,100,125);
+  introLayer.style.opacity=introP;
+  introLayer.style.transform=`scale(${lerp(.8,1,introP)})`;
+  introGlow.style.opacity=introP;
+  introGlow.style.transform=`scale(${.8+introP*.4})`;
+  letterEls.forEach((el,i)=>{
+    const t=easeOutBack(clamp(prog(frame,i*4,i*4+18)));
+    el.style.opacity=t;
+    el.style.transform=`translateY(${lerp(60,0,t)}px) scale(${lerp(.6,1,t)})`;
+  });
+  const introLineP=easeOutExpo(clamp(prog(frame,65,90)));
+  introLineWrap.style.opacity=introLineP*introP;
+  introLine.style.width=(introLineP*520)+'px';
+  const kP=presence(frame,72,95,100,120);
+  kicker.style.opacity=kP*introP;
+  kicker.style.transform=`translateY(${lerp(16,0,kP)}px)`;
+  kicker.style.filter=`blur(${lerp(8,0,easeOutExpo(kP))}px)`;
+
+  // corner logo
+  const cornerP=presence(frame,110,135,300,325);
+  cornerLogo.style.opacity=cornerP;
+  cornerLogo.style.transform=`scale(${lerp(0,1,easeOutExpo(clamp(prog(frame,110,135))))}) translateY(${lerp(-20,0,cornerP)}px)`;
+
+  // 2) services
+  const svcHeadP=presence(frame,108,130,188,212);
+  svcHead.style.opacity=svcHeadP;
+  const h1aP=easeOutExpo(clamp(prog(frame,108,142)))*(1-easeInOutCubic(clamp(prog(frame,188,210))));
+  const h1bP=easeOutExpo(clamp(prog(frame,116,150)))*(1-easeInOutCubic(clamp(prog(frame,188,210))));
+  svcH1a.style.transform=`translateX(${lerp(28,0,h1aP)}px)`;svcH1a.style.opacity=h1aP;
+  svcH1b.style.transform=`translateX(${lerp(28,0,h1bP)}px)`;svcH1b.style.opacity=h1bP;
+  svcLine.style.width=(svcHeadP*540)+'px';
+  cardEls.forEach((c,i)=>{
+    const p=presence(frame,132+i*10,155+i*10,190,214);
+    c.style.opacity=p;
+    c.style.transform=`translateX(${lerp(28,0,easeOutExpo(p))}px)`;
+  });
+
+  // 3) stats
+  const statHeadP=presence(frame,215,238,290,315);
+  statHead.style.opacity=statHeadP;
+  statHead.style.transform=`translateY(${lerp(18,0,statHeadP)}px)`;
+  let statVis=statHeadP;
+  statEls.forEach((s,i)=>{
+    const p=presence(frame,220+i*14,248+i*14,292,318);
+    statVis=Math.max(statVis,p);
+    s.wrap.style.opacity=p;
+    s.wrap.style.transform=`translateY(${lerp(50,0,p)}px) scale(${lerp(.75,1,p)})`;
+    const ct=easeInOutCubic(clamp(prog(frame,228+i*14,308+i*14)));
+    s.num.textContent=Math.round(ct*s.val);
+    s.arc.setAttribute('stroke-dasharray',`${s.len*ct} ${s.len}`);
+  });
+  statLayer.style.opacity=Math.max(statHeadP,statVis);
+
+  // 4) CTA
+  const ctaP=presence(frame,315,345,470,495);
+  const ctaScale=easeOutBack(clamp(prog(frame,315,345)));
+  ctaLayer.style.opacity=Math.max(ctaP,presence(frame,348,370,465,488));
+  ctaLogoEl.style.opacity=ctaP;
+  ctaLogoEl.style.transform=`scale(${lerp(.7,1,ctaScale)})`;
+  ctaLineWrap.style.opacity=ctaP;ctaLine.style.width=(ctaP*480)+'px';
+  const ringPulse=1+0.035*Math.sin(frame*0.09);
+  ringEls.forEach((r,i)=>{
+    r.style.opacity=ctaP;
+    r.style.transform=`translate(-50%,-50%) scale(${ringPulse+i*0.015})`;
+  });
+  const ctaTextP=presence(frame,348,370,465,488);
+  ctaText.style.opacity=ctaTextP;
+  ctaText.style.transform=`translateY(${lerp(24,0,ctaTextP)}px)`;
+  ctaText.style.filter=`blur(${lerp(8,0,easeOutExpo(ctaTextP))}px)`;
+  const ctaBtnP=presence(frame,368,395,465,488);
+  ctaBtnWrap.style.opacity=ctaBtnP;
+  ctaBtnWrap.style.transform=`scale(${easeOutBack(clamp(prog(frame,368,392)))})`;
+  shimmer.style.left=(((frame*2.5)%130)-30)+'px';
+  const ctaUrlP=presence(frame,395,415,465,488);
+  ctaUrl.style.opacity=ctaUrlP;
+  ctaUrl.style.transform=`translateY(${lerp(12,0,ctaUrlP)}px)`;
+
+  // final fade
+  fade.style.opacity=easeInOutCubic(clamp(prog(frame,468,498)));
+}
+
+/* loop clock */
+let start=null;
+function tick(ts){
+  if(start===null)start=ts;
+  const frame=((ts-start)/1000*FPS)%TOTAL;
+  render(frame);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+document.getElementById('replay').onclick=()=>{start=null;};
+</script>
+</body>
+</html>
