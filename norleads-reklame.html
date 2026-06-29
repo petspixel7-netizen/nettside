@@ -26,7 +26,11 @@
   --ease:cubic-bezier(.18,.82,.2,1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:#0c0b09;overflow:hidden}
+html,body{height:100%;overflow:hidden;background:
+    radial-gradient(circle at 7% 6%,rgba(255,225,45,.50),transparent 30rem),
+    radial-gradient(circle at 94% 16%,rgba(32,205,224,.30),transparent 34rem),
+    radial-gradient(circle at 42% 86%,rgba(255,118,168,.20),transparent 40rem),
+    var(--paper)}
 body{
   font-family:"Newsreader",Georgia,serif;
   color:var(--ink);
@@ -72,13 +76,17 @@ body{
 }
 
 /* ---------- Scene: BOOT ---------- */
-#s-boot{align-content:center; just-items:center; gap:0}
-#s-boot .center-rule{position:absolute; left:50%; top:0; bottom:0; width:2px; background:var(--red); transform:scaleY(0); transform-origin:top}
+#s-boot{align-content:center; justify-items:center; gap:0}
+#s-boot .ring-a,#s-boot .ring-b{position:absolute; left:50%; top:50%; border-radius:50%; border:2px solid var(--red); transform:translate(-50%,-50%) scale(0); opacity:.5}
+#s-boot .ring-a{width:560px; height:560px}
+#s-boot .ring-b{width:760px; height:760px; border-color:var(--blue)}
 #boot-top{position:absolute; top:64px; left:0; right:0; display:flex; justify-content:space-between; padding:0 80px; color:var(--muted); font-size:20px}
-#boot-count{font-family:"Anton",Impact,sans-serif; font-size:520px; line-height:.8; color:var(--ink); letter-spacing:-.02em}
-#boot-sub{font-family:"Anton",Impact,sans-serif; text-transform:uppercase; font-size:64px; color:var(--red); margin-top:10px; letter-spacing:.02em; overflow:hidden}
-#boot-sub span{display:inline-block}
+#boot-core{position:absolute; inset:0; display:grid; place-content:center; justify-items:center; text-align:center}
+#boot-count{font-family:"Anton",Impact,sans-serif; font-size:480px; line-height:.78; color:var(--ink); letter-spacing:-.02em}
+#boot-cap{margin-top:14px; font-family:"Space Mono",monospace; text-transform:uppercase; letter-spacing:.22em; font-size:60px; color:var(--red); line-height:1}
 #boot-tag{position:absolute; bottom:70px; left:0; right:0; text-align:center; color:var(--muted); font-size:22px}
+#confetti{position:absolute; inset:0; z-index:58; pointer-events:none; overflow:hidden}
+.confetti-piece{position:absolute; left:50%; top:46%; will-change:transform; opacity:0}
 
 /* ---------- Scene: HERO ---------- */
 #s-hero{align-content:center; padding-left:120px}
@@ -195,13 +203,17 @@ body{
 <div id="stage" aria-label="NorLeads reklame">
   <div id="ambient"></div>
   <div id="flood"></div>
+  <div id="confetti"></div>
 
   <!-- BOOT -->
   <section class="scene" id="s-boot">
-    <div class="center-rule"></div>
+    <div class="ring-b"></div>
+    <div class="ring-a"></div>
     <div id="boot-top" class="mono"><span>NORLEADS</span><span>MOTION DESIGN STUDIO</span></div>
-    <div id="boot-count">00</div>
-    <div id="boot-sub"><span>Showcase 2026</span></div>
+    <div id="boot-core">
+      <div id="boot-count">0</div>
+      <div id="boot-cap">system</div>
+    </div>
     <div id="boot-tag" class="mono">Reklamefilm · Video mockups · Kampanjeflater</div>
   </section>
 
@@ -251,7 +263,7 @@ body{
   <section class="scene" id="s-outro">
     <div id="outro-lock"><span class="a">Nor</span><span class="b">leads</span><span id="outro-star">✱</span></div>
     <div id="outro-line">Motion Design Studio · Moss / Oslo</div>
-    <a id="outro-mail" href="mailto:hei@norleads.no">hei@norleads.no</a>
+    <a id="outro-mail" href="mailto:kontakt@norleads.no">kontakt@norleads.no</a>
     <div id="outro-foot" class="mono"><span>Showcase 2026</span><span>Klar for produksjon</span></div>
   </section>
 </div>
@@ -337,27 +349,60 @@ function charOut(tl,els,at,opt={}){
     rotation:gsap.utils.wrap([-34,30,-20,24]),
     duration:o.dur,ease:o.ease,stagger:{each:o.each,from:o.from}},at);
 }
-/* never-static letter float that fills the hold window */
+/* never-static letters: a smooth traveling wave (y + sway) that runs the
+   ENTIRE hold window, so motion is constant — not just on enter/exit. */
 function idle(tl,els,at,dur,amp){
-  amp=amp||7;
-  els.forEach(el=>{
-    const a=amp*rnd(.5,1.4), d=rnd(.9,1.8), reps=Math.max(2,Math.round(dur/d));
-    tl.to(el,{y:(Math.random()<.5?-1:1)*a,rotation:rnd(-5,5),
-      duration:d,repeat:reps,yoyo:true,ease:"sine.inOut"},at+rnd(0,.5));
+  amp=amp||10;
+  const half=0.85, rd=1.9;
+  els.forEach((el,i)=>{
+    const ph=Math.min(i*0.08, dur*0.3);     // phase offset => traveling wave
+    const span=Math.max(0.6, dur-ph);
+    const reps=Math.max(1,Math.round(span/half));
+    const rreps=Math.max(1,Math.round(span/rd));
+    tl.to(el,{y:`-=${amp}`,duration:half,ease:"sine.inOut",repeat:reps,yoyo:true},at+ph);
+    tl.to(el,{rotation:`+=${rnd(-4,4)}`,duration:rd,ease:"sine.inOut",repeat:rreps,yoyo:true},at+ph);
   });
+}
+/* slow continuous scale-breath on a whole group (adds life to the hold) */
+function breathe(tl,sel,at,dur,amp){
+  amp=amp||0.025;
+  tl.to(sel,{scale:1+amp,duration:dur/2,ease:"sine.inOut",
+    repeat:1,yoyo:true,transformOrigin:"50% 60%"},at);
 }
 /* slow continuous parallax drift on a whole scene */
 function drift(tl,el,at,dur,mag){
-  mag=mag||1.3;
+  mag=mag||1.6;
   tl.fromTo(el,{xPercent:0,yPercent:0},
     {xPercent:rnd(-mag,mag),yPercent:rnd(-mag,mag),duration:dur,ease:"sine.inOut"},at);
 }
 /* diagonal color swipe transition that covers a cut */
 function swipe(tl,color,at){
-  tl.set(flood,{backgroundColor:color,xPercent:-130,skewX:-12,scaleX:1.5,scaleY:1,
+  tl.set(flood,{backgroundColor:color,xPercent:-135,skewX:-13,scaleX:1.6,scaleY:1,
     transformOrigin:"center",autoAlpha:1},at)
-    .to(flood,{xPercent:130,duration:.62,ease:"power2.inOut"},at)
-    .set(flood,{autoAlpha:0},at+.62);
+    .to(flood,{xPercent:135,duration:.7,ease:"power3.inOut"},at)
+    .set(flood,{autoAlpha:0},at+.7);
+}
+/* confetti burst from screen centre (used after the 0->7 count) */
+function confetti(tl,at,n){
+  n=n||90;
+  const cont=q("#confetti"); cont.innerHTML="";
+  const cols=["--red","--yellow","--cyan","--blue","--pink","--orange","--acid","--violet"];
+  for(let i=0;i<n;i++){
+    const d=document.createElement("i"); d.className="confetti-piece";
+    const c=cols[i%cols.length];
+    const w=rnd(8,18), h=rnd(10,22);
+    d.style.background=`var(${c})`; d.style.width=w+"px"; d.style.height=h+"px";
+    if(Math.random()<.32) d.style.borderRadius="50%";
+    cont.appendChild(d);
+    const ang=rnd(0,Math.PI*2), sp=rnd(220,760);
+    const dx=Math.cos(ang)*sp, dy=Math.sin(ang)*sp;
+    tl.set(d,{x:0,y:0,opacity:1,scale:rnd(.6,1.3),rotation:rnd(0,360)},at);
+    tl.to(d,{x:dx,duration:2.0,ease:"power3.out"},at);
+    tl.to(d,{y:dy-rnd(60,180),duration:.55,ease:"power2.out"},at)
+      .to(d,{y:dy+820,duration:1.7,ease:"power1.in"},at+.55);
+    tl.to(d,{rotation:`+=${rnd(-900,900)}`,duration:2.2,ease:"none"},at);
+    tl.to(d,{opacity:0,duration:.6,ease:"power1.in"},at+1.7);
+  }
 }
 
 /* ---------- ambient continuous-motion layer (runs the whole film) ---------- */
@@ -429,7 +474,6 @@ function buildMaster(){
 
   // pre-split letters
   const cBootTop=[].concat(...qa("#boot-top span").map(splitChars));
-  const cBootSub=real(splitChars(q("#boot-sub span")));
   const cBootTag=real(splitChars(q("#boot-tag")));
   const cReklame=splitChars(q(".hero-word.reklame"));
   const cMed=splitChars(q(".hero-word.med"));
@@ -443,28 +487,68 @@ function buildMaster(){
 
   const tl=gsap.timeline({paused:true});
 
-  /* ================= SCENE 1 · BOOT (0 → 5.0) ================= */
+  /* ================= SCENE 1 · BOOT (0 → 5.2) ================= */
   tl.set(scenes.boot,{autoAlpha:1},0);
-  tl.fromTo("#s-boot .center-rule",{scaleY:0},{scaleY:1,duration:.7,ease:"power2.out"},0);
-  charIn(tl,cBootTop,0.15,{y:-50,scale:.6,each:.018,ease:"power3.out"});
-  const cnt={v:0};
-  tl.to(cnt,{v:7,duration:2.6,ease:"steps(7)",
-    onUpdate:()=>q("#boot-count").textContent=String(Math.round(cnt.v)).padStart(2,"0")},0.45);
-  tl.from("#boot-count",{scale:.5,opacity:0,filter:"blur(14px)",duration:.5,ease:"back.out(1.7)"},0.45);
-  // each tick gives the counter a quick kick
-  tl.to("#boot-count",{scale:1.07,duration:.18,yoyo:true,repeat:13,ease:"power1.inOut",transformOrigin:"50% 60%"},0.55);
-  charIn(tl,cBootSub,2.35,{y:70,scale:.5,each:.04});
-  // tag types on letter-by-letter
-  tl.from(cBootTag,{autoAlpha:0,duration:.01,stagger:.03},0.5);
-  drift(tl,scenes.boot,0.5,4.4,1);
-  idle(tl,cBootTop.concat(cBootSub),3.0,1.6,5);
-  charOut(tl,cBootSub,4.45,{y:90,each:.02});
-  charOut(tl,cBootTop,4.5,{y:-70,each:.015});
-  tl.to("#boot-count",{scale:1.6,autoAlpha:0,filter:"blur(12px)",duration:.5,ease:"power2.in"},4.4);
-  tl.to("#boot-tag",{autoAlpha:0,duration:.3},4.4);
-  tl.to("#s-boot .center-rule",{scaleY:0,transformOrigin:"bottom",duration:.4},4.5);
-  tl.set(scenes.boot,{autoAlpha:0},5.05);
-  swipe(tl,"#f03b2f",4.7);
+  charIn(tl,cBootTop,0.1,{y:-50,scale:.6,each:.018,ease:"power3.out"});
+  tl.from(cBootTag,{autoAlpha:0,duration:.01,stagger:.03},0.35);
+  // pulsing concentric rings behind the counter (continuous)
+  tl.fromTo(".ring-a",{scale:0,opacity:.55},{scale:1,opacity:0,duration:1.5,ease:"power2.out",repeat:3},0.3);
+  tl.fromTo(".ring-b",{scale:0,opacity:.45},{scale:1,opacity:0,duration:1.9,ease:"power2.out",repeat:3},0.55);
+  drift(tl,scenes.boot,0.4,4.6,1);
+  idle(tl,cBootTop,1.0,3.2,5);
+
+  // the count: each digit gets its OWN typeface + red caption + own entrance
+  const cEl=q("#boot-count"), capEl=q("#boot-cap");
+  const nums=[
+    {d:"0",font:'"Anton"',           col:"--ink",   cap:"system",  capF:'"Space Mono"'},
+    {d:"1",font:'"Monoton"',         col:"--cyan",  cap:"letter",  capF:'"Space Mono"'},
+    {d:"2",font:'"Bungee Shade"',    col:"--red",   cap:"image",   capF:'"Space Mono"'},
+    {d:"3",font:'"Rye"',             col:"--orange",cap:"grid",    capF:'"Space Mono"'},
+    {d:"4",font:'"Rubik Glitch"',    col:"--violet",cap:"motion",  capF:'"Space Mono"'},
+    {d:"5",font:'"Bowlby One SC"',   col:"--blue",  cap:"color",   capF:'"Space Mono"'},
+    {d:"6",font:'"Fredericka the Great"',col:"--pink",cap:"type",  capF:'"Space Mono"'},
+    {d:"7",font:'"Faster One"',      col:"--red",   cap:"norleads",capF:'"Space Mono"'}
+  ];
+  const froms=[
+    {opacity:0,scale:.3,filter:"blur(20px)"},
+    {opacity:0,rotation:-90,y:-40},
+    {opacity:0,y:-240,rotation:8},
+    {opacity:0,x:-300},
+    {opacity:0,scale:2.4,filter:"blur(8px)"},
+    {opacity:0,y:240},
+    {opacity:0,x:300,rotation:-14},
+    {opacity:0,scale:.3,rotation:24}
+  ];
+  const eases=["expo.out","back.out(2)","bounce.out","power4.out","power3.out","back.out(1.8)","power4.out","back.out(2.4)"];
+  const step=0.46, t0=0.4;
+  tl.set(cEl,{opacity:0,visibility:"visible"},0);
+  nums.forEach((nx,i)=>{
+    const at=t0+i*step;
+    tl.call(()=>{
+      cEl.textContent=nx.d; cEl.style.fontFamily=nx.font; cEl.style.color=`var(${nx.col})`;
+      capEl.textContent=nx.cap; capEl.style.fontFamily=nx.capF;
+    },null,at);
+    tl.fromTo(cEl,Object.assign({},froms[i]),
+      {opacity:1,x:0,y:0,scale:1,rotation:0,filter:"blur(0px)",
+       duration:0.30,ease:eases[i],immediateRender:false},at);
+    tl.fromTo(capEl,{autoAlpha:0,scale:.7,y:20},
+      {autoAlpha:1,scale:1,y:0,duration:.24,ease:"back.out(2)",immediateRender:false},at+.04);
+    // subtle continuous motion while the digit is on screen
+    tl.to(cEl,{rotation:`+=${rnd(-2.2,2.2)}`,y:`-=${rnd(4,9)}`,duration:step,ease:"sine.inOut"},at+.3);
+  });
+  const lastAt=t0+(nums.length-1)*step;        // moment "7" lands (~3.62)
+  // confetti celebration after the count reaches 7
+  confetti(tl,lastAt+.18,110);
+  tl.to(cEl,{scale:1.12,duration:.5,yoyo:true,repeat:1,ease:"sine.inOut",transformOrigin:"50% 60%"},lastAt+.18);
+  tl.to(capEl,{scale:1.18,duration:.4,yoyo:true,repeat:1,ease:"sine.inOut"},lastAt+.18);
+
+  // boot exit
+  charOut(tl,cBootTop,4.55,{y:-70,each:.015});
+  tl.to(cEl,{scale:1.8,autoAlpha:0,filter:"blur(14px)",duration:.5,ease:"power2.in"},4.55);
+  tl.to(capEl,{autoAlpha:0,y:-30,duration:.4,ease:"power2.in"},4.55);
+  tl.to("#boot-tag",{autoAlpha:0,duration:.3},4.55);
+  tl.set(scenes.boot,{autoAlpha:0},5.15);
+  swipe(tl,"#f03b2f",4.85);
 
   /* ================= SCENE 2 · HERO (4.85 → 12.0) ================= */
   tl.set(scenes.hero,{autoAlpha:1},4.85);
@@ -580,7 +664,7 @@ function buildMaster(){
   const offerAll=[].concat(...cOfferW);
   cOfferW.forEach((w,i)=>charIn(tl,w,32.1+i*.18,{y:120,scale:.4,each:.04,ease:"back.out(1.7)"}));
   idle(tl,offerAll,33.4,3.0,7);
-  tl.to("#offer-big .free .ch",{scale:1.12,color:"#ff9a1f",duration:.45,yoyo:true,repeat:5,ease:"sine.inOut",stagger:{each:.04,yoyo:true,repeat:5}},33.6);
+  tl.to("#offer-big .free .ch",{scale:1.14,color:"#ff9a1f",duration:.5,yoyo:true,repeat:3,ease:"sine.inOut",stagger:{each:.05,from:"start"}},33.6);
   drift(tl,"#offer-big",32.3,5,1.4);
   charOut(tl,offerAll,37.0,{y:-120,each:.012,from:"random"});
   tl.to("#offer-kicker",{autoAlpha:0,duration:.3},37.0);
