@@ -20,15 +20,19 @@ import {
   ─────────────────────────────────────────────────────────────────────────────
 */
 
-// ─── Palette ──────────────────────────────────────────────────────────────────
+// ─── Palette (dempet emerald/cyan/teal — inspirert av braathe-petrol/grønn) ───
 const BG     = '#05070C';
 const BG2    = '#0A0F18';
 const INK    = '#EAF2FB';
 const MUTED  = '#8696AC';
 const CYAN   = '#22D3EE';
-const LIME   = '#A3E635';
-const VIOLET = '#A78BFA';
-const GREEN  = '#34D399';
+const EMER   = '#00E08A'; // braathe-grønn
+const TEAL   = '#2DD4BF';
+const PETROL = '#0B3B40';
+
+// Sammenhengende, rolig fargesyklus i stedet for regnbue
+const CYCLE = [CYAN, EMER, TEAL];
+const cyc = (i: number) => CYCLE[i % CYCLE.length];
 
 const SANS = '"Inter", "Helvetica Neue", "Segoe UI", Arial, sans-serif';
 const MONO = '"SF Mono", "SFMono-Regular", "Roboto Mono", Menlo, Consolas, monospace';
@@ -36,6 +40,21 @@ const MONO = '"SF Mono", "SFMono-Regular", "Roboto Mono", Menlo, Consolas, monos
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const hex  = (c: string, a: number) =>
   c + Math.round(clamp(a) * 255).toString(16).padStart(2, '0');
+
+// ─── GSAP-aktig easing (power3/power4-out) + reveal-hjelpere ──────────────────
+const quart = (t: number) => 1 - Math.pow(1 - clamp(t), 4); // power4.out
+const quint = (t: number) => 1 - Math.pow(1 - clamp(t), 5); // power5.out
+const expoOut = (t: number) => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * clamp(t)));
+
+// Linje-maske-reveal (som GSAP SplitText): teksten «tørkes» opp bak en maske
+const textReveal = (p: number): React.CSSProperties => {
+  const e = quart(p);
+  return {
+    clipPath: `inset(-12% 0% ${(1 - e) * 108}% 0%)`,
+    WebkitClipPath: `inset(-12% 0% ${(1 - e) * 108}% 0%)`,
+    transform: `translateY(${(1 - e) * 18}px)`,
+  } as React.CSSProperties;
+};
 
 // ─── Timeline ─────────────────────────────────────────────────────────────────
 const TOTAL = 1350; // 45s
@@ -58,7 +77,7 @@ const NODES = Array.from({ length: 26 }, (_, i) => ({
   vx: Math.sin(i * 1.7) * 0.0015,
   vy: -(0.0016 + (i % 5) * 0.0009),
   ph: (i * 33) % (Math.PI * 2),
-  c:  [CYAN, LIME, VIOLET, CYAN][i % 4],
+  c:  [CYAN, EMER, TEAL, CYAN][i % 4],
 }));
 
 const DUST = Array.from({ length: 60 }, (_, i) => ({
@@ -72,10 +91,10 @@ const DUST = Array.from({ length: 60 }, (_, i) => ({
 }));
 
 const AURORA = [
-  { x: 26, y: 32, rx: 16, ry: 11, sx: 0.006, sy: 0.008, px: 0.0, py: 1.1, size: 880, c: CYAN,   op: 0.16 },
-  { x: 74, y: 60, rx: 13, ry: 18, sx: 0.008, sy: 0.005, px: 2.0, py: 0.5, size: 1000, c: VIOLET, op: 0.10 },
-  { x: 52, y: 22, rx: 19, ry: 9,  sx: 0.005, sy: 0.010, px: 1.1, py: 2.8, size: 720, c: LIME,   op: 0.09 },
-  { x: 18, y: 78, rx: 11, ry: 15, sx: 0.010, sy: 0.006, px: 4.0, py: 0.7, size: 620, c: CYAN,   op: 0.10 },
+  { x: 26, y: 32, rx: 16, ry: 11, sx: 0.006, sy: 0.008, px: 0.0, py: 1.1, size: 880, c: CYAN, op: 0.15 },
+  { x: 74, y: 60, rx: 13, ry: 18, sx: 0.008, sy: 0.005, px: 2.0, py: 0.5, size: 1000, c: TEAL, op: 0.11 },
+  { x: 52, y: 22, rx: 19, ry: 9,  sx: 0.005, sy: 0.010, px: 1.1, py: 2.8, size: 720, c: EMER, op: 0.10 },
+  { x: 18, y: 78, rx: 11, ry: 15, sx: 0.010, sy: 0.006, px: 4.0, py: 0.7, size: 620, c: PETROL, op: 0.16 },
 ];
 
 // ─── Tech background (aurora + perspective grid + node network + dust) ────────
@@ -184,15 +203,6 @@ const TechBackground: React.FC<{ cam: number }> = ({ cam }) => {
         );
       })}
 
-      {/* Scanning sweep */}
-      <div style={{
-        position: 'absolute', top: 0, bottom: 0,
-        left: `${((t * 0.05) % 1.6 - 0.3) * 100}%`,
-        width: 260,
-        background: `linear-gradient(90deg, transparent, ${hex(CYAN, 0.05)}, transparent)`,
-        transform: 'skewX(-12deg)', pointerEvents: 'none',
-      }} />
-
       {/* Vignette */}
       <div style={{
         position: 'absolute', inset: 0,
@@ -249,15 +259,15 @@ const Block: React.FC<BlockProps> = ({
   frame, baseAt, outAt, kicker, heading, body,
   accent, accentColor = CYAN, headSize = 64, align = 'left', color = CYAN,
 }) => {
-  const kP = presence(frame, baseAt, baseAt + 22, outAt, outAt + 16);
-  const rP = easeOutExpo(clamp(prog(frame, baseAt + 8, baseAt + 36)));
-  const hP = presence(frame, baseAt + 16, baseAt + 42, outAt, outAt + 16);
-  const bP = presence(frame, baseAt + 32, baseAt + 56, outAt, outAt + 16);
+  const kP = presence(frame, baseAt, baseAt + 24, outAt, outAt + 18);
+  const rP = quint(clamp(prog(frame, baseAt + 10, baseAt + 44)));
+  const hP = presence(frame, baseAt + 16, baseAt + 48, outAt, outAt + 18);
+  const bP = presence(frame, baseAt + 34, baseAt + 64, outAt, outAt + 18);
 
-  const slide = (p: number) => ({
+  // mykt slide+fade (power4-out) for brødtekst
+  const glide = (p: number) => ({
     opacity: p,
-    transform: `translateY(${lerp(18, 0, easeOutExpo(p))}px)`,
-    filter: `blur(${lerp(6, 0, easeOutExpo(p))}px)`,
+    transform: `translateY(${lerp(20, 0, quart(p))}px)`,
   });
 
   const parts = accent ? heading.split(new RegExp(`(${accent})`, 'i')) : [heading];
@@ -269,8 +279,9 @@ const Block: React.FC<BlockProps> = ({
     <div style={{ display: 'flex', flexDirection: 'column', ...aStyle, gap: 0 }}>
       {kicker && <div style={{ marginBottom: 16 }}><Kicker p={kP} text={kicker} color={color} align={align} /></div>}
       {rP > 0.04 && <div style={{ marginBottom: 18 }}><Rule p={rP} width={align === 'center' ? 90 : 64} color={color} /></div>}
-      <div style={{ ...slide(hP), marginBottom: body ? 20 : 0 }}>
+      <div style={{ opacity: hP, marginBottom: body ? 20 : 0 }}>
         <h2 style={{
+          ...textReveal(hP),
           fontFamily: SANS, fontSize: headSize, fontWeight: 800,
           lineHeight: 1.08, margin: 0, color: INK,
           letterSpacing: '-1.5px', maxWidth: 1100,
@@ -284,7 +295,7 @@ const Block: React.FC<BlockProps> = ({
         </h2>
       </div>
       {body && (
-        <div style={slide(bP)}>
+        <div style={glide(bP)}>
           <p style={{
             fontFamily: SANS, fontSize: 25, lineHeight: 1.6, margin: 0,
             color: hex(INK, 0.66), maxWidth: 760, fontWeight: 400,
@@ -302,15 +313,16 @@ const BeamCard: React.FC<{
   frame: number; showAt: number; outAt: number;
   color: string; children: React.ReactNode; spin: number;
 }> = ({ frame, showAt, outAt, color, children, spin }) => {
-  const p = presence(frame, showAt, showAt + 24, outAt, outAt + 16);
-  const angle = (frame * 2.2 + spin) % 360;
+  const p = presence(frame, showAt, showAt + 26, outAt, outAt + 18);
+  // rolig, langsom traveling-glød rundt kanten (ingen hard flash)
+  const angle = (frame * 0.9 + spin) % 360;
   if (p <= 0) return null;
   return (
     <div style={{
       position: 'relative', borderRadius: 18, padding: 1.5,
       opacity: p,
-      transform: `translateY(${lerp(26, 0, easeOutExpo(p))}px) scale(${lerp(0.94, 1, easeOutExpo(p))})`,
-      background: `conic-gradient(from ${angle}deg, transparent 0deg, ${color} 50deg, transparent 120deg, transparent 360deg)`,
+      transform: `translateY(${lerp(28, 0, quart(p))}px) scale(${lerp(0.95, 1, quart(p))})`,
+      background: `conic-gradient(from ${angle}deg, ${hex(color, 0.12)} 0deg, ${hex(color, 0.85)} 45deg, ${hex(color, 0.12)} 110deg, ${hex(color, 0.12)} 360deg)`,
     }}>
       <div style={{
         borderRadius: 17, height: '100%',
@@ -349,20 +361,19 @@ const Counter: React.FC<{
   frame: number; showAt: number; outAt: number;
   value: number; suffix: string; label: string; sub: string; color: string; idx: number;
 }> = ({ frame, showAt, outAt, value, suffix, label, sub, color, idx }) => {
-  const p = presence(frame, showAt, showAt + 24, outAt, outAt + 16);
-  const t = easeInOutCubic(clamp(prog(frame, showAt + 6, showAt + 6 + 70)));
+  const p = presence(frame, showAt, showAt + 26, outAt, outAt + 18);
+  const t = quint(clamp(prog(frame, showAt + 6, showAt + 6 + 72)));
   const val = Math.round(t * value);
-  const glow = 0.6 + 0.4 * Math.sin(frame * 0.07 + idx * 1.6);
   if (p <= 0) return null;
   return (
     <div style={{
       textAlign: 'center', opacity: p,
-      transform: `translateY(${lerp(34, 0, easeOutExpo(p))}px) scale(${lerp(0.9, 1, easeOutExpo(p))})`,
+      transform: `translateY(${lerp(34, 0, quart(p))}px) scale(${lerp(0.92, 1, quart(p))})`,
     }}>
       <div style={{
         fontFamily: SANS, fontSize: 96, fontWeight: 800, lineHeight: 1,
         color, letterSpacing: '-3px',
-        textShadow: `0 0 ${24 + glow * 30}px ${hex(color, 0.55)}`,
+        textShadow: `0 0 38px ${hex(color, 0.45)}`,
       }}>
         {val}<span style={{ fontSize: 52, fontWeight: 700 }}>{suffix}</span>
       </div>
@@ -378,35 +389,35 @@ const Counter: React.FC<{
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 const PILLARS = [
-  { n: '01', t: 'Fellesskap',        d: 'Events, meetups & hackathons',        c: CYAN },
-  { n: '02', t: 'Vertikaler',        d: '8 sektorer med industriledere',       c: LIME },
-  { n: '03', t: 'Utdanning & talent', d: 'NTNU · Kristiania · HiØ',            c: VIOLET },
-  { n: '04', t: 'Kapital',           d: 'DNB · Nordea · SpareBank 1',          c: GREEN },
-  { n: '05', t: 'Fysiske rom',       d: 'WORKS, labs & co-working',            c: CYAN },
+  { n: '01', t: 'Fellesskap',        d: 'Events, meetups & hackathons',  c: cyc(0) },
+  { n: '02', t: 'Vertikaler',        d: '8 sektorer med industriledere', c: cyc(1) },
+  { n: '03', t: 'Utdanning & talent', d: 'NTNU · Kristiania · HiØ',      c: cyc(2) },
+  { n: '04', t: 'Kapital',           d: 'DNB · Nordea · SpareBank 1',    c: cyc(0) },
+  { n: '05', t: 'Fysiske rom',       d: 'WORKS, labs & co-working',      c: cyc(1) },
 ];
 
 const VERTICALS = [
-  { icon: 'ai',       t: 'AI',         d: 'Industriell intelligens', c: CYAN },
-  { icon: 'robot',    t: 'Robotikk',   d: 'Autonome systemer',       c: LIME },
-  { icon: 'gear',     t: 'Automasjon', d: 'Smart produksjon',        c: VIOLET },
-  { icon: 'bolt',     t: 'Energi',     d: 'Fornybar & grønn',        c: GREEN },
-  { icon: 'box',      t: 'Logistikk',  d: 'Smarte forsyningskjeder', c: CYAN },
-  { icon: 'wave',     t: 'Maritim',    d: 'Autonome fartøy',         c: LIME },
-  { icon: 'mobility', t: 'Mobilitet',  d: 'Elektrisk transport',     c: VIOLET },
-  { icon: 'health',   t: 'Helse',      d: 'Medisinsk innovasjon',    c: GREEN },
+  { icon: 'ai',       t: 'AI',         d: 'Industriell intelligens', c: cyc(0) },
+  { icon: 'robot',    t: 'Robotikk',   d: 'Autonome systemer',       c: cyc(1) },
+  { icon: 'gear',     t: 'Automasjon', d: 'Smart produksjon',        c: cyc(2) },
+  { icon: 'bolt',     t: 'Energi',     d: 'Fornybar & grønn',        c: cyc(0) },
+  { icon: 'box',      t: 'Logistikk',  d: 'Smarte forsyningskjeder', c: cyc(1) },
+  { icon: 'wave',     t: 'Maritim',    d: 'Autonome fartøy',         c: cyc(2) },
+  { icon: 'mobility', t: 'Mobilitet',  d: 'Elektrisk transport',     c: cyc(0) },
+  { icon: 'health',   t: 'Helse',      d: 'Medisinsk innovasjon',    c: cyc(1) },
 ];
 
 const STATS = [
-  { value: 100, suffix: '+', label: 'Charter-medlemmer', sub: 'grunnleggere', color: CYAN },
-  { value: 95,  suffix: '+', label: 'Partnerbedrifter',  sub: 'i økosystemet', color: LIME },
-  { value: 50,  suffix: '+', label: 'Startups i Moss',   sub: 'år 5–10',       color: VIOLET },
-  { value: 10,  suffix: ' år', label: 'Veikart',         sub: 'til nordisk hub', color: GREEN },
+  { value: 100, suffix: '+', label: 'Charter-medlemmer', sub: 'grunnleggere', color: cyc(0) },
+  { value: 95,  suffix: '+', label: 'Partnerbedrifter',  sub: 'i økosystemet', color: cyc(1) },
+  { value: 50,  suffix: '+', label: 'Startups i Moss',   sub: 'år 5–10',       color: cyc(2) },
+  { value: 10,  suffix: ' år', label: 'Veikart',         sub: 'til nordisk hub', color: cyc(0) },
 ];
 
 const ROADMAP = [
-  { p: 'År 1–2', t: 'Fundament',  d: '3 første vertikaler etableres',      c: CYAN },
-  { p: 'År 3–5', t: 'Aktivering', d: 'Alle 8 vertikaler + universiteter',  c: LIME },
-  { p: 'År 5–10', t: 'Skalering', d: 'Moss som nordisk teknologi-hub',     c: VIOLET },
+  { p: 'År 1–2', t: 'Fundament',  d: '3 første vertikaler etableres',      c: cyc(0) },
+  { p: 'År 3–5', t: 'Aktivering', d: 'Alle 8 vertikaler + universiteter',  c: cyc(1) },
+  { p: 'År 5–10', t: 'Skalering', d: 'Moss som nordisk teknologi-hub',     c: cyc(2) },
 ];
 
 const PARTNERS = ['1X Robotics', 'Kongsberg Gruppen', 'Multiconsult', 'NTNU', 'Høyskolen Kristiania', 'HiØ', 'DNB', 'Nordea', 'SpareBank 1', 'Microsoft', 'Google', 'OpenAI'];
@@ -419,7 +430,7 @@ const Wordmark: React.FC<{ size: number; p: number }> = ({ size, p }) => (
   }}>
     <span style={{ color: INK }}>Moss</span>
     <span style={{
-      background: `linear-gradient(120deg, ${CYAN}, ${LIME})`,
+      background: `linear-gradient(120deg, ${CYAN}, ${EMER})`,
       WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
       filter: `drop-shadow(0 0 24px ${hex(CYAN, 0.45)})`,
     }}>Tech</span>
@@ -428,16 +439,61 @@ const Wordmark: React.FC<{ size: number; p: number }> = ({ size, p }) => (
 
 // ─── Section shell ────────────────────────────────────────────────────────────
 const Section: React.FC<{
-  frame: number; start: number; align?: string; pad?: string; children: React.ReactNode;
-}> = ({ frame, start, align = 'flex-end', pad = '0 130px 120px', children }) => {
-  const whoosh = lerp(7, 0, easeOutExpo(clamp(prog(frame, start, start + 28))));
+  frame: number; start: number; end: number; align?: string; pad?: string; children: React.ReactNode;
+}> = ({ frame, start, end, align = 'flex-end', pad = '0 130px 120px', children }) => {
+  // GSAP-aktig: hele seksjonen glir mykt opp inn, og glir videre opp ut
+  const inP  = quint(clamp(prog(frame, start, start + 30)));
+  const outP = quart(clamp(prog(frame, end - 24, end)));
+  const y = lerp(36, 0, inP) - outP * 30;
   return (
     <AbsoluteFill style={{
       display: 'flex', flexDirection: 'column', justifyContent: align as React.CSSProperties['justifyContent'],
-      padding: pad, filter: `blur(${whoosh}px)`, pointerEvents: 'none',
+      padding: pad, pointerEvents: 'none',
+      transform: `translateY(${y}px)`,
     }}>
       {children}
     </AbsoluteFill>
+  );
+};
+
+// ─── Overgangs-wipe mellom seksjoner (tynn lysstripe som sveiper) ─────────────
+const SectionWipe: React.FC = () => {
+  const frame = useCurrentFrame();
+  const bounds = [
+    { f: SS.VISION,    c: CYAN },
+    { f: SS.PILLARS,   c: EMER },
+    { f: SS.VERTICALS, c: TEAL },
+    { f: SS.STATS,     c: CYAN },
+    { f: SS.ROADMAP,   c: EMER },
+    { f: SS.CTA,       c: TEAL },
+  ];
+  return (
+    <>
+      {bounds.map((b, i) => {
+        const t = prog(frame, b.f - 14, b.f + 18);
+        if (t <= 0 || t >= 1) return null;
+        const e = quint(t);
+        const y = lerp(40, 60, e);
+        const op = Math.sin(t * Math.PI); // 0 → 1 → 0
+        return (
+          <div key={i} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+            {/* myk fargeslør-puls */}
+            <div style={{
+              position: 'absolute', inset: 0,
+              background: `radial-gradient(ellipse 90% 50% at 50% ${y}%, ${hex(b.c, 0.06)}, transparent 60%)`,
+              opacity: op,
+            }} />
+            {/* lysstripe */}
+            <div style={{
+              position: 'absolute', left: '8%', right: '8%', top: `${y}%`, height: 2,
+              background: `linear-gradient(90deg, transparent, ${b.c}, transparent)`,
+              boxShadow: `0 0 26px ${b.c}`,
+              opacity: op * 0.85,
+            }} />
+          </div>
+        );
+      })}
+    </>
   );
 };
 
@@ -485,13 +541,13 @@ export const MossTech: React.FC = () => {
           <span style={{
             fontFamily: SANS, fontSize: 40, fontWeight: 700, color: INK, letterSpacing: '-1px',
           }}>
-            Norges <span style={{ color: LIME }}>teknologiby</span>
+            Norges <span style={{ color: EMER }}>teknologiby</span>
           </span>
         </div>
       </AbsoluteFill>
 
       {/* ═══ VISION (150–340) ═════════════════════════════════════════════ */}
-      <Section frame={frame} start={SS.VISION} align="center" pad="0 140px">
+      <Section frame={frame} start={SS.VISION} end={SS.PILLARS} align="center" pad="0 140px">
         <Block
           frame={frame} baseAt={SS.VISION + 18} outAt={SS.PILLARS - 28}
           kicker="Visjonen" color={CYAN} align="center" headSize={66}
@@ -502,13 +558,13 @@ export const MossTech: React.FC = () => {
       </Section>
 
       {/* ═══ PILLARS (340–575) ════════════════════════════════════════════ */}
-      <Section frame={frame} start={SS.PILLARS} align="center" pad="0 120px">
+      <Section frame={frame} start={SS.PILLARS} end={SS.VERTICALS} align="center" pad="0 120px">
         <div style={{
           opacity: Math.min(inWin(SS.PILLARS + 6), outWin(SS.VERTICALS)),
           marginBottom: 44, textAlign: 'center',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
         }}>
-          <Kicker p={presence(frame, SS.PILLARS + 6, SS.PILLARS + 28, SS.VERTICALS - 26, SS.VERTICALS)} text="Hvordan vi bygger" color={LIME} align="center" />
+          <Kicker p={presence(frame, SS.PILLARS + 6, SS.PILLARS + 28, SS.VERTICALS - 26, SS.VERTICALS)} text="Hvordan vi bygger" color={EMER} align="center" />
           <h2 style={{
             fontFamily: SANS, fontSize: 54, fontWeight: 800, color: INK,
             margin: '16px 0 0', letterSpacing: '-1.5px',
@@ -534,13 +590,13 @@ export const MossTech: React.FC = () => {
       </Section>
 
       {/* ═══ VERTICALS (575–835) ══════════════════════════════════════════ */}
-      <Section frame={frame} start={SS.VERTICALS} align="center" pad="0 120px">
+      <Section frame={frame} start={SS.VERTICALS} end={SS.STATS} align="center" pad="0 120px">
         <div style={{
           opacity: Math.min(inWin(SS.VERTICALS + 6), outWin(SS.STATS)),
           marginBottom: 40, textAlign: 'center',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
         }}>
-          <Kicker p={presence(frame, SS.VERTICALS + 6, SS.VERTICALS + 28, SS.STATS - 26, SS.STATS)} text="8 teknologi-vertikaler" color={VIOLET} align="center" />
+          <Kicker p={presence(frame, SS.VERTICALS + 6, SS.VERTICALS + 28, SS.STATS - 26, SS.STATS)} text="8 teknologi-vertikaler" color={TEAL} align="center" />
           <h2 style={{
             fontFamily: SANS, fontSize: 54, fontWeight: 800, color: INK,
             margin: '16px 0 0', letterSpacing: '-1.5px',
@@ -553,18 +609,17 @@ export const MossTech: React.FC = () => {
           maxWidth: 1480, margin: '0 auto', width: '100%',
         }}>
           {VERTICALS.map((v, i) => {
-            const p = presence(frame, SS.VERTICALS + 44 + i * 9, SS.VERTICALS + 70 + i * 9, SS.STATS - 26, SS.STATS);
-            const glow = 0.5 + 0.5 * Math.sin(frame * 0.06 + i);
+            const p = presence(frame, SS.VERTICALS + 44 + i * 9, SS.VERTICALS + 74 + i * 9, SS.STATS - 26, SS.STATS);
             if (p <= 0) return null;
             return (
               <div key={i} style={{
                 opacity: p,
-                transform: `translateY(${lerp(28, 0, easeOutExpo(p))}px) scale(${lerp(0.93, 1, easeOutExpo(p))})`,
+                transform: `translateY(${lerp(30, 0, quart(p))}px) scale(${lerp(0.94, 1, quart(p))})`,
                 background: `linear-gradient(150deg, ${hex(BG2, 0.9)}, ${hex(BG, 0.95)})`,
-                border: `1px solid ${hex(v.c, 0.2 + glow * 0.12)}`,
+                border: `1px solid ${hex(v.c, 0.26)}`,
                 borderRadius: 16, padding: '26px 24px',
                 display: 'flex', flexDirection: 'column', gap: 14,
-                boxShadow: `0 0 ${18 + glow * 14}px ${hex(v.c, 0.07)}`,
+                boxShadow: `0 0 24px ${hex(v.c, 0.08)}, inset 0 1px 0 ${hex(INK, 0.04)}`,
               }}>
                 <div style={{
                   width: 52, height: 52, borderRadius: 13,
@@ -582,7 +637,7 @@ export const MossTech: React.FC = () => {
       </Section>
 
       {/* ═══ STATS (835–1050) ═════════════════════════════════════════════ */}
-      <Section frame={frame} start={SS.STATS} align="center" pad="0 120px">
+      <Section frame={frame} start={SS.STATS} end={SS.ROADMAP} align="center" pad="0 120px">
         <div style={{
           opacity: Math.min(inWin(SS.STATS + 6), outWin(SS.ROADMAP)),
           marginBottom: 56, textAlign: 'center',
@@ -608,13 +663,13 @@ export const MossTech: React.FC = () => {
       </Section>
 
       {/* ═══ ROADMAP (1050–1200) ══════════════════════════════════════════ */}
-      <Section frame={frame} start={SS.ROADMAP} align="center" pad="0 130px">
+      <Section frame={frame} start={SS.ROADMAP} end={SS.CTA} align="center" pad="0 130px">
         <div style={{
           opacity: Math.min(inWin(SS.ROADMAP + 6), outWin(SS.CTA)),
           marginBottom: 48, textAlign: 'center',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
         }}>
-          <Kicker p={presence(frame, SS.ROADMAP + 6, SS.ROADMAP + 28, SS.CTA - 26, SS.CTA)} text="10-års veikart" color={LIME} align="center" />
+          <Kicker p={presence(frame, SS.ROADMAP + 6, SS.ROADMAP + 28, SS.CTA - 26, SS.CTA)} text="10-års veikart" color={EMER} align="center" />
         </div>
         <div style={{ display: 'flex', gap: 0, justifyContent: 'center', alignItems: 'stretch', position: 'relative' }}>
           {ROADMAP.map((r, i) => {
@@ -707,17 +762,18 @@ export const MossTech: React.FC = () => {
             position: 'relative', borderRadius: 50, overflow: 'hidden', marginBottom: 30,
           }}>
             <div style={{
-              background: `linear-gradient(120deg, ${CYAN}, ${LIME})`,
+              background: `linear-gradient(120deg, ${CYAN}, ${EMER})`,
               color: '#04110F', fontFamily: SANS, fontSize: 26, fontWeight: 800,
               padding: '20px 64px', borderRadius: 50, letterSpacing: '-0.3px',
               boxShadow: `0 0 44px ${hex(CYAN, 0.5)}, 0 0 90px ${hex(CYAN, 0.2)}`,
             }}>
               Signer Charter
             </div>
+            {/* ett mykt sveip ved inngang — ingen loop */}
             <div style={{
               position: 'absolute', top: 0, bottom: 0,
-              left: ((frame * 2.6) % 150) - 40, width: 70,
-              background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)',
+              left: lerp(-90, 420, quint(clamp(prog(frame, SS.CTA + 60, SS.CTA + 116)))), width: 80,
+              background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)',
               transform: 'skewX(-20deg)',
             }} />
           </div>
@@ -743,6 +799,9 @@ export const MossTech: React.FC = () => {
           </span>
         </div>
       </AbsoluteFill>
+
+      {/* Overgangs-wipe mellom seksjoner */}
+      <SectionWipe />
 
       {/* Final fade */}
       <div style={{
