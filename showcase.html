@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NORLEADS® — Showreel</title>
+<style>
+:root{
+  --bg:#0a0906;
+  --panel:#17140d;
+  --line:#3b321f;
+  --paper:#f3ead2;
+  --muted:#b8ab8b;
+  --gold:#d9b45d;
+  --green:#a7c957;
+  --danger:#e56b5f;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 78% 6%,rgba(217,180,93,.20),transparent 26rem),
+    radial-gradient(circle at 10% 72%,rgba(167,201,87,.10),transparent 24rem),
+    linear-gradient(135deg,#050504,#121008 54%,#080706);
+  color:var(--paper);
+  font-family:"Segoe UI",Verdana,sans-serif;
+  overflow-x:hidden;
+}
+a{color:inherit}
+.shell{width:min(1480px,94vw);margin:0 auto;padding:30px 0 70px}
+
+/* ---------- Topbar ---------- */
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:46px}
+.logo{font-family:Georgia,"Times New Roman",serif;font-size:24px;letter-spacing:.02em;font-weight:700}
+.logo b{color:var(--gold)}
+.navlinks{display:flex;gap:26px;align-items:center;font-size:13px;text-transform:uppercase;letter-spacing:.16em;color:var(--muted)}
+.navlinks a{text-decoration:none;transition:color .2s}
+.navlinks a:hover{color:var(--gold)}
+.navcta{border:1px solid var(--gold);color:var(--gold);padding:10px 16px;text-decoration:none;font-weight:800;letter-spacing:.1em;transition:.2s}
+.navcta:hover{background:var(--gold);color:#151108}
+@media(max-width:780px){.navlinks a:not(.navcta){display:none}}
+
+/* ---------- Hero ---------- */
+.hero{margin-bottom:54px;position:relative}
+.eyebrow{color:var(--gold);font-size:12px;font-weight:800;letter-spacing:.28em;text-transform:uppercase;display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.eyebrow::before{content:"";width:46px;height:1px;background:var(--gold);display:inline-block}
+h1{margin:0;font-family:Georgia,"Times New Roman",serif;font-size:clamp(48px,9vw,128px);line-height:.86;letter-spacing:-.05em;max-width:1100px}
+h1 em{font-style:italic;color:var(--gold)}
+.lead{margin:24px 0 0;color:var(--muted);font-size:clamp(16px,2vw,20px);line-height:1.5;max-width:660px}
+.metarow{display:flex;flex-wrap:wrap;gap:30px;margin-top:34px;padding-top:26px;border-top:1px solid var(--line)}
+.metarow div{display:grid;gap:4px}
+.metarow b{font-family:Georgia,serif;font-size:30px;color:var(--paper)}
+.metarow span{font-size:11px;text-transform:uppercase;letter-spacing:.16em;color:var(--muted)}
+
+/* ---------- Showcase grid ---------- */
+.gridhead{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin:0 0 22px}
+.gridhead h2{margin:0;font-family:Georgia,serif;font-size:clamp(26px,4vw,40px)}
+.gridhead p{margin:0;color:var(--muted);font-size:13px;letter-spacing:.04em}
+
+.showcase{
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  grid-auto-rows:118px;
+  gap:16px;
+}
+.tile{
+  position:relative;
+  overflow:hidden;
+  border:1px solid var(--line);
+  background:#0d0b07;
+  cursor:pointer;
+  transition:transform .45s cubic-bezier(.2,.8,.2,1),border-color .3s,box-shadow .4s;
+  will-change:transform;
+}
+.tile:hover{
+  border-color:var(--gold);
+  box-shadow:0 26px 70px rgba(0,0,0,.55),0 0 0 1px rgba(217,180,93,.35);
+  z-index:5;
+}
+.tile video,.tile .ph{
+  width:100%;height:100%;object-fit:cover;display:block;
+  filter:saturate(.92) contrast(1.02);
+  transition:transform .6s ease,filter .4s;
+}
+.tile:hover video,.tile:hover .ph{transform:scale(1.06);filter:saturate(1.05) contrast(1.05)}
+
+/* placeholder look while no video is dropped in */
+.ph{
+  display:grid;place-content:center;text-align:center;gap:10px;
+  background:
+    repeating-linear-gradient(45deg,rgba(217,180,93,.05) 0 12px,transparent 12px 24px),
+    radial-gradient(circle at 50% 38%,rgba(217,180,93,.14),transparent 60%),
+    linear-gradient(160deg,#16130c,#0b0907);
+}
+.ph .num{font-family:Georgia,serif;font-size:clamp(38px,7vw,80px);color:rgba(243,234,210,.16);line-height:1}
+.ph .lbl{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+
+/* overlay (caption + play) */
+.tile .meta{
+  position:absolute;inset:auto 0 0 0;padding:16px 16px 14px;
+  background:linear-gradient(to top,rgba(5,5,4,.92),rgba(5,5,4,.0));
+  display:flex;justify-content:space-between;align-items:flex-end;gap:10px;
+  transform:translateY(6px);opacity:.92;transition:.3s;
+}
+.tile:hover .meta{transform:none;opacity:1}
+.tile .meta h3{margin:0;font-family:Georgia,serif;font-size:18px;letter-spacing:-.01em}
+.tile .meta small{display:block;color:var(--gold);font-size:10px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:3px}
+.tag{align-self:flex-end;flex:none;border:1px solid var(--line);color:var(--muted);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:5px 8px;background:rgba(13,11,7,.6)}
+.play{
+  position:absolute;top:14px;right:14px;width:42px;height:42px;border-radius:50%;
+  border:1px solid rgba(243,234,210,.4);background:rgba(10,9,6,.55);backdrop-filter:blur(4px);
+  display:grid;place-content:center;transition:.3s;
+}
+.tile:hover .play{background:var(--gold);border-color:var(--gold)}
+.play svg{width:15px;height:15px;fill:var(--paper);margin-left:2px;transition:.3s}
+.tile:hover .play svg{fill:#151108}
+
+/* corner accent ticks */
+.tile::before,.tile::after{content:"";position:absolute;width:14px;height:14px;border:1px solid rgba(217,180,93,.0);transition:.35s;pointer-events:none;z-index:3}
+.tile::before{top:10px;left:10px;border-right:0;border-bottom:0}
+.tile::after{bottom:10px;right:10px;border-left:0;border-top:0}
+.tile:hover::before,.tile:hover::after{border-color:rgba(217,180,93,.7)}
+
+/* ---- creative / scattered placement ---- */
+.t1{grid-column:1/6;grid-row:1/4}
+.t2{grid-column:6/10;grid-row:1/3}
+.t3{grid-column:10/13;grid-row:1/4}
+.t4{grid-column:6/10;grid-row:3/6;transform:translateY(18px)}
+.t5{grid-column:1/4;grid-row:4/7}
+.t6{grid-column:4/6;grid-row:4/6}
+.t7{grid-column:10/13;grid-row:4/7;transform:translateY(18px)}
+.t8{grid-column:1/7;grid-row:7/10}
+.t9{grid-column:7/13;grid-row:6/10}
+.t4:hover,.t7:hover{transform:translateY(18px) scale(1.012)}
+
+@media(max-width:1000px){
+  .showcase{grid-auto-rows:104px}
+  .t1{grid-column:1/8;grid-row:1/4}
+  .t2{grid-column:8/13;grid-row:1/3}
+  .t3{grid-column:8/13;grid-row:3/6}
+  .t4{grid-column:1/5;grid-row:4/7;transform:none}
+  .t5{grid-column:5/9;grid-row:4/7}
+  .t6{grid-column:9/13;grid-row:6/9}
+  .t7{grid-column:1/7;grid-row:7/10;transform:none}
+  .t8{grid-column:1/7;grid-row:10/13}
+  .t9{grid-column:7/13;grid-row:9/13}
+  .t4:hover,.t7:hover{transform:scale(1.012)}
+}
+@media(max-width:620px){
+  .showcase{grid-template-columns:1fr;grid-auto-rows:200px;gap:14px}
+  .showcase .tile{grid-column:1/-1 !important;grid-row:auto !important;transform:none !important}
+}
+
+/* ---------- Footer CTA ---------- */
+.footcta{margin-top:64px;border:1px solid var(--line);background:rgba(23,20,13,.7);padding:clamp(28px,5vw,56px);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:24px}
+.footcta h2{margin:0;font-family:Georgia,serif;font-size:clamp(26px,4vw,46px);max-width:560px;line-height:1}
+.footcta a{background:var(--gold);color:#151108;padding:16px 26px;text-decoration:none;font-weight:900;letter-spacing:.04em;white-space:nowrap;transition:.2s}
+.footcta a:hover{background:var(--green)}
+.colophon{margin-top:40px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;color:var(--muted);font-size:12px;letter-spacing:.06em}
+
+/* ---------- Lightbox ---------- */
+.lb{position:fixed;inset:0;z-index:50;display:none;place-content:center;padding:24px;
+  background:rgba(4,4,3,.92);backdrop-filter:blur(8px)}
+.lb.open{display:grid}
+.lb-inner{width:min(1100px,92vw);max-height:88vh}
+.lb video{width:100%;max-height:78vh;background:#000;border:1px solid var(--line);box-shadow:0 30px 90px rgba(0,0,0,.6)}
+.lb-bar{display:flex;justify-content:space-between;align-items:center;margin-top:14px;color:var(--muted);font-size:13px}
+.lb-bar h3{margin:0;font-family:Georgia,serif;font-size:22px;color:var(--paper)}
+.lb-close{position:fixed;top:22px;right:26px;width:46px;height:46px;border:1px solid var(--line);background:rgba(23,20,13,.8);color:var(--paper);font-size:22px;cursor:pointer;line-height:1;transition:.2s}
+.lb-close:hover{border-color:var(--gold);color:var(--gold)}
+</style>
+</head>
+<body>
+<main class="shell">
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="logo">NOR<b>LEADS</b>®</div>
+    <nav class="navlinks">
+      <a href="index.html">Hjem</a>
+      <a href="generator.html">Generator</a>
+      <a href="#reel">Showreel</a>
+      <a class="navcta" href="beompris.html">Be om pris</a>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="eyebrow">Motion Design Studio · Showreel 2026</div>
+    <h1>Videoene<br>vi har <em>laget</em>.</h1>
+    <p class="lead">Et utvalg reklamefilmer og motion-prosjekter fra NorLeads. Hold over en flate for forhåndsvisning, klikk for å spille av i full størrelse.</p>
+    <div class="metarow">
+      <div><b>8</b><span>Prosjekter</span></div>
+      <div><b>100%</b><span>Egenprodusert</span></div>
+      <div><b>4K</b><span>Leveranse</span></div>
+      <div><b>∞</b><span>Iterasjoner</span></div>
+    </div>
+  </section>
+
+  <!-- Showcase -->
+  <section id="reel">
+    <div class="gridhead">
+      <h2>Utvalgte arbeider</h2>
+      <p>01 — 08</p>
+    </div>
+
+    <div class="showcase" id="showcase">
+      <!-- Tiles are generated below. Drop your files in /videos as 1.mp4 ... 8.mp4 -->
+    </div>
+  </section>
+
+  <!-- Footer CTA -->
+  <section class="footcta">
+    <h2>Vil du ha en film som denne?</h2>
+    <a href="beompris.html">Be om pris →</a>
+  </section>
+
+  <div class="colophon">
+    <span>© 2026 NORLEADS® — Motion Design Studio</span>
+    <span>Oslo · Norge</span>
+  </div>
+</main>
+
+<!-- Lightbox -->
+<div class="lb" id="lb">
+  <button class="lb-close" id="lbClose" aria-label="Lukk">×</button>
+  <div class="lb-inner">
+    <video id="lbVideo" controls playsinline></video>
+    <div class="lb-bar">
+      <h3 id="lbTitle"></h3>
+      <span id="lbMeta"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---- Project data — endre titler/lengder fritt, og legg videoene i /videos ---- */
+const projects = [
+  {n:"01", cls:"t1", title:"Hotel Riviera",     tag:"Reklame",  len:"0:30", src:"videos/1.mp4"},
+  {n:"02", cls:"t2", title:"Thumb Stopper",     tag:"Social",   len:"0:15", src:"videos/2.mp4"},
+  {n:"03", cls:"t3", title:"Kinetic Type",      tag:"Branding", len:"0:20", src:"videos/3.mp4"},
+  {n:"04", cls:"t4", title:"NorLeads Ad",       tag:"Kampanje", len:"0:30", src:"videos/4.mp4"},
+  {n:"05", cls:"t5", title:"Ignored Ads",       tag:"Konsept",  len:"0:10", src:"videos/5.mp4"},
+  {n:"06", cls:"t6", title:"Glow Lines",        tag:"Loop",     len:"0:08", src:"videos/6.mp4"},
+  {n:"07", cls:"t7", title:"Particles",         tag:"Motion",   len:"0:20", src:"videos/7.mp4"},
+  {n:"08", cls:"t8", title:"Hovedfilm",         tag:"Showreel", len:"0:40", src:"videos/8.mp4"},
+];
+
+const playSvg = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+const grid = document.getElementById("showcase");
+
+grid.innerHTML = projects.map((p,i) => `
+  <article class="tile ${p.cls}" data-i="${i}">
+    <video muted loop playsinline preload="metadata" poster="">
+      <source src="${p.src}" type="video/mp4">
+    </video>
+    <div class="ph">
+      <div class="num">${p.n}</div>
+      <div class="lbl">Video ${p.n} · slipp inn ${p.src}</div>
+    </div>
+    <div class="play">${playSvg}</div>
+    <div class="meta">
+      <div><small>${p.tag} · ${p.len}</small><h3>${p.title}</h3></div>
+      <span class="tag">MP4</span>
+    </div>
+  </article>
+`).join("");
+
+/* If a video file exists, hide the placeholder; otherwise keep the styled placeholder. */
+document.querySelectorAll(".tile").forEach(tile => {
+  const video = tile.querySelector("video");
+  const ph = tile.querySelector(".ph");
+  let hasVideo = false;
+
+  video.addEventListener("loadeddata", () => { hasVideo = true; ph.style.display = "none"; });
+  video.addEventListener("error", () => { video.style.display = "none"; });
+
+  // hover preview (muted autoplay)
+  tile.addEventListener("mouseenter", () => { if (hasVideo) video.play().catch(()=>{}); });
+  tile.addEventListener("mouseleave", () => { if (hasVideo){ video.pause(); video.currentTime = 0; } });
+
+  // click → lightbox
+  tile.addEventListener("click", () => openLightbox(projects[+tile.dataset.i]));
+});
+
+/* ---- Lightbox ---- */
+const lb = document.getElementById("lb");
+const lbVideo = document.getElementById("lbVideo");
+const lbTitle = document.getElementById("lbTitle");
+const lbMeta  = document.getElementById("lbMeta");
+
+function openLightbox(p){
+  lbVideo.src = p.src;
+  lbTitle.textContent = p.title;
+  lbMeta.textContent = `${p.tag} · ${p.len}`;
+  lb.classList.add("open");
+  document.body.style.overflow = "hidden";
+  lbVideo.play().catch(()=>{});
+}
+function closeLightbox(){
+  lb.classList.remove("open");
+  lbVideo.pause();
+  lbVideo.removeAttribute("src");
+  lbVideo.load();
+  document.body.style.overflow = "";
+}
+document.getElementById("lbClose").addEventListener("click", closeLightbox);
+lb.addEventListener("click", e => { if (e.target === lb) closeLightbox(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeLightbox(); });
+</script>
+</body>
+</html>
