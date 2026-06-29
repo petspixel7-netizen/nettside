@@ -1,0 +1,54 @@
+/* NorLeads — motion & design tokens (kode, klar til bruk i videoene)
+   Verdiene er åpne tokens fra:
+   • Google Material Design  (Apache-2.0)
+   • IBM Carbon Design System (Apache-2.0)
+   Brukt som funksjonelle verdier — ikke kopi av sidene deres. */
+
+:root{
+  /* ── EASING · Material (M2) ───────────────────────────── */
+  --ease-standard:    cubic-bezier(.4, 0, .2, 1);   /* generell */
+  --ease-decelerate:  cubic-bezier(0, 0, .2, 1);    /* entré (kommer inn) */
+  --ease-accelerate:  cubic-bezier(.4, 0, 1, 1);    /* exit (går ut) */
+  --ease-sharp:       cubic-bezier(.4, 0, .6, 1);   /* midlertidig/retur */
+
+  /* ── EASING · Carbon expressive (merkevare-øyeblikk) ──── */
+  --ease-exp-entrance: cubic-bezier(0, 0, .3, 1);
+  --ease-exp-standard: cubic-bezier(.4, .14, .3, 1);
+  --ease-exp-exit:     cubic-bezier(.4, .14, 1, 1);
+  /* ── EASING · Carbon productive (UI/nytte) ────────────── */
+  --ease-prod-entrance: cubic-bezier(0, 0, .38, .9);
+  --ease-prod-standard: cubic-bezier(.2, 0, .38, .9);
+  --ease-prod-exit:     cubic-bezier(.2, 0, 1, .9);
+
+  /* ── DURATION · Material ──────────────────────────────── */
+  --dur-short-1:100ms; --dur-short-2:200ms;
+  --dur-med-1:250ms;   --dur-med-2:300ms;
+  --dur-long-1:400ms;  --dur-long-2:500ms;
+  /* ── DURATION · Carbon tokens ─────────────────────────── */
+  --dur-fast-01:70ms;  --dur-fast-02:110ms;
+  --dur-mod-01:150ms;  --dur-mod-02:240ms;
+  --dur-slow-01:400ms; --dur-slow-02:700ms;
+  /* Regel: varighet skaler med avstand/størrelse; hero ≈ slow-02 × 1.5 */
+
+  /* ── ELEVATION · Material (skygger) ───────────────────── */
+  --elev-1: 0 1px 2px rgba(0,0,0,.30), 0 1px 3px 1px rgba(0,0,0,.15);
+  --elev-2: 0 1px 2px rgba(0,0,0,.30), 0 2px 6px 2px rgba(0,0,0,.15);
+  --elev-3: 0 4px 8px 3px rgba(0,0,0,.15), 0 1px 3px rgba(0,0,0,.30);
+  --elev-4: 0 6px 10px 4px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.30);
+
+  /* ── SPACING · Carbon (8px-basis) ─────────────────────── */
+  --sp-01:2px;  --sp-02:4px;  --sp-03:8px;  --sp-04:12px; --sp-05:16px;
+  --sp-06:24px; --sp-07:32px; --sp-08:40px; --sp-09:48px; --sp-10:64px;
+  --sp-11:80px; --sp-12:96px; --sp-13:160px;
+
+  /* ── GRID · Carbon 2x ─────────────────────────────────── */
+  --grid-columns:16; --grid-gutter:32px;
+
+  /* ── NorLeads merkevarefarger ─────────────────────────── */
+  --bg:#060608; --ink:#F4F1EA;
+  --green:#B6FF3D; --pink:#FF2E93; --cyan:#00E5FF;
+  --purple:#B47CFF; --orange:#FF6B1A; --yellow:#FFE74C;
+}
+
+/* Eksakt cubic-bézier i JS (GSAP-ease) ligger i videoens kode;
+   se docs/typografi-regelbok.md §5.6 for Newton–Raphson-løseren. */
