@@ -89,10 +89,10 @@ body{
 .confetti-piece{position:absolute; left:50%; top:46%; will-change:transform; opacity:0}
 
 /* ---------- Scene: HERO ---------- */
-#s-hero{align-content:center; padding-left:120px}
+#s-hero{align-content:center; justify-items:center; text-align:center}
 .hero-word{display:block; font-family:"Rubik Beastly","Anton",Impact,sans-serif; text-transform:lowercase; line-height:.9; color:var(--ink); will-change:transform,opacity}
-.hero-word.reklame{font-size:200px; text-shadow:.045em .045em 0 var(--yellow); transform-origin:left center}
-.hero-word.med{font-size:200px; text-shadow:.045em .045em 0 var(--cyan); transform-origin:left center}
+.hero-word.reklame{font-size:200px; text-shadow:.045em .045em 0 var(--yellow); transform-origin:center}
+.hero-word.med{font-size:200px; text-shadow:.045em .045em 0 var(--cyan); transform-origin:center}
 .hero-puls{position:relative; display:inline-block; font-size:230px; line-height:1.05; min-height:1.1em}
 #puls-text{
   font-family:"Rubik Beastly","Anton",Impact,sans-serif; text-transform:lowercase;
@@ -492,10 +492,10 @@ function buildMaster(){
   charIn(tl,cBootTop,0.1,{y:-50,scale:.6,each:.018,ease:"power3.out"});
   tl.from(cBootTag,{autoAlpha:0,duration:.01,stagger:.03},0.35);
   // pulsing concentric rings behind the counter (continuous)
-  tl.fromTo(".ring-a",{scale:0,opacity:.55},{scale:1,opacity:0,duration:1.5,ease:"power2.out",repeat:3},0.3);
-  tl.fromTo(".ring-b",{scale:0,opacity:.45},{scale:1,opacity:0,duration:1.9,ease:"power2.out",repeat:3},0.55);
-  drift(tl,scenes.boot,0.4,4.6,1);
-  idle(tl,cBootTop,1.0,3.2,5);
+  tl.fromTo(".ring-a",{scale:0,opacity:.55},{scale:1,opacity:0,duration:2.0,ease:"power2.out",repeat:3},0.4);
+  tl.fromTo(".ring-b",{scale:0,opacity:.45},{scale:1,opacity:0,duration:2.4,ease:"power2.out",repeat:3},0.7);
+  drift(tl,scenes.boot,0.4,6.4,1);
+  idle(tl,cBootTop,1.0,5.2,5);
 
   // the count: each digit gets its OWN typeface + red caption + own entrance
   const cEl=q("#boot-count"), capEl=q("#boot-cap");
@@ -520,7 +520,8 @@ function buildMaster(){
     {opacity:0,scale:.3,rotation:24}
   ];
   const eases=["expo.out","back.out(2)","bounce.out","power4.out","power3.out","back.out(1.8)","power4.out","back.out(2.4)"];
-  const step=0.46, t0=0.4;
+  // slower, readable cadence — each digit holds clearly before the next
+  const step=0.72, t0=0.6;
   tl.set(cEl,{opacity:0,visibility:"visible"},0);
   nums.forEach((nx,i)=>{
     const at=t0+i*step;
@@ -530,38 +531,38 @@ function buildMaster(){
     },null,at);
     tl.fromTo(cEl,Object.assign({},froms[i]),
       {opacity:1,x:0,y:0,scale:1,rotation:0,filter:"blur(0px)",
-       duration:0.30,ease:eases[i],immediateRender:false},at);
+       duration:0.42,ease:eases[i],immediateRender:false},at);
     tl.fromTo(capEl,{autoAlpha:0,scale:.7,y:20},
-      {autoAlpha:1,scale:1,y:0,duration:.24,ease:"back.out(2)",immediateRender:false},at+.04);
-    // subtle continuous motion while the digit is on screen
-    tl.to(cEl,{rotation:`+=${rnd(-2.2,2.2)}`,y:`-=${rnd(4,9)}`,duration:step,ease:"sine.inOut"},at+.3);
+      {autoAlpha:1,scale:1,y:0,duration:.3,ease:"back.out(2)",immediateRender:false},at+.06);
+    // gentle continuous motion while the digit holds on screen
+    tl.to(cEl,{rotation:`+=${rnd(-2.4,2.4)}`,y:`-=${rnd(6,12)}`,duration:step,ease:"sine.inOut"},at+.42);
   });
-  const lastAt=t0+(nums.length-1)*step;        // moment "7" lands (~3.62)
+  const lastAt=t0+(nums.length-1)*step;        // moment "7" lands (~5.64)
   // confetti celebration after the count reaches 7
-  confetti(tl,lastAt+.18,110);
-  tl.to(cEl,{scale:1.12,duration:.5,yoyo:true,repeat:1,ease:"sine.inOut",transformOrigin:"50% 60%"},lastAt+.18);
-  tl.to(capEl,{scale:1.18,duration:.4,yoyo:true,repeat:1,ease:"sine.inOut"},lastAt+.18);
+  confetti(tl,lastAt+.2,120);
+  tl.to(cEl,{scale:1.14,duration:.55,yoyo:true,repeat:1,ease:"sine.inOut",transformOrigin:"50% 60%"},lastAt+.2);
+  tl.to(capEl,{scale:1.2,duration:.45,yoyo:true,repeat:1,ease:"sine.inOut"},lastAt+.2);
 
   // boot exit
-  charOut(tl,cBootTop,4.55,{y:-70,each:.015});
-  tl.to(cEl,{scale:1.8,autoAlpha:0,filter:"blur(14px)",duration:.5,ease:"power2.in"},4.55);
-  tl.to(capEl,{autoAlpha:0,y:-30,duration:.4,ease:"power2.in"},4.55);
-  tl.to("#boot-tag",{autoAlpha:0,duration:.3},4.55);
-  tl.set(scenes.boot,{autoAlpha:0},5.15);
-  swipe(tl,"#f03b2f",4.85);
+  charOut(tl,cBootTop,6.7,{y:-70,each:.015});
+  tl.to(cEl,{scale:1.8,autoAlpha:0,filter:"blur(14px)",duration:.5,ease:"power2.in"},6.7);
+  tl.to(capEl,{autoAlpha:0,y:-30,duration:.4,ease:"power2.in"},6.7);
+  tl.to("#boot-tag",{autoAlpha:0,duration:.3},6.7);
+  tl.set(scenes.boot,{autoAlpha:0},7.25);
+  swipe(tl,"#f03b2f",6.95);
 
-  /* ================= SCENE 2 · HERO (4.85 → 12.0) ================= */
-  tl.set(scenes.hero,{autoAlpha:1},4.85);
-  charIn(tl,cReklame,4.95,{y:-140,scale:.5,each:.045,ease:"back.out(2)"});
-  charIn(tl,cMed,5.35,{x:-120,y:0,scale:.6,each:.05,ease:"power4.out"});
-  pulsType(tl,5.75);
+  /* ================= SCENE 2 · HERO (7.3 → 11.85) — centered, snappy ========= */
+  tl.set(scenes.hero,{autoAlpha:1},7.3);
+  charIn(tl,cReklame,7.4,{y:-110,scale:.6,each:.03,dur:.5,ease:"back.out(1.7)"});
+  charIn(tl,cMed,7.75,{y:90,scale:.6,each:.03,dur:.45,ease:"power3.out"});
+  pulsType(tl,8.05);
   // whole-word puls breathing (kept un-split to preserve the gradient)
-  tl.to("#puls-text",{scale:1.05,rotation:-1.2,duration:1.1,yoyo:true,repeat:4,ease:"sine.inOut",transformOrigin:"0% 70%"},7.7);
-  idle(tl,cReklame,5.9,5.4,9);
-  idle(tl,cMed,6.2,5.0,8);
-  drift(tl,scenes.hero,5.0,6.6,1.4);
-  charOut(tl,cReklame,11.25,{y:-150,each:.03});
-  charOut(tl,cMed,11.35,{y:150,each:.03});
+  tl.to("#puls-text",{scale:1.05,rotation:-1.2,duration:.8,yoyo:true,repeat:3,ease:"sine.inOut",transformOrigin:"50% 70%"},9.6);
+  idle(tl,cReklame,8.9,2.0,7);
+  idle(tl,cMed,9.1,1.9,7);
+  drift(tl,scenes.hero,7.8,3.6,1.0);
+  charOut(tl,cReklame,11.25,{y:-150,each:.025});
+  charOut(tl,cMed,11.35,{y:150,each:.025});
   tl.to("#puls-text",{autoAlpha:0,scale:.6,duration:.4,ease:"power2.in"},11.4);
   tl.set(scenes.hero,{autoAlpha:0},11.85);
   swipe(tl,"#2154d8",11.6);
