@@ -252,11 +252,7 @@
 <div id="viewport">
   <div id="stage">
 
-    <!-- animated colour background -->
-    <div class="bg" id="bg"></div>
-    <div class="baseline"></div>
-    <div class="grain"></div>
-    <div class="vign"></div>
+    <!-- flat solid colour per slide (assigned in JS) -->
     <div class="wipe" id="wipe"></div>
 
     <div id="track">
@@ -444,29 +440,14 @@ document.querySelectorAll('[data-split="letters"]').forEach(el=>{
   });
 });
 
-/* ---------- strong-colour drifting background ---------- */
+/* ---------- letters float continuously ---------- */
 document.querySelectorAll('.ltr').forEach((el,idx)=>{
   if(!el.querySelector('.gl')) el.innerHTML = '<span class="gl">'+el.innerHTML+'</span>';
   el.querySelector('.gl').style.animationDelay = ((idx%16)*0.08).toFixed(2)+'s';
 });
 
-const bg = document.getElementById('bg');
-const BHUE=[330,28,150,190,248,86,272];
-const blobs=[];
-for(let i=0;i<7;i++){
-  const d=document.createElement('div'); d.className='blob';
-  const size=560+(i%4)*150; d.style.width=d.style.height=size+'px';
-  bg.appendChild(d);
-  blobs.push({el:d,hue:BHUE[i],cx:15+((i*29)%70),cy:12+((i*53)%76),rx:15+(i%4)*6,ry:11+(i%3)*7,
-    spx:.006+(i%5)*.0022,spy:.005+(i%4)*.0026,phx:i*1.1,phy:i*0.7});
-}
-let bt=0;
-function bgTick(){ bt++; blobs.forEach(b=>{
-  const x=b.cx+Math.sin(bt*b.spx+b.phx)*b.rx, y=b.cy+Math.cos(bt*b.spy+b.phy)*b.ry, hue=(b.hue+bt*0.25)%360;
-  b.el.style.left=x+'%'; b.el.style.top=y+'%'; b.el.style.transform='translate(-50%,-50%)';
-  b.el.style.background='radial-gradient(circle, hsl('+hue+',100%,60%) 0%, transparent 66%)';
-}); requestAnimationFrame(bgTick); }
-bgTick();
+const BGCOL = ['#241a4d','#3d0f4d','#0f2a5c','#0c3b3a','#4d0f2f','#103d22','#4d2a0a','#15183d','#2e0f4d','#4d0f1f'];
+document.querySelectorAll('.scene').forEach((s,i)=>{ s.style.background = BGCOL[i % BGCOL.length]; });
 
 /* ---------- GSAP master timeline: horizontal filmstrip ---------- */
 const track  = document.getElementById('track');
