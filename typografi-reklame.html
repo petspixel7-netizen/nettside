@@ -165,7 +165,7 @@
 
   /* ---------- background ---------- */
   .bg{position:absolute;inset:0;overflow:hidden;z-index:0}
-  .blob{position:absolute;border-radius:50%;filter:blur(10px);mix-blend-mode:screen;opacity:.7}
+  .blob{position:absolute;border-radius:50%;filter:blur(7px);mix-blend-mode:screen;opacity:.85}
   .grain{position:absolute;inset:-50%;opacity:.05;pointer-events:none;
     background-image:radial-gradient(rgba(255,255,255,.9) .5px,transparent .6px);
     background-size:3px 3px;animation:grain 1.2s steps(6) infinite}
@@ -223,7 +223,7 @@
     box-shadow:0 0 90px rgba(0,229,255,.35);animation:spin 16s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
   .slider{width:560px;height:26px;border-radius:13px;margin-top:16px;opacity:0;position:relative;
-    background:linear-gradient(90deg,#001318,var(--cyan),#eafdff)}
+    background:linear-gradient(90deg,#ff1e7a,#ff7a00,#ffd400,#1fff8f,#00e5ff,#2b7bff,#b026ff)}
   .knob{position:absolute;top:-9px;left:0;width:44px;height:44px;border-radius:50%;background:#fff;
     box-shadow:0 6px 22px rgba(0,0,0,.6),0 0 26px var(--cyan)}
 
@@ -236,6 +236,16 @@
 
   .row{display:flex;gap:22px;align-items:center;justify-content:center}
   .mono{font-family:"JetBrains Mono",monospace}
+
+  /* ---------- never-static: continuous motion everywhere ---------- */
+  .gl{display:inline-block;animation:flt 2.6s ease-in-out infinite}
+  @keyframes flt{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-12px) rotate(2.5deg)}}
+  .swatch,.dot{animation:gp 1.6s ease-in-out infinite}
+  @keyframes gp{0%,100%{filter:brightness(1) saturate(1)}50%{filter:brightness(1.45) saturate(1.35)}}
+  .thumb{animation:hue 7s linear infinite}
+  @keyframes hue{to{filter:hue-rotate(360deg)}}
+  .pulse{animation:btnp 1.5s ease-in-out infinite}
+  @keyframes btnp{0%,100%{box-shadow:0 0 40px rgba(255,194,31,.55)}50%{box-shadow:0 0 82px rgba(255,194,31,.95)}}
 </style>
 </head>
 <body>
@@ -376,25 +386,6 @@
       </div>
     </section>
 
-    <!-- 10. LYSMODUS -->
-    <section class="scene" data-in="36" data-out="40">
-      <div class="line" data-split="letters" data-enter="flip" data-mix
-           style="font-size:90px;color:#fff;margin-bottom:34px" data-text="Lysmodus? Enkelt."></div>
-      <div class="split">
-        <div class="half dark">
-          <div class="mono" style="font-size:22px;color:#2b7bff">MØRK</div>
-          <div style="font-family:Sora;font-weight:800;font-size:40px;color:hsl(0,0%,100%)">Aa &nbsp;L = 100</div>
-          <div style="font-family:'Space Grotesk';font-size:26px;color:hsl(0,0%,60%)">dempet &nbsp;L = 60</div>
-        </div>
-        <div class="half light">
-          <div class="mono" style="font-size:22px;color:#ff7a00">LYS</div>
-          <div style="font-family:Sora;font-weight:800;font-size:40px;color:hsl(0,0%,0%)">Aa &nbsp;L = 0</div>
-          <div style="font-family:'Space Grotesk';font-size:26px;color:hsl(0,0%,40%)">dempet &nbsp;L = 40</div>
-        </div>
-      </div>
-      <div class="sub mono" style="font-size:30px;color:#ffc21f;margin-top:34px;letter-spacing:.06em">ny L = 100 − L</div>
-    </section>
-
     <!-- 11. CTA — NORLEADS -->
     <section class="scene" data-in="40" data-out="45">
       <div style="position:absolute;width:820px;height:820px;border-radius:50%;
@@ -404,8 +395,8 @@
       <div class="sub" style="font-size:30px;color:#ffffff;font-weight:600">Vi gjør budskapet ditt til kinetisk typografi.</div>
       <div class="row" style="margin-top:46px;gap:40px;align-items:center">
         <span style="font-family:Sora;font-weight:800;font-size:58px;letter-spacing:-1px;color:#fff">Nor<span style="color:#ffc21f;text-shadow:0 0 36px rgba(240,201,90,.5)">Leads</span></span>
-        <span style="font-family:Sora;font-weight:800;font-size:30px;color:#0b0c12;
-          background:linear-gradient(135deg,#ffc21f,#ffc21f);padding:18px 46px;border-radius:50px;
+        <span class="pulse" style="font-family:Sora;font-weight:800;font-size:30px;color:#0b0c12;
+          background:linear-gradient(135deg,#ffd95e,#ffb000);padding:18px 46px;border-radius:50px;
           box-shadow:0 0 44px rgba(240,201,90,.45)">Ta kontakt i dag</span>
       </div>
       <div class="sub mono" style="font-size:24px;color:#ffc21f;margin-top:34px;letter-spacing:.4em">NORLEADS.NO</div>
@@ -454,6 +445,11 @@ document.querySelectorAll('[data-split="letters"]').forEach(el=>{
 });
 
 /* ---------- strong-colour drifting background ---------- */
+document.querySelectorAll('.ltr').forEach((el,idx)=>{
+  if(!el.querySelector('.gl')) el.innerHTML = '<span class="gl">'+el.innerHTML+'</span>';
+  el.querySelector('.gl').style.animationDelay = ((idx%16)*0.08).toFixed(2)+'s';
+});
+
 const bg = document.getElementById('bg');
 const BHUE=[330,28,150,190,248,86,272];
 const blobs=[];
