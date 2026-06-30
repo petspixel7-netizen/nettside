@@ -133,7 +133,7 @@ body{
 .poster{position:absolute; overflow:hidden; border:3px solid var(--ink); will-change:transform,opacity}
 .poster::after{content:""; position:absolute; inset:18px; border:1px solid rgba(17,16,13,.3); pointer-events:none}
 .poster .p-small{position:absolute; left:24px; top:22px; right:24px; opacity:.78; font-size:15px; line-height:1.4}
-.poster .p-big{position:absolute; text-transform:uppercase; line-height:.74}
+.poster .p-big{position:absolute; text-transform:uppercase; line-height:.74; white-space:nowrap}
 .poster.yellow{background:var(--yellow); left:120px; top:300px; width:470px; height:300px; transform:rotate(.8deg)}
 .poster.yellow .p-big{left:24px; bottom:6px; font-family:"Bowlby One SC"; font-size:150px; color:var(--ink)}
 .poster.blue{background:var(--blue); color:var(--paper); left:640px; top:560px; width:250px; height:300px; transform:rotate(-1.6deg)}
@@ -244,11 +244,11 @@ body{
   <section class="scene" id="s-posters">
     <div id="posters-head">Åtte<br><span class="red">case</span>-slots</div>
     <div id="posters-sub" class="mono">Egne ord · egen type<br>høy kontrast · stramt grid</div>
-    <div class="poster yellow"><span class="p-small mono">own type specimen</span><span class="p-big">type</span></div>
-    <div class="poster red"><span class="p-big">ads</span></div>
-    <div class="poster blue"><span class="p-big">motion</span></div>
-    <div class="poster acid"><span class="p-big">font</span></div>
-    <div class="poster pink"><span class="p-big">grid</span></div>
+    <div class="poster yellow"><span class="p-small mono">egen skriftprøve</span><span class="p-big">skrift</span></div>
+    <div class="poster red"><span class="p-big">reklame</span></div>
+    <div class="poster blue"><span class="p-big">puls</span></div>
+    <div class="poster acid"><span class="p-big">farge</span></div>
+    <div class="poster pink"><span class="p-big">rytme</span></div>
   </section>
 
   <!-- OFFER -->
@@ -335,6 +335,19 @@ function splitChars(el){
 }
 const real=els=>els.filter(c=>!c.classList.contains("sp"));   // animatable (non-space) letters
 function setSplit(el,text){ el.textContent=text; return splitChars(el); }
+/* shrink a text element's font-size until it fits inside its parent box
+   (handles both horizontal and vertical writing-mode) so longer Norwegian
+   words never clip. */
+function fitText(el,pad){
+  pad=pad==null?30:pad;
+  const par=el.parentElement;
+  const vertical=getComputedStyle(el).writingMode.indexOf("vertical")===0;
+  const over=()=> vertical
+    ? el.offsetHeight > par.clientHeight-pad
+    : (el.scrollWidth > el.clientWidth+1) || (el.offsetWidth > par.clientWidth-pad);
+  let size=parseFloat(getComputedStyle(el).fontSize),g=0;
+  while(over() && size>22 && g<110){ size-=3; el.style.fontSize=size+"px"; g++; }
+}
 
 /* per-letter entrance / exit / idle presets */
 function charIn(tl,els,at,opt={}){
@@ -412,7 +425,7 @@ let ambItems=[], ambTweens=[];
 function buildAmbient(){
   ambLayer.innerHTML=""; ambItems=[];
   const ghost=document.createElement("div");
-  ghost.className="amb ghost"; ghost.textContent="TYPE";
+  ghost.className="amb ghost"; ghost.textContent="SKRIFT";
   ghost.style.left="56%"; ghost.style.top="6%"; ambLayer.appendChild(ghost); ambItems.push(ghost);
   const kinds=["plus","ring","sq","bar","cross"];
   for(let i=0;i<18;i++){
@@ -441,7 +454,7 @@ function runAmbient(){
 
 /* ---------- ticker content ---------- */
 function buildTickers(){
-  const cols=[["letter","--yellow"],["image","--pink","alt"],["grid","--cyan"],["motion","--orange"],["norleads","--acid"]];
+  const cols=[["bokstav","--yellow"],["bilde","--pink","alt"],["raster","--cyan"],["film","--orange"],["norleads","--acid"]];
   const make=()=>cols.map(([t,c,a])=>`<span class="${a||""}" style="color:var(${c})">${t}</span>`).join("");
   const html=make()+make()+make()+make();
   q("#tt-top").innerHTML=html; q("#tt-bot").innerHTML=html;
@@ -480,7 +493,8 @@ function buildMaster(){
   const cStLines=qa("#s-statement .w").map(w=>real(splitChars(w)));
   const cStCopy=real(splitChars(q("#st-copy")));
   const cPostHead=real(splitChars(q("#posters-head")));
-  const pBig=qa("#s-posters .poster .p-big").map(el=>real(splitChars(el)));
+  const pEls=qa("#s-posters .poster .p-big"); pEls.forEach(el=>fitText(el));
+  const pBig=pEls.map(el=>real(splitChars(el)));
   const cOfferW=qa("#offer-big .w").map(w=>real(splitChars(w)));
   const cOutA=splitChars(q("#outro-lock .a")), cOutB=splitChars(q("#outro-lock .b"));
   const cOutLine=real(splitChars(q("#outro-line")));
@@ -500,13 +514,13 @@ function buildMaster(){
   // the count: each digit gets its OWN typeface + red caption + own entrance
   const cEl=q("#boot-count"), capEl=q("#boot-cap");
   const nums=[
-    {d:"0",font:'"Anton"',           col:"--ink",   cap:"system",  capF:'"Space Mono"'},
-    {d:"1",font:'"Monoton"',         col:"--cyan",  cap:"letter",  capF:'"Space Mono"'},
-    {d:"2",font:'"Bungee Shade"',    col:"--red",   cap:"image",   capF:'"Space Mono"'},
-    {d:"3",font:'"Rye"',             col:"--orange",cap:"grid",    capF:'"Space Mono"'},
-    {d:"4",font:'"Rubik Glitch"',    col:"--violet",cap:"motion",  capF:'"Space Mono"'},
-    {d:"5",font:'"Bowlby One SC"',   col:"--blue",  cap:"color",   capF:'"Space Mono"'},
-    {d:"6",font:'"Fredericka the Great"',col:"--pink",cap:"type",  capF:'"Space Mono"'},
+    {d:"0",font:'"Anton"',           col:"--ink",   cap:"oppsett", capF:'"Space Mono"'},
+    {d:"1",font:'"Monoton"',         col:"--cyan",  cap:"bokstav", capF:'"Space Mono"'},
+    {d:"2",font:'"Bungee Shade"',    col:"--red",   cap:"bilde",   capF:'"Space Mono"'},
+    {d:"3",font:'"Rye"',             col:"--orange",cap:"raster",  capF:'"Space Mono"'},
+    {d:"4",font:'"Rubik Glitch"',    col:"--violet",cap:"film",    capF:'"Space Mono"'},
+    {d:"5",font:'"Bowlby One SC"',   col:"--blue",  cap:"farge",   capF:'"Space Mono"'},
+    {d:"6",font:'"Fredericka the Great"',col:"--pink",cap:"skrift",capF:'"Space Mono"'},
     {d:"7",font:'"Faster One"',      col:"--red",   cap:"norleads",capF:'"Space Mono"'}
   ];
   const froms=[
@@ -587,10 +601,10 @@ function buildMaster(){
   const block=q("#words-block"), idx=q("#words-idx"), role=q("#words-role");
   const oldBig=q("#words-big"); if(oldBig) oldBig.remove();
   const words=[
-    {t:"letter",bg:"--yellow",fg:"--ink", font:'"Bowlby One SC"',idx:"/ 01",role:"store ord = bilde"},
-    {t:"text",  bg:"--blue",  fg:"--paper",font:'"Yeseva One"',  idx:"/ 02",role:"unik kopi · selger"},
-    {t:"grid",  bg:"--cyan",  fg:"--ink", font:'"Bungee"',      idx:"/ 03",role:"12 kolonner"},
-    {t:"motion",bg:"--red",   fg:"--paper",font:'"Faster One"',  idx:"/ 04",role:"klar for video"}
+    {t:"bokstav",bg:"--yellow",fg:"--ink", font:'"Bowlby One SC"',idx:"/ 01",role:"store ord = bilde"},
+    {t:"tekst",  bg:"--blue",  fg:"--paper",font:'"Yeseva One"',  idx:"/ 02",role:"unik kopi · selger"},
+    {t:"raster", bg:"--cyan",  fg:"--ink", font:'"Bungee"',      idx:"/ 03",role:"12 kolonner"},
+    {t:"film",   bg:"--red",   fg:"--paper",font:'"Faster One"',  idx:"/ 04",role:"klar for video"}
   ];
   // build (once) a stack of layered word elements so every swap is a real build-time tween
   let stack=q("#words-stack");
@@ -601,6 +615,7 @@ function buildMaster(){
     el.className="words-w"; el.textContent=w.t;
     el.style.fontFamily=w.font; el.style.color=`var(${w.fg})`;
     stack.appendChild(el);
+    fitText(el,140);                     // keep long Norwegian words on-screen
     return {el, chars:splitChars(el), ...w};
   });
   W.forEach((w,i)=>{
