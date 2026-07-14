@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "remotion studio",
-    "render": "remotion render HelloWorld out/video.mp4",
+    "render": "remotion render Showcase out/showcase.mp4",
     "build": "remotion render"
   },
   "repository": {
@@ -16,10 +16,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@remotion/cli": "^4.0.462",
+    "@remotion/cli": "^4.0.489",
+    "gsap": "^3.15.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "remotion": "^4.0.462"
+    "remotion": "^4.0.489"
   },
   "devDependencies": {
     "@types/react": "^19.2.14",

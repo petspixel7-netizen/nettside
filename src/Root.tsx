@@ -1,4 +1,5 @@
 import { Composition } from 'remotion';
+import { Showcase, SHOWCASE_DURATION } from './Showcase';
 import { NorLeadsAd } from './NorLeadsAd';
 import { IgnoredAds } from './IgnoredAds';
 import { ThumbStopper } from './ThumbStopper';
@@ -7,6 +8,14 @@ import { HotelRiviera } from './HotelRiviera';
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      <Composition
+        id="Showcase"
+        component={Showcase}
+        durationInFrames={SHOWCASE_DURATION}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
       <Composition
         id="NorLeadsAd"
         component={NorLeadsAd}
